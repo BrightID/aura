@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    "baseUrl": "src",
+    "composite": true,
+    "declarationMap": false,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "ESNext"],
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ESNext",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo/build",
+    "types": [
+      "@vite-pwa/remix/remix-sw",
+      "vite-plugin-pwa/client",
+      "@types/node",
+      "vite/client",
+      "vitest/globals",
+      "vite-plugin-glsl/ext"
+    ],
+    "useUnknownInCatchVariables": false,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    ".react-router/**/*",
+    "__tests__/**/*",
+    "src/**/*",
+    "src/**/*.json",
+    "*.d.ts",
+    "node_modules/vite-plugin-pwa/client.d.ts"
+  ]
+}

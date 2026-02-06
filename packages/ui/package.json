@@ -5,20 +5,45 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "bun analyze && bun generate:components",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "analyze": "cem analyze --litelement --outdir . --dev --globs src/components/**",
+    "generate:components": "bun ./scripts/generate-react-wrappers.ts"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    }
   },
   "dependencies": {
     "lit": "^3.3.1",
     "vite-tsconfig-paths": "^6.0.5"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@types/bun": "^1.3.8",
+    "@types/node": "^25.2.1",
     "typescript": "~5.9.3",
     "vite": "npm:rolldown-vite@7.2.5",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.3"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": "^19.2.4",
+    "@lit/react": "^1.0.8"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "@lit/react": {
+      "optional": true
+    }
+  },
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"
-  }
+  },
+  "customElements": "custom-elements.json"
 }

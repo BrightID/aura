@@ -1,14 +1,14 @@
-import { LitElement, css, html } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import './composables/card-section'
-import './composables/dialog-section'
-import './composables/grids-section'
-import './composables/popovers-section'
-import './composables/tabs-section'
-import './index'
-import './theme-provider'
+import { LitElement, css, html } from "lit"
+import { customElement } from "lit/decorators.js"
+import "./composables/card-section"
+import "./composables/dialog-section"
+import "./composables/grids-section"
+import "./composables/popovers-section"
+import "./composables/tabs-section"
+import "./index"
+import "./components/theme-provider"
 
-@customElement('my-element')
+@customElement("my-element")
 export class MyElement extends LitElement {
   render() {
     return html`
@@ -39,6 +39,6 @@ export class MyElement extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'my-element': MyElement
+    "my-element": MyElement
   }
 }

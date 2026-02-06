@@ -10,7 +10,10 @@ export default defineConfig({
 
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: [
+        resolve(__dirname, "src/index.ts"),
+        resolve(__dirname, "src/react.ts"),
+      ],
       formats: ["es", "cjs"],
       fileName: (format) => `[name].${format === "es" ? "mjs" : "js"}`,
     },

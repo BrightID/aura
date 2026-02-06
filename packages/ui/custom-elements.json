@@ -1,0 +1,1741 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/components/badge.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "BadgeElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "'default' | 'secondary' | 'outline' | 'destructive' | 'accent' | 'glass'"
+              },
+              "default": "'default'",
+              "attribute": "variant",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "'sm' | 'md' | 'lg'"
+              },
+              "default": "'md'",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "rounded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "rounded",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "removable"
+            },
+            {
+              "kind": "method",
+              "name": "_handleRemove",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "remove",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "type": {
+                "text": "'default' | 'secondary' | 'outline' | 'destructive' | 'accent' | 'glass'"
+              },
+              "default": "'default'",
+              "fieldName": "variant"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "'sm' | 'md' | 'lg'"
+              },
+              "default": "'md'",
+              "fieldName": "size"
+            },
+            {
+              "name": "rounded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "rounded"
+            },
+            {
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "removable"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-badge",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "BadgeElement",
+          "declaration": {
+            "name": "BadgeElement",
+            "module": "src/components/badge.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-badge",
+          "declaration": {
+            "name": "BadgeElement",
+            "module": "src/components/badge.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/button.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ButtonElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "ButtonVariant"
+              },
+              "default": "'default'",
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "'sm' | 'md' | 'lg'"
+              },
+              "default": "'md'",
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "color",
+              "type": {
+                "text": "'primary' | 'secondary' | 'success' | 'warning' | 'destructive'"
+              },
+              "default": "'primary'",
+              "attribute": "color"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "type": {
+                "text": "ButtonVariant"
+              },
+              "default": "'default'",
+              "fieldName": "variant"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "'sm' | 'md' | 'lg'"
+              },
+              "default": "'md'",
+              "fieldName": "size"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "'primary' | 'secondary' | 'success' | 'warning' | 'destructive'"
+              },
+              "default": "'primary'",
+              "fieldName": "color"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-button",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ButtonElement",
+          "declaration": {
+            "name": "ButtonElement",
+            "module": "src/components/button.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-button",
+          "declaration": {
+            "name": "ButtonElement",
+            "module": "src/components/button.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/card.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CardElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "'default' | 'glass'"
+              },
+              "default": "'default'",
+              "attribute": "variant"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "type": {
+                "text": "'default' | 'glass'"
+              },
+              "default": "'default'",
+              "fieldName": "variant"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-card",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CardElement",
+          "declaration": {
+            "name": "CardElement",
+            "module": "src/components/card.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-card",
+          "declaration": {
+            "name": "CardElement",
+            "module": "src/components/card.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/container.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ContainerElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-container",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ContainerElement",
+          "declaration": {
+            "name": "ContainerElement",
+            "module": "src/components/container.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-container",
+          "declaration": {
+            "name": "ContainerElement",
+            "module": "src/components/container.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/dialog.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DialogElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "_animatingOut",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "show"
+            },
+            {
+              "kind": "method",
+              "name": "hide"
+            },
+            {
+              "kind": "method",
+              "name": "_onBackdropClick",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "MouseEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_onKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "onChange",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "open"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-dialog",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DialogElement",
+          "declaration": {
+            "name": "DialogElement",
+            "module": "src/components/dialog.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-dialog",
+          "declaration": {
+            "name": "DialogElement",
+            "module": "src/components/dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/flex.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FlexElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "direction",
+              "type": {
+                "text": "'col' | 'row'"
+              },
+              "default": "'row'",
+              "attribute": "direction"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "type": {
+                "text": "number"
+              },
+              "default": "10",
+              "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "wrap",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "wrap"
+            },
+            {
+              "kind": "field",
+              "name": "justify",
+              "type": {
+                "text": "'start' | 'center' | 'end' | 'between'"
+              },
+              "default": "'start'",
+              "attribute": "justify"
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "type": {
+                "text": "'start' | 'end' | 'center'"
+              },
+              "default": "'start'",
+              "attribute": "align"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "direction",
+              "type": {
+                "text": "'col' | 'row'"
+              },
+              "default": "'row'",
+              "fieldName": "direction"
+            },
+            {
+              "name": "gap",
+              "type": {
+                "text": "number"
+              },
+              "default": "10",
+              "fieldName": "gap"
+            },
+            {
+              "name": "wrap",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "wrap"
+            },
+            {
+              "name": "justify",
+              "type": {
+                "text": "'start' | 'center' | 'end' | 'between'"
+              },
+              "default": "'start'",
+              "fieldName": "justify"
+            },
+            {
+              "name": "align",
+              "type": {
+                "text": "'start' | 'end' | 'center'"
+              },
+              "default": "'start'",
+              "fieldName": "align"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-flex",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FlexElement",
+          "declaration": {
+            "name": "FlexElement",
+            "module": "src/components/flex.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-flex",
+          "declaration": {
+            "name": "FlexElement",
+            "module": "src/components/flex.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/grid.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Responsive, customizable grid / cards component",
+          "name": "GridElement",
+          "cssParts": [
+            {
+              "description": "the grid container",
+              "name": "grid"
+            },
+            {
+              "description": "each grid item wrapper (when using items array)",
+              "name": "item"
+            }
+          ],
+          "slots": [
+            {
+              "description": "default slot = grid items (usually <div class=\"card\">...</div>)",
+              "name": ""
+            },
+            {
+              "description": "optional header content above the grid",
+              "name": "header"
+            },
+            {
+              "description": "content shown when no items are present",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "colsLg",
+              "type": {
+                "text": "number"
+              },
+              "default": "4",
+              "description": "Number of columns on wide screens (≥1024px)",
+              "attribute": "cols-lg",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "colsMd",
+              "type": {
+                "text": "number"
+              },
+              "default": "3",
+              "description": "Number of columns on medium screens (≥768px)",
+              "attribute": "cols-md",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "colsSm",
+              "type": {
+                "text": "number"
+              },
+              "default": "2",
+              "description": "Number of columns on small screens (≥480px)",
+              "attribute": "cols-sm",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "colsXs",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "description": "Number of columns on very small screens",
+              "attribute": "cols-xs",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "type": {
+                "text": "string"
+              },
+              "default": "'1.25rem'",
+              "description": "Gap between grid items (can be overridden with --grid-gap)",
+              "attribute": "gap",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "items",
+              "type": {
+                "text": "GridItem[]"
+              },
+              "default": "[]",
+              "description": "Optional: supply data array instead of slotted items"
+            },
+            {
+              "kind": "field",
+              "name": "cardAspect",
+              "type": {
+                "text": "string"
+              },
+              "default": "'4 / 3'",
+              "description": "Aspect ratio for auto-generated cards when using .items\nExamples: '1 / 1', '4 / 3', '16 / 9', '3 / 4'",
+              "attribute": "card-aspect"
+            },
+            {
+              "kind": "method",
+              "name": "renderItem",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "item",
+                  "type": {
+                    "text": "GridItem"
+                  }
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "cols-lg",
+              "type": {
+                "text": "number"
+              },
+              "default": "4",
+              "description": "Number of columns on wide screens (≥1024px)",
+              "fieldName": "colsLg"
+            },
+            {
+              "name": "cols-md",
+              "type": {
+                "text": "number"
+              },
+              "default": "3",
+              "description": "Number of columns on medium screens (≥768px)",
+              "fieldName": "colsMd"
+            },
+            {
+              "name": "cols-sm",
+              "type": {
+                "text": "number"
+              },
+              "default": "2",
+              "description": "Number of columns on small screens (≥480px)",
+              "fieldName": "colsSm"
+            },
+            {
+              "name": "cols-xs",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "description": "Number of columns on very small screens",
+              "fieldName": "colsXs"
+            },
+            {
+              "name": "gap",
+              "type": {
+                "text": "string"
+              },
+              "default": "'1.25rem'",
+              "description": "Gap between grid items (can be overridden with --grid-gap)",
+              "fieldName": "gap"
+            },
+            {
+              "name": "card-aspect",
+              "type": {
+                "text": "string"
+              },
+              "default": "'4 / 3'",
+              "description": "Aspect ratio for auto-generated cards when using .items\nExamples: '1 / 1', '4 / 3', '16 / 9', '3 / 4'",
+              "fieldName": "cardAspect"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-grid",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "GridElement",
+          "declaration": {
+            "name": "GridElement",
+            "module": "src/components/grid.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-grid",
+          "declaration": {
+            "name": "GridElement",
+            "module": "src/components/grid.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/head.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "HeadingElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "level",
+              "type": {
+                "text": "'1' | '2' | '3' | '4' | '5' | '6'"
+              },
+              "default": "'2'",
+              "attribute": "level"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "level",
+              "type": {
+                "text": "'1' | '2' | '3' | '4' | '5' | '6'"
+              },
+              "default": "'2'",
+              "fieldName": "level"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-head",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HeadingElement",
+          "declaration": {
+            "name": "HeadingElement",
+            "module": "src/components/head.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-head",
+          "declaration": {
+            "name": "HeadingElement",
+            "module": "src/components/head.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/hover-card.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "HoverCardElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "openDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "attribute": "openDelay"
+            },
+            {
+              "kind": "field",
+              "name": "closeDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "200",
+              "attribute": "closeDelay"
+            },
+            {
+              "kind": "field",
+              "name": "side",
+              "type": {
+                "text": "'top' | 'bottom' | 'left' | 'right'"
+              },
+              "default": "'bottom'",
+              "attribute": "side",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_open",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_openTimer",
+              "type": {
+                "text": "number | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_closeTimer",
+              "type": {
+                "text": "number | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseEnter",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_handleMouseLeave",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "openDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "fieldName": "openDelay"
+            },
+            {
+              "name": "closeDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "200",
+              "fieldName": "closeDelay"
+            },
+            {
+              "name": "side",
+              "type": {
+                "text": "'top' | 'bottom' | 'left' | 'right'"
+              },
+              "default": "'bottom'",
+              "fieldName": "side"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-hover-card",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "HoverCardTriggerElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-hover-card-trigger",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "HoverCardContentElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-hover-card-content",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HoverCardElement",
+          "declaration": {
+            "name": "HoverCardElement",
+            "module": "src/components/hover-card.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-hover-card",
+          "declaration": {
+            "name": "HoverCardElement",
+            "module": "src/components/hover-card.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HoverCardTriggerElement",
+          "declaration": {
+            "name": "HoverCardTriggerElement",
+            "module": "src/components/hover-card.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-hover-card-trigger",
+          "declaration": {
+            "name": "HoverCardTriggerElement",
+            "module": "src/components/hover-card.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HoverCardContentElement",
+          "declaration": {
+            "name": "HoverCardContentElement",
+            "module": "src/components/hover-card.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-hover-card-content",
+          "declaration": {
+            "name": "HoverCardContentElement",
+            "module": "src/components/hover-card.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/badge"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/button"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/card"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/container"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/flex"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/head"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/hover-card"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/input"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/popover"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/separator"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/tab"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/text"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/dialog"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/theme-provider"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/grid"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/input.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "InputElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "string"
+              },
+              "default": "'text'",
+              "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "'input-text'",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "type",
+              "type": {
+                "text": "string"
+              },
+              "default": "'text'",
+              "fieldName": "type"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "label"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "'input-text'",
+              "fieldName": "name"
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "placeholder"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-input",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "InputElement",
+          "declaration": {
+            "name": "InputElement",
+            "module": "src/components/input.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-input",
+          "declaration": {
+            "name": "InputElement",
+            "module": "src/components/input.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/popover.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PopoverElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "side",
+              "type": {
+                "text": "'top' | 'right' | 'bottom' | 'left'"
+              },
+              "default": "'bottom'",
+              "attribute": "side",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "type": {
+                "text": "'start' | 'center' | 'end'"
+              },
+              "default": "'center'",
+              "attribute": "align",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "sideOffset",
+              "type": {
+                "text": "number"
+              },
+              "default": "4",
+              "attribute": "sideOffset"
+            },
+            {
+              "kind": "field",
+              "name": "triggerElements",
+              "type": {
+                "text": "HTMLElement[]"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_handleTriggerClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_handleOutsideClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_handleEsc",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_attachTriggerListeners",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "open-changed",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "open"
+            },
+            {
+              "name": "side",
+              "type": {
+                "text": "'top' | 'right' | 'bottom' | 'left'"
+              },
+              "default": "'bottom'",
+              "fieldName": "side"
+            },
+            {
+              "name": "align",
+              "type": {
+                "text": "'start' | 'center' | 'end'"
+              },
+              "default": "'center'",
+              "fieldName": "align"
+            },
+            {
+              "name": "sideOffset",
+              "type": {
+                "text": "number"
+              },
+              "default": "4",
+              "fieldName": "sideOffset"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-popover",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PopoverElement",
+          "declaration": {
+            "name": "PopoverElement",
+            "module": "src/components/popover.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-popover",
+          "declaration": {
+            "name": "PopoverElement",
+            "module": "src/components/popover.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/separator.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SeparatorElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-separator",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SeparatorElement",
+          "declaration": {
+            "name": "SeparatorElement",
+            "module": "src/components/separator.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-separator",
+          "declaration": {
+            "name": "SeparatorElement",
+            "module": "src/components/separator.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/tab.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabsElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tabs",
+              "type": {
+                "text": "HTMLElement[]"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_initialize",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_updateIndicator",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_updatePanelsAndTabs",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "onTabClick",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "value"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-tabs",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "active",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "value"
+            },
+            {
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "active"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-tab",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabPanelElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "value",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "value"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-tab-panel",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TabsElement",
+          "declaration": {
+            "name": "TabsElement",
+            "module": "src/components/tab.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-tabs",
+          "declaration": {
+            "name": "TabsElement",
+            "module": "src/components/tab.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "TabElement",
+          "declaration": {
+            "name": "TabElement",
+            "module": "src/components/tab.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-tab",
+          "declaration": {
+            "name": "TabElement",
+            "module": "src/components/tab.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "TabPanelElement",
+          "declaration": {
+            "name": "TabPanelElement",
+            "module": "src/components/tab.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-tab-panel",
+          "declaration": {
+            "name": "TabPanelElement",
+            "module": "src/components/tab.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/text.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TextElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "'title' | 'lead' | 'body' | 'small' | 'muted'"
+              },
+              "default": "'body'",
+              "attribute": "variant"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "type": {
+                "text": "'title' | 'lead' | 'body' | 'small' | 'muted'"
+              },
+              "default": "'body'",
+              "fieldName": "variant"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-text",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TextElement",
+          "declaration": {
+            "name": "TextElement",
+            "module": "src/components/text.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-text",
+          "declaration": {
+            "name": "TextElement",
+            "module": "src/components/text.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/theme-provider.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ThemeProvider",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-theme-provider",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ThemeProvider",
+          "declaration": {
+            "name": "ThemeProvider",
+            "module": "src/components/theme-provider.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-theme-provider",
+          "declaration": {
+            "name": "ThemeProvider",
+            "module": "src/components/theme-provider.ts"
+          }
+        }
+      ]
+    }
+  ]
+}

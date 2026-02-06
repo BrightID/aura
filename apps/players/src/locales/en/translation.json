@@ -1,0 +1,54 @@
+{
+  "welcomeScreen": {
+    "tagline": "Welcome Aura player",
+    "description": "Level up to help your friends and family get Aura verified"
+  },
+  "login": {
+    "topDescriptionDesktop": "Scan to log in",
+    "topDescriptionMobile": "Tap to log in"
+  },
+  "playerOnboarding": {
+    "step1": {
+      "title": "Find a<br />Subject",
+      "description": "Find your friends and family in your BrightID connections to help verify them"
+    },
+    "step2": {
+      "title": "Gather<br />Information",
+      "description": "Gather information to help you to make an accurate evaluation",
+      "connectionCardDescription": "See who has connected to the subject in BrightID",
+      "evaluationCardDescription": "See how other Aura players have evaluated the subject"
+    },
+    "step3": {
+      "title": "Evaluate<br />the Subject",
+      "description": "Once you have enough information, tell other players what you think about the subject and how confident are you about your answer"
+    },
+    "step4": {
+      "title": "Level up",
+      "description": "To be effective at helping others get verified, you’ll need to reach higher levels. Reach level 1+ by playing well and finding trainers to evaluate your play."
+    }
+  },
+  "evaluationQuestion": {
+    "subject": "Is this the account of {{name}} that should be Aura verified?",
+    "player": "Does this Player accurately and honestly evaluate Subjects in the BrightID domain?\n",
+    "trainer": "Does this Trainer accurately and honestly evaluate Players in the BrightID domain?\n",
+    "manager": "Does this Manager accurately and honestly evaluate Managers and Trainers in the BrightID domain?"
+  },
+  "evaluationExpression": {
+    "subject": {
+      "positive": "... this account <strong>should be</strong> verified.",
+      "negative": "... this account <strong>should not be</strong> verified."
+    },
+    "player": {
+      "positive": "... this Player accurately and honestly <strong>evaluates</strong> Subjects in the BrightID domain.",
+      "negative": "... this Player <strong>does not</strong> accurately and honestly evaluate Subjects in the BrightID domain."
+    },
+    "trainer": {
+      "positive": "... this Trainer accurately and honestly <strong>evaluates</strong> Players in the BrightID domain.",
+      "negative": "... this Trainer <strong>does not</strong> accurately and honestly evaluate Players in the BrightID domain."
+    },
+    "manager": {
+      "positive": "... this Manager accurately and honestly <strong>evaluates</strong> Managers and Trainers in the BrightID domain.",
+      "negative": "... this Manager <strong>does not</strong> accurately and honestly evaluate Managers and Trainers in the BrightID domain."
+    }
+  }
+}
