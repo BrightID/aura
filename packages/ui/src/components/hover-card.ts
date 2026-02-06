@@ -1,0 +1,173 @@
+import { css, html, LitElement, type CSSResultGroup } from 'lit'
+import { customElement, property, state } from 'lit/decorators.js'
+
+@customElement('a-hover-card')
+export class HoverCardElement extends LitElement {
+  @property({ type: Number }) openDelay = 100 // ms
+  @property({ type: Number }) closeDelay = 200 // ms
+  @property({ reflect: true }) side: 'top' | 'bottom' | 'left' | 'right' = 'bottom'
+
+  @state() private _open = false
+  private _openTimer?: number
+  private _closeTimer?: number
+
+  static styles: CSSResultGroup = css`
+    :host {
+      display: inline-block;
+      position: relative;
+    }
+
+    .content-wrapper {
+      position: absolute;
+      z-index: 50;
+      opacity: 0;
+      transform: translateX(0%) translateY(-4px) scale(0.95);
+      left: 50%;
+      pointer-events: none;
+      transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+      will-change: opacity, transform;
+    }
+
+    .content-wrapper[data-state='open'] {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0%) translateY(0);
+    }
+
+    .content-wrapper[data-state='open'] .content {
+      pointer-events: auto;
+    }
+
+    .content {
+      min-width: 20rem;
+      max-width: 24rem;
+      background: var(--card);
+      color: var(--card-foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.1),
+        0 2px 4px -2px rgb(0 0 0 / 0.1);
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* Positioning – can be overridden with side attribute */
+    :host([side='top']) .content-wrapper {
+      bottom: 100%;
+      margin-bottom: 0.5rem;
+    }
+    :host([side='bottom']) .content-wrapper {
+      top: 100%;
+      margin-top: 0.25rem;
+    }
+    :host([side='left']) .content-wrapper {
+      right: 100%;
+      margin-right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    :host([side='right']) .content-wrapper {
+      left: 100%;
+      margin-left: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Align center by default – can be adjusted with align prop if needed */
+    .content-wrapper {
+      left: 50%;
+      transform: translateX(-0%) scale(0.95);
+    }
+
+    :host([side='left']) .content-wrapper,
+    :host([side='right']) .content-wrapper {
+      transform: translateY(-50%) scale(0.95);
+    }
+  `
+
+  connectedCallback() {
+    super.connectedCallback()
+    this.addEventListener('mouseleave', this._handleMouseLeave)
+  }
+
+  private _handleMouseEnter() {
+    clearTimeout(this._closeTimer)
+    this._openTimer = window.setTimeout(() => {
+      this._open = true
+    }, this.openDelay)
+  }
+
+  private _handleMouseLeave() {
+    clearTimeout(this._openTimer)
+    this._closeTimer = window.setTimeout(() => {
+      this._open = false
+    }, this.closeDelay)
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    clearTimeout(this._openTimer)
+    clearTimeout(this._closeTimer)
+    this.removeEventListener('mouseleave', this._handleMouseLeave)
+  }
+
+  render() {
+    return html`
+      <div
+        class="trigger-wrapper"
+        @focusin=${this._handleMouseEnter}
+        @focusout=${this._handleMouseLeave}
+        @mouseenter=${this._handleMouseEnter}
+      >
+        <slot name="trigger"></slot>
+      </div>
+
+      <div class="content-wrapper" data-state=${this._open ? 'open' : 'closed'}>
+        <div class="content">
+          <slot name="content"></slot>
+        </div>
+      </div>
+    `
+  }
+}
+
+@customElement('a-hover-card-trigger')
+export class HoverCardTriggerElement extends LitElement {
+  static styles = css`
+    :host {
+      display: inline-block;
+      cursor: pointer;
+    }
+  `
+
+  render() {
+    return html`<slot></slot>`
+  }
+}
+
+@customElement('a-hover-card-content')
+export class HoverCardContentElement extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      padding: 1rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+  `
+
+  render() {
+    return html`<slot></slot>`
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'a-hover-card': HoverCardElement
+    'a-hover-card-trigger': HoverCardTriggerElement
+    'a-hover-card-content': HoverCardContentElement
+  }
+}
