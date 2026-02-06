@@ -4,14 +4,9 @@ import './styles.css'
 
 import { createRouter } from '@/app'
 
-import './components/ui/layout.ts'
+import '@aura/ui'
 
-import '@shoelace-style/shoelace/dist/components/button/button.js'
-import '@shoelace-style/shoelace/dist/components/icon/icon.js'
-import '@shoelace-style/shoelace/dist/components/input/input.js'
-import '@shoelace-style/shoelace/dist/components/rating/rating.js'
-import '@shoelace-style/shoelace/dist/themes/dark.css'
-import '@shoelace-style/shoelace/dist/themes/light.css'
+import './components/ui/layout.ts'
 
 import { fetchNewNotifications } from './lib/notifications'
 import {
@@ -79,9 +74,12 @@ export class MyApp extends LitElement {
 
     fetchNewNotifications(brightId)
 
-    this.interval = setInterval(() => {
-      if (brightId) fetchNewNotifications(brightId)
-    }, 5 * 60 * 1000)
+    this.interval = setInterval(
+      () => {
+        if (brightId) fetchNewNotifications(brightId)
+      },
+      5 * 60 * 1000
+    )
   }
 
   disconnectedCallback(): void {
@@ -91,6 +89,6 @@ export class MyApp extends LitElement {
   }
 
   render() {
-    return html` ${this.router.outlet()} `
+    return html`<a-theme-provider> ${this.router.outlet()} </a-theme-provider>`
   }
 }

@@ -240,8 +240,10 @@ export class LoginPage extends SignalWatcher(LitElement) {
     }
 
     .logo {
-      width: 4.5rem;
-      height: 4.5rem;
+      width: 10rem;
+      height: 10rem;
+      position: relative;
+      z-index: 12;
     }
 
     .container {
@@ -816,13 +818,13 @@ export class LoginPage extends SignalWatcher(LitElement) {
               </div>
 
               <div class="btn-wrapper">
-                <button
+                <a-button
                   @click=${this.onSubmit}
                   .disabled=${isLoginLoading.get()}
                   class="btn btn-email"
                 >
                   Sign in with Email
-                </button>
+                </a-button>
                 <div class="btn-info">
                   <span class="badge badge-mini security-3 opacity-50">
                     <span class="icon">🛡️</span>
@@ -865,7 +867,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
 
     return html`
       <div class="wrapper">
-        <img src="/favicon.png" class="logo" alt="Aura" />
+        <img src="/aura2.png" class="logo" alt="Aura" />
 
         <div class="container">
           <h1 class="title">Aura Verified</h1>
@@ -905,11 +907,12 @@ export class LoginPage extends SignalWatcher(LitElement) {
               </div>
 
               <div class="btn-wrapper">
-                <button @click=${
+                <a-button @click=${
                   this.onSubmit
                 } .disabled=${isLoginLoading.get()} class="btn btn-email">
                   Sign in with Email
-                </button>
+                </a-button>
+                
                 <div class="btn-info">
                   <span>Security: Medium</span>
                   <span>Setup time: 1 min</span>

@@ -1,133 +1,138 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { css, html, LitElement } from "lit"
+import { customElement, property } from "lit/decorators.js"
 
-export type ButtonVariant = 'default' | 'secondary' | 'ghost'
+export type ButtonVariant = "default" | "secondary" | "ghost"
 
-@customElement('a-button')
+@customElement("a-button")
 export class ButtonElement extends LitElement {
   @property()
-  variant: ButtonVariant = 'default'
+  variant: ButtonVariant = "default"
 
   @property()
-  size: 'sm' | 'md' | 'lg' = 'md'
+  size: "sm" | "md" | "lg" = "md"
 
   @property()
-  color: 'primary' | 'secondary' | 'success' | 'warning' | 'destructive' = 'primary'
+  color: "primary" | "secondary" | "success" | "warning" | "destructive" =
+    "primary"
 
   @property({ type: Boolean })
   disabled: boolean = false
 
-  static styles?: CSSResultGroup = css`
-    button {
-      --bg: transparent;
-      --fg: currentColor;
-      --border: transparent;
+  static styles = css`
+    :host {
+      box-sizing: border-box;
 
       display: inline-flex;
       align-items: center;
       justify-content: center;
+
       border-radius: var(--radius);
       font-weight: 500;
-      transition: all 0.15s ease;
+      transition:
+        transform 0.15s ease,
+        background-color 0.15s ease;
       cursor: pointer;
+
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--fg);
+
+      outline: none;
     }
 
-    button:active {
+    /* pressed */
+    :host(:active) {
       transform: scale(0.95);
     }
 
-    button:disabled {
+    /* disabled must be attribute-based */
+    :host([disabled]) {
       opacity: 0.5;
       pointer-events: none;
+      cursor: default;
+    }
+
+    /* keyboard focus */
+    :host(:focus-visible) {
+      outline: 2px solid oklch(from var(--color) 0.7 c h);
+      outline-offset: 2px;
     }
 
     /* sizes */
-    button[data-size='sm'] {
+    :host([size="sm"]) {
       height: 2rem;
       padding: 0 0.75rem;
       font-size: 0.8125rem;
     }
 
-    button[data-size='md'] {
+    :host([size="md"]) {
       height: 2.5rem;
       padding: 0 1rem;
       font-size: 0.875rem;
     }
 
-    button[data-size='lg'] {
+    :host([size="lg"]) {
       height: 3rem;
       padding: 0 1.5rem;
       font-size: 1rem;
     }
 
     /* color palette */
-    button[data-color='primary'] {
+    :host([color="primary"]) {
       --color: var(--primary);
       --color-fg: var(--primary-foreground);
     }
 
-    button[data-color='secondary'] {
+    :host([color="secondary"]) {
       --color: var(--secondary);
       --color-fg: var(--secondary-foreground);
     }
 
-    button[data-color='success'] {
+    :host([color="success"]) {
       --color: var(--aura-success);
       --color-fg: white;
     }
 
-    button[data-color='warning'] {
+    :host([color="warning"]) {
       --color: var(--aura-warning);
       --color-fg: white;
     }
 
-    button[data-color='destructive'] {
+    :host([color="destructive"]) {
       --color: oklch(0.65 0.25 25);
       --color-fg: white;
     }
 
     /* variants */
-    button[data-variant='default'] {
+    :host([variant="default"]) {
       --bg: var(--color);
       --fg: var(--color-fg);
     }
 
-    button[data-variant='default']:hover:not(:disabled) {
+    :host([variant="default"]:hover:not([disabled])) {
       --bg: oklch(from var(--color) calc(l + 0.05) c h);
     }
 
-    button[data-variant='secondary'] {
+    :host([variant="secondary"]) {
       --bg: color-mix(in oklch, var(--color) 15%, transparent);
       --fg: var(--color);
     }
 
-    button[data-variant='secondary']:hover:not(:disabled) {
+    :host([variant="secondary"]:hover:not([disabled])) {
       --bg: color-mix(in oklch, var(--color) 25%, transparent);
     }
 
-    button[data-variant='ghost'] {
+    :host([variant="ghost"]) {
       --bg: transparent;
       --fg: var(--color);
     }
 
-    button[data-variant='ghost']:hover:not(:disabled) {
+    :host([variant="ghost"]:hover:not([disabled])) {
       --bg: color-mix(in oklch, var(--color) 20%, transparent);
     }
   `
 
   protected render(): unknown {
-    return html`
-      <button
-        ?disabled=${this.disabled}
-        data-color=${this.color}
-        data-size=${this.size}
-        data-variant=${this.variant}
-      >
-        <slot></slot>
-      </button>
-    `
+    return html` <slot></slot> `
   }
 }
