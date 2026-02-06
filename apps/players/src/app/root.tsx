@@ -1,3 +1,4 @@
+import { Route } from '@/../.react-router/types/src/app/+types/root';
 import ThemeResolver from '@/components/ui/theme-resolver';
 import { PropsWithChildren } from 'react';
 import {
@@ -8,17 +9,16 @@ import {
   Scripts,
   ScrollRestoration,
 } from 'react-router';
+import './index.css';
 import Providers, { AppProviders } from './providers';
-import { Route } from '@/../.react-router/types/src/app/+types/root';
 
+import ErrorBoundryUi from '@/components/error-boundry';
 import GlobalSearchModal from '@/components/GlobalSearchModal';
 import DebugToolbar from '@/components/ux/debug-toolbar';
-import ErrorBoundryUi from '@/components/error-boundry';
 
-import './i18n';
-import './tailwind.css';
-import '../assets/fonts/fonts.css';
 import 'swiper/css';
+import '../assets/fonts/fonts.css';
+import './i18n';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

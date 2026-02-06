@@ -1,0 +1,70 @@
+{
+  "name": "@aura/sdk",
+  "type": "module",
+  "packageManager": "bun@1.3.8",
+  "version": "0.0.14-beta.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "license": "MIT",
+  "homepage": "https://aura-get-verified.vercel.app/home",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrightID/aura-verified.git"
+  },
+  "bugs": "https://github.com/BrightID/aura-verified/issues",
+  "keywords": [
+    "brightid",
+    "aura",
+    "get-verified",
+    "aura-verified"
+  ],
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "require": "./dist/react.cjs",
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    }
+  },
+  "scripts": {
+    "generate-types": "openapi-typescript ./api-docs.json -o ./src/lib/schema.d.ts",
+    "build": "bun clean && tsup",
+    "clean": "rimraf build",
+    "release": "bumpp && npm publish"
+  },
+  "devDependencies": {
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@types/bcrypt": "^6.0.0",
+    "@types/crypto-js": "^4.2.2",
+    "bumpp": "^10.2.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "react": "*"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@lit-app/state": "^1.0.0",
+    "@lit-labs/router": "^0.1.4",
+    "@lit-labs/signals": "^0.1.2",
+    "@lit/task": "^1.0.3",
+    "lit": "^3.3.0"
+  }
+}

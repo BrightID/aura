@@ -1,10 +1,11 @@
-import replace from '@rollup/plugin-replace';
-import { defineConfig } from 'vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
-import glsl from 'vite-plugin-glsl';
-import { ReactRouterVitePWA } from './plugins/sw';
 import { reactRouter } from '@react-router/dev/vite';
+import replace from '@rollup/plugin-replace';
+import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
+import { defineConfig } from 'vite';
+import glsl from 'vite-plugin-glsl';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { ReactRouterVitePWA } from './plugins/sw';
 
 const replaceOptions = { __DATE__: new Date().toISOString() };
 
@@ -25,6 +26,7 @@ export default defineConfig(() => {
       APP_VERSION: JSON.stringify(process.env.npm_package_version),
     },
     plugins: [
+      tailwindcss(),
       glsl({
         include: ['**/*.glsl', '**/*.vs', '**/*.fs'],
       }),

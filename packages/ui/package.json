@@ -12,9 +12,8 @@
     "generate:components": "bun ./scripts/generate-react-wrappers.ts"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./*": "./src/*"
   },
   "dependencies": {
     "lit": "^3.3.1",

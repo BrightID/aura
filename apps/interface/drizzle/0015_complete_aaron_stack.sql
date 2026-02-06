@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD CONSTRAINT "projects_brightIdAppId_brightid_apps_key_fk" FOREIGN KEY ("brightIdAppId") REFERENCES "public"."brightid_apps"("key") ON DELETE no action ON UPDATE no action;

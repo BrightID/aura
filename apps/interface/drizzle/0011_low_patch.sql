@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ALTER COLUMN "requirementLevel" DROP NOT NULL;
