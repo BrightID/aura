@@ -136,3 +136,9 @@ export class ButtonElement extends LitElement {
     return html` <slot></slot> `
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "a-button": ButtonElement
+  }
+}

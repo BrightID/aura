@@ -16,6 +16,10 @@
     "moduleDetection": "force",
     "noEmit": true,
 
+    "paths": {
+      "@aura/ui/*": ["./src/*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

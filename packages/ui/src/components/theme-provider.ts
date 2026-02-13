@@ -1,7 +1,7 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import { css, html, LitElement, type CSSResultGroup } from "lit"
+import { customElement } from "lit/decorators.js"
 
-@customElement('a-theme-provider')
+@customElement("a-theme-provider")
 export class ThemeProvider extends LitElement {
   static styles?: CSSResultGroup = css`
     :host,
@@ -62,5 +62,11 @@ export class ThemeProvider extends LitElement {
 
   protected render(): unknown {
     return html`<slot></slot>`
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "a-theme-provider": ThemeProvider
   }
 }

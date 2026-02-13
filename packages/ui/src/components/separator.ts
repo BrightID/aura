@@ -1,7 +1,7 @@
-import { LitElement, html, css } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import { LitElement, css, html } from "lit"
+import { customElement } from "lit/decorators.js"
 
-@customElement('a-separator')
+@customElement("a-separator")
 export class SeparatorElement extends LitElement {
   static styles = css`
     :host {
@@ -14,5 +14,11 @@ export class SeparatorElement extends LitElement {
 
   render() {
     return html``
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "a-separator": SeparatorElement
   }
 }

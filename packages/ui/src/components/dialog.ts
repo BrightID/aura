@@ -1,7 +1,7 @@
-import { LitElement, html, css } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { LitElement, css, html } from "lit"
+import { customElement, property, state } from "lit/decorators.js"
 
-@customElement('a-dialog')
+@customElement("a-dialog")
 export class DialogElement extends LitElement {
   @property({ type: Boolean }) open = false
 
@@ -49,7 +49,7 @@ export class DialogElement extends LitElement {
       <slot name="trigger" @click=${this.show}></slot>
 
       <div
-        class="wrapper ${this.open || this._animatingOut ? 'visible' : ''}"
+        class="wrapper ${this.open || this._animatingOut ? "visible" : ""}"
         @click=${this._onBackdropClick}
       >
         <div class="content" @click=${(e: Event) => e.stopPropagation()}>
@@ -63,7 +63,11 @@ export class DialogElement extends LitElement {
     this._animatingOut = false
 
     this.dispatchEvent(
-      new CustomEvent('onChange', { bubbles: true, composed: true, detail: { value: true } })
+      new CustomEvent("onChange", {
+        bubbles: true,
+        composed: true,
+        detail: { value: true },
+      }),
     )
   }
 
@@ -71,7 +75,11 @@ export class DialogElement extends LitElement {
     this._animatingOut = true
 
     this.dispatchEvent(
-      new CustomEvent('onChange', { bubbles: true, composed: true, detail: { value: false } })
+      new CustomEvent("onChange", {
+        bubbles: true,
+        composed: true,
+        detail: { value: false },
+      }),
     )
 
     this._animatingOut = false
@@ -83,18 +91,24 @@ export class DialogElement extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.addEventListener('keydown', this._onKeyDown)
+    this.addEventListener("keydown", this._onKeyDown)
   }
 
   disconnectedCallback() {
-    this.removeEventListener('keydown', this._onKeyDown)
+    this.removeEventListener("keydown", this._onKeyDown)
     super.disconnectedCallback()
   }
 
   private _onKeyDown = (e: KeyboardEvent) => {
-    if (this.open && e.key === 'Escape') {
+    if (this.open && e.key === "Escape") {
       e.preventDefault()
       this.hide()
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "a-dialog": DialogElement
   }
 }

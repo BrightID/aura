@@ -1,10 +1,10 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { css, html, LitElement, type CSSResultGroup } from "lit"
+import { customElement, property } from "lit/decorators.js"
 
-@customElement('a-flex')
+@customElement("a-flex")
 export class FlexElement extends LitElement {
   @property()
-  direction: 'col' | 'row' = 'row'
+  direction: "col" | "row" = "row"
 
   @property({ type: Number })
   gap: number = 10
@@ -13,10 +13,10 @@ export class FlexElement extends LitElement {
   wrap: boolean = false
 
   @property()
-  justify: 'start' | 'center' | 'end' | 'between' = 'start'
+  justify: "start" | "center" | "end" | "between" = "start"
 
   @property()
-  align: 'start' | 'end' | 'center' = 'start'
+  align: "start" | "end" | "center" = "start"
 
   static styles?: CSSResultGroup = css`
     div {
@@ -24,43 +24,43 @@ export class FlexElement extends LitElement {
       flex-direction: row;
     }
 
-    div[data-gap='1'] {
+    div[data-gap="1"] {
       gap: var(--sm);
     }
 
-    div[data-gap='4'] {
+    div[data-gap="4"] {
       gap: var(--md);
     }
 
-    div[data-direction='col'] {
+    div[data-direction="col"] {
       flex-direction: column;
     }
 
-    div[data-justify='start'] {
+    div[data-justify="start"] {
       justify-content: flex-start;
     }
 
-    div[data-justify='end'] {
+    div[data-justify="end"] {
       justify-content: flex-end;
     }
 
-    div[data-justify='between'] {
+    div[data-justify="between"] {
       justify-content: space-between;
     }
 
-    div[data-justify='center'] {
+    div[data-justify="center"] {
       justify-content: center;
     }
 
-    div[align='center'] {
+    div[align="center"] {
       align-items: center;
     }
 
-    div[align='start'] {
+    div[align="start"] {
       align-items: start;
     }
 
-    div[align='end'] {
+    div[align="end"] {
       align-items: end;
     }
   `
@@ -75,5 +75,11 @@ export class FlexElement extends LitElement {
     >
       <slot></slot>
     </div>`
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "a-flex": FlexElement
   }
 }

@@ -1,11 +1,11 @@
-import { css, html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import homeIcon from '@/assets/icons/home.svg'
 import activitiesIcon from '@/assets/icons/activities.svg'
 import bellIcon from '@/assets/icons/bell.svg'
+import homeIcon from '@/assets/icons/home.svg'
 import shareIcon from '@/assets/icons/share.svg'
-import { SignalWatcher } from '@lit-labs/signals'
 import { router } from '@/router'
+import { SignalWatcher } from '@lit-labs/signals'
+import { css, html, LitElement } from 'lit'
+import { customElement } from 'lit/decorators.js'
 
 // import profileIcon from '@/assets/icons/profile.svg'
 
@@ -23,10 +23,6 @@ const menuItems = [
     href: '/notifications',
     className: 'bell'
   },
-  // {
-  //   icon: profileIcon,
-  //   href: '/profile'
-  // },
   {
     icon: shareIcon,
     href: '/share'
@@ -68,7 +64,7 @@ export class AppFooter extends SignalWatcher(LitElement) {
       cursor: pointer;
     }
 
-    .navbar sl-icon {
+    .navbar a-icon {
       transition: all;
       transition-duration: 300ms;
 
@@ -90,18 +86,19 @@ export class AppFooter extends SignalWatcher(LitElement) {
 
   render() {
     return html`
-      <div class="navbar">
+      <a-card variant="glass" class="navbar">
         ${menuItems.map(
           (item) => html`
             <a href="${item.href}">
-              <sl-icon
+              <a-icon
+                size="md"
                 class="${router.get()?.link() === item.href ? 'active' : ''} ${item.className}"
                 src="${item.icon}"
-              ></sl-icon>
+              ></a-icon>
             </a>
           `
         )}
-      </div>
+      </a-card>
     `
   }
 }

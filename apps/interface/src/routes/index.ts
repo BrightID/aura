@@ -97,13 +97,13 @@ export class LoginPage extends SignalWatcher(LitElement) {
     .space-y-3 {
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 0.5rem;
     }
 
     .space-y-2 {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
     .button {
@@ -169,8 +169,8 @@ export class LoginPage extends SignalWatcher(LitElement) {
 
     .badge-container {
       display: flex;
+      justify-content: space-between;
       gap: 0.75rem;
-      margin-left: 1rem;
     }
 
     .mini {
@@ -323,40 +323,6 @@ export class LoginPage extends SignalWatcher(LitElement) {
       color: #9ca3af;
       font-size: 0.875rem;
       text-align: center;
-    }
-
-    .email-wrapper {
-      position: relative;
-      margin-bottom: 1rem;
-    }
-
-    .email-icon {
-      position: absolute;
-      top: 50%;
-      left: 1rem;
-      transform: translateY(-50%);
-      color: #9ca3af;
-    }
-
-    .email-input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0.75rem 1rem 0.75rem 3rem;
-      background: #1f2937;
-      border: 1px solid #4b5563;
-      border-radius: 0.5rem;
-      color: #ffffff;
-      font-size: 1rem;
-      transition: border-color 0.2s ease;
-    }
-
-    .email-input:focus {
-      border-color: #60a5fa;
-      outline: none;
-    }
-
-    .email-input::placeholder {
-      color: #6b7280;
     }
 
     .btn {
@@ -804,18 +770,14 @@ export class LoginPage extends SignalWatcher(LitElement) {
           : html`
               <h2 class="form-title">Sign In</h2>
               <p class="form-desc">Use one of these integrations to login</p>
-              <div class="email-wrapper">
-                <div class="email-icon">
-                  <img width="25" height="25" src="${EmailIcon}" alt="email" />
-                </div>
-                <input
-                  .value="${inputText.get()}"
-                  @input=${this.onInputChange}
-                  type="email"
-                  placeholder="Enter your email"
-                  class="email-input"
-                />
-              </div>
+              <a-input
+                .value="${inputText.get()}"
+                @input=${this.onInputChange}
+                type="email"
+                placeholder="Enter your email"
+              >
+                <img slot="icon" width="25" height="25" src="${EmailIcon}" alt="email" />
+              </a-input>
 
               <div class="btn-wrapper">
                 <a-button
@@ -878,7 +840,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
             <img src=${externalLinkIcon} alt="Aura" />
           </a>
 
-          <div class="form-container">
+          <a-card class="form-container">
             <div class="lamp-light"></div>
 
             ${isLoginLoading.get()
@@ -893,18 +855,14 @@ export class LoginPage extends SignalWatcher(LitElement) {
               : html`
               <h2 class="form-title">Sign In</h2>
               <p class="form-desc">Use one of these integrations to login</p>
-              <div class="email-wrapper">
-                <div class="email-icon">
-                  <img width="20" height="20" src="${EmailIcon}" alt="email" />
-                </div>
-                <input
-                  .value="${inputText.get()}"
+              <a-input
+                  .value=${inputText.get()}
                   @input=${this.onInputChange}
                   type="email"
                   placeholder="Enter your email"
-                  class="email-input"
-                />
-              </div>
+                >
+                    <img slot="icon" width="25" height="25" src="${EmailIcon}" alt="email" />
+                </a-input>
 
               <div class="btn-wrapper">
                 <a-button @click=${
@@ -937,14 +895,14 @@ export class LoginPage extends SignalWatcher(LitElement) {
                     </button>
 
                     <div class="badge-container">
-                      <div class="badge" style="color: ${method.color}">
-                        <span class="icon">🕒</span>
+                      <a-badge size="xs" style="color: ${method.color}">
+                        <span>🕒</span>
                         <span>Setup time: + ${method.setupTime}</span>
-                      </div>
-                      <div class="badge security-${method.security}">
-                        <span class="icon">🛡️</span>
+                      </a-badge>
+                      <a-badge size="xs" variant="outline" class="security-${method.security}">
+                        <span>🛡️</span>
                         <span>Security: ${method.security}/10</span>
-                      </div>
+                      </a-badge>
                     </div>
                   </div>
                 `
@@ -954,7 +912,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
               <p class="form-footer">By Signing in you will agree to our privacy policy</p>
             </div>
             `}
-          </div>
+          </a-card>
 
           <div class="bottom-bar">
             <div class="brand">

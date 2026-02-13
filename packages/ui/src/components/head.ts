@@ -1,10 +1,10 @@
-import { LitElement, css, html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { LitElement, css, html } from "lit"
+import { customElement, property } from "lit/decorators.js"
 
-@customElement('a-head')
+@customElement("a-head")
 export class HeadingElement extends LitElement {
   @property({ type: String })
-  level: '1' | '2' | '3' | '4' | '5' | '6' = '2'
+  level: "1" | "2" | "3" | "4" | "5" | "6" = "2"
 
   static styles = css`
     :host {
@@ -15,32 +15,32 @@ export class HeadingElement extends LitElement {
       margin-bottom: 0.5em;
     }
 
-    :host([level='1']) {
+    :host([level="1"]) {
       font-size: 1.875rem; /* 30px */
       line-height: 2.25rem;
     }
 
-    :host([level='2']) {
+    :host([level="2"]) {
       font-size: 1.5rem; /* 24px */
       line-height: 2rem;
     }
 
-    :host([level='3']) {
+    :host([level="3"]) {
       font-size: 1.25rem; /* 20px */
       line-height: 1.75rem;
     }
 
-    :host([level='4']) {
+    :host([level="4"]) {
       font-size: 1.125rem; /* 18px */
       line-height: 1.625rem;
     }
 
-    :host([level='5']) {
+    :host([level="5"]) {
       font-size: 1rem; /* 16px */
       line-height: 1.5rem;
     }
 
-    :host([level='6']) {
+    :host([level="6"]) {
       font-size: 0.875rem; /* 14px */
       line-height: 1.375rem;
     }
@@ -48,5 +48,11 @@ export class HeadingElement extends LitElement {
 
   render() {
     return html`<slot></slot>`
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "a-head": HeadingElement
   }
 }

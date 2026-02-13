@@ -33,7 +33,7 @@
     "outDir": "dist",
     "baseUrl": "src",
     "paths": {
-      "@/*": ["./*"]
+      "@aura/sdk/*": ["./src/*"]
     }
   },
   "include": ["src", "vite-env.d.ts", "drizzle.config.ts"]

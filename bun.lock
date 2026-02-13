@@ -121,6 +121,7 @@
         "@tanstack/query-core": "^5.80.6",
         "@wagmi/connectors": "^5.11.1",
         "@wagmi/core": "^2.21.1",
+        "base64-js": "^1.5.1",
         "bcryptjs": "^3.0.2",
         "brightid_sdk_v6": "^2.0.1",
         "crypto-js": "^4.2.0",
@@ -144,6 +145,7 @@
       "devDependencies": {
         "@aura/eslint-config": "workspace:*",
         "@aura/typescript-config": "workspace:*",
+        "@lit/reactive-element": "^2.1.2",
         "@neondatabase/serverless": "^1.0.1",
         "@types/bcrypt": "^6.0.0",
         "@types/crypto-js": "^4.2.2",
