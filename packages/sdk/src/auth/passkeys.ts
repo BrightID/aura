@@ -1,8 +1,17 @@
 import nacl from "tweetnacl"
 
+export interface PasskeyConfig {
+  /**
+   * safe:   private key is never stored — passkey tap required on every sign()
+   * cached: seed is stored in localStorage — no tap needed after first login
+   */
+  mode: "safe" | "cached"
+}
+
 interface PublicIdentity {
   publicKey: Uint8Array
   publicKeyBase64: string
+  mode: "safe" | "cached"
 }
 
 export interface SignResult {
@@ -15,7 +24,8 @@ interface PRFExtensionResult {
 }
 
 const LS_CRED_ID = "brightid_cred_id"
-const LS_PUB_KEY = "brightid_pub_key" // safe to store — public key is not secret
+const LS_PUB_KEY = "brightid_pub_key"
+const LS_SEED = "brightid_seed"
 
 const safeCopy = (bytes: Uint8Array): Uint8Array<ArrayBuffer> =>
   new Uint8Array(
@@ -143,67 +153,186 @@ async function deriveEddsa() {
   return { seed, keypair, publicKeyBase64: derivedPubKeyBase64 }
 }
 
-export async function registerWithPasskey(): Promise<PublicIdentity> {
+function restoreFromCache(): {
+  seed: Uint8Array
+  keypair: nacl.SignKeyPair
+  publicKeyBase64: string
+} | null {
+  const savedSeed = localStorage.getItem(LS_SEED)
+  const savedPub = localStorage.getItem(LS_PUB_KEY)
+  if (!savedSeed || !savedPub) return null
+
+  const seed = base64ToUint8(savedSeed)
+  const keypair = nacl.sign.keyPair.fromSeed(seed)
+  const pubBase64 = uint8ToBase64(keypair.publicKey)
+
+  // Sanity check — if localStorage is corrupted or tampered with, wipe and bail
+  if (pubBase64 !== savedPub) {
+    console.warn("Cached seed mismatch — clearing corrupted cache")
+    localStorage.removeItem(LS_SEED)
+    return null
+  }
+
+  return { seed, keypair, publicKeyBase64: pubBase64 }
+}
+
+function persistSeed(seed: Uint8Array): void {
+  localStorage.setItem(LS_SEED, uint8ToBase64(seed))
+}
+
+function clearSeed(): void {
+  localStorage.removeItem(LS_SEED)
+}
+
+export async function registerWithPasskey(
+  config: PasskeyConfig,
+): Promise<PublicIdentity> {
   const savedPub = localStorage.getItem(LS_PUB_KEY)
   const savedId = localStorage.getItem(LS_CRED_ID)
+
+  // Already registered on this device
   if (savedPub && savedId) {
     console.log("Already registered on this device")
+
+    // ── Mode migration ───────────────────────────────────
+    // Was safe, now wants cached → silently store the seed
+    if (config.mode === "cached" && !localStorage.getItem(LS_SEED)) {
+      console.log("Migrating safe → cached: re-deriving to store seed")
+      const { seed, keypair } = await deriveEddsa()
+      try {
+        persistSeed(seed)
+      } finally {
+        wipe(seed)
+        wipe(keypair.secretKey)
+      }
+    }
+
+    // Was cached, now wants safe → wipe the stored seed
+    if (config.mode === "safe" && localStorage.getItem(LS_SEED)) {
+      console.log("Migrating cached → safe: wiping stored seed")
+      clearSeed()
+    }
+
     return {
       publicKey: base64ToUint8(savedPub),
       publicKeyBase64: savedPub,
+      mode: config.mode,
     }
   }
 
+  // First time — tap passkey and register
   const { seed, keypair, publicKeyBase64 } = await deriveEddsa()
 
   try {
     await mockApi_register(publicKeyBase64)
+
+    if (config.mode === "cached") {
+      persistSeed(seed)
+    }
+    // safe mode: seed never touches localStorage
   } finally {
     wipe(seed)
     wipe(keypair.secretKey)
   }
 
-  console.log("Registered. Public key:", publicKeyBase64)
+  console.log(`Registered (${config.mode} mode). Public key:`, publicKeyBase64)
   return {
     publicKey: keypair.publicKey,
     publicKeyBase64,
+    mode: config.mode,
   }
 }
 
-export async function loginWithPasskeys(): Promise<PublicIdentity> {
-  // Trigger passkey tap — deriveEddsa() validates the credential ID + public
-  // key fingerprint internally and throws if the wrong passkey is used
-  const { seed, keypair, publicKeyBase64 } = await deriveEddsa()
+export async function loginWithPasskey(
+  config: PasskeyConfig,
+): Promise<PublicIdentity> {
+  // ── Cached mode ──────────────────────────────────────
+  // If a seed is already in localStorage, restore silently — no tap needed.
+  // If not cached yet, fall through to passkey tap and then store the seed.
+  if (config.mode === "cached") {
+    const cached = restoreFromCache()
+    if (cached) {
+      const { seed, keypair, publicKeyBase64 } = cached
+      // Wipe — we only needed the keypair to rebuild PublicIdentity
+      wipe(seed)
+      wipe(keypair.secretKey)
+      console.log("Logged in from cache (no tap needed)")
+      return { publicKey: keypair.publicKey, publicKeyBase64, mode: "cached" }
+    }
 
+    // No cache yet — tap passkey and store seed for next time
+    const { seed, keypair, publicKeyBase64 } = await deriveEddsa()
+    try {
+      const exists = await mockApi_checkExists(publicKeyBase64)
+      if (!exists)
+        throw new Error(
+          "No account found for this passkey. Please register first.",
+        )
+      persistSeed(seed)
+    } finally {
+      wipe(seed)
+      wipe(keypair.secretKey)
+    }
+
+    console.log("Logged in (cached mode — seed stored for future sessions)")
+    return { publicKey: keypair.publicKey, publicKeyBase64, mode: "cached" }
+  }
+
+  // ── Safe mode ────────────────────────────────────────
+  // Always tap passkey. Wipe secrets immediately. Seed never stored.
+  // Also handles safe → cached migration if there's a stored seed to clear.
+  if (localStorage.getItem(LS_SEED)) {
+    console.log("Switching to safe mode — wiping stored seed")
+    clearSeed()
+  }
+
+  const { seed, keypair, publicKeyBase64 } = await deriveEddsa()
   try {
     const exists = await mockApi_checkExists(publicKeyBase64)
-    if (!exists) {
+    if (!exists)
       throw new Error(
         "No account found for this passkey. Please register first.",
       )
-    }
   } finally {
     wipe(seed)
     wipe(keypair.secretKey)
   }
 
-  console.log("Logged in. Public key:", publicKeyBase64)
-  return {
-    publicKey: keypair.publicKey,
-    publicKeyBase64,
-  }
+  console.log("Logged in (safe mode — passkey tap required to sign)")
+  return { publicKey: keypair.publicKey, publicKeyBase64, mode: "safe" }
 }
 
 export async function signWithPasskey(
   message: Uint8Array,
+  config: PasskeyConfig,
 ): Promise<SignResult> {
-  const { seed, keypair } = await deriveEddsa()
+  // ── Cached mode ──────────────────────────────────────
+  // Restore from localStorage — no passkey tap needed
+  if (config.mode === "cached") {
+    const cached = restoreFromCache()
+    if (cached) {
+      const { seed, keypair } = cached
+      let signature: Uint8Array
+      try {
+        signature = nacl.sign.detached(message, keypair.secretKey)
+      } finally {
+        wipe(seed)
+        wipe(keypair.secretKey)
+      }
+      return { signature, message }
+    }
 
+    // Cache is gone (user cleared storage?) — fall back to passkey tap
+    console.warn("Cached seed missing — falling back to passkey tap")
+  }
+
+  // ── Safe mode (or cache miss fallback) ──────────────
+  // Tap passkey, sign, wipe immediately
+  const { seed, keypair } = await deriveEddsa()
   let signature: Uint8Array
   try {
     signature = nacl.sign.detached(message, keypair.secretKey)
   } finally {
-    // Wipe immediately after signing — private key's job is done
     wipe(seed)
     wipe(keypair.secretKey)
   }
@@ -211,4 +340,6 @@ export async function signWithPasskey(
   return { signature, message }
 }
 
-export function passkeyLogout(): void {}
+export function passkeyLogout(): void {
+  clearSeed()
+}

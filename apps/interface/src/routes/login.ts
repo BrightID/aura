@@ -1,13 +1,16 @@
 import brightIDIcon from '@/assets/icons/brightid.svg'
-import externalLinkIcon from '@/assets/icons/external-link.svg'
 import LockIcon from '@/assets/icons/lock.svg'
 import spinnerIcon from '@/assets/icons/spinner.svg'
+import { pushRouter } from '@/router'
 import { isLoginLoading } from '@/states/login'
 import { registerWithPasskey } from '@aura/sdk/auth/passkeys'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, CSSResultGroup, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
+
+import '@/components/landing/footer-section'
+import '@/components/landing/hero-section'
 
 interface AuthMethod {
   id: string
@@ -21,7 +24,7 @@ interface AuthMethod {
 }
 
 @customElement('login-page')
-export class LoginPage extends SignalWatcher(LitElement) {
+export class LoginPageElement extends SignalWatcher(LitElement) {
   static styles?: CSSResultGroup = css`
     :host {
       display: block;
@@ -170,55 +173,6 @@ export class LoginPage extends SignalWatcher(LitElement) {
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .logo {
-      width: 10rem;
-      height: 10rem;
-      position: relative;
-      z-index: 12;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem 0;
-      flex: 1;
-    }
-
-    h1.title {
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 700;
-      color: #ffffff;
-    }
-
-    .info-text {
-      margin: 1rem 0 1.5rem;
-      color: #9ca3af;
-      font-size: 0.875rem;
-      text-align: center;
-    }
-
-    .desc-btn {
-      display: inline-flex;
-      align-items: center;
-      background: transparent;
-      border: none;
-      font-weight: 600;
-      color: #60a5fa;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-
-    .desc-btn:hover {
-      color: #3b82f6;
-    }
-
-    .desc-btn span {
-      margin-right: 0.5rem;
     }
 
     .form-container {
@@ -494,17 +448,9 @@ export class LoginPage extends SignalWatcher(LitElement) {
   protected render() {
     return html`
       <div class="wrapper">
-        <img src="/aura2.png" class="logo" alt="Aura" />
+        <hero-section></hero-section>
 
         <div class="container">
-          <h1 class="title">Aura Verified</h1>
-          <p class="info-text">Decentralized verification platform</p>
-
-          <a href="https://brightid.gitbook.io/aura" target="_blank" class="desc-btn">
-            <span>What is Aura?</span>
-            <img src=${externalLinkIcon} alt="Aura" />
-          </a>
-
           <a-card class="form-container">
             <div class="lamp-light"></div>
 
@@ -544,27 +490,22 @@ export class LoginPage extends SignalWatcher(LitElement) {
             </div>
             `}
           </a-card>
-
-          <div class="bottom-bar">
-            <div class="brand">
-              <a-icon src=${brightIDIcon} size="md"></a-icon>
-
-              <span class="brand-name">Bright ID</span>
-            </div>
-            <a href="/privacy-policy" class="privacy">Privacy Policy</a>
-          </div>
         </div>
+
+        <footer-section></footer-section>
       </div>
     `
   }
 
-  protected signWithBrightID() {}
+  protected signWithBrightID() {
+    pushRouter('/brightid')
+  }
 
   protected async signWithPasskey() {
     isLoginLoading.set(true)
 
     try {
-      const response = await registerWithPasskey()
+      const response = await registerWithPasskey({ mode: 'cached' })
       console.log(response)
     } finally {
       isLoginLoading.set(false)

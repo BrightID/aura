@@ -12,10 +12,10 @@ export class FlexElement extends LitElement {
   @property({ type: Boolean })
   wrap: boolean = false
 
-  @property()
+  @property({ reflect: true })
   justify: "start" | "center" | "end" | "between" = "start"
 
-  @property()
+  @property({ reflect: true })
   align: "start" | "end" | "center" = "start"
 
   static styles?: CSSResultGroup = css`

@@ -28,6 +28,9 @@ import {
 } from '@/utils/encoding'
 import QrCodeWithLogo from 'qrcode-with-logos'
 
+import '@/components/landing/footer-section'
+import '@/components/landing/hero-section'
+
 const brightIDQRLink = signal('')
 const brightIDQrImage = signal('')
 
@@ -63,11 +66,15 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
 
     .qr-code {
       padding: 0;
-      border-radius: 20px;
     }
 
     .container {
       position: relative;
+      border-radius: 20px;
+      padding: 10px 0;
+      background-color: white;
+      width: 375px;
+      margin: auto;
     }
 
     .title {
@@ -297,31 +304,11 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
   }
 
   protected render() {
-    if (this.withoutTitle) {
-      return html` <button @click=${this.offBrightIDSection} class="back">Back</button>
-        <h3 class="">Login with BrightID</h3>
-        <div class="container">
-          <img class="qr-code" .src=${brightIDQrImage.get()} />
-        </div>
-        <div class="instructions">
-          <p>Steps to complete:</p>
-
-          <ol>
-            <li>
-              Download the brightid application from here:
-              <a href="https://www.brightid.org/">Link</a>
-            </li>
-            <li>
-              Scan the qr code above or click <a href="${brightIDQRLink.get()}">Here</a> to open the
-              app
-            </li>
-          </ol>
-        </div>`
-    }
     return html`
-      <a class="back" href="/">Back</a>
+      <a class="back" href="/login">Back</a>
 
-      <h1 class="title">Login with BrightID</h1>
+      <hero-section title="Login With BrightID"></hero-section>
+
       <div class="container">
         <img class="qr-code" .src=${brightIDQrImage.get()} />
       </div>
@@ -339,6 +326,8 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
           </li>
         </ol>
       </div>
+
+      <footer-section></footer-section>
     `
   }
 }
