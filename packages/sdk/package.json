@@ -27,16 +27,8 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./react": {
-      "require": "./dist/react.cjs",
-      "types": "./dist/react.d.ts",
-      "import": "./dist/react.js"
-    }
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
   "scripts": {
     "generate-types": "openapi-typescript ./api-docs.json -o ./src/lib/schema.d.ts",
@@ -53,6 +45,8 @@
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
+    "@wagmi/core": "^3.3.3",
+    "@zerodev/wallet": "^0.1.5",
     "react": "*"
   },
   "peerDependenciesMeta": {
@@ -65,6 +59,13 @@
     "@lit-labs/router": "^0.1.4",
     "@lit-labs/signals": "^0.1.2",
     "@lit/task": "^1.0.3",
-    "lit": "^3.3.0"
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/wagmi": "^4.6.7",
+    "axios": "^1.13.5",
+    "base64-js": "^1.5.1",
+    "lit": "^3.3.0",
+    "tweetnacl": "^1.0.3",
+    "viem": "^2.45.3",
+    "wagmi": "^3.4.3"
   }
 }

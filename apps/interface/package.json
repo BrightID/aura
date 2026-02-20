@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@aura/ui": "workspace:*",
+    "@aura/sdk": "workspace:*",
     "@lit-app/state": "^1.0.0",
     "@lit-labs/router": "^0.1.4",
     "@lit-labs/signals": "^0.1.2",

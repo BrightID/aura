@@ -13,6 +13,14 @@ export const createRouter = (classThis: ReactiveControllerHost & HTMLElement) =>
       render: () => html` <app-layout> <home-page></home-page></app-layout>`
     },
     {
+      path: '/login',
+      enter: async () => {
+        await import('@/routes/login')
+        return true
+      },
+      render: () => html` <app-layout> <login-page></login-page></app-layout>`
+    },
+    {
       path: '/landings/:id',
       enter: async () => {
         await import('@/routes/project-page')

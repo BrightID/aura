@@ -5,17 +5,17 @@ export type ButtonVariant = "default" | "secondary" | "ghost"
 
 @customElement("a-button")
 export class ButtonElement extends LitElement {
-  @property()
+  @property({ reflect: true })
   variant: ButtonVariant = "default"
 
-  @property()
+  @property({ reflect: true })
   size: "sm" | "md" | "lg" = "md"
 
-  @property()
+  @property({ reflect: true })
   color: "primary" | "secondary" | "success" | "warning" | "destructive" =
     "primary"
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   disabled: boolean = false
 
   static styles = css`

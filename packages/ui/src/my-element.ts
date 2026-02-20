@@ -1,12 +1,12 @@
 import { LitElement, css, html } from "lit"
 import { customElement } from "lit/decorators.js"
+import "./components/theme-provider"
 import "./composables/card-section"
 import "./composables/dialog-section"
 import "./composables/grids-section"
 import "./composables/popovers-section"
 import "./composables/tabs-section"
 import "./index"
-import "./components/theme-provider"
 
 @customElement("my-element")
 export class MyElement extends LitElement {
@@ -31,6 +31,8 @@ export class MyElement extends LitElement {
           </div>
         </a-flex>
       </a-container>
+
+      <a-toaster></a-toaster>
     `
   }
 

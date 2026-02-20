@@ -1,9 +1,10 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import '../components/card'
-import '../components/head'
+import { css, html, LitElement, type CSSResultGroup } from "lit"
+import { customElement } from "lit/decorators.js"
+import { toast } from "../components"
+import "../components/card"
+import "../components/head"
 
-@customElement('cards-section')
+@customElement("cards-section")
 export class CardsSectionElement extends LitElement {
   static styles?: CSSResultGroup = css`
     a-card {
@@ -21,6 +22,10 @@ export class CardsSectionElement extends LitElement {
     }
   `
 
+  protected onClick() {
+    toast("Clicked :Check:")
+  }
+
   protected render() {
     return html`
       <a-head level="3"> Cards Preview </a-head>
@@ -28,12 +33,16 @@ export class CardsSectionElement extends LitElement {
       <a-card variant="default">
         <a-text>Sample card title</a-text>
 
-        <a-input name="firstName" placeholder="Enter your name" label="First Name"></a-input>
+        <a-input
+          name="firstName"
+          placeholder="Enter your name"
+          label="First Name"
+        ></a-input>
 
         <a-flex gap="4" justify="end">
           <a-button color="destructive"> Reject </a-button>
 
-          <a-button> Accept </a-button>
+          <a-button @click=${this.onClick}> Accept </a-button>
         </a-flex>
 
         <div>
@@ -60,7 +69,11 @@ export class CardsSectionElement extends LitElement {
       <a-card variant="glass">
         <a-text>Sample card title</a-text>
 
-        <a-input name="firstName" placeholder="Enter your name" label="First Name"></a-input>
+        <a-input
+          name="firstName"
+          placeholder="Enter your name"
+          label="First Name"
+        ></a-input>
 
         <a-flex gap="4" justify="end">
           <a-button color="destructive"> Reject </a-button>
@@ -87,11 +100,17 @@ export class CardsSectionElement extends LitElement {
             </div>
           </div>
 
-          <p class="text-sm">The React Framework – created and maintained by @vercel.</p>
+          <p class="text-sm">
+            The React Framework – created and maintained by @vercel.
+          </p>
 
           <div class="flex gap-6 mt-4 text-sm text-muted-foreground">
-            <div><span class="font-medium text-foreground">12k</span> Followers</div>
-            <div><span class="font-medium text-foreground">289</span> Following</div>
+            <div>
+              <span class="font-medium text-foreground">12k</span> Followers
+            </div>
+            <div>
+              <span class="font-medium text-foreground">289</span> Following
+            </div>
           </div>
         </a-hover-card-content>
       </a-hover-card>
