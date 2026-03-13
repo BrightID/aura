@@ -45,9 +45,7 @@ export class HomeElement extends SignalWatcher(LitElement) {
       margin-bottom: 32px;
     }
 
-    .apps-section h2 {
-      font-size: 20px;
-      font-weight: 700;
+    .apps-section a-head {
       margin-bottom: 24px;
     }
 
@@ -105,7 +103,7 @@ export class HomeElement extends SignalWatcher(LitElement) {
       </div>
 
       <div class="apps-section">
-        <h2>Apps needing verification</h2>
+        <a-head level="2">Apps needing verification</a-head>
 
         ${isLoading.get()
           ? html`

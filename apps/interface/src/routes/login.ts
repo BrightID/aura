@@ -3,7 +3,7 @@ import LockIcon from '@/assets/icons/lock.svg'
 import spinnerIcon from '@/assets/icons/spinner.svg'
 import { pushRouter } from '@/router'
 import { isLoginLoading } from '@/states/login'
-import { registerWithPasskey } from '@aura/sdk/auth/passkeys'
+import { hasStoredPasskey, loginWithPasskey, registerWithPasskey } from '@aura/sdk/auth/passkeys'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, CSSResultGroup, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
@@ -452,7 +452,7 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
               ? html`
                   <div class="loading-wrapper">
                     <div>
-                      <h2>Signing Up</h2>
+                      <h2>Signing In</h2>
                       <img width="25" height="25" src="${spinnerIcon}" alt="spinner" />
                     </div>
                   </div>
@@ -499,8 +499,15 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
     isLoginLoading.set(true)
 
     try {
-      const response = await registerWithPasskey({ mode: 'cached' })
-      console.log(response)
+      if (hasStoredPasskey()) {
+        await loginWithPasskey({ mode: 'cached' })
+      } else {
+        await registerWithPasskey({ mode: 'cached', username: `aura-${new Date().toISOString()}` })
+      }
+      pushRouter('/')
+    } catch (err) {
+      console.error(err)
+      alert(err instanceof Error ? err.message : 'Passkey login failed')
     } finally {
       isLoginLoading.set(false)
     }

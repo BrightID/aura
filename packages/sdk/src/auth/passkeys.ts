@@ -6,6 +6,8 @@ export interface PasskeyConfig {
    * cached: seed is stored in localStorage — no tap needed after first login
    */
   mode: "safe" | "cached"
+  /** Display name shown in the passkey prompt when creating a new credential */
+  username?: string
 }
 
 interface PublicIdentity {
@@ -88,6 +90,68 @@ async function mockApi_register(publicKeyBase64: string): Promise<void> {
 
 async function mockApi_checkExists(publicKeyBase64: string): Promise<boolean> {
   return mockDatabase.has(publicKeyBase64)
+}
+
+/**
+ * Creates a brand-new passkey credential and derives an Ed25519 seed from it.
+ *
+ * Some authenticators return the PRF output during creation itself (one tap).
+ * Others only allow PRF evaluation during authentication, so we fall back to
+ * an immediate `credentials.get()` with the freshly-created credential ID.
+ */
+async function createNewPasskeyAndDerive(username: string): Promise<{
+  seed: Uint8Array
+  keypair: nacl.SignKeyPair
+  publicKeyBase64: string
+}> {
+  const prfSalt = new TextEncoder().encode("BrightID")
+
+  const credential = (await navigator.credentials.create({
+    publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: { name: "BrightID" },
+      user: {
+        id: crypto.getRandomValues(new Uint8Array(16)),
+        name: username,
+        displayName: username,
+      },
+      pubKeyCredParams: [
+        { type: "public-key", alg: -7 },   // ES256
+        { type: "public-key", alg: -257 },  // RS256
+      ],
+      authenticatorSelection: {
+        userVerification: "required",
+        residentKey: "required",
+      },
+      extensions: {
+        prf: { eval: { first: prfSalt } },
+      } as AuthenticationExtensionsClientInputs,
+    },
+  })) as PublicKeyCredential | null
+
+  if (!credential) throw new Error("Passkey creation cancelled")
+
+  // Persist the new credential ID so deriveEddsa() targets it on fallback
+  localStorage.setItem(LS_CRED_ID, uint8ToBase64(new Uint8Array(credential.rawId)))
+
+  const extensions = credential.getClientExtensionResults() as PRFExtensionResult
+  const prfFromCreate = extensions.prf?.results?.first
+
+  if (prfFromCreate) {
+    // Authenticator returned PRF output during creation — no second tap needed
+    const seed = await hkdf(
+      new Uint8Array(prfFromCreate),
+      new TextEncoder().encode("BrightID"),
+      "BrightID Ed25519 Identity v1",
+    )
+    const keypair = nacl.sign.keyPair.fromSeed(seed)
+    const publicKeyBase64 = uint8ToBase64(keypair.publicKey)
+    localStorage.setItem(LS_PUB_KEY, publicKeyBase64)
+    return { seed, keypair, publicKeyBase64 }
+  }
+
+  // PRF not returned during creation — do a follow-up assertion with the new key
+  return deriveEddsa()
 }
 
 async function deriveEddsa() {
@@ -220,8 +284,9 @@ export async function registerWithPasskey(
     }
   }
 
-  // First time — tap passkey and register
-  const { seed, keypair, publicKeyBase64 } = await deriveEddsa()
+  // First time — create a new passkey and derive identity from it
+  const username = config.username ?? "user"
+  const { seed, keypair, publicKeyBase64 } = await createNewPasskeyAndDerive(username)
 
   try {
     await mockApi_register(publicKeyBase64)
@@ -338,6 +403,10 @@ export async function signWithPasskey(
   }
 
   return { signature, message }
+}
+
+export function hasStoredPasskey(): boolean {
+  return !!(localStorage.getItem(LS_CRED_ID) && localStorage.getItem(LS_PUB_KEY))
 }
 
 export function passkeyLogout(): void {

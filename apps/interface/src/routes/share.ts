@@ -53,68 +53,8 @@ export class SharePage extends SignalWatcher(LitElement) {
       margin-bottom: 2rem;
     }
 
-    .title {
-      font-size: 1.875rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-
-    .subtitle {
-      font-size: 1.125rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .text-muted {
-      color: #8c8c8c;
-    }
-
-    .card {
-      background: linear-gradient(to bottom, rgba(46, 51, 90, 0.26), rgba(28, 27, 51, 0.26) 100%);
-      box-shadow: 0px 1px 0px 0px #ffffff40 inset;
-      backdrop-filter: blur(31.5px);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      text-align: left;
-      margin-bottom: 2rem;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .icon-wrapper {
-      margin-top: 0.25rem;
-    }
-
-    .card-content {
-      flex: 1;
-    }
-
-    .card-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .card-description {
-      color: #8c8c8c;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-
-    .link-button {
-      color: #8c8c8c;
-      font-size: 0.875rem;
-      text-decoration: underline;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      margin-top: 0.5rem;
-      text-align: left;
+    .header {
+      margin-bottom: 1.5rem;
     }
 
     .platform-buttons {
@@ -158,72 +98,26 @@ export class SharePage extends SignalWatcher(LitElement) {
       box-sizing: border-box;
     }
 
-    .qr-container {
-      padding: 1rem;
-      box-sizing: border-box;
-      border-radius: 0.75rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      background: linear-gradient(to bottom, rgba(46, 51, 90, 0.26), rgba(28, 27, 51, 0.26) 100%);
-    }
-
     .qr-code {
-      position: relative;
-      height: 300px;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.5rem;
     }
 
     .qr-image {
       object-fit: contain;
-      width: 280px;
-      height: 280px;
+      width: 240px;
+      height: 240px;
       border-radius: 12px;
     }
 
-    .qr-logo {
-      padding: 0.5rem;
-      border-radius: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .qr-logo svg {
-      background-color: #ff3d00;
-      border-radius: 0.75rem;
-      padding: 0.5rem;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .divider-line {
-      height: 1px;
-      background-color: #333;
-      flex: 1;
-      width: 60px;
-    }
-
-    .divider-text {
-      padding: 0 1rem;
-      color: #8c8c8c;
-    }
-
-    /* Profile link */
     .profile-link {
       text-align: center;
-      margin-bottom: 1rem;
+      margin-top: 0.5rem;
     }
 
     .link {
-      color: #8c8c8c;
+      color: var(--accent);
       text-decoration: underline;
     }
 
@@ -259,25 +153,6 @@ export class SharePage extends SignalWatcher(LitElement) {
       margin-top: 0.25rem;
     }
 
-    .share-input {
-      display: block;
-      width: 100%;
-      background: rgba(46, 51, 90, 0.26);
-      border: none;
-      outline: none;
-      height: 40px;
-      font-size: 1.05rem;
-      border-radius: 5px;
-      margin-bottom: 12px;
-      color: white;
-      padding: 0 10px;
-    }
-    label {
-      display: block;
-      text-align: left;
-      margin-bottom: 2px;
-      font-size: small;
-    }
   `
 
   constructor() {
@@ -326,19 +201,19 @@ export class SharePage extends SignalWatcher(LitElement) {
     return emailRegex.test(gravatarEmail.get())
   }
 
-  private onNicknameChange(event: InputEvent) {
-    if (!event.target || !('value' in event.target)) return
+  private onNicknameChange(event: Event) {
+    const value = event instanceof CustomEvent ? (event.detail as string) : (event.target as HTMLInputElement).value
 
-    nickname.set(event.target.value as string)
+    nickname.set(value)
     this.generateQRCodeLink()
   }
 
-  private onEmailChange(event: InputEvent) {
-    if (!event.target || !('value' in event.target)) return
+  private onEmailChange(event: Event) {
+    const value = event instanceof CustomEvent ? (event.detail as string) : (event.target as HTMLInputElement).value
 
-    gravatarEmail.set(event.target.value as string)
+    gravatarEmail.set(value)
     if (this.isEmailValid()) {
-      getGravatarHash(event.target.value as string).then((res) => {
+      getGravatarHash(value).then((res) => {
         hashedEmail.set(res)
         this.generateQRCodeLink()
       })
@@ -393,52 +268,43 @@ export class SharePage extends SignalWatcher(LitElement) {
     return html` <div class="container">
       <main class="main-content">
         <div class="header">
-          <h1 class="title">Find Verifiers</h1>
-          <p class="text-muted">
+          <a-head level="1">Find Verifiers</a-head>
+          <a-text variant="muted">
             Share your profile to relative aura players and ask for evaluation
-          </p>
+          </a-text>
         </div>
 
         <contacts-section></contacts-section>
 
         <gravatar-profile .hashedEmail=${hashedEmail.get()}></gravatar-profile>
 
-        <label for="gravatar-email"> Gravatar Email </label>
-        <input
-          id="gravatar-email"
+        <a-input
+          label="Gravatar Email"
+          type="email"
           placeholder="gravatar@email.com"
           .value=${gravatarEmail.get()}
           @change=${this.onEmailChange}
-          class="share-input"
-        />
+        ></a-input>
 
-        <label for="nickname"> Your nickname </label>
-        <input
+        <a-input
+          label="Your nickname"
           .value=${nickname.get()}
           @change=${this.onNicknameChange}
-          id="nickname"
           placeholder="Your name"
-          class="share-input"
-        />
+        ></a-input>
 
-        <div class="qr-container">
+        <a-card style="margin-bottom: 1.5rem; text-align: center">
           <div class="qr-code">
-            <div class="qr-logo-container">
-              <div class="qr-logo">
-                <img class="qr-image" .src="${this.linkImage.get()}" alt="qr code" />
-              </div>
-            </div>
+            <img class="qr-image" .src="${this.linkImage.get()}" alt="qr code" />
           </div>
-          <div class="divider">
-            <div class="divider-line"></div>
-            <span class="divider-text">Or</span>
-            <div class="divider-line"></div>
-          </div>
+
+          <a-separator></a-separator>
 
           <div class="profile-link">
             <a href="${this.profileLink}" target="_blank" class="link"> Aura Profile Link </a>
           </div>
-        </div>
+        </a-card>
+
         <div class="social-buttons">
           <button class="social-button" @click=${() => this.handleShare('twitter')}>
             <div class="social-icon twitter">

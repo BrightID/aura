@@ -19,42 +19,19 @@ const isLoading = signal(true)
 @customElement('verifiers-page')
 export class VerifiersPage extends SignalWatcher(LitElement) {
   static styles?: CSSResultGroup = css`
-    .title {
-      margin-top: 10px;
-    }
-
     .filter {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       align-items: center;
-    }
-
-    .filter button {
-      padding: 10px 15px;
-      display: flex;
-
-      border-radius: 4000px;
-      cursor: pointer;
-
-      color: rgba(255, 255, 255, 0.64);
-
-      text-align: center;
-      font-size: 11px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-
-      border: 1px solid rgba(93, 93, 93, 0.32);
-
-      background: #161629;
+      margin-bottom: 8px;
     }
 
     main {
-      margin-top: 30px;
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
   `
 
@@ -70,7 +47,6 @@ export class VerifiersPage extends SignalWatcher(LitElement) {
     })
 
     isLoading.set(false)
-
     verifications.set(res)
   }
 
@@ -80,15 +56,15 @@ export class VerifiersPage extends SignalWatcher(LitElement) {
 
   protected render() {
     return html`
-      <h1 class="title">Verifiers</h1>
+      <a-head level="1">Verifiers</a-head>
 
-      <section class="filter">
-        <button>Level 1</button>
-        <button>Level 2</button>
-        <button>Level 3</button>
-        <button>Evaluated</button>
-        <button>Didn't evaluate</button>
-      </section>
+      <div class="filter">
+        <a-button variant="ghost" size="sm">Level 1</a-button>
+        <a-button variant="ghost" size="sm">Level 2</a-button>
+        <a-button variant="ghost" size="sm">Level 3</a-button>
+        <a-button variant="ghost" size="sm">Evaluated</a-button>
+        <a-button variant="ghost" size="sm">Didn't evaluate</a-button>
+      </div>
 
       <main>
         ${isLoading.get()
@@ -97,12 +73,11 @@ export class VerifiersPage extends SignalWatcher(LitElement) {
               <verification-card-skeleton></verification-card-skeleton>
               <verification-card-skeleton></verification-card-skeleton>
             `
-          : map(verifications.get(), (item, key) => {
+          : map(verifications.get(), (item) => {
               const verification = getAuraVerification(
                 item.verifications,
                 EvaluationCategory.PLAYER
               )
-
               const level = verification?.level ?? 0
 
               return html`
@@ -111,8 +86,7 @@ export class VerifiersPage extends SignalWatcher(LitElement) {
                   verifierEmail=""
                   .verifierPicture=${createBlockiesImage(item.id)}
                   .verifierLevel=${level}
-                  .progressPercent=${((verification?.score ?? 0) / this.nextLevelScore(level)) *
-                  100}
+                  .progressPercent=${((verification?.score ?? 0) / this.nextLevelScore(level)) * 100}
                 ></verifier-card>
               `
             })}

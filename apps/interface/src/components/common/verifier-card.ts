@@ -32,47 +32,20 @@ export class VerifierCard extends LitElement {
   evaluationNote = 'Evaluated you'
 
   static styles = css`
-    .verifier-card {
-      background-image: linear-gradient(
-        to top right,
-        rgba(46, 51, 90, 0.26),
-        rgba(28, 27, 51, 0.26) 100%
-      );
-      backdrop-filter: blur(21px);
-      border-radius: 24px;
-      padding: 18px 20px 5px 18px;
-      border-top: 1px solid #ffffff30;
-    }
-
-    p {
-      color: #cfcfcf;
-      font-size: 12px;
-      margin: 0;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-
-    p strong {
-      color: white;
-      margin-left: 5px;
-    }
-
     .verifier-header {
       display: flex;
       align-items: flex-start;
-
       text-align: left;
-
-      gap: 24px;
+      gap: 16px;
       margin-bottom: 16px;
     }
 
     .verifier-picture {
-      width: 64px;
-      height: 64px;
+      width: 52px;
+      height: 52px;
       border-radius: 6px;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .verifier-picture img {
@@ -80,93 +53,74 @@ export class VerifierCard extends LitElement {
       height: 100%;
       object-fit: cover;
     }
+
     .verifier-info {
       flex: 1 1 auto;
+      min-width: 0;
     }
 
-    .verifier-info h2 {
-      margin: 0;
-      font-size: medium;
-      font-weight: 700;
-    }
-
-    .verifier-info p {
-      margin: 4px 0 12px 0px;
-      color: #dadada;
-      font-size: smaller;
-    }
-
-    .level-progress {
-      color: #ebebeb;
-      font-size: 9px;
-      font-weight: 300;
-      letter-spacing: 1px;
-    }
-
-    .mt-2 {
-      margin-top: 10px;
+    .verifier-level {
+      margin-left: auto;
+      white-space: nowrap;
     }
 
     .progress-bar {
       width: 100%;
-      height: 12px;
-      background-color: #313042;
-      border-radius: 2px;
+      height: 8px;
+      background-color: color-mix(in oklch, var(--border) 50%, transparent);
+      border-radius: 9999px;
       overflow: hidden;
     }
 
     .progress {
       height: 100%;
-      background-color: #5500ff;
+      background-color: var(--primary);
       border-radius: 9999px;
     }
 
-    .evaluation-high {
-      color: #50c76b;
-      text-align: center;
-      font-weight: 400;
-      font-size: 14px;
-      padding-top: 5px;
-
-      display: inline-flex;
-      gap: 5px;
-    }
-    section {
-      margin-left: auto;
-      width: 117.975px;
+    .evaluation {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
     }
 
-    section small {
+    .evaluation-note {
       font-size: 10px;
-      color: #838383;
-      margin: auto;
+      color: var(--muted-foreground);
     }
   `
 
   protected render() {
     return html`
-      <div class="verifier-card">
+      <a-card variant="glass">
         <div class="verifier-header">
           <div class="verifier-picture">
             <img src="${this.verifierPicture}" alt="verifier picture" />
           </div>
           <div class="verifier-info">
-            <h2>${this.verifierName}</h2>
-            <p class="mt-2">${this.verifierEmail}</p>
+            <a-head level="5" style="margin: 0; font-size: 0.9375rem">${this.verifierName}</a-head>
+            ${this.verifierEmail
+              ? html`<a-text variant="muted" style="display: block; margin-top: 2px">${this.verifierEmail}</a-text>`
+              : ''}
           </div>
-          <p>Verifier level <strong>${this.verifierLevel}</strong></p>
+          <div class="verifier-level">
+            <a-badge variant="secondary" size="xs">Level ${this.verifierLevel}</a-badge>
+          </div>
         </div>
+
         <div class="progress-bar">
           <div class="progress" style="width: ${this.progressPercent}%;"></div>
         </div>
-        <section>
-          <div class="evaluation-high">
-            <img width="16" height="16" src="${this.evaluationIcon}" alt="thumbs up" />
+
+        <div class="evaluation">
+          <img width="14" height="14" src="${this.evaluationIcon}" alt="evaluation" />
+          <a-text variant="small" style="color: var(--aura-success)">
             +${this.evaluationScore} ${this.evaluationText}
-          </div>
-          <small>${this.evaluationNote}</small>
-        </section>
-      </div>
+          </a-text>
+          <span class="evaluation-note">${this.evaluationNote}</span>
+        </div>
+      </a-card>
     `
   }
 }

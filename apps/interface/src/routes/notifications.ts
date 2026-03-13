@@ -17,32 +17,8 @@ export class NotificationsPage extends LitElement {
 
     .filter {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
-    }
-
-    .chip {
-      border-radius: 13px;
-      border: 1px solid rgba(93, 93, 93, 0.32);
-      background: #161629;
-      padding: 5px 10px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.64);
-      cursor: pointer;
-    }
-
-    .chip.active {
-      background: #28284a;
-      color: #fff;
-      border-color: #ccc;
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    .no-notification-text {
-      margin-top: 12px;
     }
   `
 
@@ -61,7 +37,6 @@ export class NotificationsPage extends LitElement {
   }
 
   protected render() {
-    // Filter notifications based on active chip
     const items = notificationItems.get()
     const filtered =
       this.activeFilter === 'All'
@@ -74,33 +49,31 @@ export class NotificationsPage extends LitElement {
 
     return html`
       <section>
-        <h1>Notifications</h1>
+        <a-head level="1">Notifications</a-head>
+
         <div class="filter">
           ${this.filters.map(
             (f) => html`
-              <button
-                class="chip${this.activeFilter === f.label ? ' active' : ''}"
+              <a-button
+                size="sm"
+                variant="${this.activeFilter === f.label ? 'default' : 'ghost'}"
                 @click=${() => this.setFilter(f.label)}
               >
                 ${f.label}
-              </button>
+              </a-button>
             `
           )}
         </div>
+
         ${filtered.length === 0
           ? html`
-              <div style="text-align:center; margin: 48px 0; color: #888;">
+              <div style="text-align:center; margin: 48px 0; color: var(--muted-foreground)">
                 <svg width="48" height="48" fill="none" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="22" stroke="#ddd" stroke-width="2" fill="none" />
-                  <path
-                    d="M16 32h16M24 16v8"
-                    stroke="#ddd"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
-                  <circle cx="24" cy="28" r="1.5" fill="#ddd" />
+                  <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3" />
+                  <path d="M16 32h16M24 16v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.3" />
+                  <circle cx="24" cy="28" r="1.5" fill="currentColor" opacity="0.3" />
                 </svg>
-                <div class="no-notification-text">No notifications yet</div>
+                <a-text variant="muted" style="margin-top: 12px; display: block">No notifications yet</a-text>
               </div>
             `
           : filtered.map(

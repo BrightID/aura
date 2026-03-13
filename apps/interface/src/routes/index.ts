@@ -106,40 +106,11 @@ export class LoginPage extends SignalWatcher(LitElement) {
       gap: 0.5rem;
     }
 
-    .button {
-      width: 100%;
-      height: 3.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 1rem;
-      border-radius: 0.5rem;
-      padding: 0 1.25rem;
-      background: linear-gradient(145deg, #2a2a2a05, #1e1e1e6c);
-      border: 1px solid #3a3a3a;
-      color: #ffffff;
-      font-size: 1rem;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
     .mini-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 4rem;
-    }
-
-    .button:hover {
-      background: linear-gradient(145deg, #39383d, #1a0b35);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .button:active {
-      transform: translateY(0);
-      box-shadow: none;
     }
 
     .flex-container {
@@ -323,35 +294,6 @@ export class LoginPage extends SignalWatcher(LitElement) {
       color: #9ca3af;
       font-size: 0.875rem;
       text-align: center;
-    }
-
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-email {
-      background: #2563eb;
-      color: #ffffff;
-      border: none;
-    }
-
-    .btn-email:hover {
-      background: #1d4ed8;
-    }
-
-    .divider {
-      height: 1px;
-      background: #4b5563;
-      margin: 1.5rem 0;
     }
 
     .mini-divider {
@@ -781,21 +723,20 @@ export class LoginPage extends SignalWatcher(LitElement) {
 
               <div class="btn-wrapper">
                 <a-button
+                  size="lg"
+                  style="width: 100%"
                   @click=${this.onSubmit}
                   .disabled=${isLoginLoading.get()}
-                  class="btn btn-email"
                 >
                   Sign in with Email
                 </a-button>
                 <div class="btn-info">
-                  <span class="badge badge-mini security-3 opacity-50">
-                    <span class="icon">🛡️</span>
-                    <span>3/10</span>
-                  </span>
-                  <span class="badge badge-mini">
-                    <span class="icon">🕒</span>
-                    <span>Setup time: +1m</span>
-                  </span>
+                  <a-badge size="xs" variant="outline" class="security-3" style="opacity: 0.5">
+                    <span>🛡️</span><span>3/10</span>
+                  </a-badge>
+                  <a-badge size="xs" variant="outline">
+                    <span>🕒</span><span>Setup: +1m</span>
+                  </a-badge>
                 </div>
               </div>
 
@@ -807,16 +748,19 @@ export class LoginPage extends SignalWatcher(LitElement) {
                     this.authMethods,
                     (method) => html`
                       <div class="space-y-2">
-                        <button class="button mini-button" @click=${() => method.callback?.()}>
-                          <div class="">
-                            <img width="20" height="20" src="${method.icon}" alt="${method.name}" />
-                          </div>
-                        </button>
+                        <a-button
+                          variant="ghost"
+                          size="sm"
+                          class="mini-button"
+                          @click=${() => method.callback?.()}
+                        >
+                          <img width="20" height="20" src="${method.icon}" alt="${method.name}" />
+                        </a-button>
                         <div class="badge-container mini">
-                          <div class="badge security-${method.security}">
-                            <span class="icon">🛡️</span>
+                          <a-badge size="xs" variant="outline" class="security-${method.security}">
+                            <span>🛡️</span>
                             <span>${method.security}/10</span>
-                          </div>
+                          </a-badge>
                         </div>
                       </div>
                     `
@@ -865,49 +809,60 @@ export class LoginPage extends SignalWatcher(LitElement) {
                 </a-input>
 
               <div class="btn-wrapper">
-                <a-button @click=${
-                  this.onSubmit
-                } .disabled=${isLoginLoading.get()} class="btn btn-email">
+                <a-button
+                  size="lg"
+                  style="width: 100%"
+                  @click=${this.onSubmit}
+                  .disabled=${isLoginLoading.get()}
+                >
                   Sign in with Email
                 </a-button>
-                
+
                 <div class="btn-info">
-                  <span>Security: Medium</span>
-                  <span>Setup time: 1 min</span>
+                  <a-badge size="xs" variant="outline" class="security-3">
+                    <span>🛡️</span><span>3/10</span>
+                  </a-badge>
+                  <a-badge size="xs" variant="outline">
+                    <span>🕒</span><span>~1 min</span>
+                  </a-badge>
                 </div>
               </div>
 
-              <div class="divider"></div>
+              <a-separator></a-separator>
 
-                  <div class="space-y-3">
-              ${map(
-                this.authMethods,
-                (method) => html`
-                  <div class="space-y-2">
-                    <button class="button" @click=${() => method.callback?.()}>
-                      <div class="flex-container">
-                        <img width="20" height="20" src="${method.icon}" alt="${method.name}" />
-                        <div class="flex-1">
-                          <div class="font-medium">${method.name}</div>
-                          <div class="text-xs text-muted-foreground">${method.description}</div>
+              <div class="space-y-3">
+                ${map(
+                  this.authMethods,
+                  (method) => html`
+                    <div class="space-y-2">
+                      <a-button
+                        variant="secondary"
+                        style="width: 100%; height: 3.75rem; justify-content: flex-start; padding: 0 1.25rem; display: flex"
+                        @click=${() => method.callback?.()}
+                      >
+                        <div class="flex-container">
+                          <img width="20" height="20" src="${method.icon}" alt="${method.name}" />
+                          <div class="flex-1">
+                            <div class="font-medium">${method.name}</div>
+                            <div class="text-xs text-muted-foreground">${method.description}</div>
+                          </div>
                         </div>
-                      </div>
-                    </button>
+                      </a-button>
 
-                    <div class="badge-container">
-                      <a-badge size="xs" style="color: ${method.color}">
-                        <span>🕒</span>
-                        <span>Setup time: + ${method.setupTime}</span>
-                      </a-badge>
-                      <a-badge size="xs" variant="outline" class="security-${method.security}">
-                        <span>🛡️</span>
-                        <span>Security: ${method.security}/10</span>
-                      </a-badge>
+                      <div class="badge-container">
+                        <a-badge size="xs" style="color: ${method.color}">
+                          <span>🕒</span>
+                          <span>Setup time: + ${method.setupTime}</span>
+                        </a-badge>
+                        <a-badge size="xs" variant="outline" class="security-${method.security}">
+                          <span>🛡️</span>
+                          <span>Security: ${method.security}/10</span>
+                        </a-badge>
+                      </div>
                     </div>
-                  </div>
-                `
-              )}
-                    </div>
+                  `
+                )}
+              </div>
 
               <p class="form-footer">By Signing in you will agree to our privacy policy</p>
             </div>
