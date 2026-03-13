@@ -6,6 +6,7 @@ const levelColors: Record<number, { bg: string; text: string; border: string }> 
   1: { bg: 'rgba(251, 191, 36, 0.15)', text: '#fbbf24', border: 'rgba(251, 191, 36, 0.3)' },
   2: { bg: 'rgba(96, 165, 250, 0.15)', text: 'var(--aura-info)', border: 'rgba(96, 165, 250, 0.3)' },
   3: { bg: 'rgba(74, 222, 128, 0.15)', text: 'var(--aura-success)', border: 'rgba(74, 222, 128, 0.3)' },
+  4: { bg: 'rgba(167, 139, 250, 0.15)', text: '#a78bfa', border: 'rgba(167, 139, 250, 0.3)' },
 }
 
 const levelLabels: Record<number, string> = {
@@ -13,6 +14,7 @@ const levelLabels: Record<number, string> = {
   1: 'Level 1',
   2: 'Level 2',
   3: 'Level 3',
+  4: 'Level 4',
 }
 
 @customElement('verification-level-badge')
@@ -52,7 +54,7 @@ export class VerificationLevelBadge extends LitElement {
   `
 
   render() {
-    const level = Math.max(0, Math.min(3, this.level))
+    const level = Math.max(0, Math.min(4, this.level))
     const colors = levelColors[level] ?? levelColors[0]!
     const label = levelLabels[level] ?? 'Unknown'
 

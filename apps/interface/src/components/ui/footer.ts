@@ -2,7 +2,7 @@ import activitiesIcon from '@/assets/icons/activities.svg'
 import bellIcon from '@/assets/icons/bell.svg'
 import homeIcon from '@/assets/icons/home.svg'
 import shareIcon from '@/assets/icons/share.svg'
-import { router } from '@/router'
+import { currentPath, pushRouter } from '@/router'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
@@ -10,95 +10,166 @@ import { customElement } from 'lit/decorators.js'
 // import profileIcon from '@/assets/icons/profile.svg'
 
 const menuItems = [
-  {
-    icon: homeIcon,
-    href: '/home'
-  },
-  {
-    icon: activitiesIcon,
-    href: '/activities'
-  },
-  {
-    icon: bellIcon,
-    href: '/notifications',
-    className: 'bell'
-  },
-  {
-    icon: shareIcon,
-    href: '/share'
-  }
+  { icon: homeIcon, href: '/home' },
+  { icon: activitiesIcon, href: '/activities' },
+  { icon: bellIcon, href: '/notifications', small: true },
+  { icon: shareIcon, href: '/share' }
 ]
 
 @customElement('app-footer')
 export class AppFooter extends SignalWatcher(LitElement) {
-  static styles = css`
-    .navbar {
-      background-image: linear-gradient(
-        to bottom,
-        rgba(46, 51, 90, 0.26),
-        rgba(28, 27, 51, 0.26) 100%
-      );
+  private _onPopState = () => currentPath.set(window.location.pathname)
 
-      z-index: 30;
-      position: fixed;
-      bottom: 23px;
-      left: 50%;
-      width: 350px;
-      max-width: 98vw;
-      transform: translateX(-50%);
-      backdrop-filter: blur(24px);
-      padding: 10px 16px;
-      border: 1px solid #33333320;
-      border-top: 1px solid #ffffff20;
-      border-radius: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+  connectedCallback() {
+    super.connectedCallback()
+    window.addEventListener('popstate', this._onPopState)
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    window.removeEventListener('popstate', this._onPopState)
+  }
+
+  private navigate(e: Event, href: string) {
+    e.preventDefault()
+    pushRouter(href)
+  }
+
+  private isActive(href: string) {
+    const path = currentPath.get()
+    return path === href || path.startsWith(href + '/')
+  }
+
+  static styles = css`
+    :host {
+      display: block;
     }
 
-    .navbar button {
-      background: transparent;
-      outline: none;
-      border: none;
-      color: #aaaaaa;
+    /* ── Mobile-first: full-width bar pinned to bottom ── */
+    .navbar {
+      z-index: 30;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 6px 0;
+      padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(
+        to bottom,
+        rgba(46, 51, 90, 0.35),
+        rgba(28, 27, 51, 0.6) 100%
+      );
+      backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    /* ── Larger screens: floating pill ── */
+    @media (min-width: 480px) {
+      .navbar {
+        bottom: 22px;
+        left: 50%;
+        right: auto;
+        width: 380px;
+        transform: translateX(-50%);
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 8px 12px;
+      }
+    }
+
+    /* ── Nav item ── */
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-height: 48px;
+      gap: 4px;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
       cursor: pointer;
     }
 
-    .navbar a-icon {
-      transition: all;
-      transition-duration: 300ms;
-
-      color: #aaaaaa;
-      fill: #aaaaaa;
-      width: 30px;
-      height: 30px;
+    /* ── Icon wrapper ── */
+    .icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 34px;
+      border-radius: 12px;
       background: transparent;
-    }
-    .active {
-      color: white !important;
+      transition: background 220ms ease, transform 180ms ease;
     }
 
-    .bell {
-      width: 25px !important;
-      height: 25px !important;
+    .nav-item.active .icon-wrap {
+      background: rgba(160, 150, 220, 0.15);
+    }
+
+    /* ── Icon ── */
+    a-icon {
+      width: 24px;
+      height: 24px;
+      color: rgba(150, 150, 180, 0.55);
+      fill: rgba(150, 150, 180, 0.55);
+      transition: color 200ms ease, fill 200ms ease;
+    }
+
+    .nav-item.active a-icon {
+      color: rgba(195, 185, 255, 0.9);
+      fill: rgba(195, 185, 255, 0.9);
+    }
+
+    .small-icon {
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    /* ── Active dot ── */
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(195, 185, 255, 0.75);
+      opacity: 0;
+      transform: scale(0);
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+
+    .nav-item.active .dot {
+      opacity: 1;
+      transform: scale(1);
     }
   `
 
   render() {
     return html`
-      <a-card variant="glass" class="navbar">
+      <nav class="navbar" role="navigation" aria-label="Main navigation">
         ${menuItems.map(
           (item) => html`
-            <a href="${item.href}">
-              <a-icon
-                size="md"
-                class="${router.get()?.link() === item.href ? 'active' : ''} ${item.className}"
-                src="${item.icon}"
-              ></a-icon>
+            <a
+              href="${item.href}"
+              class="nav-item ${this.isActive(item.href) ? 'active' : ''}"
+              aria-current="${this.isActive(item.href) ? 'page' : 'false'}"
+              @click="${(e: Event) => this.navigate(e, item.href)}"
+            >
+              <div class="icon-wrap">
+                <a-icon
+                  size="md"
+                  class="${item.small ? 'small-icon' : ''}"
+                  src="${item.icon}"
+                ></a-icon>
+              </div>
+              <div class="dot"></div>
             </a>
           `
         )}
-      </a-card>
+      </nav>
     `
   }
 }

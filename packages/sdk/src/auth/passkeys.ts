@@ -1,33 +1,33 @@
-import nacl from "tweetnacl"
+import nacl from "tweetnacl";
 
 export interface PasskeyConfig {
   /**
    * safe:   private key is never stored — passkey tap required on every sign()
    * cached: seed is stored in localStorage — no tap needed after first login
    */
-  mode: "safe" | "cached"
+  mode: "safe" | "cached";
   /** Display name shown in the passkey prompt when creating a new credential */
-  username?: string
+  username?: string;
 }
 
-interface PublicIdentity {
-  publicKey: Uint8Array
-  publicKeyBase64: string
-  mode: "safe" | "cached"
+export interface PublicIdentity {
+  publicKey: Uint8Array;
+  publicKeyBase64: string;
+  mode: "safe" | "cached";
 }
 
 export interface SignResult {
-  signature: Uint8Array
-  message: Uint8Array
+  signature: Uint8Array;
+  message: Uint8Array;
 }
 
 interface PRFExtensionResult {
-  prf?: { results?: { first?: ArrayBuffer } }
+  prf?: { results?: { first?: ArrayBuffer } };
 }
 
-const LS_CRED_ID = "brightid_cred_id"
-const LS_PUB_KEY = "brightid_pub_key"
-const LS_SEED = "brightid_seed"
+const LS_CRED_ID = "brightid_cred_id";
+const LS_PUB_KEY = "brightid_pub_key";
+const LS_SEED = "brightid_seed";
 
 const safeCopy = (bytes: Uint8Array): Uint8Array<ArrayBuffer> =>
   new Uint8Array(
@@ -35,16 +35,16 @@ const safeCopy = (bytes: Uint8Array): Uint8Array<ArrayBuffer> =>
       bytes.byteOffset,
       bytes.byteOffset + bytes.byteLength,
     ) as ArrayBuffer,
-  )
+  );
 
 function uint8ToBase64(bytes: Uint8Array): string {
-  let binary = ""
-  for (const byte of bytes) binary += String.fromCharCode(byte)
-  return btoa(binary)
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
 }
 
 function base64ToUint8(base64: string): Uint8Array {
-  return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))
+  return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 }
 
 async function hkdf(
@@ -59,7 +59,7 @@ async function hkdf(
     { name: "HKDF" },
     false,
     ["deriveBits"],
-  )
+  );
   const derived = await crypto.subtle.deriveBits(
     {
       name: "HKDF",
@@ -69,27 +69,27 @@ async function hkdf(
     },
     baseKey,
     outputLength * 8,
-  )
-  return new Uint8Array(derived)
+  );
+  return new Uint8Array(derived);
 }
 
 function wipe(bytes: Uint8Array): void {
-  bytes.fill(0)
+  bytes.fill(0);
 }
 
-const mockDatabase = new Map<string, { publicKey: string }>()
+const mockDatabase = new Map<string, { publicKey: string }>();
 
 async function mockApi_register(publicKeyBase64: string): Promise<void> {
-  console.log("[mock API] Registering:", publicKeyBase64)
+  console.log("[mock API] Registering:", publicKeyBase64);
   if (mockDatabase.has(publicKeyBase64)) {
-    console.log("[mock API] Already exists, skipping")
-    return
+    console.log("[mock API] Already exists, skipping");
+    return;
   }
-  mockDatabase.set(publicKeyBase64, { publicKey: publicKeyBase64 })
+  mockDatabase.set(publicKeyBase64, { publicKey: publicKeyBase64 });
 }
 
 async function mockApi_checkExists(publicKeyBase64: string): Promise<boolean> {
-  return mockDatabase.has(publicKeyBase64)
+  return mockDatabase.has(publicKeyBase64);
 }
 
 /**
@@ -100,11 +100,11 @@ async function mockApi_checkExists(publicKeyBase64: string): Promise<boolean> {
  * an immediate `credentials.get()` with the freshly-created credential ID.
  */
 async function createNewPasskeyAndDerive(username: string): Promise<{
-  seed: Uint8Array
-  keypair: nacl.SignKeyPair
-  publicKeyBase64: string
+  seed: Uint8Array;
+  keypair: nacl.SignKeyPair;
+  publicKeyBase64: string;
 }> {
-  const prfSalt = new TextEncoder().encode("BrightID")
+  const prfSalt = new TextEncoder().encode("BrightID");
 
   const credential = (await navigator.credentials.create({
     publicKey: {
@@ -116,8 +116,8 @@ async function createNewPasskeyAndDerive(username: string): Promise<{
         displayName: username,
       },
       pubKeyCredParams: [
-        { type: "public-key", alg: -7 },   // ES256
-        { type: "public-key", alg: -257 },  // RS256
+        { type: "public-key", alg: -7 }, // ES256
+        { type: "public-key", alg: -257 }, // RS256
       ],
       authenticatorSelection: {
         userVerification: "required",
@@ -127,15 +127,19 @@ async function createNewPasskeyAndDerive(username: string): Promise<{
         prf: { eval: { first: prfSalt } },
       } as AuthenticationExtensionsClientInputs,
     },
-  })) as PublicKeyCredential | null
+  })) as PublicKeyCredential | null;
 
-  if (!credential) throw new Error("Passkey creation cancelled")
+  if (!credential) throw new Error("Passkey creation cancelled");
 
   // Persist the new credential ID so deriveEddsa() targets it on fallback
-  localStorage.setItem(LS_CRED_ID, uint8ToBase64(new Uint8Array(credential.rawId)))
+  localStorage.setItem(
+    LS_CRED_ID,
+    uint8ToBase64(new Uint8Array(credential.rawId)),
+  );
 
-  const extensions = credential.getClientExtensionResults() as PRFExtensionResult
-  const prfFromCreate = extensions.prf?.results?.first
+  const extensions =
+    credential.getClientExtensionResults() as PRFExtensionResult;
+  const prfFromCreate = extensions.prf?.results?.first;
 
   if (prfFromCreate) {
     // Authenticator returned PRF output during creation — no second tap needed
@@ -143,28 +147,28 @@ async function createNewPasskeyAndDerive(username: string): Promise<{
       new Uint8Array(prfFromCreate),
       new TextEncoder().encode("BrightID"),
       "BrightID Ed25519 Identity v1",
-    )
-    const keypair = nacl.sign.keyPair.fromSeed(seed)
-    const publicKeyBase64 = uint8ToBase64(keypair.publicKey)
-    localStorage.setItem(LS_PUB_KEY, publicKeyBase64)
-    return { seed, keypair, publicKeyBase64 }
+    );
+    const keypair = nacl.sign.keyPair.fromSeed(seed);
+    const publicKeyBase64 = uint8ToBase64(keypair.publicKey);
+    localStorage.setItem(LS_PUB_KEY, publicKeyBase64);
+    return { seed, keypair, publicKeyBase64 };
   }
 
   // PRF not returned during creation — do a follow-up assertion with the new key
-  return deriveEddsa()
+  return deriveEddsa();
 }
 
 async function deriveEddsa() {
-  const prfSalt = new TextEncoder().encode("BrightID")
+  const prfSalt = new TextEncoder().encode("BrightID");
 
-  const savedId = localStorage.getItem(LS_CRED_ID)
-  const savedPubKey = localStorage.getItem(LS_PUB_KEY)
+  const savedId = localStorage.getItem(LS_CRED_ID);
+  const savedPubKey = localStorage.getItem(LS_PUB_KEY);
 
-  let allowCredentials: PublicKeyCredentialDescriptor[] = []
+  let allowCredentials: PublicKeyCredentialDescriptor[] = [];
   if (savedId) {
     allowCredentials = [
       { id: base64ToUint8(savedId) as BufferSource, type: "public-key" },
-    ]
+    ];
   }
 
   const assertion = (await navigator.credentials.get({
@@ -176,136 +180,138 @@ async function deriveEddsa() {
         prf: { eval: { first: prfSalt } },
       } as AuthenticationExtensionsClientInputs,
     },
-  })) as PublicKeyCredential | null
+  })) as PublicKeyCredential | null;
 
-  if (!assertion) throw new Error("Passkey prompt cancelled")
+  if (!assertion) throw new Error("Passkey prompt cancelled");
 
-  const extensions = assertion.getClientExtensionResults() as PRFExtensionResult
+  const extensions =
+    assertion.getClientExtensionResults() as PRFExtensionResult;
 
-  const prfBytes = extensions.prf?.results?.first
+  const prfBytes = extensions.prf?.results?.first;
   if (!prfBytes) {
     throw new Error(
       "PRF not supported by this authenticator. " +
         "Try Chrome on desktop, or Safari 17.5+ on iOS.",
-    )
+    );
   }
 
   const seed = await hkdf(
     new Uint8Array(prfBytes),
     new TextEncoder().encode("BrightID"),
     "BrightID Ed25519 Identity v1",
-  )
+  );
 
-  const keypair = nacl.sign.keyPair.fromSeed(seed)
-  const derivedPubKeyBase64 = uint8ToBase64(keypair.publicKey)
+  const keypair = nacl.sign.keyPair.fromSeed(seed);
+  const derivedPubKeyBase64 = uint8ToBase64(keypair.publicKey);
 
   if (savedPubKey && savedPubKey !== derivedPubKeyBase64) {
-    wipe(seed)
-    wipe(keypair.secretKey)
+    wipe(seed);
+    wipe(keypair.secretKey);
     throw new Error(
       "Wrong passkey selected — this would produce a different identity. " +
         "Please use the passkey you originally registered with.",
-    )
+    );
   }
 
   localStorage.setItem(
     LS_CRED_ID,
     uint8ToBase64(new Uint8Array(assertion.rawId)),
-  )
-  localStorage.setItem(LS_PUB_KEY, derivedPubKeyBase64)
+  );
+  localStorage.setItem(LS_PUB_KEY, derivedPubKeyBase64);
 
-  return { seed, keypair, publicKeyBase64: derivedPubKeyBase64 }
+  return { seed, keypair, publicKeyBase64: derivedPubKeyBase64 };
 }
 
 function restoreFromCache(): {
-  seed: Uint8Array
-  keypair: nacl.SignKeyPair
-  publicKeyBase64: string
+  seed: Uint8Array;
+  keypair: nacl.SignKeyPair;
+  publicKeyBase64: string;
 } | null {
-  const savedSeed = localStorage.getItem(LS_SEED)
-  const savedPub = localStorage.getItem(LS_PUB_KEY)
-  if (!savedSeed || !savedPub) return null
+  const savedSeed = localStorage.getItem(LS_SEED);
+  const savedPub = localStorage.getItem(LS_PUB_KEY);
+  if (!savedSeed || !savedPub) return null;
 
-  const seed = base64ToUint8(savedSeed)
-  const keypair = nacl.sign.keyPair.fromSeed(seed)
-  const pubBase64 = uint8ToBase64(keypair.publicKey)
+  const seed = base64ToUint8(savedSeed);
+  const keypair = nacl.sign.keyPair.fromSeed(seed);
+  const pubBase64 = uint8ToBase64(keypair.publicKey);
 
   // Sanity check — if localStorage is corrupted or tampered with, wipe and bail
   if (pubBase64 !== savedPub) {
-    console.warn("Cached seed mismatch — clearing corrupted cache")
-    localStorage.removeItem(LS_SEED)
-    return null
+    console.warn("Cached seed mismatch — clearing corrupted cache");
+    localStorage.removeItem(LS_SEED);
+    return null;
   }
 
-  return { seed, keypair, publicKeyBase64: pubBase64 }
+  return { seed, keypair, publicKeyBase64: pubBase64 };
 }
 
 function persistSeed(seed: Uint8Array): void {
-  localStorage.setItem(LS_SEED, uint8ToBase64(seed))
+  localStorage.setItem(LS_SEED, uint8ToBase64(seed));
 }
 
 function clearSeed(): void {
-  localStorage.removeItem(LS_SEED)
+  localStorage.removeItem(LS_SEED);
 }
 
 export async function registerWithPasskey(
   config: PasskeyConfig,
 ): Promise<PublicIdentity> {
-  const savedPub = localStorage.getItem(LS_PUB_KEY)
-  const savedId = localStorage.getItem(LS_CRED_ID)
+  const savedPub = localStorage.getItem(LS_PUB_KEY);
+  const savedId = localStorage.getItem(LS_CRED_ID);
 
   // Already registered on this device
   if (savedPub && savedId) {
-    console.log("Already registered on this device")
+    console.log("Already registered on this device");
 
     // ── Mode migration ───────────────────────────────────
     // Was safe, now wants cached → silently store the seed
     if (config.mode === "cached" && !localStorage.getItem(LS_SEED)) {
-      console.log("Migrating safe → cached: re-deriving to store seed")
-      const { seed, keypair } = await deriveEddsa()
+      console.log("Migrating safe → cached: re-deriving to store seed");
+      const { seed, keypair } = await deriveEddsa();
       try {
-        persistSeed(seed)
+        persistSeed(seed);
       } finally {
-        wipe(seed)
-        wipe(keypair.secretKey)
+        wipe(seed);
+        wipe(keypair.secretKey);
       }
     }
 
     // Was cached, now wants safe → wipe the stored seed
     if (config.mode === "safe" && localStorage.getItem(LS_SEED)) {
-      console.log("Migrating cached → safe: wiping stored seed")
-      clearSeed()
+      console.log("Migrating cached → safe: wiping stored seed");
+      clearSeed();
     }
 
     return {
       publicKey: base64ToUint8(savedPub),
       publicKeyBase64: savedPub,
       mode: config.mode,
-    }
+    };
   }
 
   // First time — create a new passkey and derive identity from it
-  const username = config.username ?? "user"
-  const { seed, keypair, publicKeyBase64 } = await createNewPasskeyAndDerive(username)
+  const username = config.username ?? "user";
+  const { seed, keypair, publicKeyBase64 } =
+    await createNewPasskeyAndDerive(username);
 
   try {
-    await mockApi_register(publicKeyBase64)
+    await mockApi_register(publicKeyBase64);
 
     if (config.mode === "cached") {
-      persistSeed(seed)
+      persistSeed(seed);
     }
     // safe mode: seed never touches localStorage
   } finally {
-    wipe(seed)
-    wipe(keypair.secretKey)
+    wipe(seed);
+    wipe(keypair.secretKey);
   }
 
-  console.log(`Registered (${config.mode} mode). Public key:`, publicKeyBase64)
+  console.log(`Registered (${config.mode} mode). Public key:`, publicKeyBase64);
   return {
     publicKey: keypair.publicKey,
     publicKeyBase64,
     mode: config.mode,
-  }
+  };
 }
 
 export async function loginWithPasskey(
@@ -315,56 +321,56 @@ export async function loginWithPasskey(
   // If a seed is already in localStorage, restore silently — no tap needed.
   // If not cached yet, fall through to passkey tap and then store the seed.
   if (config.mode === "cached") {
-    const cached = restoreFromCache()
+    const cached = restoreFromCache();
     if (cached) {
-      const { seed, keypair, publicKeyBase64 } = cached
+      const { seed, keypair, publicKeyBase64 } = cached;
       // Wipe — we only needed the keypair to rebuild PublicIdentity
-      wipe(seed)
-      wipe(keypair.secretKey)
-      console.log("Logged in from cache (no tap needed)")
-      return { publicKey: keypair.publicKey, publicKeyBase64, mode: "cached" }
+      wipe(seed);
+      wipe(keypair.secretKey);
+      console.log("Logged in from cache (no tap needed)");
+      return { publicKey: keypair.publicKey, publicKeyBase64, mode: "cached" };
     }
 
     // No cache yet — tap passkey and store seed for next time
-    const { seed, keypair, publicKeyBase64 } = await deriveEddsa()
+    const { seed, keypair, publicKeyBase64 } = await deriveEddsa();
     try {
-      const exists = await mockApi_checkExists(publicKeyBase64)
-      if (!exists)
-        throw new Error(
-          "No account found for this passkey. Please register first.",
-        )
-      persistSeed(seed)
+      // const exists = await mockApi_checkExists(publicKeyBase64);
+      // if (!exists)
+      //   throw new Error(
+      //     "No account found for this passkey. Please register first.",
+      //   );
+      persistSeed(seed);
     } finally {
-      wipe(seed)
-      wipe(keypair.secretKey)
+      wipe(seed);
+      wipe(keypair.secretKey);
     }
 
-    console.log("Logged in (cached mode — seed stored for future sessions)")
-    return { publicKey: keypair.publicKey, publicKeyBase64, mode: "cached" }
+    console.log("Logged in (cached mode — seed stored for future sessions)");
+    return { publicKey: keypair.publicKey, publicKeyBase64, mode: "cached" };
   }
 
   // ── Safe mode ────────────────────────────────────────
   // Always tap passkey. Wipe secrets immediately. Seed never stored.
   // Also handles safe → cached migration if there's a stored seed to clear.
   if (localStorage.getItem(LS_SEED)) {
-    console.log("Switching to safe mode — wiping stored seed")
-    clearSeed()
+    console.log("Switching to safe mode — wiping stored seed");
+    clearSeed();
   }
 
-  const { seed, keypair, publicKeyBase64 } = await deriveEddsa()
+  const { seed, keypair, publicKeyBase64 } = await deriveEddsa();
   try {
-    const exists = await mockApi_checkExists(publicKeyBase64)
+    const exists = await mockApi_checkExists(publicKeyBase64);
     if (!exists)
       throw new Error(
         "No account found for this passkey. Please register first.",
-      )
+      );
   } finally {
-    wipe(seed)
-    wipe(keypair.secretKey)
+    wipe(seed);
+    wipe(keypair.secretKey);
   }
 
-  console.log("Logged in (safe mode — passkey tap required to sign)")
-  return { publicKey: keypair.publicKey, publicKeyBase64, mode: "safe" }
+  console.log("Logged in (safe mode — passkey tap required to sign)");
+  return { publicKey: keypair.publicKey, publicKeyBase64, mode: "safe" };
 }
 
 export async function signWithPasskey(
@@ -374,41 +380,43 @@ export async function signWithPasskey(
   // ── Cached mode ──────────────────────────────────────
   // Restore from localStorage — no passkey tap needed
   if (config.mode === "cached") {
-    const cached = restoreFromCache()
+    const cached = restoreFromCache();
     if (cached) {
-      const { seed, keypair } = cached
-      let signature: Uint8Array
+      const { seed, keypair } = cached;
+      let signature: Uint8Array;
       try {
-        signature = nacl.sign.detached(message, keypair.secretKey)
+        signature = nacl.sign.detached(message, keypair.secretKey);
       } finally {
-        wipe(seed)
-        wipe(keypair.secretKey)
+        wipe(seed);
+        wipe(keypair.secretKey);
       }
-      return { signature, message }
+      return { signature, message };
     }
 
     // Cache is gone (user cleared storage?) — fall back to passkey tap
-    console.warn("Cached seed missing — falling back to passkey tap")
+    console.warn("Cached seed missing — falling back to passkey tap");
   }
 
   // ── Safe mode (or cache miss fallback) ──────────────
   // Tap passkey, sign, wipe immediately
-  const { seed, keypair } = await deriveEddsa()
-  let signature: Uint8Array
+  const { seed, keypair } = await deriveEddsa();
+  let signature: Uint8Array;
   try {
-    signature = nacl.sign.detached(message, keypair.secretKey)
+    signature = nacl.sign.detached(message, keypair.secretKey);
   } finally {
-    wipe(seed)
-    wipe(keypair.secretKey)
+    wipe(seed);
+    wipe(keypair.secretKey);
   }
 
-  return { signature, message }
+  return { signature, message };
 }
 
 export function hasStoredPasskey(): boolean {
-  return !!(localStorage.getItem(LS_CRED_ID) && localStorage.getItem(LS_PUB_KEY))
+  return !!(
+    localStorage.getItem(LS_CRED_ID) && localStorage.getItem(LS_PUB_KEY)
+  );
 }
 
 export function passkeyLogout(): void {
-  clearSeed()
+  clearSeed();
 }

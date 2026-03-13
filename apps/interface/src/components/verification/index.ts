@@ -166,7 +166,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     const appName = project?.name ?? ''
     const appDescription = project?.description
     const appLogo = project?.image
-    const requiredLevel = (project?.requirementLevel ?? 1) as 1 | 2 | 3
+    const requiredLevel = (project?.requirementLevel ?? 1) as 1 | 2 | 3 | 4
 
     switch (this.step) {
       case 'intro':

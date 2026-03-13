@@ -8,9 +8,11 @@ import { SignalWatcher } from '@lit-labs/signals'
 import { css, CSSResultGroup, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import { map } from 'lit/directives/map.js'
+import { type PublicIdentity } from '@aura/sdk/auth/passkeys'
 
 import '@/components/landing/footer-section'
 import '@/components/landing/hero-section'
+import { userBrightId } from '@/states/user'
 
 interface AuthMethod {
   id: string
@@ -425,10 +427,17 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
   authMethods: AuthMethod[] = [
     {
       id: 'passkey',
-      name: 'Passkey',
+      name: 'Login with Passkey',
       icon: LockIcon,
       description: 'Sign in with Passkeys',
-      callback: this.signWithPasskey.bind(this)
+      callback: this.loginExistingPasskey.bind(this)
+    },
+    {
+      id: 'register-passkey',
+      name: 'Register Passkey',
+      icon: LockIcon,
+      description: 'Register a new Passkey',
+      callback: this.registerNewPasskey.bind(this)
     },
     {
       id: 'brightid',
@@ -495,16 +504,37 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
     pushRouter('/brightid')
   }
 
-  protected async signWithPasskey() {
+  protected async loginExistingPasskey() {
     isLoginLoading.set(true)
-
     try {
-      if (hasStoredPasskey()) {
-        await loginWithPasskey({ mode: 'cached' })
-      } else {
-        await registerWithPasskey({ mode: 'cached', username: `aura-${new Date().toISOString()}` })
-      }
-      pushRouter('/')
+      const savedId = localStorage.getItem('brightid_cred_id')
+      localStorage.removeItem('brightid_cred_id')
+
+      const key = await loginWithPasskey({ mode: 'cached' })
+      userBrightId.set(key.publicKeyBase64)
+      pushRouter('/home')
+    } catch (err) {
+      console.error(err)
+      alert(err instanceof Error ? err.message : 'Passkey login failed')
+    } finally {
+      isLoginLoading.set(false)
+    }
+  }
+
+  protected async registerNewPasskey() {
+    isLoginLoading.set(true)
+    try {
+      // Clear stored keys so registerWithPasskey treats this as first time
+      localStorage.removeItem('brightid_cred_id')
+      localStorage.removeItem('brightid_pub_key')
+      localStorage.removeItem('brightid_seed')
+
+      const key = await registerWithPasskey({
+        mode: 'cached',
+        username: `aura-${new Date().toISOString()}`
+      })
+      userBrightId.set(key.publicKeyBase64)
+      pushRouter('/home')
     } catch (err) {
       console.error(err)
       alert(err instanceof Error ? err.message : 'Passkey login failed')

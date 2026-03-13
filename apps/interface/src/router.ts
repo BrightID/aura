@@ -4,10 +4,12 @@ import { signal } from '@lit-labs/signals'
 import 'urlpattern-polyfill'
 
 export const router = signal(null as null | Router)
+export const currentPath = signal(window.location.pathname)
 
 export const pushRouter = (path: string) => {
   history.pushState('', '', path)
   router.get()?.goto(path)
+  currentPath.set(path)
 }
 
 export function getQueryParams() {
