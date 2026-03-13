@@ -1,22 +1,22 @@
-import { css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
 
-export type ButtonVariant = "default" | "secondary" | "ghost"
+export type ButtonVariant = "default" | "secondary" | "ghost";
 
 @customElement("a-button")
 export class ButtonElement extends LitElement {
   @property({ reflect: true })
-  variant: ButtonVariant = "default"
+  variant: ButtonVariant = "default";
 
   @property({ reflect: true })
-  size: "sm" | "md" | "lg" = "md"
+  size: "sm" | "md" | "lg" = "md";
 
   @property({ reflect: true })
   color: "primary" | "secondary" | "success" | "warning" | "destructive" =
-    "primary"
+    "primary";
 
   @property({ type: Boolean, reflect: true })
-  disabled: boolean = false
+  disabled: boolean = false;
 
   static styles = css`
     :host {
@@ -131,15 +131,15 @@ export class ButtonElement extends LitElement {
     :host([variant="ghost"]:hover:not([disabled])) {
       --bg: color-mix(in oklch, var(--color) 20%, transparent);
     }
-  `
+  `;
 
   protected render(): unknown {
-    return html` <slot></slot> `
+    return html` <slot></slot> `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-button": ButtonElement
+    "a-button": ButtonElement;
   }
 }

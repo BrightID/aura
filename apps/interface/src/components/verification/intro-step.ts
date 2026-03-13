@@ -1,7 +1,8 @@
-import { css, CSSResultGroup, html, LitElement } from 'lit'
+import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import './level-badge'
 
-const levelDescriptions = {
+const levelDescriptions: Record<number, string> = {
   1: 'Basic verification for general access',
   2: 'Enhanced verification for trusted features',
   3: 'Premium verification for full access'
@@ -9,127 +10,218 @@ const levelDescriptions = {
 
 @customElement('verification-intro')
 export class IntroStep extends LitElement {
-  @property({})
-  appName!: string
+  @property() appName = ''
+  @property() appDescription?: string
+  @property() appLogo?: string
+  @property({ type: Number }) requiredLevel: 1 | 2 | 3 = 1
 
-  @property()
-  appDescription?: string
-
-  @property()
-  appLogo?: string
-
-  @property({ type: Number })
-  requiredLevel!: 1 | 2 | 3
-
-  static styles?: CSSResultGroup | undefined = css`
-    :where(& > :not(:last-child)) {
-      margin-bottom: 1.25rem;
+  static styles: CSSResultGroup = css`
+    :host {
+      display: block;
+      font-size: inherit;
     }
 
-    .app-logo {
-      width: 3rem;
-      height: 3rem;
-      border-radius: var(--xl);
-      object-fit: cover;
-    }
-    .app-logo-text {
-      background-color: var(--secondary);
+    .stack {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: var(--lg);
-      font-weight: bold;
-      color: var(--foreground);
+      flex-direction: column;
+      gap: 1.25em;
     }
 
-    .flex-1 {
-      flex: 1 1 auto;
-    }
-
+    /* App header */
     .header {
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
+      gap: 0.75em;
+    }
+    .app-logo-img {
+      width: 3em;
+      height: 3em;
+      flex-shrink: 0;
+      border-radius: var(--radius, 0.75rem);
+      object-fit: cover;
+    }
+    .app-logo-text {
+      width: 3em;
+      height: 3em;
+      flex-shrink: 0;
+      border-radius: var(--radius, 0.75rem);
+      background: var(--secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125em;
+      font-weight: bold;
+      color: var(--foreground);
+    }
+    .header-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .app-name {
+      margin: 0 0 0.25em;
+      font-size: 1em;
+      font-weight: 600;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .app-desc {
+      margin: 0;
+      font-size: 0.875em;
+      color: var(--muted-foreground);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* Requirement card */
+    .req-card {
+      padding: 1em;
+      background: var(--secondary);
+      border-radius: var(--radius, 0.75rem);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75em;
+    }
+    .req-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .req-label {
+      font-size: 0.875em;
+      color: var(--muted-foreground);
+    }
+    .req-desc {
+      margin: 0;
+      font-size: 0.875em;
+      color: var(--foreground);
+    }
+
+    /* Aura info card */
+    .aura-card {
+      padding: 1em;
+      background: rgba(var(--primary-rgb, 99, 102, 241), 0.05);
+      border-radius: var(--radius, 0.75rem);
+      border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+    }
+    .aura-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .aura-logo {
+      width: 1.25em;
+      height: 1.25em;
+      flex-shrink: 0;
+    }
+    .aura-title {
+      font-size: 0.875em;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+    .aura-desc {
+      margin: 0;
+      font-size: 0.875em;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+    .learn-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25em;
+      font-size: 0.875em;
+      color: var(--primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.15s;
+    }
+    .learn-btn:hover {
+      opacity: 0.75;
+    }
+    .learn-btn svg {
+      flex-shrink: 0;
+    }
+
+    .trust-note {
+      margin: 0;
+      font-size: 0.75em;
+      text-align: center;
+      color: var(--muted-foreground);
     }
   `
 
   protected render() {
-    return html` 
-      <div class="header">
-        ${
-          this.appLogo
-            ? html` <img
-                .src=${this.appLogo || '/placeholder.svg'}
-                .alt=${this.appName}
-                class=""
-              />`
-            : html` <div class="app-logo app-logo-text">${this.appName.charAt(0)}</div> `
-        }
-         
-        <div class="flex-1">
-          <h2 className="font-semibold text-foreground truncate">${this.appName}</h2>
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            ${this.appDescription}
+    return html`
+      <div class="stack">
+        <div class="header">
+          ${this.appLogo
+            ? html`<img src=${this.appLogo} alt=${this.appName} class="app-logo-img" />`
+            : html`<div class="app-logo-text">${this.appName.charAt(0)}</div>`}
+          <div class="header-info">
+            <h2 class="app-name">${this.appName}</h2>
+            <p class="app-desc">${this.appDescription}</p>
+          </div>
+        </div>
+
+        <div class="req-card">
+          <div class="req-header">
+            <span class="req-label">Required Verification</span>
+            <verification-level-badge
+              .level=${this.requiredLevel}
+              size="sm"
+            ></verification-level-badge>
+          </div>
+          <p class="req-desc">${levelDescriptions[this.requiredLevel]}</p>
+        </div>
+
+        <div class="aura-card">
+          <div class="aura-header">
+            <svg class="aura-logo" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <circle cx="16" cy="16" r="14" stroke="#a0dba0" stroke-width="2" opacity="0.4" />
+              <circle cx="16" cy="16" r="10" stroke="#c8e6c8" stroke-width="2" opacity="0.6" />
+              <circle cx="16" cy="16" r="6" fill="#ffd700" />
+              <circle cx="16" cy="16" r="3" fill="#ff8c00" />
+            </svg>
+            <span class="aura-title">Powered by Aura</span>
+          </div>
+          <p class="aura-desc">
+            Aura is a decentralized network that verifies your unique humanity without exposing
+            personal information.
           </p>
+          <button class="learn-btn" @click=${() => this._emit('how-it-works')}>
+            Learn how it works
+            <svg width="1em" height="1em" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </div>
-      </div>
 
-      <div className="p-4 bg-secondary/50 rounded-xl border border-border space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            Required Verification
-          </span>
-          <LevelBadge level={requiredLevel} size="sm" />
-        </div>
-        <p className="text-sm text-foreground">
-          ${levelDescriptions[this.requiredLevel]}
+        <a-button size="md" @click=${() => this._emit('continue')}>
+          <span>Verify with Aura</span>
+        </a-button>
+
+        <p class="trust-note">
+          Your identity stays private. ${this.appName} only sees your verification level.
         </p>
       </div>
-
-      <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 space-y-2">
-        <div className="flex items-center gap-2">
-          <AuraLogo className="w-5 h-5 text-primary" />
-          <span className="text-sm font-medium text-foreground">
-            Powered by Aura
-          </span>
-        </div>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Aura is a decentralized network that verifies your unique humanity
-          without exposing personal information.
-        </p>
-        <button
-          @click=${this.onHowItWorks}
-          className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-        >
-          Learn how it works
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <a-button @click=${this.onContinue} class="w-full" size="lg">
-        Verify with Aura
-      </a-button>
-
-      <p className="text-xs text-center text-muted-foreground">
-        Your identity stays private. ${this.appName} only sees your verification
-        level.
-      </p>
-    </div>`
+    `
   }
 
-  protected onHowItWorks() {}
-
-  protected onContinue() {}
+  private _emit(event: string) {
+    this.dispatchEvent(new CustomEvent(event, { bubbles: true, composed: true }))
+  }
 }

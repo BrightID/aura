@@ -10,3 +10,7 @@ body {
   overflow-x: hidden;
   font-weight: 400;
 }
+
+:root {
+  /*--verification-size: 0.9rem;*/
+}
