@@ -28,13 +28,13 @@ export class IconElement extends LitElement {
       vertical-align: -0.125em; /* better alignment in text */
     }
 
-    :host([size="sm"]) svg {
+    :host([size="sm"]) {
       font-size: 1rem;
     }
-    :host([size="md"]) svg {
+    :host([size="md"]) {
       font-size: 1.5rem;
     }
-    :host([size="lg"]) svg {
+    :host([size="lg"]) {
       font-size: 2rem;
     }
   `
@@ -51,6 +51,7 @@ export class IconElement extends LitElement {
   connectedCallback() {
     super.connectedCallback()
     this.loadIcon()
+    this.updateAccessibility()
   }
 
   willUpdate(changedProperties: Map<PropertyKey, unknown>) {
@@ -138,9 +139,17 @@ export class IconElement extends LitElement {
     }
   }
 
-  render() {
-    this.updateAccessibility()
+  updated(changedProperties: Map<PropertyKey, unknown>) {
+    if (
+      changedProperties.has("label") ||
+      changedProperties.has("name") ||
+      changedProperties.has("src")
+    ) {
+      this.updateAccessibility()
+    }
+  }
 
+  render() {
     if (!this.svgContent) {
       return html`<span aria-hidden="true"><!-- icon failed --></span>`
     }

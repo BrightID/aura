@@ -248,7 +248,6 @@ export class PopoverElement extends LitElement {
     const contentClasses = classMap({
       content: true,
       'animate-in': this.open,
-      'animate-out': !this.open && !this.open /* only animate out if was previously open */
     })
 
     return html`

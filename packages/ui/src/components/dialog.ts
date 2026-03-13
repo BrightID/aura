@@ -60,13 +60,14 @@ export class DialogElement extends LitElement {
   }
 
   show() {
+    this.open = true
     this._animatingOut = false
 
     this.dispatchEvent(
-      new CustomEvent("onChange", {
+      new CustomEvent("open-change", {
         bubbles: true,
         composed: true,
-        detail: { value: true },
+        detail: { open: true },
       }),
     )
   }
@@ -75,14 +76,18 @@ export class DialogElement extends LitElement {
     this._animatingOut = true
 
     this.dispatchEvent(
-      new CustomEvent("onChange", {
+      new CustomEvent("open-change", {
         bubbles: true,
         composed: true,
-        detail: { value: false },
+        detail: { open: false },
       }),
     )
 
-    this._animatingOut = false
+    // Wait for exit animation before fully closing
+    setTimeout(() => {
+      this.open = false
+      this._animatingOut = false
+    }, 220)
   }
 
   private _onBackdropClick(e: MouseEvent) {

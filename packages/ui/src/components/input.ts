@@ -10,6 +10,8 @@ export class InputElement extends LitElement {
   @property({ reflect: true }) value = ""
   @property({ type: Boolean }) disabled = false
 
+  private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`
+
   static styles: CSSResultGroup = css`
     :host {
       display: block;
@@ -91,6 +93,7 @@ export class InputElement extends LitElement {
       box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 30%, transparent);
       background: color-mix(in oklch, var(--background) 75%, transparent);
       outline: none;
+      transform: translateY(-0.5px);
     }
 
     input:focus-visible {
@@ -104,21 +107,19 @@ export class InputElement extends LitElement {
       background: color-mix(in oklch, var(--background) 90%, transparent);
       border-color: color-mix(in oklch, var(--border) 60%, transparent);
     }
-
-    /* Optional — slightly raised effect on focus for some depth */
-    input:focus {
-      transform: translateY(-0.5px);
-    }
   `
 
   render() {
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : ""}
+      ${this.label
+        ? html`<label for=${this._inputId}>${this.label}</label>`
+        : ""}
 
       <div class="input-wrapper">
         <slot name="icon" class="icon"></slot>
 
         <input
+          id=${this._inputId}
           .value=${this.value}
           @input=${this.onInputChange}
           .type=${this.type}

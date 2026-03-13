@@ -125,6 +125,7 @@ export class ButtonElement extends LitElement {
     :host([variant="ghost"]) {
       --bg: transparent;
       --fg: var(--color);
+      border-color: transparent;
     }
 
     :host([variant="ghost"]:hover:not([disabled])) {

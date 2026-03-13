@@ -21,8 +21,8 @@ export class HoverCardElement extends LitElement {
       position: absolute;
       z-index: 50;
       opacity: 0;
-      transform: translateX(0%) translateY(-4px) scale(0.95);
       left: 50%;
+      transform: translateX(-50%) translateY(-4px) scale(0.95);
       pointer-events: none;
       transition:
         opacity 0.15s ease,
@@ -33,11 +33,7 @@ export class HoverCardElement extends LitElement {
     .content-wrapper[data-state='open'] {
       opacity: 1;
       pointer-events: auto;
-      transform: translateX(0%) translateY(0);
-    }
-
-    .content-wrapper[data-state='open'] .content {
-      pointer-events: auto;
+      transform: translateX(-50%) translateY(0) scale(1);
     }
 
     .content {
@@ -51,40 +47,41 @@ export class HoverCardElement extends LitElement {
         0 4px 6px -1px rgb(0 0 0 / 0.1),
         0 2px 4px -2px rgb(0 0 0 / 0.1);
       overflow: hidden;
-      pointer-events: none;
     }
 
-    /* Positioning – can be overridden with side attribute */
+    /* Positioning – top/bottom center horizontally */
     :host([side='top']) .content-wrapper {
       bottom: 100%;
+      top: auto;
+      left: 50%;
       margin-bottom: 0.5rem;
     }
     :host([side='bottom']) .content-wrapper {
       top: 100%;
+      left: 50%;
       margin-top: 0.25rem;
     }
+
+    /* Left/right: center vertically, reset horizontal centering */
     :host([side='left']) .content-wrapper {
       right: 100%;
-      margin-right: 0.5rem;
+      left: auto;
       top: 50%;
-      transform: translateY(-50%);
+      margin-right: 0.5rem;
+      transform: translateX(4px) translateY(-50%) scale(0.95);
     }
+    :host([side='left']) .content-wrapper[data-state='open'] {
+      transform: translateX(0) translateY(-50%) scale(1);
+    }
+
     :host([side='right']) .content-wrapper {
       left: 100%;
-      margin-left: 0.5rem;
       top: 50%;
-      transform: translateY(-50%);
+      margin-left: 0.5rem;
+      transform: translateX(-4px) translateY(-50%) scale(0.95);
     }
-
-    /* Align center by default – can be adjusted with align prop if needed */
-    .content-wrapper {
-      left: 50%;
-      transform: translateX(-0%) scale(0.95);
-    }
-
-    :host([side='left']) .content-wrapper,
-    :host([side='right']) .content-wrapper {
-      transform: translateY(-50%) scale(0.95);
+    :host([side='right']) .content-wrapper[data-state='open'] {
+      transform: translateX(0) translateY(-50%) scale(1);
     }
   `
 

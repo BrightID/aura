@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js"
 
 @customElement("a-card")
 export class CardElement extends LitElement {
-  @property()
+  @property({ reflect: true })
   variant: "default" | "glass" = "default"
 
   static styles: CSSResultGroup = css`
@@ -28,11 +28,10 @@ export class CardElement extends LitElement {
       --card-border: color-mix(in oklch, var(--border) 60%, transparent);
     }
 
-    :host([variant="glass"]),
-    :host.glass {
+    :host([variant="glass"]) {
       --card-bg: color-mix(in oklch, var(--background) 50%, transparent);
-      backdrop-filter: blur(var(--blur)) saturate(1.4);
-      -webkit-backdrop-filter: blur(var(--blur)) saturate(1.4);
+      backdrop-filter: blur(var(--blur, 12px)) saturate(1.4);
+      -webkit-backdrop-filter: blur(var(--blur, 12px)) saturate(1.4);
     }
   `
 

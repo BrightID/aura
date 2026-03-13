@@ -52,15 +52,15 @@ export class FlexElement extends LitElement {
       justify-content: center;
     }
 
-    div[align="center"] {
+    div[data-align="center"] {
       align-items: center;
     }
 
-    div[align="start"] {
+    div[data-align="start"] {
       align-items: start;
     }
 
-    div[align="end"] {
+    div[data-align="end"] {
       align-items: end;
     }
   `

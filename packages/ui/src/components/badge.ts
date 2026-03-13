@@ -61,7 +61,7 @@ export class BadgeElement extends LitElement {
     }
 
     :host([rounded]) {
-      --radius: 9999px;
+      border-radius: 9999px;
     }
 
     :host {

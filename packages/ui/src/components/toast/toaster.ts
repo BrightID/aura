@@ -163,6 +163,23 @@ export class ToasterElement extends LitElement {
     .toast:hover {
       box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.4);
     }
+
+    .action-btn {
+      margin-top: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      border-radius: calc(var(--toast-radius) - 0.25rem);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--card-foreground);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .action-btn:hover {
+      background: color-mix(in oklch, var(--card-foreground) 10%, transparent);
+    }
   `
 
   connectedCallback() {
@@ -222,6 +239,17 @@ export class ToasterElement extends LitElement {
                   ${t.description
                     ? html`<div class="description">${t.description}</div>`
                     : ""}
+                  ${t.action
+                    ? html`<button
+                        class="action-btn"
+                        @click=${(e: Event) => {
+                          e.stopPropagation()
+                          t.action!.onClick()
+                        }}
+                      >
+                        ${t.action.label}
+                      </button>`
+                    : ""}
                 </div>
               </div>
             </div>
@@ -252,7 +280,7 @@ export class ToasterElement extends LitElement {
     }
   }
 
-  private handleSwipeEnd(e: PointerEvent, id: string) {
+  private handleSwipeEnd(_e: PointerEvent, _id: string) {
     this.resetSwipe()
   }
 

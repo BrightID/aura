@@ -89,7 +89,7 @@ export class GridElement extends LitElement {
     }
 
     /* When using slotted content */
-    ::slotted([slot=""]) {
+    ::slotted(*) {
       display: contents;
     }
 
@@ -153,16 +153,6 @@ export class GridElement extends LitElement {
       color: var(--muted-foreground);
     }
   `;
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.style.setProperty('--cols-lg', String(this.colsLg));
-    this.style.setProperty('--cols-md', String(this.colsMd));
-    this.style.setProperty('--cols-sm', String(this.colsSm));
-    this.style.setProperty('--cols-xs', String(this.colsXs));
-    this.style.setProperty('--grid-gap', this.gap);
-    this.style.setProperty('--card-aspect', this.cardAspect);
-  }
 
   updated(changedProperties: Map<string | number | symbol, unknown>) {
     if (changedProperties.has('colsLg')) this.style.setProperty('--cols-lg', String(this.colsLg));
