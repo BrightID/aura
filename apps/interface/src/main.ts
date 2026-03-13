@@ -2,7 +2,7 @@ import { LitElement, html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import './styles.css'
 
-import { createRouter } from '@/app'
+import { createRouter } from '@/app-routes'
 
 import '@aura/ui'
 
@@ -35,7 +35,7 @@ function onInjectLogin(
 }
 
 @customElement('my-app')
-export class MyApp extends LitElement {
+export class AuraAppElement extends LitElement {
   interval: ReturnType<typeof setInterval> | undefined
 
   private router = createRouter(this)

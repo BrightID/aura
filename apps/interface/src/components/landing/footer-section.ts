@@ -59,7 +59,7 @@ export class FooterSectionElement extends LitElement {
       <div class="brand">
         <a-icon src=${brightIDIcon} size="md"></a-icon>
 
-        <span class="brand-name">Bright ID</span>
+        <span class="brand-name">BrightID</span>
       </div>
       <a href="/privacy-policy" class="privacy">Privacy Policy</a>
     </div>`

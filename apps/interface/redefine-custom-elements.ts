@@ -1,24 +1,20 @@
-// This just adds a CustomEvent on https://github.com/caridy/redefine-custom-elements
-
 interface Definition {
-  LatestCtor: CustomElementConstructor;
-  PivotCtor?: CustomElementConstructor;
-  connectedCallback: (() => void) | void;
-  disconnectedCallback: (() => void) | void;
-  adoptedCallback: (() => void) | void;
-  attributeChangedCallback:
-    | ((name: string, oldValue: any, newValue: any) => void)
-    | void;
-  formAssociatedCallback: (() => void) | void;
-  formDisabledCallback: (() => void) | void;
-  formResetCallback: (() => void) | void;
-  formStateRestoreCallback: (() => void) | void;
-  observedAttributes: Set<string>;
+  LatestCtor: CustomElementConstructor
+  PivotCtor?: CustomElementConstructor
+  connectedCallback: (() => void) | void
+  disconnectedCallback: (() => void) | void
+  adoptedCallback: (() => void) | void
+  attributeChangedCallback: ((name: string, oldValue: any, newValue: any) => void) | void
+  formAssociatedCallback: (() => void) | void
+  formDisabledCallback: (() => void) | void
+  formResetCallback: (() => void) | void
+  formStateRestoreCallback: (() => void) | void
+  observedAttributes: Set<string>
 }
 
 export interface RedefinedCustomElementDetail {
-  tagName: string;
-  newConstructor: CustomElementConstructor;
+  tagName: string
+  newConstructor: CustomElementConstructor
   // oldConstructor: CustomElementConstructor | undefined;
 }
 
@@ -47,21 +43,18 @@ const {
 
 const nativeNodeIsConnectedGetter = Object.getOwnPropertyDescriptor(
   Node.prototype,
-  "isConnected"
+  'isConnected'
 )!.get!
 
 function valueToString(value: any): string {
   try {
     return String(value)
     // eslint-disable-next-line no-empty
-  } catch {
-  }
-  return ""
+  } catch {}
+  return ''
 }
 
-function createDefinitionRecord(
-  constructor: CustomElementConstructor
-): Definition {
+function createDefinitionRecord(constructor: CustomElementConstructor): Definition {
   // Since observedAttributes can't change, we approximate it by patching
   // set/removeAttribute on the user's class
   const {
@@ -74,9 +67,7 @@ function createDefinitionRecord(
     formResetCallback,
     formStateRestoreCallback
   } = constructor.prototype
-  const observedAttributes = new Set<string>(
-    (constructor as any).observedAttributes || []
-  )
+  const observedAttributes = new Set<string>((constructor as any).observedAttributes || [])
   return {
     LatestCtor: constructor,
     connectedCallback,
@@ -116,10 +107,7 @@ function patchAttributes(
   if (observedAttributes.size === 0 || !attributeChangedCallback) {
     return
   }
-  const offset = getObservedAttributesOffset(
-    originalDefinition,
-    instancedDefinition
-  )
+  const offset = getObservedAttributesOffset(originalDefinition, instancedDefinition)
   if (offset.size === 0) {
     return
   }
@@ -247,17 +235,12 @@ function createPivotingClass(originalDefinition: Definition, tagName: string) {
       definition?.formStateRestoreCallback?.apply(this, arguments as any)
     }
 
-    attributeChangedCallback(
-      ...args: [name: string, oldValue: any, newValue: any]
-    ) {
+    attributeChangedCallback(...args: [name: string, oldValue: any, newValue: any]) {
       const definition = definitionForElement.get(this)
       // if both definitions are the same, then the observedAttributes is the same,
       // but if they are different, only if the runtime definition has the attribute
       // marked as observed, then it should invoke attributeChangedCallback.
-      if (
-        originalDefinition === definition ||
-        definition?.observedAttributes.has(args[0])
-      ) {
+      if (originalDefinition === definition || definition?.observedAttributes.has(args[0])) {
         definition.attributeChangedCallback?.apply(this, args)
       }
     }
@@ -269,18 +252,12 @@ function createPivotingClass(originalDefinition: Definition, tagName: string) {
 let upgradingInstance: HTMLElement | undefined
 const definitionForElement = new WeakMap<HTMLElement, Definition>()
 const pendingRegistryForElement = new WeakMap<HTMLElement, Definition>()
-const definitionForConstructor = new WeakMap<
-  CustomElementConstructor,
-  Definition
->()
+const definitionForConstructor = new WeakMap<CustomElementConstructor, Definition>()
 const pivotCtorByTag = new Map<string, CustomElementConstructor>()
 const definitionsByTag = new Map<string, Definition>()
 const definitionsByClass = new Map<CustomElementConstructor, Definition>()
 const definedPromises = new Map<string, Promise<CustomElementConstructor>>()
-const definedResolvers = new Map<
-  string,
-  (ctor: CustomElementConstructor) => void
->()
+const definedResolvers = new Map<string, (ctor: CustomElementConstructor) => void>()
 const awaitingUpgrade = new Map<string, Set<HTMLElement>>()
 
 // Helper to upgrade an instance with a CE definition using "constructor call trick"
@@ -306,10 +283,7 @@ function internalUpgrade(
 
   const { observedAttributes, attributeChangedCallback } = instancedDefinition
   if (observedAttributes.size > 0 && attributeChangedCallback) {
-    const offset = getObservedAttributesOffset(
-      originalDefinition,
-      instancedDefinition
-    )
+    const offset = getObservedAttributesOffset(originalDefinition, instancedDefinition)
     if (offset.size > 0) {
       // Approximate observedAttributes from the user class, but only for the offset attributes
       offset.forEach((name) => {
@@ -328,14 +302,8 @@ function internalUpgrade(
   }
 }
 
-function getDefinitionForConstructor(
-  constructor: CustomElementConstructor
-): Definition {
-  if (
-    !constructor ||
-    !constructor.prototype ||
-    typeof constructor.prototype !== "object"
-  ) {
+function getDefinitionForConstructor(constructor: CustomElementConstructor): Definition {
+  if (!constructor || !constructor.prototype || typeof constructor.prototype !== 'object') {
     throw new TypeError(`The referenced constructor is not a constructor.`)
   }
   let definition = definitionForConstructor.get(constructor)
@@ -346,10 +314,7 @@ function getDefinitionForConstructor(
   return definition
 }
 
-const patchedHTMLElement = function HTMLElement(
-  this: HTMLElement,
-  ...args: any[]
-) {
+const patchedHTMLElement = function HTMLElement(this: HTMLElement, ...args: any[]) {
   if (!new.target) {
     throw new TypeError(
       `Failed to construct 'HTMLElement': Please use the 'new' operator, this DOM object constructor cannot be called as a function.`
@@ -373,11 +338,9 @@ const patchedHTMLElement = function HTMLElement(
   const { constructor } = this
   // Construction case: we need to construct the pivoting instance and return it
   // This is possible when the user instantiate it via `new LatestCtor()`.
-  const definition = definitionsByClass.get(
-    constructor as CustomElementConstructor
-  )
+  const definition = definitionsByClass.get(constructor as CustomElementConstructor)
   if (!definition || !definition.PivotCtor) {
-    throw new TypeError("Illegal constructor")
+    throw new TypeError('Illegal constructor')
   }
   // This constructor is ONLY invoked when it is the user instantiating
   // an element via new Ctor while Ctor is the latest registered constructor.
@@ -396,13 +359,12 @@ Object.assign(CustomElementRegistry.prototype, {
       // going to leak constructors from another windows. But right now, I don't
       // know the implications yet, the safe bet is to throw here.
       // TODO: this could leak pivots from another document, that's the concern.
-      throw new TypeError("Illegal invocation")
+      throw new TypeError('Illegal invocation')
     }
     const { 0: tagName } = args
     return (
       // SyntaxError if The provided name is not a valid custom element name.
-      ReflectApply(nativeGet, this, args) &&
-      definitionsByTag.get(tagName)?.LatestCtor
+      ReflectApply(nativeGet, this, args) && definitionsByTag.get(tagName)?.LatestCtor
     )
   },
   define(
@@ -414,13 +376,13 @@ Object.assign(CustomElementRegistry.prototype, {
       // normally a runtime error when attempting to define a class that inherit
       // from a constructor from another window. But right now, I don't know how
       // to do this runtime check, the safe bet is to throw here.
-      throw new TypeError("Illegal invocation")
+      throw new TypeError('Illegal invocation')
     }
     const { 0: tagName, 1: constructor, 2: options } = args
     // TODO: I think we can support this just fine...
     if (options && options.extends) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw new DOMException("NotSupportedError: ")
+      throw new DOMException('NotSupportedError: ')
     }
     let PivotCtor = ReflectApply(nativeGet, this, [tagName]) // SyntaxError if The provided name is not a valid custom element name.
     // TODO: do we really need to lower case this?
@@ -477,7 +439,7 @@ Object.assign(CustomElementRegistry.prototype, {
 
     if (wasReddefined) {
       const definedEvent = new CustomEvent<RedefinedCustomElementDetail>(
-        "redefined-custom-element",
+        'redefined-custom-element',
         {
           detail: {
             tagName,
@@ -497,7 +459,7 @@ Object.assign(CustomElementRegistry.prototype, {
       // going to leak constructors from another windows when defined. But right
       // now, I don't know the implications yet, the safe bet is to throw here.
       // TODO: maybe returning a promise that will never fulfill is better.
-      throw new TypeError("Illegal invocation")
+      throw new TypeError('Illegal invocation')
     }
     const { 0: tagName } = args
     // TODO: the promise constructor could be leaked here when using multi-window

@@ -19,7 +19,7 @@ export class AppLayout extends LitElement {
 
   static styles = css`
     .layout-wrapper {
-      background-color: #0d0d1b;
+      background-color: var(--background);
     }
     .layout {
       text-align: center;

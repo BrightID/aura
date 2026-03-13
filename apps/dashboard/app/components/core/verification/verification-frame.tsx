@@ -1,17 +1,17 @@
-import { useState, useCallback, useEffect } from "react"
-import { IntroStep } from "./intro-step"
+import { cn } from "@/lib/utils"
+import { useCallback, useEffect, useState } from "react"
 import { ConnectStep } from "./connect"
+import { FindPlayersStep } from "./find-players"
+import { HowItWorks } from "./how-it-works"
+import { IntroStep } from "./intro-step"
 import { ProgressStep } from "./progress-step"
 import { SuccessStep } from "./success-step"
-import { HowItWorks } from "./how-it-works"
-import { FindPlayersStep } from "./find-players"
 import type {
   AuraFrameConfig,
   FrameStep,
-  UserVerificationStatus,
   FrameTheme,
+  UserVerificationStatus,
 } from "./types"
-import { cn } from "@/lib/utils"
 
 const themeStyles: Record<FrameTheme, string> = {
   dark: "",
@@ -61,7 +61,7 @@ export function AuraVerificationFrame({
       setPreviousStep(step)
       setStep(newStep)
     },
-    [step]
+    [step],
   )
 
   const handleConnect = useCallback(
@@ -74,7 +74,7 @@ export function AuraVerificationFrame({
         goToStep("progress")
       }
     },
-    [requiredLevel, onVerified, goToStep]
+    [requiredLevel, onVerified, goToStep],
   )
 
   const handleDisconnect = useCallback(() => {
@@ -92,7 +92,7 @@ export function AuraVerificationFrame({
   const handleStartVerification = useCallback(() => {
     window.open(
       "https://brightid.gitbook.io/aura/getting-started/get-brightid",
-      "_blank"
+      "_blank",
     )
   }, [])
 
@@ -114,8 +114,8 @@ export function AuraVerificationFrame({
   return (
     <div
       className={cn(
-        "w-full max-w-[380px] bg-card rounded-2xl shadow-2xl shadow-black/20 overflow-hidden border border-border relative",
-        themeStyles[theme]
+        "w-full max-w-95 bg-card rounded-2xl shadow-2xl shadow-black/20 overflow-hidden border border-border relative",
+        themeStyles[theme],
       )}
     >
       {testMode && (
@@ -128,7 +128,7 @@ export function AuraVerificationFrame({
       <div
         className={cn(
           "p-5 transition-all duration-300",
-          step === "how-it-works" && "bg-card"
+          step === "how-it-works" && "bg-card",
         )}
       >
         {step === "intro" && (

@@ -1,6 +1,6 @@
 import { Router } from '@lit-labs/router'
 import { html, type ReactiveControllerHost } from 'lit'
-import { getQueryParams, router } from './router'
+import { router } from './router'
 
 export const createRouter = (classThis: ReactiveControllerHost & HTMLElement) => {
   const routerValue = new Router(classThis, [
@@ -123,32 +123,13 @@ export const createRouter = (classThis: ReactiveControllerHost & HTMLElement) =>
     {
       path: '/embed/projects/:id',
       enter: async () => {
-        await import('@/components/project-verification')
+        await import('@/components/verification/index')
         return true
       },
       render: ({ id }) =>
-        html`<app-layout isEmbeded>
-          <project-verification .projectId=${Number(id)}></project-verification
+        html`<app-layout .isEmbeded=${false}>
+          <app-verification-embed .projectId=${Number(id)}></app-verification-embed
         ></app-layout>`
-    },
-    {
-      path: '/embed/verification',
-      enter: async () => {
-        await import('@/routes/verify-without-project')
-        return true
-      },
-      render: ({}) => {
-        const params = getQueryParams()
-
-        return html`<app-layout isEmbeded>
-          <verify-without-project-page
-            .description=${params.description}
-            .image=${params.image}
-            .projectName=${params.name ?? 'Get Verified'}
-            .level=${Number(params.level) || 1}
-          ></verify-without-project-page
-        ></app-layout>`
-      }
     },
     {
       path: '*',

@@ -16,8 +16,6 @@ interface AuthMethod {
   id: string
   name: string
   icon: string
-  setupTime: string
-  security: number
   description: string
   color?: string
   callback?: CallableFunction
@@ -429,8 +427,6 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
       id: 'passkey',
       name: 'Passkey',
       icon: LockIcon,
-      setupTime: '10s',
-      security: 10,
       description: 'Sign in with Passkeys',
       callback: this.signWithPasskey.bind(this)
     },
@@ -438,8 +434,6 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
       id: 'brightid',
       name: 'BrightID',
       icon: brightIDIcon,
-      setupTime: '3m',
-      security: 10,
       description: 'Decentralized identity verification',
       callback: this.signWithBrightID
     }

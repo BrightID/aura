@@ -1,76 +1,75 @@
 import { focusedProject } from '@/lib/projects'
 import { projects } from '@/states/projects'
 import { getProjects } from '@/utils/apis'
-import { css, html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { css, CSSResultGroup, html, LitElement } from 'lit'
+import { customElement, property, state } from 'lit/decorators.js'
 
-@customElement('app-verification')
-export class Verification extends LitElement {
-    @property({
-        type: Number
+import { SignalWatcher } from '@lit-labs/signals'
+import './footer'
+import './intro-step'
+
+export type Step = 'intro' | 'connect' | 'progress' | 'success' | 'how-it-works' | 'find-players'
+
+@customElement('app-verification-embed')
+export class AppVerificationElement extends SignalWatcher(LitElement) {
+  @property({
+    type: Number
+  })
+  projectId!: number
+
+  @state()
+  step: Step = 'intro'
+
+  static styles?: CSSResultGroup | undefined = css`
+    .container {
+      max-width: 380px;
+      margin: auto;
+      border-radius: var(--xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+      padding: 12px;
+    }
+  `
+
+  connectedCallback(): void {
+    super.connectedCallback()
+    this.fetchProjects()
+  }
+
+  private fetchProjects() {
+    getProjects().then((res) => {
+      projects.set(res)
+      const project = res.find((item) => item.id === this.projectId)
+      if (!project) return
+
+      focusedProject.set(project)
     })
-    projectId!: number
+  }
 
-    static styles = css`
-        :root {
-            --background: oklch(0.13 0.01 260);
-            --foreground: oklch(0.98 0 0);
-            --card: oklch(0.18 0.015 260);
-            --card-foreground: oklch(0.98 0 0);
-            --popover: oklch(0.16 0.012 260);
-            --popover-foreground: oklch(0.98 0 0);
-            --primary: oklch(0.72 0.18 150);
-            --primary-foreground: oklch(0.13 0.01 260);
-            --secondary: oklch(0.25 0.02 260);
-            --secondary-foreground: oklch(0.85 0 0);
-            --muted: oklch(0.22 0.015 260);
-            --muted-foreground: oklch(0.65 0 0);
-            --accent: oklch(0.65 0.16 200);
-            --accent-foreground: oklch(0.98 0 0);
-            --destructive: oklch(0.55 0.22 25);
-            --destructive-foreground: oklch(0.98 0 0);
-            --border: oklch(0.28 0.02 260);
-            --input: oklch(0.22 0.015 260);
-            --ring: oklch(0.72 0.18 150);
-            --chart-1: oklch(0.72 0.18 150);
-            --chart-2: oklch(0.65 0.16 200);
-            --chart-3: oklch(0.6 0.14 280);
-            --chart-4: oklch(0.75 0.15 80);
-            --chart-5: oklch(0.55 0.22 25);
-            --radius: 0.75rem;
+  protected render() {
+    return html` <a-card class="container">
+      ${this.renderTabsSection()}
+      <verification-footer></verification-footer>
+    </a-card>`
+  }
 
-            --aura-success: oklch(0.72 0.18 150);
-            --aura-warning: oklch(0.78 0.16 80);
-            --aura-info: oklch(0.65 0.16 200);
-            --aura-level-1: oklch(0.65 0.12 90);
-            --aura-level-2: oklch(0.65 0.16 200);
-            --aura-level-3: oklch(0.72 0.18 150);
-            --sidebar: oklch(0.985 0 0);
-            --sidebar-foreground: oklch(0.145 0 0);
-            --sidebar-primary: oklch(0.205 0 0);
-            --sidebar-primary-foreground: oklch(0.985 0 0);
-            --sidebar-accent: oklch(0.97 0 0);
-            --sidebar-accent-foreground: oklch(0.205 0 0);
-            --sidebar-border: oklch(0.922 0 0);
-            --sidebar-ring: oklch(0.708 0 0);
-        }
-    `
+  protected renderTabsSection() {
+    const project = focusedProject.get()
 
-    protected render() {
-        return html``
+    switch (this.step) {
+      case 'connect':
+      case 'find-players':
+      case 'intro':
+        return html`<verification-intro
+          .appDescription=${project?.description}
+          .appLogo=${project?.image}
+          .requiredLevel=${Number(project?.requirementLevel)}
+          .appName=${project?.name ?? 'loading'}
+        ></verification-intro>`
+      case 'progress':
+      case 'success':
+      case 'how-it-works':
     }
-
-    connectedCallback(): void {
-        this.fetchProjects()
-    }
-
-    private fetchProjects() {
-        getProjects().then((res) => {
-            projects.set(res)
-            const project = res.find(item => item.id === this.projectId)
-            if (!project) return
-
-            focusedProject.set(project)
-        })
-    }
+  }
 }
