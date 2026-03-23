@@ -1,3 +1,5 @@
+> **LLMs:** Read `.llm/index.md` first for a compact workspace overview (structure, stacks, commands, memory, skills). Return here only when you need specific UI component APIs.
+
 # Aura UI — Component Reference
 
 This monorepo ships a Lit-based design system at `packages/ui` (`@aura/ui`). All apps in `./apps` consume it. Use this document when building any UI inside the apps.

@@ -34,7 +34,9 @@
     "outDir": "dist",
     "baseUrl": "src",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@aura/query": ["../../packages/query/src/index.ts"],
+      "@aura/query/*": ["../../packages/query/src/*.ts"]
     }
   },
   "include": ["src", "vite-env.d.ts", "drizzle.config.ts"]

@@ -5,7 +5,11 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@aura/ui": ["../../packages/ui/dist/index.d.ts"],
+      "@aura/ui/*": ["../../packages/ui/dist/*"]
+    }
   },
   "include": [
     "**/*.ts",

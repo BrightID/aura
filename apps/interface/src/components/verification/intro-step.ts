@@ -157,6 +157,11 @@ export class IntroStep extends LitElement {
       text-align: center;
       color: var(--muted-foreground);
     }
+
+    .logo {
+      width: 3rem;
+      height: 3rem;
+    }
   `
 
   protected render() {
@@ -185,12 +190,7 @@ export class IntroStep extends LitElement {
 
         <div class="aura-card">
           <div class="aura-header">
-            <svg class="aura-logo" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <circle cx="16" cy="16" r="14" stroke="#a0dba0" stroke-width="2" opacity="0.4" />
-              <circle cx="16" cy="16" r="10" stroke="#c8e6c8" stroke-width="2" opacity="0.6" />
-              <circle cx="16" cy="16" r="6" fill="#ffd700" />
-              <circle cx="16" cy="16" r="3" fill="#ff8c00" />
-            </svg>
+            <img src="/aura2.png" class="logo" alt="Aura" />
             <span class="aura-title">Powered by Aura</span>
           </div>
           <p class="aura-desc">

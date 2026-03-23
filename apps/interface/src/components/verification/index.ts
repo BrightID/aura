@@ -116,6 +116,16 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       this._goToStep(auraLevel >= requiredLevel ? 'success' : 'progress')
     } catch (err) {
       console.error('Failed to fetch verification data', err)
+      // Treat missing profile (404) as a new user with level 0 and score 0
+      // so they can continue to find verifiers instead of being stuck on connect
+      this.verificationData = {
+        brightId,
+        auraLevel: 0,
+        auraScore: 0,
+        evaluationsReceived: 0,
+        requirements: [],
+      }
+      this._goToStep('progress')
     } finally {
       this.isLoadingVerification = false
     }

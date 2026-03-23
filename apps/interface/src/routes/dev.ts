@@ -93,7 +93,7 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
         <iframe
           id="iframe"
           @load=${this.onIframeLoad}
-          height="550"
+          height="600"
           src="/embed/projects/4"
         ></iframe>
         <!--</div>
