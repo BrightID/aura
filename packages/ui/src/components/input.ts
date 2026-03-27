@@ -1,26 +1,29 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { css, html, LitElement, type CSSResultGroup } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 
 @customElement("a-input")
 export class InputElement extends LitElement {
-  @property() type: "text" | "email" | "password" | "number" = "text"
-  @property() label?: string
-  @property() name: string = "input-text"
-  @property() placeholder = ""
-  @property({ reflect: true }) value = ""
-  @property({ type: Boolean }) disabled = false
+  @property() type: "text" | "email" | "password" | "number" = "text";
+  @property() label?: string;
+  @property() name: string = "input-text";
+  @property() placeholder = "";
+  @property({ reflect: true }) value = "";
+  @property({ type: Boolean }) disabled = false;
 
-  private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`
+  @state() private _hasIcon = false;
+
+  private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`;
 
   static styles: CSSResultGroup = css`
     :host {
       display: block;
       position: relative;
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.5rem;
     }
 
     label {
       display: block;
+      text-align: left;
       margin-bottom: 0.5rem;
       font-size: var(--sm);
       font-weight: 500;
@@ -49,7 +52,6 @@ export class InputElement extends LitElement {
       width: 100%;
       height: 2.5rem;
       padding: 0 0.875rem;
-      padding-left: 2.75rem; /* ← space for icon */
       box-sizing: border-box;
 
       font-size: 0.875rem;
@@ -69,9 +71,9 @@ export class InputElement extends LitElement {
         background-color 0.18s ease;
     }
 
-    /* When no icon is present → less left padding */
-    :host(:not(:has([slot="icon"]))) input {
-      padding-left: 0.875rem;
+    /* When icon is present → extra left padding to clear the icon */
+    input.has-icon {
+      padding-left: 2.75rem;
     }
 
     input::placeholder {
@@ -107,7 +109,7 @@ export class InputElement extends LitElement {
       background: color-mix(in oklch, var(--background) 90%, transparent);
       border-color: color-mix(in oklch, var(--border) 60%, transparent);
     }
-  `
+  `;
 
   render() {
     return html`
@@ -116,10 +118,11 @@ export class InputElement extends LitElement {
         : ""}
 
       <div class="input-wrapper">
-        <slot name="icon" class="icon"></slot>
+        <slot name="icon" @slotchange=${this._onIconSlotChange}></slot>
 
         <input
           id=${this._inputId}
+          class=${this._hasIcon ? "has-icon" : ""}
           .value=${this.value}
           @input=${this.onInputChange}
           .type=${this.type}
@@ -128,12 +131,17 @@ export class InputElement extends LitElement {
           name=${this.name}
         />
       </div>
-    `
+    `;
+  }
+
+  private _onIconSlotChange(e: Event) {
+    const slot = e.target as HTMLSlotElement;
+    this._hasIcon = slot.assignedElements().length > 0;
   }
 
   private onInputChange(e: Event) {
-    const target = e.target as HTMLInputElement
-    this.value = target.value // optional: two-way binding support
+    const target = e.target as HTMLInputElement;
+    this.value = target.value; // optional: two-way binding support
 
     this.dispatchEvent(
       new CustomEvent("change", {
@@ -142,12 +150,12 @@ export class InputElement extends LitElement {
         bubbles: true,
         composed: true,
       }),
-    )
+    );
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-input": InputElement
+    "a-input": InputElement;
   }
 }

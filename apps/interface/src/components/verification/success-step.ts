@@ -32,7 +32,7 @@ export class VerificationSuccessElement extends LitElement {
       border-radius: 9999px; background: rgba(74, 222, 128, 0.1);
       display: flex; align-items: center; justify-content: center;
     }
-    .ring-inner svg { width: 2.5em; height: 2.5em; color: var(--aura-success); }
+    .ring-inner iconify-icon { width: 2.5em; height: 2.5em; color: var(--aura-success); }
 
     /* Message */
     .message-group { display: flex; flex-direction: column; gap: 0.5em; }
@@ -63,9 +63,7 @@ export class VerificationSuccessElement extends LitElement {
         <div class="success-ring">
           <div class="ring-pulse"></div>
           <div class="ring-inner">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
+            <iconify-icon icon="lucide:check"></iconify-icon>
           </div>
         </div>
 

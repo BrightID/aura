@@ -7,8 +7,8 @@
       }
     ],
     "paths": {
-      "@aura/ui": ["../../packages/ui/dist/index.d.ts"],
-      "@aura/ui/*": ["../../packages/ui/dist/*"]
+      "@aura/ui": ["../../packages/ui/src/index.ts"],
+      "@aura/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [

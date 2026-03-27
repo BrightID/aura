@@ -1,12 +1,16 @@
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
+import { SignalWatcher } from '@lit-labs/signals'
 import './level-badge'
+import { userFirstName, userLastName, userProfilePicture } from '@/states/user'
+import type { AuraImpact } from '@/types/evaluation'
 
 export interface ProgressStepData {
   brightId: string
   auraLevel: number
   auraScore: number
   evaluationsReceived: number
+  auraImpacts: AuraImpact[]
   requirements: { reason: string; status: 'passed' | 'incomplete'; level: number }[]
 }
 
@@ -18,7 +22,7 @@ const scoreThresholds: Record<number, number> = {
 }
 
 @customElement('verification-progress')
-export class VerificationProgressElement extends LitElement {
+export class VerificationProgressElement extends SignalWatcher(LitElement) {
   @property({ type: Object }) data!: ProgressStepData
   @property({ type: Number }) requiredLevel = 1
   @property() appName = ''
@@ -159,6 +163,16 @@ export class VerificationProgressElement extends LitElement {
       display: flex;
       flex-direction: column;
       gap: 0.5em;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: border-color 0.15s, background 0.15s;
+      text-align: left;
+      width: 100%;
+      font: inherit;
+    }
+    .metric-card:hover {
+      border-color: var(--border);
+      background: color-mix(in srgb, var(--secondary) 80%, var(--foreground) 4%);
     }
     .metric-header {
       display: flex;
@@ -390,6 +404,62 @@ export class VerificationProgressElement extends LitElement {
       margin-right: 0.375em;
       vertical-align: -0.125em;
     }
+
+    .user-avatar iconify-icon {
+      color: var(--primary);
+    }
+    .req-indicator iconify-icon {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+    }
+    .metric-header iconify-icon {
+      width: 0.875em;
+      height: 0.875em;
+      flex-shrink: 0;
+    }
+    .next-steps-title iconify-icon {
+      width: 1em;
+      height: 1em;
+      color: var(--aura-warning);
+      flex-shrink: 0;
+    }
+    .tips-toggle-left iconify-icon {
+      width: 0.875em;
+      height: 0.875em;
+      color: var(--primary);
+    }
+    .success-icon iconify-icon {
+      color: var(--aura-success);
+    }
+
+    /* Avatar image */
+    .user-avatar-img {
+      width: 2.5em;
+      height: 2.5em;
+      border-radius: 9999px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* Header actions */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.75em;
+      color: var(--primary);
+      padding: 0;
+      transition: opacity 0.15s;
+    }
+    .edit-btn:hover {
+      opacity: 0.75;
+    }
   `
 
   protected render() {
@@ -414,45 +484,33 @@ export class VerificationProgressElement extends LitElement {
         <!-- User header -->
         <div class="user-header">
           <div class="user-info">
-            <div class="user-avatar">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
+            ${userProfilePicture.get()
+              ? html`<img src=${userProfilePicture.get()} alt="avatar" class="user-avatar-img" />`
+              : html`
+                  <div class="user-avatar">
+                    <iconify-icon icon="lucide:user" width="1.25em" height="1.25em"></iconify-icon>
+                  </div>
+                `}
             <div>
-              <p class="user-id">${brightId.slice(0, 12)}…</p>
-              <verification-level-badge .level=${auraLevel} size="sm"></verification-level-badge>
+              <p class="user-id">${userFirstName.get() + ' ' + userLastName.get()}</p>
+              <verification-level-badge
+                .level=${auraLevel ?? 0}
+                size="sm"
+              ></verification-level-badge>
             </div>
           </div>
-          <button class="disconnect-btn" @click=${() => this._emit('disconnect')}>
-            Disconnect
-          </button>
+          <div class="header-actions">
+            <button class="edit-btn" @click=${() => this._emit('edit-profile')}>Edit</button>
+            <button class="disconnect-btn" @click=${() => this._emit('disconnect')}>
+              <iconify-icon icon="mdi:shutdown" width="20" height="20"></iconify-icon>
+            </button>
+          </div>
         </div>
 
-        <!-- Requirement status -->
         <div class="req-indicator ${isMet ? 'met' : 'unmet'}">
           ${isMet
-            ? html`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>`
-            : html`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 15v2m0 0v2m0-2h2m-2 0H10m10-6a8 8 0 11-16 0 8 8 0 0116 0z"
-                />
-              </svg>`}
+            ? html`<iconify-icon icon="lucide:check"></iconify-icon>`
+            : html`<iconify-icon icon="lucide:circle-help"></iconify-icon>`}
           <span
             >${isMet
               ? `Level ${this.requiredLevel} requirement met`
@@ -517,16 +575,12 @@ export class VerificationProgressElement extends LitElement {
         </div>
 
         <div class="metrics-grid">
-          <div class="metric-card ${hasScoreReq ? '' : 'metric-card--full'}">
+          <button
+            class="metric-card ${hasScoreReq ? '' : 'metric-card--full'}"
+            @click=${() => this._emit('show-evaluations')}
+          >
             <div class="metric-header">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
+              <iconify-icon icon="lucide:users"></iconify-icon>
               Evaluations
             </div>
             <div class="metric-value">
@@ -539,20 +593,13 @@ export class VerificationProgressElement extends LitElement {
                 style="width: ${evalProgress}%; background: var(--aura-info)"
               ></div>
             </div>
-          </div>
+          </button>
 
           ${hasScoreReq
             ? html`
-                <div class="metric-card">
+                <button class="metric-card" @click=${() => this._emit('show-score')}>
                   <div class="metric-header">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                      />
-                    </svg>
+                    <iconify-icon icon="lucide:trending-up"></iconify-icon>
                     Score
                   </div>
                   <div class="metric-value">
@@ -565,7 +612,7 @@ export class VerificationProgressElement extends LitElement {
                       style="width: ${scoreProgress}%; background: var(--aura-warning)"
                     ></div>
                   </div>
-                </div>
+                </button>
               `
             : ''}
         </div>
@@ -573,14 +620,7 @@ export class VerificationProgressElement extends LitElement {
 
       <div class="next-steps">
         <h3 class="next-steps-title">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
-          </svg>
+          <iconify-icon icon="lucide:zap"></iconify-icon>
           Reach Level ${this.requiredLevel} to continue
         </h3>
         <p class="next-steps-desc">
@@ -590,39 +630,21 @@ export class VerificationProgressElement extends LitElement {
         </p>
         <div class="action-row">
           <a-button size="sm" @click=${() => this._openGetVerified()}>
-            <svg
+            <iconify-icon
+              icon="lucide:external-link"
               class="btn-icon"
               width="1em"
               height="1em"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
+            ></iconify-icon>
             Get Verified
           </a-button>
           <a-button variant="secondary" size="sm" @click=${() => this._emit('find-players')}>
-            <svg
+            <iconify-icon
+              icon="lucide:users"
               class="btn-icon"
               width="1em"
               height="1em"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
+            ></iconify-icon>
             Find Players
           </a-button>
         </div>
@@ -650,39 +672,25 @@ export class VerificationProgressElement extends LitElement {
 
       <button class="tips-toggle" @click=${() => (this.showTips = !this.showTips)}>
         <span class="tips-toggle-left">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-            />
-          </svg>
+          <iconify-icon icon="lucide:lightbulb"></iconify-icon>
           Tips to level up faster
         </span>
-        <svg
+        <iconify-icon
+          icon="lucide:chevron-down"
           class="tips-chevron ${this.showTips ? 'open' : ''}"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+          width="1em"
+          height="1em"
+        ></iconify-icon>
       </button>
 
       ${this.showTips
         ? html`
             <div class="tips-list">
               ${[
-                'Ask friends who already use BrightID to evaluate you',
-                'Join community verification events',
-                'Higher confidence evaluations increase your score more',
-                'Connect with more verified players to build trust'
+                'Connect your contacts to see if any of your relatives is an aura verifier',
+                'Ask friends who already are a player in aura to evaluate you',
+                'Join the discord channel for more help',
+                'Find existing verifiers for evaluations'
               ].map(
                 (tip, i) => html`
                   <div class="tip-item">
@@ -701,14 +709,7 @@ export class VerificationProgressElement extends LitElement {
     return html`
       <div class="success-state">
         <div class="success-icon">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <iconify-icon icon="lucide:circle-check" width="2em" height="2em"></iconify-icon>
         </div>
         <h3 class="success-title">Verification Complete</h3>
         <p class="success-desc">You meet the requirements for ${this.appName}</p>

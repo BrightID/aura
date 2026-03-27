@@ -10,16 +10,28 @@ import { SignalWatcher } from '@lit-labs/signals'
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 
+import './edit-profile'
+import './evaluations-step'
 import './find-players'
 import './footer'
 import './how-it-works'
 import './intro-step'
 import './login'
 import './progress-step'
+import './score-step'
 import './success-step'
 import type { ProgressStepData } from './progress-step'
 
-export type Step = 'intro' | 'connect' | 'progress' | 'success' | 'how-it-works' | 'find-players'
+export type Step =
+  | 'intro'
+  | 'connect'
+  | 'progress'
+  | 'success'
+  | 'how-it-works'
+  | 'find-players'
+  | 'edit-profile'
+  | 'evaluations'
+  | 'score'
 
 @customElement('app-verification-embed')
 export class AppVerificationElement extends SignalWatcher(LitElement) {
@@ -31,8 +43,6 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   @state() private isLoadingVerification = false
   @state() private verificationData: ProgressStepData | null = null
 
-  // Set --verification-size on the element to scale the entire widget.
-  // e.g. 0.875rem = compact, 0.75rem = modal/tiny
   static styles: CSSResultGroup = css`
     :host {
       display: block;
@@ -46,10 +56,29 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       border: 1px solid var(--border);
       background: var(--card);
       position: relative;
+      display: flex;
+      flex-direction: column;
+      max-height: var(--verification-max-height, none);
     }
 
     .content {
       padding: 1.25em;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .content::-webkit-scrollbar {
+      width: 4px;
+    }
+    .content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 9999px;
     }
 
     .loading-state {
@@ -72,7 +101,11 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       animation: spin 0.6s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
   `
 
   connectedCallback(): void {
@@ -81,9 +114,9 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   }
 
   private _fetchProjects() {
-    getProjects().then(res => {
+    getProjects().then((res) => {
       projects.set(res)
-      const project = res.find(item => item.id === this.projectId)
+      const project = res.find((item) => item.id === this.projectId)
       if (project) focusedProject.set(project)
     })
 
@@ -98,7 +131,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     try {
       const [levelData, subjectData] = await Promise.all([
         getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }),
-        getSubjectVerifications(brightId, EvaluationCategory.SUBJECT),
+        getSubjectVerifications(brightId, EvaluationCategory.SUBJECT)
       ])
 
       this.verificationData = {
@@ -106,7 +139,8 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
         auraLevel: subjectData?.auraLevel ?? 0,
         auraScore: subjectData?.auraScore ?? 0,
         evaluationsReceived: subjectData?.auraImpacts?.length ?? 0,
-        requirements: levelData.requirements,
+        auraImpacts: subjectData?.auraImpacts ?? [],
+        requirements: levelData.requirements
       }
 
       const project = focusedProject.get()
@@ -123,7 +157,8 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
         auraLevel: 0,
         auraScore: 0,
         evaluationsReceived: 0,
-        requirements: [],
+        auraImpacts: [],
+        requirements: []
       }
       this._goToStep('progress')
     } finally {
@@ -205,6 +240,9 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
             .appName=${appName}
             @disconnect=${() => this._handleDisconnect()}
             @find-players=${() => this._goToStep('find-players')}
+            @edit-profile=${() => this._goToStep('edit-profile')}
+            @show-evaluations=${() => this._goToStep('evaluations')}
+            @show-score=${() => this._goToStep('score')}
           ></verification-progress>
         `
       case 'success':
@@ -227,6 +265,27 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
             @back=${() => this._goToStep('progress')}
             @select-player=${(e: CustomEvent) => console.log('Selected player:', e.detail)}
           ></verification-find-players>
+        `
+      case 'edit-profile':
+        return html`
+          <verification-edit-profile
+            @back=${() => this._goToStep('progress')}
+          ></verification-edit-profile>
+        `
+      case 'evaluations':
+        return html`
+          <verification-evaluations
+            .impacts=${this.verificationData?.auraImpacts ?? []}
+            @back=${() => this._goToStep('progress')}
+          ></verification-evaluations>
+        `
+      case 'score':
+        return html`
+          <verification-score
+            .impacts=${this.verificationData?.auraImpacts ?? []}
+            .totalScore=${this.verificationData?.auraScore ?? 0}
+            @back=${() => this._goToStep('progress')}
+          ></verification-score>
         `
       default:
         return html``

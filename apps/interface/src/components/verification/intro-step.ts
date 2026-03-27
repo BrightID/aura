@@ -147,7 +147,7 @@ export class IntroStep extends LitElement {
     .learn-btn:hover {
       opacity: 0.75;
     }
-    .learn-btn svg {
+    .learn-btn iconify-icon {
       flex-shrink: 0;
     }
 
@@ -199,14 +199,7 @@ export class IntroStep extends LitElement {
           </p>
           <button class="learn-btn" @click=${() => this._emit('how-it-works')}>
             Learn how it works
-            <svg width="1em" height="1em" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <iconify-icon icon="lucide:chevron-right" width="1em" height="1em"></iconify-icon>
           </button>
         </div>
 

@@ -32,9 +32,8 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
     "outDir": "dist",
-    "baseUrl": "src",
     "paths": {
-      "@/*": ["./*"],
+      "@/*": ["./src/*"],
       "@aura/query": ["../../packages/query/src/index.ts"],
       "@aura/query/*": ["../../packages/query/src/*.ts"]
     }

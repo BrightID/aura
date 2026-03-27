@@ -4,6 +4,7 @@ import './styles.css'
 
 import { createRouter } from '@/app-routes'
 
+import 'iconify-icon'
 import '@aura/ui'
 
 import './components/ui/layout.ts'

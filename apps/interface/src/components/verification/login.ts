@@ -169,7 +169,7 @@ export class VerificationConnectElement extends LitElement {
     .help-btn:hover {
       color: var(--foreground);
     }
-    .help-btn svg {
+    .help-btn iconify-icon {
       width: 1em;
       height: 1em;
       flex-shrink: 0;
@@ -192,7 +192,7 @@ export class VerificationConnectElement extends LitElement {
       font-size: 0.75em;
       color: var(--muted-foreground);
     }
-    .trust-item svg {
+    .trust-item iconify-icon {
       width: 0.875em;
       height: 0.875em;
       flex-shrink: 0;
@@ -266,49 +266,21 @@ export class VerificationConnectElement extends LitElement {
         ${this.error ? html`<p class="error-msg">${this.error}</p>` : ''}
 
         <button class="help-btn" @click=${() => this._emit('how-it-works')}>
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <iconify-icon icon="lucide:info"></iconify-icon>
           What is Aura?
         </button>
 
         <div class="trust-row">
           <span class="trust-item">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
+            <iconify-icon icon="lucide:shield-check"></iconify-icon>
             Decentralized
           </span>
           <span class="trust-item">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
+            <iconify-icon icon="lucide:lock"></iconify-icon>
             Privacy-First
           </span>
           <span class="trust-item">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
-              />
-            </svg>
+            <iconify-icon icon="lucide:globe"></iconify-icon>
             Open Network
           </span>
         </div>
@@ -365,10 +337,7 @@ export class VerificationConnectElement extends LitElement {
         ${this.error ? html`<p class="error-msg">${this.error}</p>` : ''}
 
         <button class="help-btn" @click=${() => { this.view = 'options'; this.error = '' }}>
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 19l-7-7 7-7" />
-          </svg>
+          <iconify-icon icon="lucide:chevron-left"></iconify-icon>
           Back
         </button>
       </div>

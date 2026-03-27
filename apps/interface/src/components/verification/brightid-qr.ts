@@ -67,7 +67,7 @@ export class VerificationBrightIDQrElement extends LitElement {
     .back-btn:hover {
       background: var(--secondary);
     }
-    .back-btn svg {
+    .back-btn iconify-icon {
       width: 1.25em;
       height: 1.25em;
     }
@@ -215,7 +215,7 @@ export class VerificationBrightIDQrElement extends LitElement {
     .open-link:hover {
       background: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
     }
-    .open-link svg {
+    .open-link iconify-icon {
       width: 0.875em;
       height: 0.875em;
       flex-shrink: 0;
@@ -382,9 +382,7 @@ export class VerificationBrightIDQrElement extends LitElement {
       <div class="stack">
         <div class="page-header">
           <button class="back-btn" aria-label="Go back" @click=${() => this._emit('back')}>
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
           </button>
           <img src=${brightIDIcon} class="header-icon" alt="BrightID" />
           <h2 class="title">Connect with BrightID</h2>
@@ -412,10 +410,7 @@ export class VerificationBrightIDQrElement extends LitElement {
         ${this.deeplink
           ? html`
               <a href=${this.deeplink} class="open-link" target="_blank" rel="noopener noreferrer">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
+                <iconify-icon icon="lucide:smartphone"></iconify-icon>
                 Open in BrightID app instead
               </a>
             `

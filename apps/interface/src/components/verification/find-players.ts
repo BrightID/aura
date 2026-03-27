@@ -9,15 +9,13 @@ import { Mutation } from '@aura/query'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
-import QrCodeWithLogo from 'qrcode-with-logos'
 import './level-badge'
 import type { ContactsHashWorkerOutput } from '@/workers/contacts-hash.worker'
 
 @customElement('verification-find-players')
 export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
-  @state() private showQR = false
   @state() private searchQuery = ''
-  @state() private qrDataUrl = ''
+  @state() private _copied = false
 
   #googleImport = new Mutation<void, void>(this, {
     mutationFn: async () => {
@@ -67,7 +65,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     .back-btn:hover {
       background: var(--secondary);
     }
-    .back-btn svg {
+    .back-btn iconify-icon {
       width: 1.25em;
       height: 1.25em;
     }
@@ -78,89 +76,56 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       color: var(--foreground);
     }
 
-    /* QR toggle */
-    .qr-toggle {
-      width: 100%;
+    /* Copy link */
+    .copy-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 0.75em;
       padding: 0.75em;
       background: var(--secondary);
       border: 1px solid var(--border);
       border-radius: var(--radius, 0.75rem);
-      cursor: pointer;
-      transition: background 0.15s;
-      text-align: left;
     }
-    .qr-toggle:hover {
-      background: color-mix(in srgb, var(--secondary) 80%, var(--foreground) 5%);
+    .copy-row-info {
+      flex: 1;
+      min-width: 0;
     }
-    .qr-toggle-left {
-      display: flex;
-      align-items: center;
-      gap: 0.75em;
-    }
-    .qr-icon {
-      width: 2.5em;
-      height: 2.5em;
-      border-radius: 0.5em;
-      flex-shrink: 0;
-      background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .qr-icon svg {
-      width: 1.25em;
-      height: 1.25em;
-      color: var(--primary);
-    }
-    .qr-text-name {
-      font-size: 0.875em;
+    .copy-row-name {
+      font-size: 0.8em;
       font-weight: 500;
       color: var(--foreground);
     }
-    .qr-text-desc {
+    .copy-row-desc {
       font-size: 0.75em;
       color: var(--muted-foreground);
       margin-top: 0.125em;
     }
-    .qr-chevron {
-      width: 1.25em;
-      height: 1.25em;
-      color: var(--muted-foreground);
-      transition: transform 0.2s;
-    }
-    .qr-chevron.open {
-      transform: rotate(180deg);
-    }
-
-    .qr-display {
-      margin-top: 0.75em;
-      padding: 1em;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius, 0.75rem);
+    .copy-btn {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 0.75em;
-    }
-    .qr-img-wrap {
-      padding: 0.75em;
-      background: #fff;
-      border-radius: 0.75em;
-    }
-    .qr-img {
-      width: 10em;
-      height: 10em;
+      gap: 0.375em;
+      flex-shrink: 0;
+      padding: 0.4em 0.75em;
       border-radius: 0.5em;
-      display: block;
+      border: 1px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      font-size: 0.775em;
+      font-weight: 500;
+      color: var(--foreground);
+      transition: background 0.15s, color 0.15s;
     }
-    .qr-caption {
-      font-size: 0.75em;
-      color: var(--muted-foreground);
-      text-align: center;
+    .copy-btn:hover {
+      background: color-mix(in srgb, var(--card) 80%, var(--foreground) 8%);
+    }
+    .copy-btn.copied {
+      color: var(--aura-success, #22c55e);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    .copy-btn iconify-icon {
+      width: 0.875em;
+      height: 0.875em;
+      flex-shrink: 0;
     }
 
     /* Search */
@@ -229,7 +194,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       height: 1.125em;
       flex-shrink: 0;
     }
-    .import-btn svg {
+    .import-btn iconify-icon {
       width: 1.125em;
       height: 1.125em;
       flex-shrink: 0;
@@ -332,15 +297,6 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       border-radius: 9999px;
       animation: spin 0.6s linear infinite;
     }
-    .qr-spinner {
-      width: 2.5em;
-      height: 2.5em;
-      border: 3px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 9999px;
-      animation: spin 0.6s linear infinite;
-      margin: 1em auto;
-    }
     @keyframes spin {
       to {
         transform: rotate(360deg);
@@ -382,76 +338,30 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       <div class="stack">
         <div class="page-header">
           <button class="back-btn" aria-label="Go back" @click=${() => this._emit('back')}>
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
           </button>
           <h2 class="page-title">Find Aura Players</h2>
         </div>
 
-        <!-- QR section -->
-        <div>
-          <button class="qr-toggle" @click=${() => this._toggleQR(brightId)}>
-            <div class="qr-toggle-left">
-              <div class="qr-icon">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <div class="qr-text-name">Show my QR Code</div>
-                <div class="qr-text-desc">Let others scan to connect</div>
-              </div>
-            </div>
-            <svg
-              class="qr-chevron ${this.showQR ? 'open' : ''}"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+        <!-- Copy profile link -->
+        <div class="copy-row">
+          <div class="copy-row-info">
+            <div class="copy-row-name">Share my profile</div>
+            <div class="copy-row-desc">Send this link to Aura players to get verified</div>
+          </div>
+          <button
+            class="copy-btn ${this._copied ? 'copied' : ''}"
+            ?disabled=${!brightId}
+            @click=${() => this._copyProfileLink(brightId)}
+          >
+            <iconify-icon icon=${this._copied ? 'lucide:check' : 'lucide:copy'}></iconify-icon>
+            ${this._copied ? 'Copied!' : 'Copy link'}
           </button>
-
-          ${this.showQR
-            ? html`
-                <div class="qr-display">
-                  <div class="qr-img-wrap">
-                    ${this.qrDataUrl
-                      ? html`<img class="qr-img" src=${this.qrDataUrl} alt="Your Aura QR Code" />`
-                      : html`<div class="qr-spinner"></div>`}
-                  </div>
-                  <p class="qr-caption">Scan to view my BrightID profile</p>
-                </div>
-              `
-            : ''}
         </div>
 
         <!-- Search -->
         <div class="search-wrap">
-          <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+          <iconify-icon icon="lucide:search" class="search-icon"></iconify-icon>
           <input
             class="search-input"
             type="text"
@@ -477,14 +387,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
             ?disabled=${isImporting}
             @click=${() => this.shadowRoot?.querySelector<HTMLInputElement>('.file-input')?.click()}
           >
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-              />
-            </svg>
+            <iconify-icon icon="lucide:upload"></iconify-icon>
             Import file
           </button>
           <input
@@ -529,19 +432,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                         <div class="player-name">${player.name}</div>
                         <div class="player-sub">${player.value.slice(0, 10)}…</div>
                       </div>
-                      <svg
-                        class="player-chevron"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
+                      <iconify-icon icon="lucide:chevron-right" class="player-chevron"></iconify-icon>
                     </button>
                   `
                 )}
@@ -553,55 +444,19 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
           size="sm"
           @click=${() => window.open('https://brightid.app', '_blank')}
         >
-          <svg
-            class="btn-icon"
-            width="1em"
-            height="1em"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
+          <iconify-icon icon="lucide:camera" class="btn-icon" width="1em" height="1em"></iconify-icon>
           Scan QR Code
         </a-button>
       </div>
     `
   }
 
-  private _toggleQR(brightId: string | null) {
-    this.showQR = !this.showQR
-    if (this.showQR && brightId && !this.qrDataUrl) {
-      this._generateQR(brightId)
-    }
-  }
-
-  private _generateQR(brightId: string) {
-    const profileUrl = `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/`
-    const qrCode = new QrCodeWithLogo({
-      width: 200,
-      content: profileUrl,
-      logo: {
-        src: '/images/brightId.svg',
-        bgColor: '#333',
-        borderWidth: 5
-      },
-      dotsOptions: { color: '#111' }
-    })
-    qrCode.getImage().then((img) => {
-      this.qrDataUrl = img.src
-    })
+  private async _copyProfileLink(brightId: string | null) {
+    if (!brightId) return
+    const url = `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/`
+    await navigator.clipboard.writeText(url)
+    this._copied = true
+    setTimeout(() => (this._copied = false), 2000)
   }
 
   private _onFileSelected(e: Event) {

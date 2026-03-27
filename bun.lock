@@ -134,6 +134,7 @@
         "firebase": "^11.9.0",
         "firebase-admin": "^13.6.0",
         "googleapis": "^155.0.1",
+        "iconify-icon": "^3.0.2",
         "lit": "^3.3.0",
         "marked": "^16.1.1",
         "openapi-fetch": "^0.14.0",
@@ -996,6 +997,8 @@
     "@humanwhocodes/object-schema": ["@humanwhocodes/object-schema@2.0.3", "", {}, "sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA=="],
 
     "@humanwhocodes/retry": ["@humanwhocodes/retry@0.4.3", "", {}, "sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ=="],
+
+    "@iconify/types": ["@iconify/types@2.0.0", "", {}, "sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg=="],
 
     "@img/colour": ["@img/colour@1.0.0", "", {}, "sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw=="],
 
@@ -3292,6 +3295,8 @@
     "i18next": ["i18next@22.4.10", "", { "dependencies": { "@babel/runtime": "^7.20.6" } }, "sha512-3EqgGK6fAJRjnGgfkNSStl4mYLCjUoJID338yVyLMj5APT67HUtWoqSayZewiiC5elzMUB1VEUwcmSCoeQcNEA=="],
 
     "i18next-parser": ["i18next-parser@3.0.0", "", { "dependencies": { "broccoli-plugin": "^1.3.0", "cheerio": "^1.0.0-rc.2", "colors": "~1.2.0-rc0", "commander": "~2.9.0", "concat-stream": "~1.6.0", "eol": "^0.9.1", "fs-extra": "^6.0.1", "gulp-sort": "^2.0.0", "i18next": "^19.0.1", "rsvp": "^4.8.2", "through2": "~2.0.3", "typescript": "^3.6.4", "vinyl": "~2.0.1", "vinyl-fs": "^3.0.2", "vue-template-compiler": "^2.6.11", "yamljs": "^0.3.0" }, "bin": { "i18next": "./bin/cli.js" } }, "sha512-yb4BayelBAmwn8E53KT/cHFwXtEccVUPQxZuhwHSMyI2JU4L/rca6d8QR7pxjmp8HNWhoCGRD+YMJ5oQi5JvtA=="],
+
+    "iconify-icon": ["iconify-icon@3.0.2", "", { "dependencies": { "@iconify/types": "^2.0.0" } }, "sha512-DYPAumiUeUeT/GHT8x2wrAVKn1FqZJqFH0Y5pBefapWRreV1BBvqBVMb0020YQ2njmbR59r/IathL2d2OrDrxA=="],
 
     "iconv-lite": ["iconv-lite@0.6.3", "", { "dependencies": { "safer-buffer": ">= 2.1.2 < 3.0.0" } }, "sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw=="],
 

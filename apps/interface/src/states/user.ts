@@ -3,8 +3,8 @@ import { signal } from '@lit-labs/signals'
 
 export const userEmail = localStorageSignal('_email', '')
 export const userBrightId = localStorageSignal('_brightId', '')
-export const userFirstName = localStorageSignal('_firstName', '')
-export const userLastName = localStorageSignal('_lastName', '')
+export const userFirstName = localStorageSignal('_firstName', 'Aura')
+export const userLastName = localStorageSignal('_lastName', 'User')
 export const userProfilePicture = localStorageSignal(
   '_profilePicture',
   '',
@@ -12,6 +12,7 @@ export const userProfilePicture = localStorageSignal(
   (value) => value?.toString() ?? ''
 )
 export const userPhoneNumber = localStorageSignal('_phoneNumber', '')
+export const userGravatarEmail = localStorageSignal('_gravatarEmail', '')
 
 export const levelUpProgress = signal(
   [] as {

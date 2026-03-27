@@ -5,74 +5,22 @@ const steps = [
   {
     title: 'Connect Your Identity',
     description: 'Link your BrightID or create a universal identifier that you control.',
-    icon: html`<svg
-      width="1.25em"
-      height="1.25em"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-      />
-    </svg>`
+    icon: html`<iconify-icon icon="lucide:user" width="1.25em" height="1.25em"></iconify-icon>`
   },
   {
     title: 'Get Evaluated',
     description: 'People who know you evaluate your uniqueness. No personal info is shared.',
-    icon: html`<svg
-      width="1.25em"
-      height="1.25em"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-      />
-    </svg>`
+    icon: html`<iconify-icon icon="lucide:users" width="1.25em" height="1.25em"></iconify-icon>`
   },
   {
     title: 'Earn Levels',
     description: 'Your verification level increases as you receive positive evaluations.',
-    icon: html`<svg
-      width="1.25em"
-      height="1.25em"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-      />
-    </svg>`
+    icon: html`<iconify-icon icon="lucide:badge-check" width="1.25em" height="1.25em"></iconify-icon>`
   },
   {
     title: 'Unlock Access',
     description: 'Apps verify your level to grant access—without seeing your identity.',
-    icon: html`<svg
-      width="1.25em"
-      height="1.25em"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-      />
-    </svg>`
+    icon: html`<iconify-icon icon="lucide:lock-open" width="1.25em" height="1.25em"></iconify-icon>`
   }
 ]
 
@@ -111,7 +59,7 @@ export class VerificationHowItWorksElement extends LitElement {
     .back-btn:hover {
       background: var(--secondary);
     }
-    .back-btn svg {
+    .back-btn iconify-icon {
       width: 1.25em;
       height: 1.25em;
     }
@@ -185,7 +133,7 @@ export class VerificationHowItWorksElement extends LitElement {
       flex-shrink: 0;
       margin-top: 0.125em;
     }
-    .privacy-icon svg {
+    .privacy-icon iconify-icon {
       width: 1em;
       height: 1em;
       color: var(--aura-info);
@@ -213,14 +161,7 @@ export class VerificationHowItWorksElement extends LitElement {
       <div class="stack">
         <div class="page-header">
           <button class="back-btn" aria-label="Go back" @click=${() => this._emit('back')}>
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
           </button>
           <div class="header-title">
             <img src="/aura2.png" class="logo" alt="Aura" />
@@ -244,14 +185,7 @@ export class VerificationHowItWorksElement extends LitElement {
 
         <div class="privacy-note">
           <div class="privacy-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
+            <iconify-icon icon="lucide:lock"></iconify-icon>
           </div>
           <div>
             <p class="privacy-heading">Privacy First</p>

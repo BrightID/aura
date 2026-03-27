@@ -1,89 +1,47 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import { Switch } from "@/components/ui/switch"
-import type {
-  AuraFrameConfig,
-  FrameTheme,
-  UserVerificationStatus,
-  VerificationLevel,
-} from "~/components/core/verification/types"
-import { AuraVerificationFrame } from "~/components/core/verification/verification-frame"
-import type { Project } from "~/types/projects"
-
-const demoApps: Omit<AuraFrameConfig, "onVerified" | "onClose">[] = [
-  {
-    appName: "Gitcoin Grants",
-    appDescription:
-      "Decentralized funding for open source projects. Verify to participate in funding rounds.",
-    requiredLevel: 2,
-  },
-  {
-    appName: "DAO Governance",
-    appDescription:
-      "Vote on community proposals and participate in decentralized governance.",
-    requiredLevel: 1,
-  },
-  {
-    appName: "Premium Access",
-    appDescription:
-      "Unlock exclusive features with highest verification level.",
-    requiredLevel: 3,
-  },
-]
-
-const themes: { value: FrameTheme; label: string; preview: string }[] = [
-  { value: "dark", label: "Dark", preview: "bg-[#1a1a2e]" },
-  { value: "light", label: "Light", preview: "bg-[#f8fafc]" },
-  { value: "emerald", label: "Emerald", preview: "bg-[#064e3b]" },
-  { value: "ocean", label: "Ocean", preview: "bg-[#0c4a6e]" },
-  { value: "sunset", label: "Sunset", preview: "bg-[#431407]" },
-]
+import { useState } from "react";
+import { Slider } from "@/components/ui/slider";
+import type { VerificationLevel } from "~/components/core/verification/types";
+import { AuraVerificationFrame } from "~/components/core/verification/verification-frame";
+import {
+  DEFAULT_DEMO_CONFIG,
+  DEMO_APP_PRESETS,
+  DEMO_THEMES,
+  toUserStatus,
+  type DemoConfig,
+} from "~/components/core/verification/demo-config";
+import type { Project } from "~/types/projects";
 
 export default function PreviewTab({ project }: { project: Project }) {
-  const [showFrame, setShowFrame] = useState(true)
+  const [config, setConfig] = useState<DemoConfig>({
+    ...DEFAULT_DEMO_CONFIG,
+    appName: project.name,
+    appDescription: project.description,
+    appLogo: project.logoUrl ?? undefined,
+    requiredLevel:
+      (project.requirementLevel as VerificationLevel) ??
+      DEFAULT_DEMO_CONFIG.requiredLevel,
+    testMode: project.brightIdApp?.testing ?? true,
+  });
+
   const [verificationResult, setVerificationResult] = useState<{
-    userId: string
-    level: VerificationLevel
-  } | null>(null)
+    userId: string;
+    level: VerificationLevel;
+  } | null>(null);
 
-  const [selectedTheme, setSelectedTheme] = useState<FrameTheme>("dark")
-  const [userStatus, setUserStatus] = useState<UserVerificationStatus>({
-    isConnected: true,
-    userId: "aura_demo_user_123",
-    currentLevel: 1,
-    evaluationsReceived: 2,
-    evaluationsNeeded: 5,
-    score: 45,
-    scoreNeeded: 100,
-  })
+  const update = (patch: Partial<DemoConfig>) =>
+    setConfig((prev) => ({ ...prev, ...patch }));
 
-  const handleVerified = (userId: string, level: VerificationLevel) => {
-    setVerificationResult({ userId, level })
-  }
-
-  const handleLevelChange = (value: number[]) => {
-    setUserStatus((prev) => ({
-      ...prev,
-      currentLevel: value[0] as 0 | 1 | 2 | 3,
-    }))
-  }
-
-  const handleEvaluationsChange = (value: number[]) => {
-    setUserStatus((prev) => ({ ...prev, evaluationsReceived: value[0] }))
-  }
-
-  const handleScoreChange = (value: number[]) => {
-    setUserStatus((prev) => ({ ...prev, score: value[0] }))
-  }
+  const userStatus = toUserStatus(config);
 
   return (
     <div className="mx-auto px-4 py-8">
       <div className="grid lg:grid-cols-2 gap-2 items-start">
+        {/* Controls */}
         <div className="space-y-6">
           <div className="grid md:grid-cols-2 gap-2">
+            {/* App Configuration */}
             <div className="p-4 rounded-xl bg-card border border-border space-y-4">
               <h3 className="font-medium text-foreground text-sm flex items-center gap-2">
                 <svg
@@ -107,9 +65,67 @@ export default function PreviewTab({ project }: { project: Project }) {
                 </svg>
                 App Configuration
               </h3>
+
+              {/* Preset buttons */}
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground">
+                  Demo Preset
+                </label>
+                <div className="flex flex-col gap-1">
+                  {DEMO_APP_PRESETS.map((preset) => (
+                    <button
+                      key={preset.label}
+                      onClick={() =>
+                        update({
+                          appName: preset.appName,
+                          appDescription: preset.appDescription,
+                          requiredLevel: preset.requiredLevel,
+                        })
+                      }
+                      className={`text-left px-3 py-2 rounded-lg border text-xs transition-all ${
+                        config.appName === preset.appName
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-border hover:border-muted-foreground/50 text-muted-foreground"
+                      }`}
+                    >
+                      <span className="font-medium">{preset.label}</span>
+                      <span className="ml-2 opacity-60">
+                        Level {preset.requiredLevel} required
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Required level slider */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs text-muted-foreground">
+                    Required Level
+                  </label>
+                  <span className="text-xs font-mono text-foreground">
+                    {config.requiredLevel}
+                  </span>
+                </div>
+                <Slider
+                  value={[config.requiredLevel]}
+                  onValueChange={([v]) =>
+                    update({ requiredLevel: v as VerificationLevel })
+                  }
+                  min={1}
+                  max={3}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-[10px] text-muted-foreground">
+                  <span>L1</span>
+                  <span>L2</span>
+                  <span>L3</span>
+                </div>
+              </div>
             </div>
 
-            {/* User Profile Controls */}
+            {/* User Profile (Mock) */}
             <div className="p-4 rounded-xl bg-card border border-border space-y-4">
               <h3 className="font-medium text-foreground text-sm flex items-center gap-2">
                 <svg
@@ -128,19 +144,20 @@ export default function PreviewTab({ project }: { project: Project }) {
                 User Profile (Mock)
               </h3>
 
-              {/* Level Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-xs text-muted-foreground">
                     Current Level
                   </label>
                   <span className="text-xs font-mono text-foreground">
-                    {userStatus.currentLevel}
+                    {config.currentLevel}
                   </span>
                 </div>
                 <Slider
-                  value={[userStatus.currentLevel]}
-                  onValueChange={handleLevelChange}
+                  value={[config.currentLevel]}
+                  onValueChange={([v]) =>
+                    update({ currentLevel: v as 0 | 1 | 2 | 3 })
+                  }
                   min={0}
                   max={3}
                   step={1}
@@ -154,20 +171,18 @@ export default function PreviewTab({ project }: { project: Project }) {
                 </div>
               </div>
 
-              {/* Evaluations Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-xs text-muted-foreground">
                     Evaluations Received
                   </label>
                   <span className="text-xs font-mono text-foreground">
-                    {userStatus.evaluationsReceived}/
-                    {userStatus.evaluationsNeeded}
+                    {config.evaluationsReceived}/{config.evaluationsNeeded}
                   </span>
                 </div>
                 <Slider
-                  value={[userStatus.evaluationsReceived]}
-                  onValueChange={handleEvaluationsChange}
+                  value={[config.evaluationsReceived]}
+                  onValueChange={([v]) => update({ evaluationsReceived: v })}
                   min={0}
                   max={10}
                   step={1}
@@ -175,19 +190,18 @@ export default function PreviewTab({ project }: { project: Project }) {
                 />
               </div>
 
-              {/* Score Slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-xs text-muted-foreground">
                     Verification Score
                   </label>
                   <span className="text-xs font-mono text-foreground">
-                    {userStatus.score}%
+                    {config.score}%
                   </span>
                 </div>
                 <Slider
-                  value={[userStatus.score]}
-                  onValueChange={handleScoreChange}
+                  value={[config.score]}
+                  onValueChange={([v]) => update({ score: v })}
                   min={0}
                   max={100}
                   step={5}
@@ -196,7 +210,7 @@ export default function PreviewTab({ project }: { project: Project }) {
               </div>
             </div>
 
-            {/* Theme Selection */}
+            {/* Theme */}
             <div className="p-4 rounded-xl bg-card border border-border space-y-4 md:col-span-2">
               <h3 className="font-medium text-foreground text-sm flex items-center gap-2">
                 <svg
@@ -216,12 +230,12 @@ export default function PreviewTab({ project }: { project: Project }) {
               </h3>
 
               <div className="flex flex-wrap gap-2">
-                {themes.map((theme) => (
+                {DEMO_THEMES.map((theme) => (
                   <button
                     key={theme.value}
-                    onClick={() => setSelectedTheme(theme.value)}
+                    onClick={() => update({ theme: theme.value })}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
-                      selectedTheme === theme.value
+                      config.theme === theme.value
                         ? "border-primary bg-primary/10"
                         : "border-border hover:border-muted-foreground/50"
                     }`}
@@ -238,7 +252,7 @@ export default function PreviewTab({ project }: { project: Project }) {
             </div>
           </div>
 
-          {/* Verification Result */}
+          {/* Verification callback result */}
           {verificationResult && (
             <div className="p-4 rounded-xl bg-aura-success/10 border border-aura-success/20">
               <div className="flex items-center gap-2 text-aura-success">
@@ -260,24 +274,30 @@ export default function PreviewTab({ project }: { project: Project }) {
                 </span>
               </div>
               <div className="mt-2 text-sm text-muted-foreground font-mono">
-                <p>userId: "{verificationResult.userId}"</p>
+                <p>userId: &quot;{verificationResult.userId}&quot;</p>
                 <p>level: {verificationResult.level}</p>
               </div>
             </div>
           )}
 
-          {/* Integration Code */}
+          {/* Integration snippet */}
           <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-3">
             <h3 className="text-sm font-medium text-foreground">
               Integration Code
             </h3>
             <div className="p-3 rounded-lg bg-background/50 overflow-x-auto">
-              <pre className="text-xs text-muted-foreground font-mono">
+              <pre className="text-xs text-muted-foreground font-mono whitespace-pre">
+                {/*<AuraVerificationFrame
+                  appName={config.appName}
+                  appDescription={config.appDescription}
+                  requiredLevel={config.requiredLevel}
+                  theme={config.theme}
+                ></AuraVerificationFrame>*/}
                 {`<AuraVerificationFrame
-  appName="${project.name}"
-  appDescription="${project.description}"
-  requiredLevel={${project.requirementLevel}}
-  theme="${selectedTheme}"}
+  appName="${config.appName}"
+  appDescription="${config.appDescription}"
+  requiredLevel={${config.requiredLevel}}
+  theme="${config.theme}"
   onVerified={(userId, level) => {
     // Handle verification
   }}
@@ -287,25 +307,37 @@ export default function PreviewTab({ project }: { project: Project }) {
           </div>
         </div>
 
+        {/* Live frame preview */}
         <div className="lg:sticky lg:top-24">
-          <div className="space-y-3">
-            <div className="flex justify-center">
-              <AuraVerificationFrame
-                appDescription={project.description}
-                appName={project.name}
-                requiredLevel={project.requirementLevel as VerificationLevel}
-                appLogo={project.logoUrl!}
-                theme={selectedTheme}
-                testMode={project.brightIdApp?.testing ?? true}
-                externalUserStatus={userStatus}
-                onUserStatusChange={setUserStatus}
-                onVerified={handleVerified}
-                onClose={() => setShowFrame(false)}
-              />
-            </div>
+          <div className="flex justify-center">
+            <AuraVerificationFrame
+              appName={config.appName}
+              appDescription={config.appDescription}
+              appLogo={config.appLogo}
+              requiredLevel={config.requiredLevel}
+              theme={config.theme}
+              testMode={config.testMode}
+              externalUserStatus={userStatus}
+              onUserStatusChange={(status) =>
+                setConfig((prev) => ({
+                  ...prev,
+                  isConnected: status.isConnected,
+                  userId: status.userId ?? prev.userId,
+                  currentLevel: status.currentLevel,
+                  evaluationsReceived: status.evaluationsReceived,
+                  evaluationsNeeded: status.evaluationsNeeded,
+                  score: status.score,
+                  scoreNeeded: status.scoreNeeded,
+                }))
+              }
+              onVerified={(userId, level) =>
+                setVerificationResult({ userId, level })
+              }
+              onClose={() => setVerificationResult(null)}
+            />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
