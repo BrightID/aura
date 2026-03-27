@@ -69,6 +69,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     .user-id {
       font-size: 0.875em;
       font-weight: 500;
+      margin: 0.25rem;
       color: var(--foreground);
       font-family: monospace;
     }
@@ -165,7 +166,9 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       gap: 0.5em;
       cursor: pointer;
       border: 1px solid transparent;
-      transition: border-color 0.15s, background 0.15s;
+      transition:
+        border-color 0.15s,
+        background 0.15s;
       text-align: left;
       width: 100%;
       font: inherit;

@@ -1,6 +1,14 @@
 import googleIcon from '@/assets/icons/google.svg'
 import { foundAuraPlayersFromContact } from '@/lib/data/contacts'
-import { userBrightId } from '@/states/user'
+import { userBrightId, userFirstName, userGravatarEmail, userLastName } from '@/states/user'
+
+async function getGravatarHash(email: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase())
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
 import { clientAPI } from '@/utils/apis'
 import { parseContactsFile } from '@/utils/integrations/contacts-file'
 import type { Contact } from '@/utils/integrations/contacts'
@@ -80,11 +88,26 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     .copy-row {
       display: flex;
       align-items: center;
-      gap: 0.75em;
-      padding: 0.75em;
-      background: var(--secondary);
-      border: 1px solid var(--border);
+      gap: 0.875em;
+      padding: 0.875em 1em;
+      background: rgba(var(--primary-rgb, 99, 102, 241), 0.05);
+      border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
       border-radius: var(--radius, 0.75rem);
+    }
+    .copy-row-icon {
+      width: 2.25em;
+      height: 2.25em;
+      border-radius: 0.5em;
+      background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--primary);
+    }
+    .copy-row-icon iconify-icon {
+      width: 1em;
+      height: 1em;
     }
     .copy-row-info {
       flex: 1;
@@ -92,35 +115,41 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     }
     .copy-row-name {
       font-size: 0.8em;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--foreground);
     }
     .copy-row-desc {
-      font-size: 0.75em;
+      font-size: 0.72em;
       color: var(--muted-foreground);
-      margin-top: 0.125em;
+      margin-top: 0.15em;
     }
     .copy-btn {
       display: flex;
       align-items: center;
       gap: 0.375em;
       flex-shrink: 0;
-      padding: 0.4em 0.75em;
+      padding: 0.5em 0.875em;
       border-radius: 0.5em;
-      border: 1px solid var(--border);
-      background: var(--card);
+      border: none;
+      background: var(--primary);
       cursor: pointer;
       font-size: 0.775em;
-      font-weight: 500;
-      color: var(--foreground);
-      transition: background 0.15s, color 0.15s;
+      font-weight: 600;
+      color: var(--primary-foreground, #fff);
+      transition: background 0.2s, transform 0.1s;
     }
-    .copy-btn:hover {
-      background: color-mix(in srgb, var(--card) 80%, var(--foreground) 8%);
+    .copy-btn:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--primary) 85%, black 15%);
+    }
+    .copy-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+    .copy-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
     .copy-btn.copied {
-      color: var(--aura-success, #22c55e);
-      border-color: rgba(34, 197, 94, 0.3);
+      background: var(--aura-success, #22c55e);
     }
     .copy-btn iconify-icon {
       width: 0.875em;
@@ -345,6 +374,9 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
         <!-- Copy profile link -->
         <div class="copy-row">
+          <div class="copy-row-icon">
+            <iconify-icon icon="lucide:share-2"></iconify-icon>
+          </div>
           <div class="copy-row-info">
             <div class="copy-row-name">Share my profile</div>
             <div class="copy-row-desc">Send this link to Aura players to get verified</div>
@@ -355,7 +387,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
             @click=${() => this._copyProfileLink(brightId)}
           >
             <iconify-icon icon=${this._copied ? 'lucide:check' : 'lucide:copy'}></iconify-icon>
-            ${this._copied ? 'Copied!' : 'Copy link'}
+            ${this._copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
 
@@ -453,7 +485,26 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
   private async _copyProfileLink(brightId: string | null) {
     if (!brightId) return
-    const url = `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/`
+
+    let queryParams = ''
+
+    const email = userGravatarEmail.get().trim()
+    if (email) {
+      const hash = await getGravatarHash(email)
+      queryParams = '?gravatar=' + encodeURIComponent(hash)
+    }
+
+    const firstName = userFirstName.get().trim()
+    const lastName = userLastName.get().trim()
+    const name = [firstName, lastName].filter(Boolean).join(' ')
+    if (name) {
+      queryParams +=
+        queryParams.length > 0
+          ? '&name=' + encodeURIComponent(name)
+          : '?name=' + encodeURIComponent(name)
+    }
+
+    const url = `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/` + queryParams
     await navigator.clipboard.writeText(url)
     this._copied = true
     setTimeout(() => (this._copied = false), 2000)

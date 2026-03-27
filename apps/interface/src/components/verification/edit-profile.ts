@@ -26,7 +26,7 @@ export class VerificationEditProfileElement extends LitElement {
     .stack {
       display: flex;
       flex-direction: column;
-      gap: 1.25em;
+      gap: 0.875em;
     }
 
     /* Header */
@@ -62,57 +62,62 @@ export class VerificationEditProfileElement extends LitElement {
       color: var(--foreground);
     }
 
-    /* Form card */
+    /* Purpose note */
+    .purpose-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4em;
+      font-size: 0.75em;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .purpose-note iconify-icon {
+      width: 0.9em;
+      height: 0.9em;
+      flex-shrink: 0;
+      margin-top: 0.3em;
+    }
+
+    /* Form */
     .form-card {
-      padding: 1.25em;
+      display: flex;
+      flex-direction: column;
+      gap: 0.125em;
+      padding: 0.875em;
       background: var(--secondary);
       border: 1px solid var(--border);
       border-radius: var(--radius, 0.75rem);
-      display: flex;
-      flex-direction: column;
-      gap: 0.25em;
     }
 
-    /* Avatar preview */
-    .avatar-row {
-      display: flex;
+    /* Gravatar hint */
+    .gravatar-hint {
+      /*display: flex;
       align-items: center;
-      gap: 1em;
-      padding-bottom: 1em;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 0.5em;
-    }
-    .avatar-preview {
-      width: 3.5em;
-      height: 3.5em;
-      border-radius: 9999px;
-      background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-    .avatar-preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .avatar-preview iconify-icon {
-      color: var(--primary);
-    }
-    .avatar-label {
-      flex: 1;
-    }
-    .avatar-label-title {
-      font-size: 0.875em;
-      font-weight: 500;
-      color: var(--foreground);
-    }
-    .avatar-label-desc {
-      font-size: 0.75em;
+      justify-content: space-between;*/
+      padding: 0.25em 0.125em 0.375em;
+      font-size: 0.7em;
       color: var(--muted-foreground);
-      margin-top: 0.125em;
+    }
+    .gravatar-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2em;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .gravatar-link:hover {
+      text-decoration: underline;
+    }
+    .gravatar-link iconify-icon {
+      width: 0.75em;
+      height: 0.75em;
+    }
+    .gravatar-link span {
+      flex: 1 1 auto;
+      width: 100%;
     }
 
     /* Actions */
@@ -120,9 +125,9 @@ export class VerificationEditProfileElement extends LitElement {
       display: flex;
       gap: 0.5em;
       justify-content: flex-end;
-      padding-top: 0.75em;
+      padding-top: 0.625em;
       border-top: 1px solid var(--border);
-      margin-top: 0.5em;
+      margin-top: 0.375em;
     }
   `
 
@@ -134,7 +139,6 @@ export class VerificationEditProfileElement extends LitElement {
   }
 
   protected render() {
-    const pic = userProfilePicture.get()
     return html`
       <div class="stack">
         <div class="page-header">
@@ -144,19 +148,13 @@ export class VerificationEditProfileElement extends LitElement {
           <h2 class="title">Edit Profile</h2>
         </div>
 
-        <div class="form-card">
-          <div class="avatar-row">
-            <div class="avatar-preview">
-              ${pic
-                ? html`<img src=${pic} alt="avatar" />`
-                : html`<iconify-icon icon="lucide:user" width="1.5em" height="1.5em"></iconify-icon>`}
-            </div>
-            <div class="avatar-label">
-              <div class="avatar-label-title">Profile Picture</div>
-              <div class="avatar-label-desc">Set via Gravatar email below</div>
-            </div>
-          </div>
+        <p class="purpose-note">
+          <iconify-icon icon="lucide:info"></iconify-icon>
+          Your name and photo are embedded in the link you share with Aura players, making it easier
+          for them to identify and evaluate you.
+        </p>
 
+        <div class="form-card">
           <a-input
             label="First Name"
             .value=${this._firstName}
@@ -180,9 +178,26 @@ export class VerificationEditProfileElement extends LitElement {
               this._gravatarEmail = e.detail as string
             }}
           ></a-input>
+          <div class="gravatar-hint">
+            <span>Profile picture is pulled from Gravatar</span>
+            <a
+              class="gravatar-link"
+              href="https://gravatar.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span> Create a Gravatar </span>
+              <iconify-icon icon="lucide:external-link"></iconify-icon>
+            </a>
+          </div>
 
           <div class="actions">
-            <a-button variant="ghost" size="sm" ?disabled=${this._saving} @click=${() => this._emit('back')}>
+            <a-button
+              variant="ghost"
+              size="sm"
+              ?disabled=${this._saving}
+              @click=${() => this._emit('back')}
+            >
               Cancel
             </a-button>
             <a-button size="sm" ?disabled=${this._saving} @click=${() => this._save()}>

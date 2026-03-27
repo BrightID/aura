@@ -56,29 +56,10 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       border: 1px solid var(--border);
       background: var(--card);
       position: relative;
-      display: flex;
-      flex-direction: column;
-      max-height: var(--verification-max-height, none);
     }
 
     .content {
       padding: 1.25em;
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .content::-webkit-scrollbar {
-      width: 4px;
-    }
-    .content::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .content::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 9999px;
     }
 
     .loading-state {
