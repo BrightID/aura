@@ -1,6 +1,8 @@
 {
   "extends": "@aura/typescript-config/nextjs.json",
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "plugins": [
       {
         "name": "next"

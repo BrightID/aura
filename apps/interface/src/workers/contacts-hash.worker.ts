@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
-import { BASE_SALT_FOR_CONTACTS, normalizeContactValue } from '@/lib/constants/contacts'
-import type { Contact } from '@/utils/integrations/contacts'
+import { BASE_SALT_FOR_CONTACTS, normalizeContactValue } from '../lib/constants/contacts'
+import type { Contact } from '../utils/integrations/contacts'
 
 export type ContactsHashWorkerInput = {
   contacts: Contact[]
@@ -21,7 +21,7 @@ self.onmessage = async (e: MessageEvent<ContactsHashWorkerInput>) => {
     const photo = contact.photos?.find((p) => !p.default)?.url ?? contact.photos?.at(0)?.url
     const infos: string[] = [
       ...(contact.phoneNumbers ?? []).map((p) => p.canonicalForm ?? p.value),
-      ...(contact.emailAddresses ?? []).map((e) => e.value),
+      ...(contact.emailAddresses ?? []).map((e) => e.value)
     ]
 
     for (const value of infos) {

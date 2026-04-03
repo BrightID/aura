@@ -1,4 +1,5 @@
 import Image, { type ImageProps } from "next/image";
+import { ReactNode } from "react";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -16,7 +17,7 @@ const ThemeImage = (props: Props) => {
   );
 };
 
-export default function Home() {
+export default function Home(): ReactNode {
   return (
     <div className="grid min-h-svh grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-20 max-sm:p-8 max-sm:pb-20">
       <main className="row-start-2 flex flex-col gap-8 max-sm:items-center">
@@ -30,7 +31,10 @@ export default function Home() {
         />
         <ol className="m-0 list-inside p-0 font-[family-name:var(--font-geist-mono)] text-sm leading-6 tracking-tight max-sm:text-center">
           <li className="mb-2">
-            Get started by editing <code className="rounded bg-black/5 px-1 py-0.5 font-[inherit] font-semibold dark:bg-white/10">apps/docs/app/page.tsx</code>
+            Get started by editing{" "}
+            <code className="rounded bg-black/5 px-1 py-0.5 font-[inherit] font-semibold dark:bg-white/10">
+              apps/docs/app/page.tsx
+            </code>
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>

@@ -1,10 +1,10 @@
-import { LitElement, css, html } from "lit"
-import { customElement, state } from "lit/decorators.js"
-import { type ToastData, type ToastVariant, subscribe, toast } from "./toast.ts"
+import { LitElement, css, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import { type ToastData, type ToastVariant, subscribe, toast } from "./toast";
 
 @customElement("a-toaster")
 export class ToasterElement extends LitElement {
-  @state() private toasts: ToastData[] = []
+  @state() private toasts: ToastData[] = [];
 
   static styles = css`
     :host {
@@ -180,36 +180,36 @@ export class ToasterElement extends LitElement {
     .action-btn:hover {
       background: color-mix(in oklch, var(--card-foreground) 10%, transparent);
     }
-  `
+  `;
 
   connectedCallback() {
-    super.connectedCallback()
+    super.connectedCallback();
     this.removeOnUnmount = subscribe((ts) => {
-      this.toasts = ts
-    })
+      this.toasts = ts;
+    });
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-    this.removeOnUnmount?.()
+    super.disconnectedCallback();
+    this.removeOnUnmount?.();
   }
 
-  private removeOnUnmount?: () => void
+  private removeOnUnmount?: () => void;
 
   private renderIcon(variant?: ToastVariant) {
     switch (variant) {
       case "success":
-        return "✓"
+        return "✓";
       case "error":
-        return "✕"
+        return "✕";
       case "warning":
-        return "⚠"
+        return "⚠";
       case "info":
-        return "ℹ"
+        return "ℹ";
       case "loading":
-        return null
+        return null;
       default:
-        return "→"
+        return "→";
     }
   }
 
@@ -243,8 +243,8 @@ export class ToasterElement extends LitElement {
                     ? html`<button
                         class="action-btn"
                         @click=${(e: Event) => {
-                          e.stopPropagation()
-                          t.action!.onClick()
+                          e.stopPropagation();
+                          t.action!.onClick();
                         }}
                       >
                         ${t.action.label}
@@ -256,41 +256,41 @@ export class ToasterElement extends LitElement {
           `,
         )}
       </div>
-    `
+    `;
   }
 
-  private swipeStartX = 0
-  private swipeStartY = 0
-  private currentToastId: string | null = null
+  private swipeStartX = 0;
+  // private swipeStartY = 0;
+  private currentToastId: string | null = null;
 
   private handleSwipeStart(e: PointerEvent, id: string) {
-    if (e.pointerType !== "mouse" && e.pointerType !== "touch") return
-    this.currentToastId = id
-    this.swipeStartX = e.clientX
-    this.swipeStartY = e.clientY
-    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    if (e.pointerType !== "mouse" && e.pointerType !== "touch") return;
+    this.currentToastId = id;
+    this.swipeStartX = e.clientX;
+    // this.swipeStartY = e.clientY;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }
 
   private handleSwipeMove(e: PointerEvent) {
-    if (!this.currentToastId) return
-    const dx = e.clientX - this.swipeStartX
+    if (!this.currentToastId) return;
+    const dx = e.clientX - this.swipeStartX;
     if (dx > 60) {
-      toast.dismiss(this.currentToastId)
-      this.resetSwipe()
+      toast.dismiss(this.currentToastId);
+      this.resetSwipe();
     }
   }
 
   private handleSwipeEnd(_e: PointerEvent, _id: string) {
-    this.resetSwipe()
+    this.resetSwipe();
   }
 
   private resetSwipe() {
-    this.currentToastId = null
+    this.currentToastId = null;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-toaster": ToasterElement
+    "a-toaster": ToasterElement;
   }
 }
