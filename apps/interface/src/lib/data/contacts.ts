@@ -33,3 +33,12 @@ export const sentPlayerLinks = localStorageSignal<string[]>(
   (value) => JSON.parse(value ?? '[]'),
   (value) => JSON.stringify(value)
 )
+
+export const askedEvaluationPlayers = localStorageSignal<
+  { name: string; value: string; photo?: string; askedAt: number }[]
+>(
+  'askedEvaluationPlayers',
+  [],
+  (value) => JSON.parse(value ?? '[]'),
+  (value) => JSON.stringify(value)
+)

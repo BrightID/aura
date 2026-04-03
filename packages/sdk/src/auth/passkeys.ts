@@ -40,11 +40,14 @@ const safeCopy = (bytes: Uint8Array): Uint8Array<ArrayBuffer> =>
 function uint8ToBase64(bytes: Uint8Array): string {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
 
 function base64ToUint8(base64: string): Uint8Array {
-  return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  // normalize url-safe base64 back to standard before decoding
+  const standard = base64.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = standard.padEnd(standard.length + ((4 - (standard.length % 4)) % 4), "=");
+  return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
 }
 
 async function hkdf(

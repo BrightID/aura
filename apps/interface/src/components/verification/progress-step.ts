@@ -4,6 +4,7 @@ import { SignalWatcher } from '@lit-labs/signals'
 import './level-badge'
 import { userFirstName, userLastName, userProfilePicture } from '@/states/user'
 import type { AuraImpact } from '@/types/evaluation'
+import { askedEvaluationPlayers } from '@/lib/data/contacts'
 
 export interface ProgressStepData {
   brightId: string
@@ -495,6 +496,88 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     .edit-btn:hover {
       opacity: 0.75;
     }
+
+    /* ── Asked players section ──────────────── */
+    .asked-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+    }
+    .asked-section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 0.7em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .asked-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .asked-section-title iconify-icon { width: 0.875em; height: 0.875em; flex-shrink: 0; }
+    .asked-player-row {
+      display: flex;
+      align-items: center;
+      gap: 0.625em;
+      padding: 0.5em 0.625em;
+      border-radius: 0.5em;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+    .asked-avatar {
+      width: 1.875em;
+      height: 1.875em;
+      border-radius: 9999px;
+      background: color-mix(in srgb, var(--primary) 14%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65em;
+      font-weight: 700;
+      color: var(--primary);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .asked-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .asked-player-info { flex: 1; min-width: 0; }
+    .asked-player-name {
+      font-size: 0.8em;
+      font-weight: 500;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .asked-player-sub {
+      font-size: 0.68em;
+      color: var(--muted-foreground);
+      margin-top: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
+    }
+    .asked-player-sub iconify-icon { width: 0.7em; height: 0.7em; flex-shrink: 0; }
+    .asked-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25em;
+      font-size: 0.62em;
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 0.2em 0.55em;
+      flex-shrink: 0;
+    }
+    .asked-status-badge.waiting {
+      color: var(--aura-info, #06b6d4);
+      background: rgba(6, 182, 212, 0.10);
+      border: 1px solid rgba(6, 182, 212, 0.22);
+    }
+    .asked-status-badge iconify-icon { width: 0.65em; height: 0.65em; }
   `
 
   protected render() {
@@ -568,6 +651,8 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               evalTarget,
               hasScoreReq
             )}
+
+        ${this._renderAskedPlayers()}
       </div>
     `
   }
@@ -776,6 +861,43 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
         </div>
         <h3 class="success-title">Verification Complete</h3>
         <p class="success-desc">You meet the requirements for ${this.appName}</p>
+      </div>
+    `
+  }
+
+  private _renderAskedPlayers() {
+    const asked = askedEvaluationPlayers.get()
+    if (!asked.length) return html``
+
+    const getInitials = (name: string) =>
+      name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+
+    return html`
+      <div class="asked-section">
+        <span class="asked-section-title">
+          <iconify-icon icon="lucide:clock"></iconify-icon>
+          People You've Asked
+        </span>
+        ${asked.map((player) => html`
+          <div class="asked-player-row">
+            <div class="asked-avatar">
+              ${player.photo
+                ? html`<img src=${player.photo} alt=${player.name} />`
+                : getInitials(player.name)}
+            </div>
+            <div class="asked-player-info">
+              <div class="asked-player-name">${player.name}</div>
+              <div class="asked-player-sub">
+                <iconify-icon icon="lucide:clock"></iconify-icon>
+                Waiting for evaluation
+              </div>
+            </div>
+            <span class="asked-status-badge waiting">
+              <iconify-icon icon="lucide:hourglass"></iconify-icon>
+              Waiting
+            </span>
+          </div>
+        `)}
       </div>
     `
   }

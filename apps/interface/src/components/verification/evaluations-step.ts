@@ -1,4 +1,4 @@
-import { foundAuraPlayersFromContact } from '@/lib/data/contacts'
+import { askedEvaluationPlayers, foundAuraPlayersFromContact } from '@/lib/data/contacts'
 import type { AuraImpact } from '@/types/evaluation'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
@@ -33,8 +33,8 @@ export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
       gap: 0.75em;
     }
     .back-btn {
-      padding: 0.375em;
-      margin-left: -0.375em;
+      padding: 0.5em;
+      margin-left: -0.5em;
       border-radius: 0.5em;
       background: none;
       border: none;
@@ -49,8 +49,8 @@ export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
       background: var(--secondary);
     }
     .back-btn iconify-icon {
-      width: 1.25em;
-      height: 1.25em;
+      width: 1.5em;
+      height: 1.5em;
     }
     .title {
       margin: 0;
@@ -184,11 +184,55 @@ export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
       color: var(--muted-foreground);
       font-size: 0.875em;
     }
+
+    /* Pending / asked section */
+    .pending-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 0.7em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25em;
+    }
+    .pending-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .pending-label iconify-icon { width: 0.8em; height: 0.8em; flex-shrink: 0; }
+    .avatar.pending {
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--aura-info, #06b6d4);
+    }
+    .pending-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2em;
+      font-size: 0.7em;
+      color: var(--aura-info, #06b6d4);
+      background: rgba(6, 182, 212, 0.10);
+      border: 1px solid rgba(6, 182, 212, 0.22);
+      border-radius: 9999px;
+      padding: 0.15em 0.5em;
+    }
+    .pending-badge iconify-icon { width: 0.7em; height: 0.7em; }
+    .impact.zero { color: var(--muted-foreground); }
   `
 
   protected render() {
     const contacts = foundAuraPlayersFromContact.get()
     const sorted = [...this.impacts].sort((a, b) => b.impact - a.impact)
+    const asked = askedEvaluationPlayers.get()
+    const evaluatorSet = new Set(this.impacts.map((i) => i.evaluator))
+    // pending = asked players not yet in actual impacts (value is email/phone, never matches evaluator BrightID)
+    const pending = asked.filter((p) => !evaluatorSet.has(p.value))
+
+    const getInitials = (name: string) =>
+      name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
 
     return html`
       <div class="stack">
@@ -197,10 +241,10 @@ export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
             <iconify-icon icon="lucide:chevron-left"></iconify-icon>
           </button>
           <h2 class="title">Evaluators</h2>
-          <span class="count-pill">${this.impacts.length}</span>
+          <span class="count-pill">${this.impacts.length + pending.length}</span>
         </div>
 
-        ${sorted.length === 0
+        ${sorted.length === 0 && pending.length === 0
           ? html`<div class="empty">No evaluations received yet</div>`
           : html`
               <div class="evaluator-list">
@@ -260,6 +304,30 @@ export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
                     </div>
                   `
                 })}
+                ${pending.length > 0 ? html`
+                  <span class="pending-label">
+                    <iconify-icon icon="lucide:clock"></iconify-icon>
+                    Waiting for evaluation
+                  </span>
+                  ${pending.map((player) => html`
+                    <div class="evaluator-card">
+                      <div class="avatar pending">${getInitials(player.name)}</div>
+                      <div class="info">
+                        <div class="name">${player.name}</div>
+                        <div class="sub">
+                          <span class="pending-badge">
+                            <iconify-icon icon="lucide:hourglass"></iconify-icon>
+                            Asked
+                          </span>
+                        </div>
+                      </div>
+                      <div class="right">
+                        <span class="impact zero">0</span>
+                        <span class="confidence">Pending</span>
+                      </div>
+                    </div>
+                  `)}
+                ` : ''}
               </div>
             `}
       </div>

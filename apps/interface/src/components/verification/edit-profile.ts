@@ -36,8 +36,8 @@ export class VerificationEditProfileElement extends LitElement {
       gap: 0.75em;
     }
     .back-btn {
-      padding: 0.375em;
-      margin-left: -0.375em;
+      padding: 0.5em;
+      margin-left: -0.5em;
       border-radius: 0.5em;
       background: none;
       border: none;
@@ -52,8 +52,8 @@ export class VerificationEditProfileElement extends LitElement {
       background: var(--secondary);
     }
     .back-btn iconify-icon {
-      width: 1.25em;
-      height: 1.25em;
+      width: 1.5em;
+      height: 1.5em;
     }
     .title {
       margin: 0;

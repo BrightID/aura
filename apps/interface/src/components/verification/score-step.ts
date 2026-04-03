@@ -1,4 +1,4 @@
-import { foundAuraPlayersFromContact } from '@/lib/data/contacts'
+import { askedEvaluationPlayers, foundAuraPlayersFromContact } from '@/lib/data/contacts'
 import type { AuraImpact } from '@/types/evaluation'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, type CSSResultGroup, html, LitElement, svg } from 'lit'
@@ -75,8 +75,8 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
       gap: 0.75em;
     }
     .back-btn {
-      padding: 0.375em;
-      margin-left: -0.375em;
+      padding: 0.5em;
+      margin-left: -0.5em;
       border-radius: 0.5em;
       background: none;
       border: none;
@@ -91,8 +91,8 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
       background: var(--secondary);
     }
     .back-btn iconify-icon {
-      width: 1.25em;
-      height: 1.25em;
+      width: 1.5em;
+      height: 1.5em;
     }
     .title {
       margin: 0;
@@ -172,12 +172,41 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
       color: var(--muted-foreground);
       font-size: 0.875em;
     }
+
+    /* Pending rows */
+    .pending-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 0.7em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25em;
+    }
+    .pending-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .pending-label iconify-icon { width: 0.8em; height: 0.8em; flex-shrink: 0; }
+    .breakdown-item.pending {
+      opacity: 0.65;
+    }
+    .bi-amount.zero { color: var(--muted-foreground); }
   `
 
   protected render() {
     const contacts = foundAuraPlayersFromContact.get()
     const sorted = [...this.impacts].sort((a, b) => b.impact - a.impact)
     const total = sorted.reduce((sum, i) => sum + i.impact, 0) || 1
+    const asked = askedEvaluationPlayers.get()
+    const evaluatorSet = new Set(this.impacts.map((i) => i.evaluator))
+    const pending = asked.filter((p) => !evaluatorSet.has(p.value))
+    const getInitials = (name: string) =>
+      name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
 
     const CX = 50,
       CY = 50,
@@ -216,7 +245,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
           <h2 class="title">Score Breakdown</h2>
         </div>
 
-        ${sorted.length === 0
+        ${sorted.length === 0 && pending.length === 0
           ? html`<div class="empty">No score data yet</div>`
           : html`
               <div class="chart-section">
@@ -271,6 +300,23 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
                     </div>
                   `
                 })}
+                ${pending.length > 0 ? html`
+                  <span class="pending-label">
+                    <iconify-icon icon="lucide:clock"></iconify-icon>
+                    Waiting for evaluation
+                  </span>
+                  ${pending.map((player) => html`
+                    <div class="breakdown-item pending">
+                      <div class="color-dot" style="background: var(--border)"></div>
+                      <span class="bi-name">${player.name}</span>
+                      <span class="bi-conf">Pending</span>
+                      <div class="bi-right">
+                        <span class="bi-amount zero">+0</span>
+                        <span class="bi-pct">0%</span>
+                      </div>
+                    </div>
+                  `)}
+                ` : ''}
               </div>
             `}
       </div>

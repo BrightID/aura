@@ -1,5 +1,5 @@
 import googleIcon from '@/assets/icons/google.svg'
-import { foundAuraPlayersFromContact, sentPlayerLinks } from '@/lib/data/contacts'
+import { askedEvaluationPlayers, foundAuraPlayersFromContact, sentPlayerLinks } from '@/lib/data/contacts'
 import { userBrightId, userFirstName, userGravatarEmail, userLastName } from '@/states/user'
 import type { AuraImpact } from '@/types/evaluation'
 
@@ -30,6 +30,12 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
   @state() private _copied = false
   @state() private _shareTarget: { name: string; value: string; photo?: string } | null = null
   @state() private _shareTargetCopied = false
+  @state() private _myProfileUrl = ''
+
+  override connectedCallback() {
+    super.connectedCallback()
+    this._buildProfileUrl().then((url) => { this._myProfileUrl = url })
+  }
 
   #googleImport = new Mutation<void, void>(this, {
     mutationFn: async () => {
@@ -71,8 +77,8 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2em;
-      height: 2em;
+      width: 2.25em;
+      height: 2.25em;
       border-radius: 0.5em;
       background: none;
       border: none;
@@ -85,8 +91,8 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       color: var(--foreground);
     }
     .back-btn iconify-icon {
-      width: 1.125em;
-      height: 1.125em;
+      width: 1.375em;
+      height: 1.375em;
     }
     .header-text {
       flex: 1;
@@ -411,6 +417,25 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     }
     .eval-badge iconify-icon { width: 0.7em; height: 0.7em; }
 
+    .asked-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25em;
+      font-size: 0.65em;
+      font-weight: 600;
+      color: var(--aura-info, #06b6d4);
+      background: rgba(6, 182, 212, 0.10);
+      border: 1px solid rgba(6, 182, 212, 0.22);
+      border-radius: 9999px;
+      padding: 0.2em 0.55em;
+      flex-shrink: 0;
+    }
+    .asked-badge iconify-icon { width: 0.7em; height: 0.7em; }
+
+    .sent-dot.asked {
+      background: var(--aura-info, #06b6d4);
+    }
+
     .card-chevron {
       flex-shrink: 0;
       color: var(--muted-foreground);
@@ -614,6 +639,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
   private _renderPlayers(filtered: { name: string; value: string; photo?: string }[]) {
     const sent = sentPlayerLinks.get()
+    const askedSet = new Set(askedEvaluationPlayers.get().map((p) => p.value))
     const evaluatedIds = new Set(this.auraImpacts.map((i) => i.evaluator))
 
     if (filtered.length === 0) {
@@ -637,6 +663,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     const renderCard = (player: { name: string; value: string; photo?: string }) => {
       const isEvaluated = evaluatedIds.has(player.value)
       const isSent = sent.includes(player.value)
+      const isAsked = askedSet.has(player.value)
       const isSelected = this._shareTarget?.value === player.value
       const isEmail = player.value.includes('@')
 
@@ -654,7 +681,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                 ? html`<img src=${player.photo} alt=${player.name} />`
                 : getInitials(player.name)}
             </div>
-            ${isSent && !isEvaluated ? html`<span class="sent-dot"></span>` : ''}
+            ${isAsked && !isEvaluated ? html`<span class="sent-dot asked"></span>` : ''}
           </div>
           <div class="player-info">
             <div class="player-name">${player.name}</div>
@@ -672,9 +699,14 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                 <iconify-icon icon="lucide:check"></iconify-icon>
                 Evaluated
               </span>`
-            : html`<span class="card-chevron">
-                <iconify-icon icon="lucide:chevron-right"></iconify-icon>
-              </span>`}
+            : isAsked
+              ? html`<span class="asked-badge">
+                  <iconify-icon icon="lucide:clock"></iconify-icon>
+                  Asked
+                </span>`
+              : html`<span class="card-chevron">
+                  <iconify-icon icon="lucide:chevron-right"></iconify-icon>
+                </span>`}
         </button>
         ${isSelected
           ? html`
@@ -740,55 +772,73 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     return `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/` + queryParams
   }
 
+  private _upsertAsked(player: { name: string; value: string; photo?: string }) {
+    const asked = askedEvaluationPlayers.get()
+    const idx = asked.findIndex((p) => p.value === player.value)
+    if (idx >= 0) {
+      const updated = [...asked]
+      updated[idx] = { ...updated[idx], askedAt: Date.now() }
+      askedEvaluationPlayers.set(updated)
+    } else {
+      askedEvaluationPlayers.set([...asked, { ...player, askedAt: Date.now() }])
+    }
+  }
+
   private async _copyForPlayer() {
     if (!this._shareTarget) return
-    const url = await this._buildProfileUrl()
+    const url = this._myProfileUrl
     if (!url) return
     await navigator.clipboard.writeText(url)
     const current = sentPlayerLinks.get()
     if (!current.includes(this._shareTarget.value)) {
       sentPlayerLinks.set([...current, this._shareTarget.value])
     }
+    this._upsertAsked(this._shareTarget)
     this._shareTargetCopied = true
     setTimeout(() => (this._shareTargetCopied = false), 2000)
   }
 
-  private async _shareForPlayer() {
+  private _shareForPlayer() {
     if (!this._shareTarget) return
-    const url = await this._buildProfileUrl()
+    const url = this._myProfileUrl
     if (!url) return
+    const target = this._shareTarget
     if (navigator.share) {
-      await navigator.share({
+      navigator.share({
         title: 'Evaluate me on Aura',
-        text: `Hey ${this._shareTarget.name}, could you evaluate me on Aura? Here's my profile:`,
+        text: `Hey ${target.name}, could you evaluate me on Aura? Here's my profile:`,
         url
-      })
+      }).then(() => {
+        const current = sentPlayerLinks.get()
+        if (!current.includes(target.value)) sentPlayerLinks.set([...current, target.value])
+        this._upsertAsked(target)
+      }).catch(() => {})
     } else {
-      await navigator.clipboard.writeText(url)
+      navigator.clipboard.writeText(url)
       this._shareTargetCopied = true
       setTimeout(() => (this._shareTargetCopied = false), 2000)
-    }
-    const current = sentPlayerLinks.get()
-    if (!current.includes(this._shareTarget.value)) {
-      sentPlayerLinks.set([...current, this._shareTarget.value])
+      const current = sentPlayerLinks.get()
+      if (!current.includes(target.value)) sentPlayerLinks.set([...current, target.value])
+      this._upsertAsked(target)
     }
   }
 
   private async _copyProfileLink(_brightId: string | null) {
-    const url = await this._buildProfileUrl()
+    const url = this._myProfileUrl
     if (!url) return
     await navigator.clipboard.writeText(url)
     this._copied = true
     setTimeout(() => (this._copied = false), 2000)
   }
 
-  private async _shareProfileLink(_brightId: string | null) {
-    const url = await this._buildProfileUrl()
+  private _shareProfileLink(_brightId: string | null) {
+    const url = this._myProfileUrl
     if (!url) return
     if (navigator.share) {
-      await navigator.share({ title: 'Aura Profile', text: 'Check out my Aura profile!', url })
+      navigator.share({ title: 'Aura Profile', text: 'Check out my Aura profile!', url })
+        .catch(() => {})
     } else {
-      await navigator.clipboard.writeText(url)
+      navigator.clipboard.writeText(url)
       this._copied = true
       setTimeout(() => (this._copied = false), 2000)
     }
