@@ -8,7 +8,7 @@ Aura is a decentralized platform where experts assess each other and evaluate su
 
 - **Decentralized Evaluations**: Experts collaboratively verify claims in areas such as code audits, acts of kindness, insurance claims, regulatory compliance, grant reviews, open-source impact, credentialing, community membership, and unique anonymous identities.
 - **Digital Attestations**: Evaluations result in digital attestations, enhancing the credibility of online interactions.
-- **Role-Based Participation**: Participants can engage as Trainers or Managers, facilitating evaluations and team formations. citeturn0search0
+- **Role-Based Participation**: Participants can engage as Trainers or Managers, facilitating evaluations and team formation. citeturn0search0
 - **Navigation Tools**: Breadcrumbs and other navigation features assist users in tracking evaluation history and revisiting profiles efficiently. citeturn0search2
 
 ## Getting Started
