@@ -9,7 +9,7 @@ const dirname =
 export default defineConfig({
   root: '.',
   build: {
-    outDir: 'dist',
+    outDir: 'build',
     target: 'es2022'
   },
   define: {
