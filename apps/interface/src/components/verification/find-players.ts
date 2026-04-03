@@ -1,5 +1,10 @@
 import googleIcon from '@/assets/icons/google.svg'
-import { askedEvaluationPlayers, foundAuraPlayersFromContact, sentPlayerLinks } from '@/lib/data/contacts'
+import {
+  askedEvaluationPlayers,
+  foundAuraPlayersFromContact,
+  hasTriedFindingPlayers,
+  sentPlayerLinks
+} from '@/lib/data/contacts'
 import { userBrightId, userFirstName, userGravatarEmail, userLastName } from '@/states/user'
 import type { AuraImpact } from '@/types/evaluation'
 
@@ -34,7 +39,9 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
   override connectedCallback() {
     super.connectedCallback()
-    this._buildProfileUrl().then((url) => { this._myProfileUrl = url })
+    this._buildProfileUrl().then((url) => {
+      this._myProfileUrl = url
+    })
   }
 
   #googleImport = new Mutation<void, void>(this, {
@@ -84,7 +91,9 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       border: none;
       cursor: pointer;
       color: var(--muted-foreground);
-      transition: background 0.15s, color 0.15s;
+      transition:
+        background 0.15s,
+        color 0.15s;
     }
     .back-btn:hover {
       background: var(--secondary);
@@ -163,12 +172,22 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       height: 2em;
       border-radius: 0.5em;
       cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
+      transition:
+        background 0.15s,
+        transform 0.1s;
       flex-shrink: 0;
     }
-    .icon-btn:active { transform: scale(0.93); }
-    .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .icon-btn iconify-icon { width: 0.9375em; height: 0.9375em; }
+    .icon-btn:active {
+      transform: scale(0.93);
+    }
+    .icon-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .icon-btn iconify-icon {
+      width: 0.9375em;
+      height: 0.9375em;
+    }
     .icon-btn.solid {
       background: var(--primary);
       color: var(--primary-foreground, #fff);
@@ -225,23 +244,32 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       font-size: 0.775em;
       font-weight: 500;
       color: var(--foreground);
-      transition: background 0.15s, border-color 0.15s;
+      transition:
+        background 0.15s,
+        border-color 0.15s;
     }
     .import-btn:hover:not(:disabled) {
       background: color-mix(in srgb, var(--secondary) 70%, var(--foreground) 6%);
       border-color: color-mix(in srgb, var(--border) 60%, var(--foreground) 20%);
     }
-    .import-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .import-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
     .import-btn img,
     .import-btn iconify-icon {
       width: 1em;
       height: 1em;
       flex-shrink: 0;
     }
-    .file-input { display: none; }
+    .file-input {
+      display: none;
+    }
 
     /* ── Search ──────────────────────────────── */
-    .search-wrap { position: relative; }
+    .search-wrap {
+      position: relative;
+    }
     .search-icon {
       position: absolute;
       left: 0.75em;
@@ -250,7 +278,10 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       color: var(--muted-foreground);
       pointer-events: none;
     }
-    .search-icon iconify-icon { width: 0.875em; height: 0.875em; }
+    .search-icon iconify-icon {
+      width: 0.875em;
+      height: 0.875em;
+    }
     .search-input {
       width: 100%;
       box-sizing: border-box;
@@ -265,8 +296,12 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       font: inherit;
       font-size: 0.85em;
     }
-    .search-input::placeholder { color: var(--muted-foreground); }
-    .search-input:focus { border-color: var(--primary); }
+    .search-input::placeholder {
+      color: var(--muted-foreground);
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+    }
 
     /* ── Loading / error ─────────────────────── */
     .import-loading {
@@ -289,7 +324,11 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       border-radius: 9999px;
       animation: spin 0.6s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
     .error-msg {
       padding: 0.5em 0.75em;
       background: rgba(239, 68, 68, 0.08);
@@ -297,6 +336,69 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       border-radius: 0.625em;
       font-size: 0.75em;
       color: var(--destructive);
+    }
+
+    /* ── Discord banner ─────────────────────── */
+    .discord-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+      padding: 0.75em 0.875em;
+      background: color-mix(in srgb, #5865f2 6%, var(--secondary));
+      border: 1px solid color-mix(in srgb, #5865f2 22%, transparent);
+      border-radius: var(--radius, 0.75rem);
+    }
+    .discord-icon {
+      flex-shrink: 0;
+      width: 2em;
+      height: 2em;
+      border-radius: 0.5em;
+      background: color-mix(in srgb, #5865f2 14%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5865f2;
+    }
+    .discord-icon iconify-icon {
+      width: 1em;
+      height: 1em;
+    }
+    .discord-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .discord-title {
+      font-size: 0.775em;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+    .discord-desc {
+      font-size: 0.68em;
+      color: var(--muted-foreground);
+      margin-top: 0.15em;
+    }
+    .discord-link {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      font-size: 0.72em;
+      font-weight: 600;
+      color: #5865f2;
+      text-decoration: none;
+      padding: 0.35em 0.65em;
+      border-radius: 0.5em;
+      border: 1px solid color-mix(in srgb, #5865f2 35%, transparent);
+      background: color-mix(in srgb, #5865f2 8%, transparent);
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .discord-link:hover {
+      background: color-mix(in srgb, #5865f2 16%, transparent);
+    }
+    .discord-link iconify-icon {
+      width: 0.8em;
+      height: 0.8em;
     }
 
     /* ── Players list ────────────────────────── */
@@ -339,10 +441,18 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       width: 100%;
       min-width: 0;
     }
-    .player-card:last-child { border-bottom: none; }
-    .player-card:hover { background: color-mix(in srgb, var(--card) 60%, var(--secondary) 40%); }
-    .player-card.selected { background: color-mix(in srgb, var(--primary) 5%, var(--card)); }
-    .player-card.done { opacity: 0.5; }
+    .player-card:last-child {
+      border-bottom: none;
+    }
+    .player-card:hover {
+      background: color-mix(in srgb, var(--card) 60%, var(--secondary) 40%);
+    }
+    .player-card.selected {
+      background: color-mix(in srgb, var(--primary) 5%, var(--card));
+    }
+    .player-card.done {
+      opacity: 0.5;
+    }
 
     .player-avatar-wrap {
       position: relative;
@@ -400,7 +510,9 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .player-credential iconify-icon { flex-shrink: 0; }
+    .player-credential iconify-icon {
+      flex-shrink: 0;
+    }
 
     .eval-badge {
       display: inline-flex;
@@ -415,7 +527,10 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       padding: 0.2em 0.55em;
       flex-shrink: 0;
     }
-    .eval-badge iconify-icon { width: 0.7em; height: 0.7em; }
+    .eval-badge iconify-icon {
+      width: 0.7em;
+      height: 0.7em;
+    }
 
     .asked-badge {
       display: inline-flex;
@@ -424,13 +539,16 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       font-size: 0.65em;
       font-weight: 600;
       color: var(--aura-info, #06b6d4);
-      background: rgba(6, 182, 212, 0.10);
+      background: rgba(6, 182, 212, 0.1);
       border: 1px solid rgba(6, 182, 212, 0.22);
       border-radius: 9999px;
       padding: 0.2em 0.55em;
       flex-shrink: 0;
     }
-    .asked-badge iconify-icon { width: 0.7em; height: 0.7em; }
+    .asked-badge iconify-icon {
+      width: 0.7em;
+      height: 0.7em;
+    }
 
     .sent-dot.asked {
       background: var(--aura-info, #06b6d4);
@@ -440,14 +558,19 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       flex-shrink: 0;
       color: var(--muted-foreground);
       opacity: 0.5;
-      transition: opacity 0.15s, transform 0.2s;
+      transition:
+        opacity 0.15s,
+        transform 0.2s;
     }
     .player-card.selected .card-chevron {
       opacity: 1;
       color: var(--primary);
       transform: rotate(90deg);
     }
-    .card-chevron iconify-icon { width: 0.875em; height: 0.875em; }
+    .card-chevron iconify-icon {
+      width: 0.875em;
+      height: 0.875em;
+    }
 
     /* ── Share strip (inline, below selected card) ── */
     .share-strip {
@@ -458,7 +581,9 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       background: color-mix(in srgb, var(--primary) 5%, var(--secondary));
       border-bottom: 1px solid var(--border);
     }
-    .share-strip:last-child { border-bottom: none; }
+    .share-strip:last-child {
+      border-bottom: none;
+    }
     .share-strip-text {
       flex: 1;
       min-width: 0;
@@ -510,7 +635,10 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       color: var(--muted-foreground);
       margin-bottom: 0.25em;
     }
-    .empty-icon iconify-icon { width: 1.25em; height: 1.25em; }
+    .empty-icon iconify-icon {
+      width: 1.25em;
+      height: 1.25em;
+    }
     .empty-title {
       font-size: 0.825em;
       font-weight: 500;
@@ -590,7 +718,8 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
             <button
               class="import-btn"
               ?disabled=${isImporting}
-              @click=${() => this.shadowRoot?.querySelector<HTMLInputElement>('.file-input')?.click()}
+              @click=${() =>
+                this.shadowRoot?.querySelector<HTMLInputElement>('.file-input')?.click()}
             >
               <iconify-icon icon="lucide:upload"></iconify-icon>
               Import file
@@ -613,6 +742,30 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
             `
           : ''}
         ${importError ? html`<p class="error-msg">${importError}</p>` : ''}
+        ${!isImporting && players.length === 0 && hasTriedFindingPlayers.get()
+          ? html`
+              <div class="discord-banner">
+                <div class="discord-icon">
+                  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+                </div>
+                <div class="discord-text">
+                  <div class="discord-title">No Aura players in your contacts?</div>
+                  <div class="discord-desc">
+                    Find other players and get evaluated on our community server
+                  </div>
+                </div>
+                <a
+                  class="discord-link"
+                  href="https://discord.gg/pcWy6NqM"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Join
+                  <iconify-icon icon="lucide:external-link"></iconify-icon>
+                </a>
+              </div>
+            `
+          : ''}
 
         <!-- Search + list -->
         ${players.length > 0
@@ -626,8 +779,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                   type="text"
                   placeholder="Search players…"
                   .value=${this.searchQuery}
-                  @input=${(e: Event) =>
-                    (this.searchQuery = (e.target as HTMLInputElement).value)}
+                  @input=${(e: Event) => (this.searchQuery = (e.target as HTMLInputElement).value)}
                 />
               </div>
               ${this._renderPlayers(filtered)}
@@ -658,7 +810,12 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     const done = filtered.filter((p) => evaluatedIds.has(p.value))
 
     const getInitials = (name: string) =>
-      name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+      name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
 
     const renderCard = (player: { name: string; value: string; photo?: string }) => {
       const isEvaluated = evaluatedIds.has(player.value)
@@ -717,7 +874,10 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                 <button
                   class="icon-btn solid ${this._shareTargetCopied ? 'success' : ''}"
                   aria-label=${this._shareTargetCopied ? 'Copied' : 'Copy link'}
-                  @click=${(e: Event) => { e.stopPropagation(); this._copyForPlayer() }}
+                  @click=${(e: Event) => {
+                    e.stopPropagation()
+                    this._copyForPlayer()
+                  }}
                 >
                   <iconify-icon
                     icon=${this._shareTargetCopied ? 'lucide:check' : 'lucide:copy'}
@@ -726,7 +886,10 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                 <button
                   class="icon-btn ghost"
                   aria-label="Share"
-                  @click=${(e: Event) => { e.stopPropagation(); this._shareForPlayer() }}
+                  @click=${(e: Event) => {
+                    e.stopPropagation()
+                    this._shareForPlayer()
+                  }}
                 >
                   <iconify-icon icon="lucide:share-2"></iconify-icon>
                 </button>
@@ -739,7 +902,9 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     return html`
       <div>
         <div class="list-header" style="margin-bottom: 0.375em">
-          <span class="list-count">${filtered.length} player${filtered.length !== 1 ? 's' : ''} found</span>
+          <span class="list-count"
+            >${filtered.length} player${filtered.length !== 1 ? 's' : ''} found</span
+          >
         </div>
         <div class="players-list">
           ${active.map(renderCard)}
@@ -804,15 +969,18 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     if (!url) return
     const target = this._shareTarget
     if (navigator.share) {
-      navigator.share({
-        title: 'Evaluate me on Aura',
-        text: `Hey ${target.name}, could you evaluate me on Aura? Here's my profile:`,
-        url
-      }).then(() => {
-        const current = sentPlayerLinks.get()
-        if (!current.includes(target.value)) sentPlayerLinks.set([...current, target.value])
-        this._upsertAsked(target)
-      }).catch(() => {})
+      navigator
+        .share({
+          title: 'Evaluate me on Aura',
+          text: `Hey ${target.name}, could you evaluate me on Aura? Here's my profile:`,
+          url
+        })
+        .then(() => {
+          const current = sentPlayerLinks.get()
+          if (!current.includes(target.value)) sentPlayerLinks.set([...current, target.value])
+          this._upsertAsked(target)
+        })
+        .catch(() => {})
     } else {
       navigator.clipboard.writeText(url)
       this._shareTargetCopied = true
@@ -835,7 +1003,8 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     const url = this._myProfileUrl
     if (!url) return
     if (navigator.share) {
-      navigator.share({ title: 'Aura Profile', text: 'Check out my Aura profile!', url })
+      navigator
+        .share({ title: 'Aura Profile', text: 'Check out my Aura profile!', url })
         .catch(() => {})
     } else {
       navigator.clipboard.writeText(url)
@@ -880,6 +1049,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       .filter((p): p is { name: string; value: string; photo?: string } => !!p && !!p.name)
 
     foundAuraPlayersFromContact.set(players)
+    hasTriedFindingPlayers.set(true)
   }
 
   private _emit(event: string, detail?: unknown) {

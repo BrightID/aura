@@ -27,6 +27,13 @@ export const foundAuraPlayersFromContact = localStorageSignal<
   (value) => JSON.stringify(value)
 )
 
+export const hasTriedFindingPlayers = localStorageSignal(
+  'hasTriedFindingPlayers',
+  false,
+  (value) => JSON.parse(value ?? 'false'),
+  (value) => JSON.stringify(value)
+)
+
 export const sentPlayerLinks = localStorageSignal<string[]>(
   'sentPlayerLinks',
   [],
