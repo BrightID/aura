@@ -12,7 +12,7 @@ export async function getContactsList() {
     const accessToken = credential?.accessToken
     const peopleApiUrl =
       'https://people.googleapis.com/v1/people/me/connections' +
-      '?personFields=names,emailAddresses,phoneNumbers'
+      '?personFields=names,emailAddresses,phoneNumbers,photos'
 
     // Make a direct fetch request to the Google People API
     const response = await fetch(peopleApiUrl, {

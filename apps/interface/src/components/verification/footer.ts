@@ -6,10 +6,14 @@ export class VerificationFooterElement extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       font-size: inherit;
       padding: 0.625em 1.25em;
       border-top: 1px solid var(--border);
-      background: color-mix(in srgb, var(--muted) 30%, transparent);
+      background: var(--muted);
     }
 
     .footer-row {
@@ -32,7 +36,9 @@ export class VerificationFooterElement extends LitElement {
       text-decoration: none;
     }
 
-    a:hover { text-decoration: underline; }
+    a:hover {
+      text-decoration: underline;
+    }
   `
 
   protected render() {

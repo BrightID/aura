@@ -1,4 +1,4 @@
-import { BASE_SALT_FOR_CONTACTS } from '@/lib/constants/contacts'
+import { BASE_SALT_FOR_CONTACTS, normalizeContactValue } from '@/lib/constants/contacts'
 import bcrypt from 'bcryptjs'
 
 export type Contact = {
@@ -8,6 +8,7 @@ export type Contact = {
 
   phoneNumbers?: { value: string; canonicalForm: string }[]
   emailAddresses?: { value: string }[]
+  photos?: { url: string; default?: boolean }[]
 }
 
 const salt = BASE_SALT_FOR_CONTACTS
@@ -17,7 +18,10 @@ export async function extractHashsedSocialsFromContact(contact: Contact): Promis
 
   if (contact.phoneNumbers) {
     for (const phoneNumber of contact.phoneNumbers) {
-      const hashed = await bcrypt.hash(phoneNumber.canonicalForm ?? phoneNumber.value, salt)
+      const hashed = await bcrypt.hash(
+        normalizeContactValue(phoneNumber.canonicalForm ?? phoneNumber.value),
+        salt
+      )
 
       res.push(hashed)
     }
@@ -25,7 +29,7 @@ export async function extractHashsedSocialsFromContact(contact: Contact): Promis
 
   if (contact.emailAddresses) {
     for (const email of contact.emailAddresses) {
-      const hashed = await bcrypt.hash(email.value, salt)
+      const hashed = await bcrypt.hash(normalizeContactValue(email.value), salt)
 
       res.push(hashed)
     }

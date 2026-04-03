@@ -123,6 +123,27 @@ export class QueryClient {
     return this.getEntry<TData>(hashKey(queryKey))?.data
   }
 
+  /**
+   * Return cached data if it exists and is not stale; otherwise fetch,
+   * populate the cache, and return the result.
+   */
+  async ensureQueryData<TData>({
+    queryKey,
+    queryFn,
+  }: {
+    queryKey: unknown[]
+    queryFn: (ctx: { queryKey: unknown[]; signal: AbortSignal }) => Promise<TData>
+  }): Promise<TData> {
+    const entry = this.getEntry<TData>(hashKey(queryKey))
+    if (entry?.status === 'success' && entry.updatedAt > 0 && entry.data !== undefined) {
+      return entry.data
+    }
+    const controller = new AbortController()
+    const data = await queryFn({ queryKey, signal: controller.signal })
+    this.setQueryData(queryKey, data)
+    return data
+  }
+
   // ─── Config accessors ─────────────────────────────────────────────────────
 
   getDefaultStaleTime(): number {

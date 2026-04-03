@@ -1,18 +1,55 @@
 import type { Contact } from './contacts'
 
+/** Decode a Quoted-Printable encoded string to UTF-8 text. */
+function decodeQuotedPrintable(input: string): string {
+  const bytes: number[] = []
+  let i = 0
+  while (i < input.length) {
+    if (input[i] === '=' && i + 2 < input.length) {
+      const hex = input.slice(i + 1, i + 3)
+      if (/^[0-9A-Fa-f]{2}$/.test(hex)) {
+        bytes.push(parseInt(hex, 16))
+        i += 3
+        continue
+      }
+    }
+    bytes.push(input.charCodeAt(i) & 0xff)
+    i++
+  }
+  return new TextDecoder('utf-8').decode(new Uint8Array(bytes))
+}
+
 /**
  * Parse a .vcf (vCard) file text into Contact[].
- * Handles vCard 2.1, 3.0, and 4.0 formats.
+ * Handles vCard 2.1, 3.0, and 4.0 formats including Quoted-Printable encoding.
  */
 export function parseVcf(text: string): Contact[] {
   const contacts: Contact[] = []
-  // Split into individual vCard blocks
   const blocks = text.split(/BEGIN:VCARD/i).slice(1)
 
   for (const block of blocks) {
-    const lines = block.split(/\r?\n/)
-    const contact: Contact = { names: [] }
+    // Step 1: unfold standard vCard continuation lines (lines starting with whitespace)
+    const rawLines = block.split(/\r?\n/)
+    const unfolded: string[] = []
+    for (const line of rawLines) {
+      if ((line.startsWith(' ') || line.startsWith('\t')) && unfolded.length > 0) {
+        unfolded[unfolded.length - 1] += line.slice(1)
+      } else {
+        unfolded.push(line)
+      }
+    }
 
+    // Step 2: join Quoted-Printable soft line breaks (line ends with `=`)
+    const lines: string[] = []
+    for (let i = 0; i < unfolded.length; i++) {
+      let line = unfolded[i]
+      while (line.endsWith('=') && i + 1 < unfolded.length) {
+        line = line.slice(0, -1) + unfolded[++i]
+      }
+      lines.push(line)
+    }
+
+    const contact: Contact = { names: [] }
     let displayName = ''
     const phoneNumbers: Contact['phoneNumbers'] = []
     const emailAddresses: Contact['emailAddresses'] = []
@@ -21,27 +58,24 @@ export function parseVcf(text: string): Contact[] {
       const trimmed = line.trim()
       if (!trimmed || trimmed.toUpperCase() === 'END:VCARD') continue
 
-      // FN (full name)
-      const fnMatch = trimmed.match(/^FN(?:;[^:]*)?:(.*)/i)
-      if (fnMatch) {
-        displayName = fnMatch[1].trim()
-        continue
-      }
+      const colonIdx = trimmed.indexOf(':')
+      if (colonIdx === -1) continue
 
-      // TEL — phone number
-      const telMatch = trimmed.match(/^TEL(?:;[^:]*)?:(.*)/i)
-      if (telMatch) {
-        const value = telMatch[1].trim()
-        if (value) phoneNumbers.push({ value, canonicalForm: value })
-        continue
-      }
+      const propPart = trimmed.slice(0, colonIdx)
+      const rawValue = trimmed.slice(colonIdx + 1)
+      const params = propPart.toUpperCase().split(';')
+      const isQP = params.some((p) => p === 'ENCODING=QUOTED-PRINTABLE')
+      const value = isQP ? decodeQuotedPrintable(rawValue) : rawValue
+      const propName = params[0]
 
-      // EMAIL
-      const emailMatch = trimmed.match(/^EMAIL(?:;[^:]*)?:(.*)/i)
-      if (emailMatch) {
-        const value = emailMatch[1].trim()
-        if (value) emailAddresses.push({ value })
-        continue
+      if (propName === 'FN') {
+        displayName = value.trim()
+      } else if (propName === 'TEL') {
+        const tel = value.trim()
+        if (tel) phoneNumbers.push({ value: tel, canonicalForm: tel })
+      } else if (propName === 'EMAIL') {
+        const email = value.trim()
+        if (email) emailAddresses.push({ value: email })
       }
     }
 

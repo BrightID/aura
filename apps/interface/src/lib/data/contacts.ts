@@ -18,8 +18,17 @@ export const hashedContactsList = localStorageSignal<string[]>(
   (value) => JSON.stringify(value)
 )
 
-export const foundAuraPlayersFromContact = localStorageSignal<{ name: string; value: string }[]>(
+export const foundAuraPlayersFromContact = localStorageSignal<
+  { name: string; value: string; photo?: string }[]
+>(
   'auraPlayers',
+  [],
+  (value) => JSON.parse(value ?? '[]'),
+  (value) => JSON.stringify(value)
+)
+
+export const sentPlayerLinks = localStorageSignal<string[]>(
+  'sentPlayerLinks',
   [],
   (value) => JSON.parse(value ?? '[]'),
   (value) => JSON.stringify(value)

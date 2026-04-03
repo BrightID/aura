@@ -1,19 +1,14 @@
-import activitiesIcon from '@/assets/icons/activities.svg'
-import bellIcon from '@/assets/icons/bell.svg'
-import homeIcon from '@/assets/icons/home.svg'
-import shareIcon from '@/assets/icons/share.svg'
+import 'iconify-icon'
 import { currentPath, pushRouter } from '@/router'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
-// import profileIcon from '@/assets/icons/profile.svg'
-
 const menuItems = [
-  { icon: homeIcon, href: '/home' },
-  { icon: activitiesIcon, href: '/activities' },
-  { icon: bellIcon, href: '/notifications', small: true },
-  { icon: shareIcon, href: '/share' }
+  { icon: 'lucide:house', href: '/home' },
+  { icon: 'lucide:activity', href: '/activities' },
+  { icon: 'lucide:bell', href: '/notifications', small: true },
+  { icon: 'lucide:share-2', href: '/share' }
 ]
 
 @customElement('app-footer')
@@ -112,22 +107,22 @@ export class AppFooter extends SignalWatcher(LitElement) {
     }
 
     /* ── Icon ── */
-    a-icon {
+    iconify-icon {
       width: 24px;
       height: 24px;
+      font-size: 24px;
       color: rgba(150, 150, 180, 0.55);
-      fill: rgba(150, 150, 180, 0.55);
-      transition: color 200ms ease, fill 200ms ease;
+      transition: color 200ms ease;
     }
 
-    .nav-item.active a-icon {
+    .nav-item.active iconify-icon {
       color: rgba(195, 185, 255, 0.9);
-      fill: rgba(195, 185, 255, 0.9);
     }
 
     .small-icon {
       width: 20px !important;
       height: 20px !important;
+      font-size: 20px !important;
     }
 
     /* ── Active dot ── */
@@ -159,11 +154,10 @@ export class AppFooter extends SignalWatcher(LitElement) {
               @click="${(e: Event) => this.navigate(e, item.href)}"
             >
               <div class="icon-wrap">
-                <a-icon
-                  size="md"
+                <iconify-icon
+                  icon="${item.icon}"
                   class="${item.small ? 'small-icon' : ''}"
-                  src="${item.icon}"
-                ></a-icon>
+                ></iconify-icon>
               </div>
               <div class="dot"></div>
             </a>

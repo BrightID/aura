@@ -1,14 +1,14 @@
 {
   "name": "@aura/interface",
   "type": "module",
-  "version": "0.0.72",
+  "version": "0.0.73",
   "license": "MIT",
   "homepage": "https://aura-get-verified.vercel.app/home",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Meta-Node/get-verified.git"
+    "url": "git+https://github.com/BrightID/aura"
   },
-  "bugs": "https://github.com/vite-pwa/Meta-Node/get-verified/issues",
+  "bugs": "https://github.com/BrightID/aura/issues",
   "keywords": [
     "brightid",
     "aura",
@@ -59,7 +59,6 @@
     "@lit-labs/signals": "^0.1.2",
     "@lit/task": "^1.0.3",
     "@shoelace-style/shoelace": "^2.20.1",
-    "@tanstack/query-core": "^5.80.6",
     "@wagmi/connectors": "^5.11.1",
     "@wagmi/core": "^2.21.1",
     "base64-js": "^1.5.1",
@@ -72,6 +71,7 @@
     "firebase-admin": "^13.6.0",
     "googleapis": "^155.0.1",
     "iconify-icon": "^3.0.2",
+    "libphonenumber-js": "^1.12.41",
     "lit": "^3.3.0",
     "marked": "^16.1.1",
     "openapi-fetch": "^0.14.0",

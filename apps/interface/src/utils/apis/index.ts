@@ -2,11 +2,11 @@ import { AURA_NODE_URL_PROXY } from '@/lib/constants/domains'
 import type { paths } from '@/lib/schema'
 import type { BrightID } from '@/types/brightid'
 import type { Project } from '@/types/projects'
-import { QueryClient } from '@tanstack/query-core'
+import { QueryClient } from '@aura/query'
 import createClient from 'openapi-fetch'
 
 export const clientAPI = createClient<paths>({
-  baseUrl: '/api'
+  baseUrl: 'https://aura-get-verified.vercel.app/api'
 })
 
 const baseUrl = AURA_NODE_URL_PROXY

@@ -7,8 +7,8 @@ import { EvaluationCategory } from '@/utils/aura'
 import { getLevelupProgress } from '@/utils/score'
 import { getSubjectVerifications } from '@/utils/subject'
 import { SignalWatcher } from '@lit-labs/signals'
-import { css, type CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { css, type CSSResultGroup, html, LitElement, PropertyValues } from 'lit'
+import { customElement, property, query, state } from 'lit/decorators.js'
 
 import './edit-profile'
 import './evaluations-step'
@@ -38,6 +38,12 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   @property({ type: Number })
   projectId!: number
 
+  @property({ type: Number })
+  height: number = 550
+
+  @query('#scrollbar')
+  private scrollbar!: HTMLElement
+
   @state() private step: Step = 'intro'
   @state() private previousStep: Step = 'intro'
   @state() private isLoadingVerification = false
@@ -47,6 +53,9 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     :host {
       display: block;
       font-size: var(--verification-size, 1rem);
+      max-height: 550px;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .frame {
@@ -87,11 +96,22 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
         transform: rotate(360deg);
       }
     }
+
+    a-scroll-area {
+      padding-bottom: 1rem;
+    }
   `
 
   connectedCallback(): void {
     super.connectedCallback()
     this._fetchProjects()
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    const scrollBar = this.scrollbar
+    if (!scrollBar) return
+
+    scrollBar.style.height = `${this.height - 30}px`
   }
 
   private _fetchProjects() {
@@ -172,10 +192,10 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   protected render() {
     const project = focusedProject.get()
     return html`
-      <div class="frame">
+      <a-scroll-area .height=${this.height} id="scrollbar" class="frame">
         <div class="content">${this._renderStep(project)}</div>
         <verification-footer></verification-footer>
-      </div>
+      </a-scroll-area>
     `
   }
 
@@ -243,6 +263,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       case 'find-players':
         return html`
           <verification-find-players
+            .auraImpacts=${this.verificationData?.auraImpacts ?? []}
             @back=${() => this._goToStep('progress')}
             @select-player=${(e: CustomEvent) => console.log('Selected player:', e.detail)}
           ></verification-find-players>

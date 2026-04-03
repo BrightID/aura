@@ -1,6 +1,7 @@
 import googleIcon from '@/assets/icons/google.svg'
-import { foundAuraPlayersFromContact } from '@/lib/data/contacts'
+import { foundAuraPlayersFromContact, sentPlayerLinks } from '@/lib/data/contacts'
 import { userBrightId, userFirstName, userGravatarEmail, userLastName } from '@/states/user'
+import type { AuraImpact } from '@/types/evaluation'
 
 async function getGravatarHash(email: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase())
@@ -9,6 +10,7 @@ async function getGravatarHash(email: string): Promise<string> {
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 }
+
 import { clientAPI } from '@/utils/apis'
 import { parseContactsFile } from '@/utils/integrations/contacts-file'
 import type { Contact } from '@/utils/integrations/contacts'
@@ -16,14 +18,18 @@ import { getContactsList } from '@/utils/integrations/google'
 import { Mutation } from '@aura/query'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { customElement, property, state } from 'lit/decorators.js'
 import './level-badge'
 import type { ContactsHashWorkerOutput } from '@/workers/contacts-hash.worker'
 
 @customElement('verification-find-players')
 export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
+  @property({ type: Array }) auraImpacts: AuraImpact[] = []
+
   @state() private searchQuery = ''
   @state() private _copied = false
+  @state() private _shareTarget: { name: string; value: string; photo?: string } | null = null
+  @state() private _shareTargetCopied = false
 
   #googleImport = new Mutation<void, void>(this, {
     mutationFn: async () => {
@@ -46,151 +52,154 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       display: block;
       font-size: inherit;
     }
+
+    /* ── Layout ─────────────────────────────── */
     .stack {
       display: flex;
       flex-direction: column;
-      gap: 1em;
+      gap: 0.875em;
     }
 
-    /* Header */
-    .page-header {
+    /* ── Header ─────────────────────────────── */
+    .header {
       display: flex;
       align-items: center;
-      gap: 0.5em;
+      gap: 0.625em;
     }
     .back-btn {
-      padding: 0.375em;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2em;
+      height: 2em;
       border-radius: 0.5em;
       background: none;
       border: none;
       cursor: pointer;
       color: var(--muted-foreground);
-      transition: background 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      transition: background 0.15s, color 0.15s;
     }
     .back-btn:hover {
       background: var(--secondary);
-    }
-    .back-btn iconify-icon {
-      width: 1.25em;
-      height: 1.25em;
-    }
-    .page-title {
-      margin: 0;
-      font-size: 1em;
-      font-weight: 600;
       color: var(--foreground);
     }
-
-    /* Copy link */
-    .copy-row {
-      display: flex;
-      align-items: center;
-      gap: 0.875em;
-      padding: 0.875em 1em;
-      background: rgba(var(--primary-rgb, 99, 102, 241), 0.05);
-      border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
-      border-radius: var(--radius, 0.75rem);
+    .back-btn iconify-icon {
+      width: 1.125em;
+      height: 1.125em;
     }
-    .copy-row-icon {
-      width: 2.25em;
-      height: 2.25em;
-      border-radius: 0.5em;
-      background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: var(--primary);
-    }
-    .copy-row-icon iconify-icon {
-      width: 1em;
-      height: 1em;
-    }
-    .copy-row-info {
+    .header-text {
       flex: 1;
       min-width: 0;
     }
-    .copy-row-name {
-      font-size: 0.8em;
+    .header-title {
+      margin: 0;
+      font-size: 0.9375em;
       font-weight: 600;
       color: var(--foreground);
+      line-height: 1.2;
     }
-    .copy-row-desc {
-      font-size: 0.72em;
+    .header-sub {
+      font-size: 0.7em;
       color: var(--muted-foreground);
       margin-top: 0.15em;
     }
-    .copy-btn {
+
+    /* ── Profile share bar ───────────────────── */
+    .profile-bar {
       display: flex;
       align-items: center;
-      gap: 0.375em;
+      gap: 0.625em;
+      padding: 0.625em 0.75em;
+      background: color-mix(in srgb, var(--primary) 5%, var(--secondary));
+      border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+      border-radius: var(--radius, 0.75rem);
+    }
+    .profile-bar-icon {
       flex-shrink: 0;
-      padding: 0.5em 0.875em;
+      width: 1.875em;
+      height: 1.875em;
       border-radius: 0.5em;
-      border: none;
-      background: var(--primary);
-      cursor: pointer;
-      font-size: 0.775em;
-      font-weight: 600;
-      color: var(--primary-foreground, #fff);
-      transition: background 0.2s, transform 0.1s;
+      background: color-mix(in srgb, var(--primary) 12%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
     }
-    .copy-btn:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--primary) 85%, black 15%);
-    }
-    .copy-btn:active:not(:disabled) {
-      transform: scale(0.96);
-    }
-    .copy-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-    .copy-btn.copied {
-      background: var(--aura-success, #22c55e);
-    }
-    .copy-btn iconify-icon {
-      width: 0.875em;
-      height: 0.875em;
-      flex-shrink: 0;
-    }
-
-    /* Search */
-    .search-wrap {
-      position: relative;
-    }
-    .search-icon {
-      position: absolute;
-      left: 0.75em;
-      top: 50%;
-      transform: translateY(-50%);
+    .profile-bar-icon iconify-icon {
       width: 1em;
       height: 1em;
-      color: var(--muted-foreground);
-      pointer-events: none;
     }
-    .search-input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0.625em 1em 0.625em 2.25em;
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius, 0.75rem);
-      font-size: 0.875em;
+    .profile-bar-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .profile-bar-label {
+      font-size: 0.775em;
+      font-weight: 600;
       color: var(--foreground);
-      outline: none;
-      transition: border-color 0.15s;
     }
-    .search-input::placeholder {
+    .profile-bar-desc {
+      font-size: 0.68em;
       color: var(--muted-foreground);
+      margin-top: 0.1em;
     }
-    .search-input:focus {
-      border-color: var(--primary);
+    .profile-bar-actions {
+      display: flex;
+      gap: 0.375em;
+      flex-shrink: 0;
+    }
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2em;
+      height: 2em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      flex-shrink: 0;
+    }
+    .icon-btn:active { transform: scale(0.93); }
+    .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .icon-btn iconify-icon { width: 0.9375em; height: 0.9375em; }
+    .icon-btn.solid {
+      background: var(--primary);
+      color: var(--primary-foreground, #fff);
+      border: none;
+    }
+    .icon-btn.solid:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--primary) 85%, black 15%);
+    }
+    .icon-btn.solid.success {
+      background: var(--aura-success, #22c55e);
+    }
+    .icon-btn.ghost {
+      background: color-mix(in srgb, var(--primary) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+      color: var(--primary);
+    }
+    .icon-btn.ghost:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--primary) 16%, transparent);
     }
 
-    /* Import buttons */
+    /* ── Contacts section ────────────────────── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 0.7em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
     .import-row {
       display: flex;
       gap: 0.5em;
@@ -200,155 +209,291 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5em;
-      padding: 0.625em 0.75em;
+      gap: 0.4em;
+      padding: 0.5em 0.625em;
       background: var(--secondary);
       border: 1px solid var(--border);
-      border-radius: var(--radius, 0.75rem);
+      border-radius: 0.625em;
       cursor: pointer;
-      transition: background 0.15s;
-      font-size: 0.8em;
+      font: inherit;
+      font-size: 0.775em;
       font-weight: 500;
       color: var(--foreground);
+      transition: background 0.15s, border-color 0.15s;
     }
     .import-btn:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--secondary) 80%, var(--foreground) 5%);
+      background: color-mix(in srgb, var(--secondary) 70%, var(--foreground) 6%);
+      border-color: color-mix(in srgb, var(--border) 60%, var(--foreground) 20%);
     }
-    .import-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .import-btn img {
-      width: 1.125em;
-      height: 1.125em;
-      flex-shrink: 0;
-    }
+    .import-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .import-btn img,
     .import-btn iconify-icon {
-      width: 1.125em;
-      height: 1.125em;
+      width: 1em;
+      height: 1em;
       flex-shrink: 0;
     }
-    .file-input {
-      display: none;
-    }
+    .file-input { display: none; }
 
-    /* Loading */
+    /* ── Search ──────────────────────────────── */
+    .search-wrap { position: relative; }
+    .search-icon {
+      position: absolute;
+      left: 0.75em;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted-foreground);
+      pointer-events: none;
+    }
+    .search-icon iconify-icon { width: 0.875em; height: 0.875em; }
+    .search-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.575em 0.875em 0.575em 2.125em;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.625em;
+      font-size: 0.85em;
+      color: var(--foreground);
+      outline: none;
+      transition: border-color 0.15s;
+      font: inherit;
+      font-size: 0.85em;
+    }
+    .search-input::placeholder { color: var(--muted-foreground); }
+    .search-input:focus { border-color: var(--primary); }
+
+    /* ── Loading / error ─────────────────────── */
     .import-loading {
       display: flex;
       align-items: center;
-      gap: 0.625em;
-      padding: 0.625em 0.75em;
-      background: rgba(var(--primary-rgb, 99, 102, 241), 0.07);
-      border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-      border-radius: var(--radius, 0.75rem);
-      font-size: 0.8em;
+      gap: 0.5em;
+      padding: 0.5em 0.75em;
+      background: color-mix(in srgb, var(--primary) 5%, transparent);
+      border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
+      border-radius: 0.625em;
+      font-size: 0.775em;
       color: var(--muted-foreground);
     }
-
-    /* Players list */
-    .list-label {
-      font-size: 0.75em;
-      color: var(--muted-foreground);
-      padding: 0 0.25em;
-    }
-    .players-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.375em;
-      max-height: 13em;
-      overflow-y: auto;
-      margin-top: 0.375em;
-    }
-    .player-btn {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 0.75em;
-      padding: 0.75em;
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius, 0.75rem);
-      cursor: pointer;
-      transition: background 0.15s;
-      text-align: left;
-    }
-    .player-btn:hover {
-      background: color-mix(in srgb, var(--secondary) 80%, var(--foreground) 5%);
-    }
-    .player-avatar {
-      position: relative;
-      flex-shrink: 0;
-      width: 2.5em;
-      height: 2.5em;
-      border-radius: 9999px;
-      background: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875em;
-      font-weight: 600;
-      color: var(--primary);
-    }
-    .player-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .player-name {
-      font-size: 0.875em;
-      font-weight: 500;
-      color: var(--foreground);
-    }
-    .player-sub {
-      font-size: 0.75em;
-      color: var(--muted-foreground);
-      margin-top: 0.125em;
-    }
-    .player-chevron {
-      width: 1em;
-      height: 1em;
-      color: var(--muted-foreground);
-      flex-shrink: 0;
-    }
-
-    .empty-msg {
-      font-size: 0.875em;
-      color: var(--muted-foreground);
-      text-align: center;
-      padding: 1em;
-    }
-
     .spinner {
-      width: 1em;
-      height: 1em;
+      width: 0.875em;
+      height: 0.875em;
       flex-shrink: 0;
       border: 2px solid var(--border);
       border-top-color: var(--primary);
       border-radius: 9999px;
       animation: spin 0.6s linear infinite;
     }
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    a-button {
-      width: 100%;
-    }
-
-    .btn-icon {
-      display: inline;
-      margin-right: 0.375em;
-      vertical-align: -0.125em;
-    }
-
+    @keyframes spin { to { transform: rotate(360deg); } }
     .error-msg {
       padding: 0.5em 0.75em;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-radius: 0.5em;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 0.625em;
       font-size: 0.75em;
       color: var(--destructive);
+    }
+
+    /* ── Players list ────────────────────────── */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .list-count {
+      font-size: 0.72em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .players-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-height: 14em;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius, 0.75rem);
+      overflow: hidden;
+    }
+
+    /* ── Player card ─────────────────────────── */
+    .player-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+      padding: 0.625em 0.75em;
+      background: var(--card);
+      border: none;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      transition: background 0.15s;
+      width: 100%;
+      min-width: 0;
+    }
+    .player-card:last-child { border-bottom: none; }
+    .player-card:hover { background: color-mix(in srgb, var(--card) 60%, var(--secondary) 40%); }
+    .player-card.selected { background: color-mix(in srgb, var(--primary) 5%, var(--card)); }
+    .player-card.done { opacity: 0.5; }
+
+    .player-avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .player-avatar {
+      width: 2.25em;
+      height: 2.25em;
+      border-radius: 9999px;
+      background: color-mix(in srgb, var(--primary) 14%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72em;
+      font-weight: 700;
+      color: var(--primary);
+      overflow: hidden;
+    }
+    .player-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .sent-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0.625em;
+      height: 0.625em;
+      border-radius: 9999px;
+      background: var(--aura-success, #22c55e);
+      border: 1.5px solid var(--card);
+    }
+
+    .player-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .player-name {
+      font-size: 0.85em;
+      font-weight: 500;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player-credential {
+      display: flex;
+      align-items: center;
+      gap: 0.275em;
+      font-size: 0.68em;
+      color: var(--muted-foreground);
+      margin-top: 0.125em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player-credential iconify-icon { flex-shrink: 0; }
+
+    .eval-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25em;
+      font-size: 0.65em;
+      font-weight: 600;
+      color: var(--aura-success, #22c55e);
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.22);
+      border-radius: 9999px;
+      padding: 0.2em 0.55em;
+      flex-shrink: 0;
+    }
+    .eval-badge iconify-icon { width: 0.7em; height: 0.7em; }
+
+    .card-chevron {
+      flex-shrink: 0;
+      color: var(--muted-foreground);
+      opacity: 0.5;
+      transition: opacity 0.15s, transform 0.2s;
+    }
+    .player-card.selected .card-chevron {
+      opacity: 1;
+      color: var(--primary);
+      transform: rotate(90deg);
+    }
+    .card-chevron iconify-icon { width: 0.875em; height: 0.875em; }
+
+    /* ── Share strip (inline, below selected card) ── */
+    .share-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      padding: 0.5em 0.75em;
+      background: color-mix(in srgb, var(--primary) 5%, var(--secondary));
+      border-bottom: 1px solid var(--border);
+    }
+    .share-strip:last-child { border-bottom: none; }
+    .share-strip-text {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.72em;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .share-strip-text strong {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+
+    /* ── Divider between groups ──────────────── */
+    .group-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      padding: 0.375em 0.75em;
+      font-size: 0.65em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: color-mix(in srgb, var(--secondary) 60%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Empty state ─────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.375em;
+      padding: 1.5em 1em;
+      border: 1px solid var(--border);
+      border-radius: var(--radius, 0.75rem);
+      text-align: center;
+    }
+    .empty-icon {
+      width: 2.5em;
+      height: 2.5em;
+      border-radius: 9999px;
+      background: var(--secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-foreground);
+      margin-bottom: 0.25em;
+    }
+    .empty-icon iconify-icon { width: 1.25em; height: 1.25em; }
+    .empty-title {
+      font-size: 0.825em;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+    .empty-desc {
+      font-size: 0.72em;
+      color: var(--muted-foreground);
     }
   `
 
@@ -365,69 +510,73 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
     return html`
       <div class="stack">
-        <div class="page-header">
+        <!-- Header -->
+        <div class="header">
           <button class="back-btn" aria-label="Go back" @click=${() => this._emit('back')}>
             <iconify-icon icon="lucide:chevron-left"></iconify-icon>
           </button>
-          <h2 class="page-title">Find Aura Players</h2>
+          <div class="header-text">
+            <h2 class="header-title">Find Aura Players</h2>
+            <p class="header-sub">Import contacts or share your profile to get evaluated</p>
+          </div>
         </div>
 
-        <!-- Copy profile link -->
-        <div class="copy-row">
-          <div class="copy-row-icon">
-            <iconify-icon icon="lucide:share-2"></iconify-icon>
+        <!-- Profile share bar -->
+        <div class="profile-bar">
+          <div class="profile-bar-icon">
+            <iconify-icon icon="lucide:link"></iconify-icon>
           </div>
-          <div class="copy-row-info">
-            <div class="copy-row-name">Share my profile</div>
-            <div class="copy-row-desc">Send this link to Aura players to get verified</div>
+          <div class="profile-bar-info">
+            <div class="profile-bar-label">Your profile link</div>
+            <div class="profile-bar-desc">Send it to Aura players and ask for an evaluation</div>
           </div>
-          <button
-            class="copy-btn ${this._copied ? 'copied' : ''}"
-            ?disabled=${!brightId}
-            @click=${() => this._copyProfileLink(brightId)}
-          >
-            <iconify-icon icon=${this._copied ? 'lucide:check' : 'lucide:copy'}></iconify-icon>
-            ${this._copied ? 'Copied!' : 'Copy'}
-          </button>
-        </div>
-
-        <!-- Search -->
-        <div class="search-wrap">
-          <iconify-icon icon="lucide:search" class="search-icon"></iconify-icon>
-          <input
-            class="search-input"
-            type="text"
-            placeholder="Search players…"
-            .value=${this.searchQuery}
-            @input=${(e: Event) => (this.searchQuery = (e.target as HTMLInputElement).value)}
-          />
+          <div class="profile-bar-actions">
+            <button
+              class="icon-btn solid ${this._copied ? 'success' : ''}"
+              ?disabled=${!brightId}
+              aria-label=${this._copied ? 'Copied' : 'Copy link'}
+              @click=${() => this._copyProfileLink(brightId)}
+            >
+              <iconify-icon icon=${this._copied ? 'lucide:check' : 'lucide:copy'}></iconify-icon>
+            </button>
+            <button
+              class="icon-btn ghost"
+              ?disabled=${!brightId}
+              aria-label="Share profile"
+              @click=${() => this._shareProfileLink(brightId)}
+            >
+              <iconify-icon icon="lucide:share-2"></iconify-icon>
+            </button>
+          </div>
         </div>
 
         <!-- Import contacts -->
-        <div class="import-row">
-          <button
-            class="import-btn"
-            ?disabled=${isImporting}
-            @click=${() => this.#googleImport.mutate()}
-          >
-            <img src=${googleIcon} alt="Google" />
-            Google Contacts
-          </button>
-
-          <button
-            class="import-btn"
-            ?disabled=${isImporting}
-            @click=${() => this.shadowRoot?.querySelector<HTMLInputElement>('.file-input')?.click()}
-          >
-            <iconify-icon icon="lucide:upload"></iconify-icon>
-            Import file
-          </button>
-          <input
-            class="file-input"
-            type="file"
-            accept=".vcf,.csv"
-            @change=${(e: Event) => this._onFileSelected(e)}
-          />
+        <div>
+          <p class="section-label">From contacts</p>
+          <div class="import-row" style="margin-top: 0.5em">
+            <button
+              class="import-btn"
+              ?disabled=${isImporting}
+              @click=${() => this.#googleImport.mutate()}
+            >
+              <img src=${googleIcon} alt="Google" />
+              Google Contacts
+            </button>
+            <button
+              class="import-btn"
+              ?disabled=${isImporting}
+              @click=${() => this.shadowRoot?.querySelector<HTMLInputElement>('.file-input')?.click()}
+            >
+              <iconify-icon icon="lucide:upload"></iconify-icon>
+              Import file
+            </button>
+            <input
+              class="file-input"
+              type="file"
+              accept=".vcf,.csv"
+              @change=${(e: Event) => this._onFileSelected(e)}
+            />
+          </div>
         </div>
 
         ${isImporting
@@ -440,81 +589,216 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
           : ''}
         ${importError ? html`<p class="error-msg">${importError}</p>` : ''}
 
-        <!-- Players -->
-        <div>
-          <p class="list-label">From your contacts (${filtered.length})</p>
-          <div class="players-list">
-            ${filtered.length === 0
-              ? html`<p class="empty-msg">No players found</p>`
-              : filtered.map(
-                  (player) => html`
-                    <button
-                      class="player-btn"
-                      @click=${() => this._emit('select-player', player.value)}
-                    >
-                      <div class="player-avatar">
-                        ${player.name
-                          .split(' ')
-                          .map((n) => n[0])
-                          .join('')
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </div>
-                      <div class="player-info">
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-sub">${player.value.slice(0, 10)}…</div>
-                      </div>
-                      <iconify-icon icon="lucide:chevron-right" class="player-chevron"></iconify-icon>
-                    </button>
-                  `
-                )}
-          </div>
-        </div>
-
-        <a-button
-          variant="secondary"
-          size="sm"
-          @click=${() => window.open('https://brightid.app', '_blank')}
-        >
-          <iconify-icon icon="lucide:camera" class="btn-icon" width="1em" height="1em"></iconify-icon>
-          Scan QR Code
-        </a-button>
+        <!-- Search + list -->
+        ${players.length > 0
+          ? html`
+              <div class="search-wrap">
+                <span class="search-icon">
+                  <iconify-icon icon="lucide:search"></iconify-icon>
+                </span>
+                <input
+                  class="search-input"
+                  type="text"
+                  placeholder="Search players…"
+                  .value=${this.searchQuery}
+                  @input=${(e: Event) =>
+                    (this.searchQuery = (e.target as HTMLInputElement).value)}
+                />
+              </div>
+              ${this._renderPlayers(filtered)}
+            `
+          : ''}
       </div>
     `
   }
 
-  private async _copyProfileLink(brightId: string | null) {
-    if (!brightId) return
+  private _renderPlayers(filtered: { name: string; value: string; photo?: string }[]) {
+    const sent = sentPlayerLinks.get()
+    const evaluatedIds = new Set(this.auraImpacts.map((i) => i.evaluator))
 
+    if (filtered.length === 0) {
+      return html`
+        <div class="empty-state">
+          <div class="empty-icon">
+            <iconify-icon icon="lucide:users"></iconify-icon>
+          </div>
+          <p class="empty-title">No players found</p>
+          <p class="empty-desc">Try a different name or import more contacts</p>
+        </div>
+      `
+    }
+
+    const active = filtered.filter((p) => !evaluatedIds.has(p.value))
+    const done = filtered.filter((p) => evaluatedIds.has(p.value))
+
+    const getInitials = (name: string) =>
+      name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+
+    const renderCard = (player: { name: string; value: string; photo?: string }) => {
+      const isEvaluated = evaluatedIds.has(player.value)
+      const isSent = sent.includes(player.value)
+      const isSelected = this._shareTarget?.value === player.value
+      const isEmail = player.value.includes('@')
+
+      return html`
+        <button
+          class="player-card ${isEvaluated ? 'done' : ''} ${isSelected ? 'selected' : ''}"
+          @click=${() => {
+            this._shareTarget = isSelected ? null : player
+            this._shareTargetCopied = false
+          }}
+        >
+          <div class="player-avatar-wrap">
+            <div class="player-avatar">
+              ${player.photo
+                ? html`<img src=${player.photo} alt=${player.name} />`
+                : getInitials(player.name)}
+            </div>
+            ${isSent && !isEvaluated ? html`<span class="sent-dot"></span>` : ''}
+          </div>
+          <div class="player-info">
+            <div class="player-name">${player.name}</div>
+            <div class="player-credential">
+              <iconify-icon
+                icon=${isEmail ? 'lucide:mail' : 'lucide:phone'}
+                width="0.75em"
+                height="0.75em"
+              ></iconify-icon>
+              ${player.value}
+            </div>
+          </div>
+          ${isEvaluated
+            ? html`<span class="eval-badge">
+                <iconify-icon icon="lucide:check"></iconify-icon>
+                Evaluated
+              </span>`
+            : html`<span class="card-chevron">
+                <iconify-icon icon="lucide:chevron-right"></iconify-icon>
+              </span>`}
+        </button>
+        ${isSelected
+          ? html`
+              <div class="share-strip">
+                <span class="share-strip-text">
+                  Ask <strong>${player.name}</strong> to evaluate you
+                </span>
+                <button
+                  class="icon-btn solid ${this._shareTargetCopied ? 'success' : ''}"
+                  aria-label=${this._shareTargetCopied ? 'Copied' : 'Copy link'}
+                  @click=${(e: Event) => { e.stopPropagation(); this._copyForPlayer() }}
+                >
+                  <iconify-icon
+                    icon=${this._shareTargetCopied ? 'lucide:check' : 'lucide:copy'}
+                  ></iconify-icon>
+                </button>
+                <button
+                  class="icon-btn ghost"
+                  aria-label="Share"
+                  @click=${(e: Event) => { e.stopPropagation(); this._shareForPlayer() }}
+                >
+                  <iconify-icon icon="lucide:share-2"></iconify-icon>
+                </button>
+              </div>
+            `
+          : ''}
+      `
+    }
+
+    return html`
+      <div>
+        <div class="list-header" style="margin-bottom: 0.375em">
+          <span class="list-count">${filtered.length} player${filtered.length !== 1 ? 's' : ''} found</span>
+        </div>
+        <div class="players-list">
+          ${active.map(renderCard)}
+          ${done.length > 0
+            ? html`
+                <div class="group-divider">Already evaluated you</div>
+                ${done.map(renderCard)}
+              `
+            : ''}
+        </div>
+      </div>
+    `
+  }
+
+  private async _buildProfileUrl(): Promise<string> {
+    const brightId = userBrightId.get()
+    if (!brightId) return ''
     let queryParams = ''
-
     const email = userGravatarEmail.get().trim()
     if (email) {
       const hash = await getGravatarHash(email)
       queryParams = '?gravatar=' + encodeURIComponent(hash)
     }
-
-    const firstName = userFirstName.get().trim()
-    const lastName = userLastName.get().trim()
-    const name = [firstName, lastName].filter(Boolean).join(' ')
+    const name = [userFirstName.get().trim(), userLastName.get().trim()].filter(Boolean).join(' ')
     if (name) {
-      queryParams +=
-        queryParams.length > 0
-          ? '&name=' + encodeURIComponent(name)
-          : '?name=' + encodeURIComponent(name)
+      queryParams += queryParams
+        ? '&name=' + encodeURIComponent(name)
+        : '?name=' + encodeURIComponent(name)
     }
+    return `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/` + queryParams
+  }
 
-    const url = `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/` + queryParams
+  private async _copyForPlayer() {
+    if (!this._shareTarget) return
+    const url = await this._buildProfileUrl()
+    if (!url) return
+    await navigator.clipboard.writeText(url)
+    const current = sentPlayerLinks.get()
+    if (!current.includes(this._shareTarget.value)) {
+      sentPlayerLinks.set([...current, this._shareTarget.value])
+    }
+    this._shareTargetCopied = true
+    setTimeout(() => (this._shareTargetCopied = false), 2000)
+  }
+
+  private async _shareForPlayer() {
+    if (!this._shareTarget) return
+    const url = await this._buildProfileUrl()
+    if (!url) return
+    if (navigator.share) {
+      await navigator.share({
+        title: 'Evaluate me on Aura',
+        text: `Hey ${this._shareTarget.name}, could you evaluate me on Aura? Here's my profile:`,
+        url
+      })
+    } else {
+      await navigator.clipboard.writeText(url)
+      this._shareTargetCopied = true
+      setTimeout(() => (this._shareTargetCopied = false), 2000)
+    }
+    const current = sentPlayerLinks.get()
+    if (!current.includes(this._shareTarget.value)) {
+      sentPlayerLinks.set([...current, this._shareTarget.value])
+    }
+  }
+
+  private async _copyProfileLink(_brightId: string | null) {
+    const url = await this._buildProfileUrl()
+    if (!url) return
     await navigator.clipboard.writeText(url)
     this._copied = true
     setTimeout(() => (this._copied = false), 2000)
+  }
+
+  private async _shareProfileLink(_brightId: string | null) {
+    const url = await this._buildProfileUrl()
+    if (!url) return
+    if (navigator.share) {
+      await navigator.share({ title: 'Aura Profile', text: 'Check out my Aura profile!', url })
+    } else {
+      await navigator.clipboard.writeText(url)
+      this._copied = true
+      setTimeout(() => (this._copied = false), 2000)
+    }
   }
 
   private _onFileSelected(e: Event) {
     const input = e.target as HTMLInputElement
     const file = input.files?.[0]
     if (!file) return
-    input.value = '' // reset so same file can be re-selected
+    input.value = ''
     this.#fileImport.mutate(file)
   }
 
@@ -535,9 +819,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
     const result = await clientAPI.POST(
       '/check-aura-player' as never,
-      {
-        body: { hashes }
-      } as never
+      { body: { hashes } } as never
     )
 
     if (!result.data) return
@@ -545,7 +827,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     const matchedHashes = (result as { data: { hash: string }[] }).data.map((item) => item.hash)
     const players = matchedHashes
       .map((hash) => hashMap[hash])
-      .filter((p): p is { name: string; value: string } => !!p && !!p.name)
+      .filter((p): p is { name: string; value: string; photo?: string } => !!p && !!p.name)
 
     foundAuraPlayersFromContact.set(players)
   }

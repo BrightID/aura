@@ -1,4 +1,3 @@
-import timesIcon from '@/assets/icons/times.svg'
 import { css, CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import '@/components/project-verification'

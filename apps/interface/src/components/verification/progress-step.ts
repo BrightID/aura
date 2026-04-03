@@ -27,7 +27,6 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
   @property({ type: Number }) requiredLevel = 1
   @property() appName = ''
 
-  @state() private showTips = false
 
   static styles: CSSResultGroup = css`
     :host {
@@ -310,61 +309,95 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       margin-top: 0.125em;
     }
 
-    /* Tips accordion */
-    .tips-toggle {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.5em 0.75em;
-      background: var(--secondary);
-      border: none;
-      border-radius: 0.5em;
-      cursor: pointer;
-      font-size: 0.75em;
-      color: var(--muted-foreground);
-      transition: background 0.15s;
+    /* Verification guide */
+    .guide-section {
+      border: 1px solid var(--border);
+      border-radius: 0.625em;
+      overflow: hidden;
     }
-    .tips-toggle:hover {
-      background: color-mix(in srgb, var(--secondary) 80%, var(--foreground) 5%);
-    }
-    .tips-toggle-left {
+    .guide-header {
       display: flex;
       align-items: center;
       gap: 0.5em;
+      padding: 0.625em 0.875em;
+      background: color-mix(in srgb, var(--primary) 8%, transparent);
+      border-bottom: 1px solid var(--border);
     }
-    .tips-toggle-left svg {
-      width: 0.875em;
-      height: 0.875em;
-      color: var(--primary);
+    .guide-header-text {
+      font-size: 0.8em;
+      font-weight: 600;
+      color: var(--foreground);
     }
-    .tips-chevron {
-      width: 1em;
-      height: 1em;
-      transition: transform 0.2s;
+    .guide-header-sub {
+      font-size: 0.7em;
+      color: var(--muted-foreground);
+      margin-left: auto;
     }
-    .tips-chevron.open {
-      transform: rotate(180deg);
-    }
-    .tips-list {
-      padding: 0.625em 0.75em;
-      background: var(--secondary);
-      border-radius: 0.5em;
-      border: 1px solid var(--border);
+    .guide-steps {
       display: flex;
       flex-direction: column;
-      gap: 0.5em;
     }
-    .tip-item {
+    .guide-step {
       display: flex;
-      align-items: flex-start;
-      gap: 0.5em;
-      font-size: 0.75em;
-      color: var(--muted-foreground);
+      align-items: center;
+      gap: 0.75em;
+      padding: 0.625em 0.875em;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      transition: background 0.15s;
+      width: 100%;
     }
-    .tip-num {
-      color: var(--primary);
+    .guide-step:last-child {
+      border-bottom: none;
+    }
+    .guide-step:hover {
+      background: color-mix(in srgb, var(--secondary) 70%, var(--foreground) 4%);
+    }
+    .guide-step-num {
       flex-shrink: 0;
+      width: 1.5em;
+      height: 1.5em;
+      border-radius: 9999px;
+      background: color-mix(in srgb, var(--primary) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7em;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .guide-step-num.done {
+      background: rgba(74, 222, 128, 0.12);
+      border-color: rgba(74, 222, 128, 0.3);
+      color: var(--aura-success);
+    }
+    .guide-step-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .guide-step-title {
+      font-size: 0.8em;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+    .guide-step-desc {
+      font-size: 0.7em;
+      color: var(--muted-foreground);
+      margin-top: 0.1em;
+      line-height: 1.4;
+    }
+    .guide-step-arrow {
+      flex-shrink: 0;
+      color: var(--muted-foreground);
+      transition: transform 0.15s;
+    }
+    .guide-step:hover .guide-step-arrow {
+      transform: translateX(2px);
     }
 
     /* Success state */
@@ -427,10 +460,9 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       color: var(--aura-warning);
       flex-shrink: 0;
     }
-    .tips-toggle-left iconify-icon {
+    .guide-step-arrow iconify-icon {
       width: 0.875em;
       height: 0.875em;
-      color: var(--primary);
     }
     .success-icon iconify-icon {
       color: var(--aura-success);
@@ -632,7 +664,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
             : `You need ${needsMore} more levels. Complete evaluations and build your verification score.`}
         </p>
         <div class="action-row">
-          <a-button size="sm" @click=${() => this._openGetVerified()}>
+          <!--<a-button size="sm" @click=${() => this._openGetVerified()}>
             <iconify-icon
               icon="lucide:external-link"
               class="btn-icon"
@@ -640,7 +672,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               height="1em"
             ></iconify-icon>
             Get Verified
-          </a-button>
+          </a-button>-->
           <a-button variant="secondary" size="sm" @click=${() => this._emit('find-players')}>
             <iconify-icon
               icon="lucide:users"
@@ -673,38 +705,66 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
           `
         : ''}
 
-      <button class="tips-toggle" @click=${() => (this.showTips = !this.showTips)}>
-        <span class="tips-toggle-left">
-          <iconify-icon icon="lucide:lightbulb"></iconify-icon>
-          Tips to level up faster
-        </span>
-        <iconify-icon
-          icon="lucide:chevron-down"
-          class="tips-chevron ${this.showTips ? 'open' : ''}"
-          width="1em"
-          height="1em"
-        ></iconify-icon>
-      </button>
-
-      ${this.showTips
-        ? html`
-            <div class="tips-list">
-              ${[
-                'Connect your contacts to see if any of your relatives is an aura verifier',
-                'Ask friends who already are a player in aura to evaluate you',
-                'Join the discord channel for more help',
-                'Find existing verifiers for evaluations'
-              ].map(
-                (tip, i) => html`
-                  <div class="tip-item">
-                    <span class="tip-num">${i + 1}.</span>
-                    <span>${tip}</span>
-                  </div>
-                `
-              )}
+      <div class="guide-section">
+        <div class="guide-header">
+          <iconify-icon
+            icon="streamline-sharp-color:star-2"
+            width="1.125em"
+            height="1.125em"
+          ></iconify-icon>
+          <span class="guide-header-text">How to get verified</span>
+          <span class="guide-header-sub">3 steps</span>
+        </div>
+        <div class="guide-steps">
+          <button class="guide-step" @click=${() => this._emit('find-players')}>
+            <div class="guide-step-num">1</div>
+            <div class="guide-step-content">
+              <div class="guide-step-title">Find players who can evaluate you</div>
+              <div class="guide-step-desc">
+                Import your Google Contacts or share your profile link with Aura players
+              </div>
             </div>
-          `
-        : ''}
+            <span class="guide-step-arrow">
+              <iconify-icon icon="lucide:chevron-right" width="0.875em" height="0.875em"></iconify-icon>
+            </span>
+          </button>
+
+          <button
+            class="guide-step"
+            @click=${() => this._emit('show-evaluations')}
+          >
+            <div class="guide-step-num ${evaluationsReceived > 0 ? 'done' : ''}">
+              ${evaluationsReceived > 0
+                ? html`<iconify-icon icon="lucide:check" width="0.75em" height="0.75em"></iconify-icon>`
+                : '2'}
+            </div>
+            <div class="guide-step-content">
+              <div class="guide-step-title">Collect evaluations</div>
+              <div class="guide-step-desc">
+                ${evaluationsReceived > 0
+                  ? `You have ${evaluationsReceived} evaluation${evaluationsReceived > 1 ? 's' : ''}. Keep going to grow your score.`
+                  : 'Each evaluation from an Aura player raises your level and score'}
+              </div>
+            </div>
+            <span class="guide-step-arrow">
+              <iconify-icon icon="lucide:chevron-right" width="0.875em" height="0.875em"></iconify-icon>
+            </span>
+          </button>
+
+          <button class="guide-step" @click=${() => this._emit('show-score')}>
+            <div class="guide-step-num">3</div>
+            <div class="guide-step-content">
+              <div class="guide-step-title">Grow your Aura score</div>
+              <div class="guide-step-desc">
+                Reach Level ${this.requiredLevel} — higher-ranked verifiers give bigger score boosts
+              </div>
+            </div>
+            <span class="guide-step-arrow">
+              <iconify-icon icon="lucide:chevron-right" width="0.875em" height="0.875em"></iconify-icon>
+            </span>
+          </button>
+        </div>
+      </div>
     `
   }
 

@@ -12,11 +12,13 @@ export type AuraNodeConnectionsResponse = {
   }
 }
 
-export const fetchInboundConnections = (
+export const fetchInboundConnections = async (
   brightId: string
 ): Promise<AuraNodeBrightIdConnection[]> => {
-  return auraGetVerifiedAPI
+  const result = await auraGetVerifiedAPI
     .GET(`/brightid/v6/users/${brightId}/connections/inbound?withVerifications=true` as never)
 
     .then((res: { data?: AuraNodeConnectionsResponse }) => res.data?.data.connections ?? [])
+
+  return result
 }
