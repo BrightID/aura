@@ -1,45 +1,45 @@
-import RecoveryCodeScreen from '@/BrightID/components/Onboarding/RecoveryFlow/RecoveryCodeScreen';
-import useRedirectAfterLogin from 'hooks/useRedirectAfterLogin';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'store/hooks';
+import useRedirectAfterLogin from "hooks/useRedirectAfterLogin"
+import { useEffect, useState } from "react"
+import { useSelector } from "store/hooks"
 import {
   selectIsLoggedIn,
   selectSplashScreenShown,
-} from 'store/profile/selectors';
+} from "store/profile/selectors"
+import RecoveryCodeScreen from "@/BrightID/components/Onboarding/RecoveryFlow/RecoveryCodeScreen"
 
-import CustomTrans from '@/components/CustomTrans';
-import { checkIndexedDB } from '@/utils/check-db';
-import Splash from './components/splash';
+import CustomTrans from "@/components/CustomTrans"
+import { checkIndexedDB } from "@/utils/check-db"
+import Splash from "./components/splash"
 
 const Login = () => {
-  const userIsLogged = useSelector(selectIsLoggedIn);
-  const splashScreenShown = useSelector(selectSplashScreenShown);
-  const redirectAfterLogin = useRedirectAfterLogin();
+  const userIsLogged = useSelector(selectIsLoggedIn)
+  const splashScreenShown = useSelector(selectSplashScreenShown)
+  const redirectAfterLogin = useRedirectAfterLogin()
 
-  const [isDbHealthy, setIsDbHealthy] = useState(false);
+  const [isDbHealthy, setIsDbHealthy] = useState(false)
 
   useEffect(() => {
     if (userIsLogged) {
-      redirectAfterLogin();
+      redirectAfterLogin()
     }
-  }, [redirectAfterLogin, userIsLogged]);
+  }, [redirectAfterLogin, userIsLogged])
 
   useEffect(() => {
     checkIndexedDB().then((isHealthy) => {
-      setIsDbHealthy(isHealthy);
-    });
-  }, []);
+      setIsDbHealthy(isHealthy)
+    })
+  }, [])
 
   if (!isDbHealthy) {
-    return <DbUnhealthy />;
+    return <DbUnhealthy />
   }
 
-  return <div>{splashScreenShown ? <RecoveryCodeScreen /> : <Splash />}</div>;
-};
+  return <div>{splashScreenShown ? <RecoveryCodeScreen /> : <Splash />}</div>
+}
 
 const DbUnhealthy = () => {
   return (
-    <div className="page flex min-h-screen flex-col !px-[22px] !pt-[90px] pb-4">
+    <div className="page flex min-h-screen flex-col px-5.5! pt-22.5! pb-4">
       <section className="content pl-5 pr-12">
         <p className="mb-3 text-5xl font-black text-white">Aura</p>
         <p className="mb-9 text-2xl font-black text-white">
@@ -56,7 +56,7 @@ const DbUnhealthy = () => {
 
       <section className="actions mb-24 mt-auto text-center">
         <button
-          className="btn btn--big w-full max-w-[270px] !text-white"
+          className="btn btn--big w-full max-w-67.5 text-white!"
           data-testid="splash-dismiss-btn"
           onClick={() => window.location.reload()}
         >
@@ -71,7 +71,7 @@ const DbUnhealthy = () => {
         </span>
       </footer>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

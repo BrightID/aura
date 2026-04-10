@@ -1,10 +1,10 @@
-import { useGetAppLatestVersionQuery } from '@/store/api/backup';
-import { skipToken } from '@reduxjs/toolkit/query';
-import { Loader2 } from 'lucide-react';
-import { MdUpdate } from 'react-icons/md';
-import { useRegisterSW } from 'virtual:pwa-register/react';
+import { useRegisterSW } from "virtual:pwa-register/react"
+import { skipToken } from "@reduxjs/toolkit/query"
+import { Loader2 } from "lucide-react"
+import { MdUpdate } from "react-icons/md"
+import { useGetAppLatestVersionQuery } from "@/store/api/backup"
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.NODE_ENV === "development"
 
 export default function VersionCard() {
   const { data, isLoading } = useGetAppLatestVersionQuery(
@@ -12,7 +12,7 @@ export default function VersionCard() {
     {
       pollingInterval: 20000,
     },
-  );
+  )
 
   const {
     offlineReady: [, setOfflineReady],
@@ -22,18 +22,18 @@ export default function VersionCard() {
     onRegisteredSW(swUrl, r) {
       r &&
         setInterval(() => {
-          console.log('Checking for sw update');
-          r.update();
-        }, 60000);
+          console.log("Checking for sw update")
+          r.update()
+        }, 60000)
     },
     onRegisterError(error) {
-      console.log('SW registration error', error);
+      console.log("SW registration error", error)
     },
-  });
+  })
 
   const handleUpdate = () => {
-    updateServiceWorker(true);
-  };
+    updateServiceWorker(true)
+  }
 
   return (
     <a-card className="flex items-center justify-between gap-2 rounded-lg py-3.5 pl-5 pr-2">
@@ -61,7 +61,7 @@ export default function VersionCard() {
               disabled={data === APP_VERSION && !needRefresh}
             >
               {!needRefresh ? (
-                'Already latest'
+                "Already latest"
               ) : (
                 <>
                   Update Available <small>{data}</small>
@@ -72,5 +72,5 @@ export default function VersionCard() {
         </div>
       )}
     </a-card>
-  );
+  )
 }

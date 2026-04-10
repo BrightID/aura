@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit"
+import { css, html, LitElement } from "lit"
 import { customElement, property, state } from "lit/decorators.js"
 
 @customElement("a-dialog")
@@ -21,6 +21,7 @@ export class DialogElement extends LitElement {
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.22s;
+      z-index: 100;
     }
     .wrapper.visible {
       opacity: 1;

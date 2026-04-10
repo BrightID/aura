@@ -1,4 +1,4 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit"
+import { type CSSResultGroup, css, html, LitElement } from "lit"
 import { customElement } from "lit/decorators.js"
 
 @customElement("a-theme-provider")

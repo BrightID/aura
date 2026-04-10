@@ -1,10 +1,11 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @plugin '@tailwindcss/typography';
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
+/* Raw custom color variables (non-utility) */
 @layer base {
   :root {
     --background-light: #e9e9e9;
@@ -68,37 +69,26 @@
     --neutral-l2: #d7cef2;
     --neutral-l3: #c9c3d9;
 
-    --background: 0 0% 98%;
-    --foreground: 240 10% 3.9%;
-
+    /* Legacy shadcn-style HSL (kept for compatibility) */
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-
-    --primary: 262 80% 55%; /* ≈ #8341DE */
+    --primary: 262 80% 55%;
     --primary-foreground: 0 0% 98%;
-
     --secondary: 240 5.9% 10%;
     --secondary-foreground: 0 0% 98%;
-
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
-
-    --destructive: 0 84.2% 60.2%; /* ≈ #EB5E55 red-ish */
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 262 80% 55%; /* matches primary */
-
+    --ring: 262 80% 55%;
     --radius: 0.5rem;
 
-    /* Chart colors (from shadcn/ui defaults – feel free to override) */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -107,76 +97,214 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-
     --primary: 262 80% 60%;
     --primary-foreground: 0 0% 98%;
-
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 262 80% 60%;
   }
 }
 
+:root {
+  /* Size tokens (shared) */
+  --xs: 0.5rem;
+  --sm: 0.75rem;
+  --md: 1rem;
+  --lg: 1.25rem;
+  --xl: 1.5rem;
+  --xl2: 2rem;
+
+  --background: oklch(0.985 0.005 260); /* Very light warm-neutral */
+  --foreground: oklch(0.145 0.01 260); /* Deep neutral text */
+
+  --card: oklch(0.99 0.005 260); /* Almost pure white card */
+  --card-foreground: oklch(0.145 0.01 260);
+
+  --popover: oklch(0.99 0.005 260);
+  --popover-foreground: oklch(0.145 0.01 260);
+
+  --primary: oklch(0.72 0.18 150); /* Vibrant teal-green */
+  --primary-foreground: oklch(0.985 0.005 260); /* Near white */
+
+  --secondary: oklch(0.96 0.01 260); /* Very light gray */
+  --secondary-foreground: oklch(0.205 0.01 260);
+
+  --muted: oklch(0.94 0.01 260);
+  --muted-foreground: oklch(0.55 0.01 260);
+
+  --accent: oklch(0.65 0.16 200); /* Bright cyan-blue */
+  --accent-foreground: oklch(0.985 0.005 260);
+
+  --destructive: oklch(0.62 0.22 25); /* Strong red */
+  --destructive-foreground: oklch(0.985 0.005 260);
+
+  --border: oklch(0.88 0.015 260);
+  --input: oklch(0.96 0.01 260);
+  --ring: oklch(0.72 0.18 150);
+
+  /* Charts */
+  --chart-1: oklch(0.72 0.18 150);
+  --chart-2: oklch(0.65 0.16 200);
+  --chart-3: oklch(0.58 0.14 275);
+  --chart-4: oklch(0.75 0.15 80);
+  --chart-5: oklch(0.62 0.22 25);
+
+  --radius: 0.75rem;
+
+  /* Aura / status colors */
+  --aura-success: oklch(0.72 0.18 150);
+  --aura-warning: oklch(0.78 0.16 80);
+  --aura-info: oklch(0.65 0.16 200);
+  --aura-level-1: oklch(0.65 0.12 90);
+  --aura-level-2: oklch(0.65 0.16 200);
+  --aura-level-3: oklch(0.72 0.18 150);
+
+  /* Sidebar - light variant */
+  --sidebar: oklch(0.985 0.005 260);
+  --sidebar-foreground: oklch(0.145 0.01 260);
+  --sidebar-primary: oklch(0.72 0.18 150);
+  --sidebar-primary-foreground: oklch(0.985 0.005 260);
+  --sidebar-accent: oklch(0.94 0.01 260);
+  --sidebar-accent-foreground: oklch(0.205 0.01 260);
+  --sidebar-border: oklch(0.88 0.015 260);
+  --sidebar-ring: oklch(0.72 0.18 150);
+}
+
+.dark {
+  --background: oklch(0.085 0.01 260);
+
+  --foreground: oklch(0.94 0.01 260);
+
+  --card: oklch(0.22 0.02 282.87);
+  --card-foreground: oklch(0.94 0.01 260);
+
+  --popover: oklch(0.125 0.015 260);
+  --popover-foreground: oklch(0.94 0.01 260);
+
+  --primary: oklch(0.7 0.19 155);
+
+  --primary-foreground: oklch(0.085 0.01 260);
+
+  --secondary: oklch(0.195 0.02 260);
+  --secondary-foreground: oklch(0.9 0.01 260);
+
+  --muted: oklch(0.165 0.015 260);
+  --muted-foreground: oklch(0.62 0.01 260);
+
+  --accent: oklch(0.64 0.17 205);
+  --accent-foreground: oklch(0.94 0.01 260);
+
+  --destructive: oklch(0.6 0.23 25);
+  --destructive-foreground: oklch(0.94 0.01 260);
+
+  --border: oklch(0.22 0.02 260);
+  --input: oklch(0.165 0.015 260);
+  --ring: oklch(0.7 0.19 155);
+
+  /* Charts - tuned for dark bg */
+  --chart-1: oklch(0.7 0.19 155);
+  --chart-2: oklch(0.64 0.17 205);
+  --chart-3: oklch(0.59 0.15 275);
+  --chart-4: oklch(0.73 0.16 85);
+  --chart-5: oklch(0.6 0.23 25);
+
+  --radius: 0.75rem;
+
+  /* Aura colors - slightly brighter for visibility on dark */
+  --aura-success: oklch(0.7 0.19 155);
+  --aura-warning: oklch(0.76 0.17 80);
+  --aura-info: oklch(0.64 0.17 205);
+  --aura-level-1: oklch(0.64 0.13 95);
+  --aura-level-2: oklch(0.64 0.17 205);
+  --aura-level-3: oklch(0.7 0.19 155);
+
+  /* Sidebar - deep dark variant */
+  --sidebar: oklch(0.095 0.01 260);
+  --sidebar-foreground: oklch(0.93 0.01 260);
+  --sidebar-primary: oklch(0.195 0.02 260);
+  --sidebar-primary-foreground: oklch(0.94 0.01 260);
+  --sidebar-accent: oklch(0.17 0.015 260);
+  --sidebar-accent-foreground: oklch(0.93 0.01 260);
+  --sidebar-border: oklch(0.22 0.02 260);
+  --sidebar-ring: oklch(0.7 0.19 155);
+}
+
 @theme {
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacOSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
+  /* Size tokens */
+  --xs: 0.5rem;
+  --sm: 0.75rem;
+  --md: 1rem;
+  --lg: 1.25rem;
+  --xl: 1.5rem;
+  --xl2: 2rem;
 
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
+  /* Light mode defaults (OKLCH) */
+  --color-background: oklch(0.985 0.005 260);
+  --color-foreground: oklch(0.145 0.01 260);
+  --color-card: oklch(0.99 0.005 260);
+  --color-card-foreground: oklch(0.145 0.01 260);
+  --color-popover: oklch(0.99 0.005 260);
+  --color-popover-foreground: oklch(0.145 0.01 260);
+  --color-primary: oklch(0.72 0.18 150);
+  --color-primary-foreground: oklch(0.985 0.005 260);
+  --color-secondary: oklch(0.96 0.01 260);
+  --color-secondary-foreground: oklch(0.205 0.01 260);
+  --color-muted: oklch(0.94 0.01 260);
+  --color-muted-foreground: oklch(0.55 0.01 260);
+  --color-accent: oklch(0.65 0.16 200);
+  --color-accent-foreground: oklch(0.985 0.005 260);
+  --color-destructive: oklch(0.62 0.22 25);
+  --color-destructive-foreground: oklch(0.985 0.005 260);
+  --color-border: oklch(0.88 0.015 260);
+  --color-input: oklch(0.96 0.01 260);
+  --color-ring: oklch(0.72 0.18 150);
+  --radius: 0.75rem;
 
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
+  /* Chart + aura colors */
+  --color-chart-1: oklch(0.72 0.18 150);
+  --color-chart-2: oklch(0.65 0.16 200);
+  --color-chart-3: oklch(0.58 0.14 275);
+  --color-chart-4: oklch(0.75 0.15 80);
+  --color-chart-5: oklch(0.62 0.22 25);
 
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-aura-success: oklch(0.72 0.18 150);
+  --color-aura-warning: oklch(0.78 0.16 80);
+  --color-aura-info: oklch(0.65 0.16 200);
+  --color-aura-level-1: oklch(0.65 0.12 90);
+  --color-aura-level-2: oklch(0.65 0.16 200);
+  --color-aura-level-3: oklch(0.72 0.18 150);
 
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  /* Sidebar light */
+  --color-sidebar: oklch(0.985 0.005 260);
+  --color-sidebar-foreground: oklch(0.145 0.01 260);
+  --color-sidebar-primary: oklch(0.72 0.18 150);
+  --color-sidebar-primary-foreground: oklch(0.985 0.005 260);
+  --color-sidebar-accent: oklch(0.94 0.01 260);
+  --color-sidebar-accent-foreground: oklch(0.205 0.01 260);
+  --color-sidebar-border: oklch(0.88 0.015 260);
+  --color-sidebar-ring: oklch(0.72 0.18 150);
 
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-
+  /* All your custom non-semantic colors (these become usable as e.g. bg-gray-00, text-purple, etc.) */
   --color-background-light: var(--background-light);
   --color-dark-primary: var(--dark-primary);
-
   --color-gray-00: var(--gray00);
   --color-gray-10: var(--gray10);
   --color-gray-20: var(--gray20);
@@ -187,36 +315,29 @@
   --color-gray-70: var(--gray70);
   --color-gray-90: var(--gray90);
   --color-gray-100: var(--gray100);
-
   --color-purple-00: var(--purple00);
   --color-purple: var(--purple);
   --color-purple-2: var(--purple2);
   --color-purple-3: var(--purple3);
-
   --color-orange: var(--orange);
   --color-light-orange: var(--light-orange);
   --color-bright-l1: var(--bright-l1);
   --color-soft-bright: var(--soft-bright);
-
   --color-blue: var(--blue);
   --color-blue-50: var(--blue50);
-
   --color-green: var(--green);
   --color-green-10: var(--green10);
   --color-green-20: var(--green20);
   --color-green-30: var(--green30);
   --color-pastel-green: var(--pastel-green);
   --color-green-card: var(--green-card);
-
   --color-red-card: var(--red-card);
   --color-error: var(--error);
   --color-delete: var(--delete);
-
   --color-pastel-purple: var(--pastel-purple);
   --color-pastel-purple-25: var(--pastel-purple-25);
   --color-pastel-orange: var(--pastel-orange);
   --color-pastel-blue: var(--pastel-blue);
-
   --color-pl-1: var(--pl1);
   --color-pl-2: var(--pl2);
   --color-pl-3: var(--pl3);
@@ -224,32 +345,76 @@
   --color-pl-1-dark: var(--pl1-dark);
   --color-pl-3-dark: var(--pl3-dark);
   --color-pl-4-dark: var(--pl4-dark);
-
   --color-nl-1: var(--nl1);
   --color-nl-2: var(--nl2);
   --color-nl-3: var(--nl3);
   --color-nl-4: var(--nl4);
-
   --color-primary-l1: var(--primary-l1);
   --color-primary-d1: var(--primary-d1);
   --color-primary-d2: var(--primary-d2);
-
   --color-natural-black: var(--natural-black);
   --color-button-primary: var(--button-primary);
   --color-black-2: var(--black2);
   --color-black-3: var(--black3);
   --color-overlay-bg: var(--overlay-bg);
   --color-white-90-card: var(--white-90-card);
-
   --color-neutral-l2: var(--neutral-l2);
   --color-neutral-l3: var(--neutral-l3);
 
+  /* Animations */
   --animate-spin-slow: spin 2s linear infinite;
   --animate-spin-fast: spin 0.5s linear infinite;
   --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
 }
 
-/* Custom animations */
+@layer base {
+  /* Dark mode overrides for semantic OKLCH colors */
+  .dark {
+    --color-background: oklch(0.085 0.01 260);
+    --color-foreground: oklch(0.94 0.01 260);
+    --color-card: oklch(0.145 0.015 260);
+    --color-card-foreground: oklch(0.94 0.01 260);
+    --color-popover: oklch(0.125 0.015 260);
+    --color-popover-foreground: oklch(0.94 0.01 260);
+    --color-primary: oklch(0.7 0.19 155);
+    --color-primary-foreground: oklch(0.085 0.01 260);
+    --color-secondary: oklch(0.195 0.02 260);
+    --color-secondary-foreground: oklch(0.9 0.01 260);
+    --color-muted: oklch(0.165 0.015 260);
+    --color-muted-foreground: oklch(0.62 0.01 260);
+    --color-accent: oklch(0.64 0.17 205);
+    --color-accent-foreground: oklch(0.94 0.01 260);
+    --color-destructive: oklch(0.6 0.23 25);
+    --color-destructive-foreground: oklch(0.94 0.01 260);
+    --color-border: oklch(0.22 0.02 260);
+    --color-input: oklch(0.165 0.015 260);
+    --color-ring: oklch(0.7 0.19 155);
+
+    --color-chart-1: oklch(0.7 0.19 155);
+    --color-chart-2: oklch(0.64 0.17 205);
+    --color-chart-3: oklch(0.59 0.15 275);
+    --color-chart-4: oklch(0.73 0.16 85);
+    --color-chart-5: oklch(0.6 0.23 25);
+
+    --color-aura-success: oklch(0.7 0.19 155);
+    --color-aura-warning: oklch(0.76 0.17 80);
+    --color-aura-info: oklch(0.64 0.17 205);
+    --color-aura-level-1: oklch(0.64 0.13 95);
+    --color-aura-level-2: oklch(0.64 0.17 205);
+    --color-aura-level-3: oklch(0.7 0.19 155);
+
+    /* Sidebar dark */
+    --color-sidebar: oklch(0.095 0.01 260);
+    --color-sidebar-foreground: oklch(0.93 0.01 260);
+    --color-sidebar-primary: oklch(0.195 0.02 260);
+    --color-sidebar-primary-foreground: oklch(0.94 0.01 260);
+    --color-sidebar-accent: oklch(0.17 0.015 260);
+    --color-sidebar-accent-foreground: oklch(0.93 0.01 260);
+    --color-sidebar-border: oklch(0.22 0.02 260);
+    --color-sidebar-ring: oklch(0.7 0.19 155);
+  }
+}
+
 @keyframes spotlight {
   from {
     opacity: 0;
@@ -261,7 +426,6 @@
   }
 }
 
-/* Optional: keep your custom transition properties */
 @utility font-weight-transition {
   transition-property: font-weight;
 }
@@ -282,9 +446,10 @@
     300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
 }
 
+/* Your custom component styles */
 .app_container__dark {
   background-color: var(--color-black-3);
-  background-image: url('/assets/images/app-background-illustrator.svg');
+  background-image: url("/assets/images/app-background-illustrator.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -339,6 +504,7 @@
 .icon {
   @apply h-10 w-10;
 }
+
 .btn {
   @apply bg-button-primary rounded-md px-4 py-3 font-bold text-white;
 }
@@ -371,22 +537,8 @@
   @apply rounded-xl;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+body {
+  @apply bg-background text-foreground overflow-hidden;
 }
 
 .dark .bg-circle-dots {
