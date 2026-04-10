@@ -1,8 +1,8 @@
-import { css, CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
 import '@/components/project-verification'
 import '@aura/ui/components/dialog'
 import { SignalWatcher } from '@lit-labs/signals'
+import { css, CSSResultGroup, html, LitElement } from 'lit'
+import { customElement, state } from 'lit/decorators.js'
 
 @customElement('verification-project')
 export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
@@ -93,7 +93,7 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
           id="iframe"
           @load=${this.onIframeLoad}
           height="600"
-          src="/embed/projects/4"
+          src="/embed/projects/9"
         ></iframe>
         <!--</div>
         </a-dialog>-->

@@ -1,10 +1,10 @@
-import { css, type CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
-import { SignalWatcher } from '@lit-labs/signals'
-import './level-badge'
+import { askedEvaluationPlayers } from '@/lib/data/contacts'
 import { userFirstName, userLastName, userProfilePicture } from '@/states/user'
 import type { AuraImpact } from '@/types/evaluation'
-import { askedEvaluationPlayers } from '@/lib/data/contacts'
+import { SignalWatcher } from '@lit-labs/signals'
+import { css, type CSSResultGroup, html, LitElement } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
+import './level-badge'
 
 export interface ProgressStepData {
   brightId: string
@@ -28,11 +28,11 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
   @property({ type: Number }) requiredLevel = 1
   @property() appName = ''
 
-
   static styles: CSSResultGroup = css`
     :host {
       display: block;
       font-size: inherit;
+      padding-bottom: 10px;
     }
     .stack {
       display: flex;
@@ -519,7 +519,11 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       height: 1px;
       background: var(--border);
     }
-    .asked-section-title iconify-icon { width: 0.875em; height: 0.875em; flex-shrink: 0; }
+    .asked-section-title iconify-icon {
+      width: 0.875em;
+      height: 0.875em;
+      flex-shrink: 0;
+    }
     .asked-player-row {
       display: flex;
       align-items: center;
@@ -543,8 +547,15 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       overflow: hidden;
       flex-shrink: 0;
     }
-    .asked-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .asked-player-info { flex: 1; min-width: 0; }
+    .asked-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .asked-player-info {
+      flex: 1;
+      min-width: 0;
+    }
     .asked-player-name {
       font-size: 0.8em;
       font-weight: 500;
@@ -561,7 +572,11 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       align-items: center;
       gap: 0.25em;
     }
-    .asked-player-sub iconify-icon { width: 0.7em; height: 0.7em; flex-shrink: 0; }
+    .asked-player-sub iconify-icon {
+      width: 0.7em;
+      height: 0.7em;
+      flex-shrink: 0;
+    }
     .asked-status-badge {
       display: inline-flex;
       align-items: center;
@@ -574,10 +589,13 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     }
     .asked-status-badge.waiting {
       color: var(--aura-info, #06b6d4);
-      background: rgba(6, 182, 212, 0.10);
+      background: rgba(6, 182, 212, 0.1);
       border: 1px solid rgba(6, 182, 212, 0.22);
     }
-    .asked-status-badge iconify-icon { width: 0.65em; height: 0.65em; }
+    .asked-status-badge iconify-icon {
+      width: 0.65em;
+      height: 0.65em;
+    }
   `
 
   protected render() {
@@ -651,7 +669,6 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               evalTarget,
               hasScoreReq
             )}
-
         ${this._renderAskedPlayers()}
       </div>
     `
@@ -810,17 +827,22 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               </div>
             </div>
             <span class="guide-step-arrow">
-              <iconify-icon icon="lucide:chevron-right" width="0.875em" height="0.875em"></iconify-icon>
+              <iconify-icon
+                icon="lucide:chevron-right"
+                width="0.875em"
+                height="0.875em"
+              ></iconify-icon>
             </span>
           </button>
 
-          <button
-            class="guide-step"
-            @click=${() => this._emit('show-evaluations')}
-          >
+          <button class="guide-step" @click=${() => this._emit('show-evaluations')}>
             <div class="guide-step-num ${evaluationsReceived > 0 ? 'done' : ''}">
               ${evaluationsReceived > 0
-                ? html`<iconify-icon icon="lucide:check" width="0.75em" height="0.75em"></iconify-icon>`
+                ? html`<iconify-icon
+                    icon="lucide:check"
+                    width="0.75em"
+                    height="0.75em"
+                  ></iconify-icon>`
                 : '2'}
             </div>
             <div class="guide-step-content">
@@ -832,7 +854,11 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               </div>
             </div>
             <span class="guide-step-arrow">
-              <iconify-icon icon="lucide:chevron-right" width="0.875em" height="0.875em"></iconify-icon>
+              <iconify-icon
+                icon="lucide:chevron-right"
+                width="0.875em"
+                height="0.875em"
+              ></iconify-icon>
             </span>
           </button>
 
@@ -845,7 +871,11 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               </div>
             </div>
             <span class="guide-step-arrow">
-              <iconify-icon icon="lucide:chevron-right" width="0.875em" height="0.875em"></iconify-icon>
+              <iconify-icon
+                icon="lucide:chevron-right"
+                width="0.875em"
+                height="0.875em"
+              ></iconify-icon>
             </span>
           </button>
         </div>
@@ -870,7 +900,12 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     if (!asked.length) return html``
 
     const getInitials = (name: string) =>
-      name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+      name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
 
     return html`
       <div class="asked-section">
@@ -878,26 +913,28 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
           <iconify-icon icon="lucide:clock"></iconify-icon>
           People You've Asked
         </span>
-        ${asked.map((player) => html`
-          <div class="asked-player-row">
-            <div class="asked-avatar">
-              ${player.photo
-                ? html`<img src=${player.photo} alt=${player.name} />`
-                : getInitials(player.name)}
-            </div>
-            <div class="asked-player-info">
-              <div class="asked-player-name">${player.name}</div>
-              <div class="asked-player-sub">
-                <iconify-icon icon="lucide:clock"></iconify-icon>
-                Waiting for evaluation
+        ${asked.map(
+          (player) => html`
+            <div class="asked-player-row">
+              <div class="asked-avatar">
+                ${player.photo
+                  ? html`<img src=${player.photo} alt=${player.name} />`
+                  : getInitials(player.name)}
               </div>
+              <div class="asked-player-info">
+                <div class="asked-player-name">${player.name}</div>
+                <div class="asked-player-sub">
+                  <iconify-icon icon="lucide:clock"></iconify-icon>
+                  Waiting for evaluation
+                </div>
+              </div>
+              <span class="asked-status-badge waiting">
+                <iconify-icon icon="lucide:hourglass"></iconify-icon>
+                Waiting
+              </span>
             </div>
-            <span class="asked-status-badge waiting">
-              <iconify-icon icon="lucide:hourglass"></iconify-icon>
-              Waiting
-            </span>
-          </div>
-        `)}
+          `
+        )}
       </div>
     `
   }

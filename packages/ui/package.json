@@ -5,11 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "bun analyze && bun generate:components",
+    "prebuild": "bun analyze",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "analyze": "cem analyze --litelement --outdir . --dev --globs src/components/**",
-    "generate:components": "bun ./scripts/generate-react-wrappers.ts"
+    "analyze": "cem analyze --litelement --outdir . --dev --globs src/components/**"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -30,14 +29,10 @@
     "@types/react-dom": "^19.2.3"
   },
   "peerDependencies": {
-    "react": "^19.2.4",
-    "@lit/react": "^1.0.8"
+    "react": "^19.2.4"
   },
   "peerDependenciesMeta": {
     "react": {
-      "optional": true
-    },
-    "@lit/react": {
       "optional": true
     }
   },

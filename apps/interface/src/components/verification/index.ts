@@ -18,9 +18,9 @@ import './how-it-works'
 import './intro-step'
 import './login'
 import './progress-step'
+import type { ProgressStepData } from './progress-step'
 import './score-step'
 import './success-step'
-import type { ProgressStepData } from './progress-step'
 
 export type Step =
   | 'intro'
@@ -147,6 +147,8 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       const project = focusedProject.get()
       const requiredLevel = project?.requirementLevel ?? 1
       const auraLevel = this.verificationData.auraLevel ?? 0
+
+      console.log(auraLevel, requiredLevel)
 
       this._goToStep(auraLevel >= requiredLevel ? 'success' : 'progress')
     } catch (err) {

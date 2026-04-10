@@ -61,6 +61,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
     :host {
       display: block;
       font-size: inherit;
+      padding-bottom: 10px;
     }
     .stack {
       display: flex;
@@ -191,11 +192,17 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
       height: 1px;
       background: var(--border);
     }
-    .pending-label iconify-icon { width: 0.8em; height: 0.8em; flex-shrink: 0; }
+    .pending-label iconify-icon {
+      width: 0.8em;
+      height: 0.8em;
+      flex-shrink: 0;
+    }
     .breakdown-item.pending {
       opacity: 0.65;
     }
-    .bi-amount.zero { color: var(--muted-foreground); }
+    .bi-amount.zero {
+      color: var(--muted-foreground);
+    }
   `
 
   protected render() {
@@ -206,7 +213,12 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
     const evaluatorSet = new Set(this.impacts.map((i) => i.evaluator))
     const pending = asked.filter((p) => !evaluatorSet.has(p.value))
     const getInitials = (name: string) =>
-      name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+      name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
 
     const CX = 50,
       CY = 50,
@@ -223,9 +235,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
       angle += sweep
       const color = SLICE_COLORS[idx % SLICE_COLORS.length]
       const contact = contacts.find((c) => c.value === impact.evaluator)
-      const name = contact
-        ? contact.name
-        : `${impact.evaluator.slice(0, 8)}…`
+      const name = contact ? contact.name : `${impact.evaluator.slice(0, 8)}…`
       return { impact, fraction, color, path: donutSlicePath(CX, CY, R, RI, start, end), name }
     })
 
@@ -255,9 +265,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
                         <circle cx="${CX}" cy="${CY}" r="${R}" fill="${slices[0].color}" />
                         <circle cx="${CX}" cy="${CY}" r="${RI}" style="fill: var(--card, #fff)" />
                       `
-                    : slices.map(
-                        (s) => svg`<path d="${s.path}" fill="${s.color}" />`
-                      )}
+                    : slices.map((s) => svg`<path d="${s.path}" fill="${s.color}" />`)}
                   <text
                     x="${CX}"
                     y="${CY - 4}"
@@ -300,23 +308,27 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
                     </div>
                   `
                 })}
-                ${pending.length > 0 ? html`
-                  <span class="pending-label">
-                    <iconify-icon icon="lucide:clock"></iconify-icon>
-                    Waiting for evaluation
-                  </span>
-                  ${pending.map((player) => html`
-                    <div class="breakdown-item pending">
-                      <div class="color-dot" style="background: var(--border)"></div>
-                      <span class="bi-name">${player.name}</span>
-                      <span class="bi-conf">Pending</span>
-                      <div class="bi-right">
-                        <span class="bi-amount zero">+0</span>
-                        <span class="bi-pct">0%</span>
-                      </div>
-                    </div>
-                  `)}
-                ` : ''}
+                ${pending.length > 0
+                  ? html`
+                      <span class="pending-label">
+                        <iconify-icon icon="lucide:clock"></iconify-icon>
+                        Waiting for evaluation
+                      </span>
+                      ${pending.map(
+                        (player) => html`
+                          <div class="breakdown-item pending">
+                            <div class="color-dot" style="background: var(--border)"></div>
+                            <span class="bi-name">${player.name}</span>
+                            <span class="bi-conf">Pending</span>
+                            <div class="bi-right">
+                              <span class="bi-amount zero">+0</span>
+                              <span class="bi-pct">0%</span>
+                            </div>
+                          </div>
+                        `
+                      )}
+                    `
+                  : ''}
               </div>
             `}
       </div>

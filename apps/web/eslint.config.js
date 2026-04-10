@@ -1,4 +1,0 @@
-import { config } from "@aura/eslint-config/next-js"
-
-/** @type {import("eslint").Linter.Config[]} */
-export default config
