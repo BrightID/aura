@@ -1,9 +1,9 @@
 {
   "typescript.tsdk": "node_modules\\typescript\\lib",
-  "prettier.endOfLine": "lf",
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always",
-    "source.organizeImports": "always"
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   }
 }
