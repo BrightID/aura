@@ -1,22 +1,21 @@
-import { resetStore } from '@/BrightID/actions';
-import { preferredViewIcon } from '@/constants/index';
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { useDispatch, useSelector } from 'store/hooks';
-import { selectPreferredView } from 'store/profile/selectors';
-import { PreferredView } from 'types/dashboard';
-import { RoutePath } from 'types/router';
-import { __DEV__ } from '@/utils/env';
-
-import { Modal } from 'components/Shared/Modal';
-import RoleSelectModal from './components/RoleSelectModal';
-import { Button } from '@/components/ui/button';
+import { Modal } from "components/Shared/Modal"
+import { useState } from "react"
+import { Link } from "react-router"
+import { useDispatch, useSelector } from "store/hooks"
+import { selectPreferredView } from "store/profile/selectors"
+import { PreferredView } from "types/dashboard"
+import { RoutePath } from "types/router"
+import { resetStore } from "@/BrightID/actions"
+import { Button } from "@/components/ui/button"
+import { preferredViewIcon } from "@/constants/index"
+import { __DEV__ } from "@/utils/env"
+import RoleSelectModal from "./components/RoleSelectModal"
 
 const Dashboard = () => {
-  const preferredView = useSelector(selectPreferredView);
-  const [isRoleSelectModalOpen, setIsRoleSelectModalOpen] = useState(false);
+  const preferredView = useSelector(selectPreferredView)
+  const [isRoleSelectModalOpen, setIsRoleSelectModalOpen] = useState(false)
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   return (
     <div className="page">
       <div className="row mb-4">
@@ -36,12 +35,12 @@ const Dashboard = () => {
           />
           <span className="mt-auto flex w-full items-center justify-between">
             <p className="font-bold">{preferredView}</p>
-            <Button
-              size={'icon'}
+            <a-button
+              size={"icon"}
               onClick={() => setIsRoleSelectModalOpen(true)}
             >
               <img src="/assets/images/Dashboard/refresh-icon.svg" alt="" />
-            </Button>
+            </a-button>
           </span>
         </div>
       </div>
@@ -124,15 +123,15 @@ const Dashboard = () => {
             alt=""
           />
           <p className="mt-auto text-right text-[18px] text-gray20">
-            {' '}
+            {" "}
             <br /> Settings
           </p>
         </div>
         {(__DEV__ ||
-          process.env.VITE_REACT_APP_IS_CYPRESS === 'true' ||
-          process.env.REACT_APP_ENABLE_LOGOUT === 'true') && (
+          process.env.VITE_REACT_APP_IS_CYPRESS === "true" ||
+          process.env.REACT_APP_ENABLE_LOGOUT === "true") && (
           <button
-            className={'btn'}
+            className={"btn"}
             onClick={() => dispatch(resetStore())}
             data-testid="logout-button"
           >
@@ -141,7 +140,7 @@ const Dashboard = () => {
         )}
       </div>
       <Modal
-        title={'Role Selection'}
+        title={"Role Selection"}
         isOpen={isRoleSelectModalOpen}
         noButtonPadding={true}
         closeModalHandler={() => setIsRoleSelectModalOpen(false)}
@@ -152,7 +151,7 @@ const Dashboard = () => {
         />
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

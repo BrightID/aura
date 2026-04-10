@@ -1,15 +1,14 @@
-import { FiltersModal } from 'components/EvaluationFlow/FiltersModal';
-import { SortsModal } from 'components/EvaluationFlow/SortsModal';
-import { useOutboundEvaluationsContext } from 'contexts/SubjectOutboundEvaluationsContext';
-import { useEffect, useMemo, useState } from 'react';
-
-import Dropdown from 'components/Shared/Dropdown';
-import { viewModeToSubjectViewMode, viewModeToViewAs } from '@/constants/index';
-import { AuraFilterId } from 'hooks/useFilters';
-import { AuraSelectedSort, AuraSortId } from 'hooks/useSorts';
-import useViewMode from 'hooks/useViewMode';
-import { AuraFilterDropdownOption } from 'types';
-import { PreferredView, ProfileTab } from 'types/dashboard';
+import { FiltersModal } from "components/EvaluationFlow/FiltersModal"
+import { SortsModal } from "components/EvaluationFlow/SortsModal"
+import Dropdown from "components/Shared/Dropdown"
+import { useOutboundEvaluationsContext } from "contexts/SubjectOutboundEvaluationsContext"
+import { AuraFilterId } from "hooks/useFilters"
+import { AuraSelectedSort, AuraSortId } from "hooks/useSorts"
+import useViewMode from "hooks/useViewMode"
+import { useEffect, useMemo, useState } from "react"
+import { AuraFilterDropdownOption } from "types"
+import { PreferredView, ProfileTab } from "types/dashboard"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -17,10 +16,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-
-import { ScrollArea } from '@/components/ui/scroll-area';
+} from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { viewModeToSubjectViewMode, viewModeToViewAs } from "@/constants/index"
 
 function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
   const {
@@ -30,14 +28,14 @@ function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
     setSelectedSort,
     filters,
     sorts,
-  } = useOutboundEvaluationsContext({ subjectId });
+  } = useOutboundEvaluationsContext({ subjectId })
 
   return (
     <div className="w-full">
       <p className="font-bold text-black2 dark:text-gray-100">Filters</p>
       <a-separator className="my-5" />
       <FiltersModal
-        testidPrefix={'subject-filter'}
+        testidPrefix={"subject-filter"}
         filters={filters}
         selectedFilterIds={selectedFilterIds}
         toggleFiltersById={toggleFiltersById}
@@ -47,13 +45,13 @@ function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
       </p>
       <a-separator className="my-5" />
       <SortsModal
-        testidPrefix={'subject-sort'}
+        testidPrefix={"subject-sort"}
         sorts={sorts}
         selectedSort={selectedSort}
         setSelectedSort={setSelectedSort}
       />
     </div>
-  );
+  )
 }
 
 export const ActivityListSearch = ({
@@ -61,11 +59,11 @@ export const ActivityListSearch = ({
   setSelectedTab,
   subjectId,
 }: {
-  subjectId: string;
-  selectedTab: ProfileTab;
-  setSelectedTab: (value: ProfileTab) => void;
+  subjectId: string
+  selectedTab: ProfileTab
+  setSelectedTab: (value: ProfileTab) => void
 }) => {
-  const { currentViewMode, currentEvaluationCategory } = useViewMode();
+  const { currentViewMode, currentEvaluationCategory } = useViewMode()
 
   const {
     itemsOriginal,
@@ -83,10 +81,10 @@ export const ActivityListSearch = ({
       selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS
         ? currentEvaluationCategory
         : viewModeToViewAs[viewModeToSubjectViewMode[currentViewMode]],
-  });
+  })
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const customViewOption = useMemo(
     () => ({
@@ -97,7 +95,7 @@ export const ActivityListSearch = ({
       onClick: () => setIsModalOpen(true),
     }),
     [],
-  );
+  )
   const defaultOption = useMemo(
     () => ({
       value: 0,
@@ -107,7 +105,7 @@ export const ActivityListSearch = ({
       onClick: () => clearSortAndFilter(),
     }),
     [clearSortAndFilter],
-  );
+  )
   const dropdownOptions: AuraFilterDropdownOption[] = useMemo(
     () => [
       defaultOption,
@@ -129,42 +127,42 @@ export const ActivityListSearch = ({
       ].map((item) => ({
         ...item,
         onClick: () => {
-          toggleFiltersById(item.filterIds, true);
-          setSelectedSort(item.sortId, item.ascending);
+          toggleFiltersById(item.filterIds, true)
+          setSelectedSort(item.sortId, item.ascending)
         },
       })),
       customViewOption,
     ],
     [customViewOption, defaultOption, setSelectedSort, toggleFiltersById],
-  );
+  )
 
   const selectedItem: AuraFilterDropdownOption = useMemo(() => {
     if (!selectedFilters && !selectedSort) {
-      return defaultOption;
+      return defaultOption
     }
     const selectedItem = dropdownOptions.find((item) => {
       const isSelectedSort =
         selectedSort?.id === item.sortId &&
         item.ascending ===
-          (selectedSort.defaultAscending !== selectedSort.isReversed);
-      if (!isSelectedSort) return false;
-      if (!selectedFilters) return !item.filterIds;
-      if (!item.filterIds) return false;
-      const selectedFilterIdsSorted = selectedFilters.map((f) => f.id).sort();
-      const itemFilterIdsSorted = [...item.filterIds].sort();
+          (selectedSort.defaultAscending !== selectedSort.isReversed)
+      if (!isSelectedSort) return false
+      if (!selectedFilters) return !item.filterIds
+      if (!item.filterIds) return false
+      const selectedFilterIdsSorted = selectedFilters.map((f) => f.id).sort()
+      const itemFilterIdsSorted = [...item.filterIds].sort()
       for (let i = 0; i < selectedFilterIdsSorted.length; i++) {
-        if (itemFilterIdsSorted[i] !== selectedFilterIdsSorted[i]) return false;
+        if (itemFilterIdsSorted[i] !== selectedFilterIdsSorted[i]) return false
       }
-      return true;
-    });
-    return selectedItem ?? customViewOption;
+      return true
+    })
+    return selectedItem ?? customViewOption
   }, [
     customViewOption,
     defaultOption,
     dropdownOptions,
     selectedFilters,
     selectedSort,
-  ]);
+  ])
 
   return (
     <>
@@ -172,11 +170,11 @@ export const ActivityListSearch = ({
         {currentViewMode === PreferredView.MANAGER_EVALUATING_MANAGER && (
           <div className="flex items-center justify-between">
             <p>
-              Showing{' '}
-              {selectedTab === ProfileTab.ACTIVITY ? 'Trainer ' : 'Manager '}{' '}
+              Showing{" "}
+              {selectedTab === ProfileTab.ACTIVITY ? "Trainer " : "Manager "}{" "}
               evaluations
             </p>
-            <Button
+            <a-button
               size="sm"
               onClick={() =>
                 setSelectedTab(
@@ -189,9 +187,9 @@ export const ActivityListSearch = ({
               className=""
             >
               {selectedTab === ProfileTab.ACTIVITY
-                ? 'View Managers'
-                : 'View Trainers'}
-            </Button>
+                ? "View Managers"
+                : "View Trainers"}
+            </a-button>
           </div>
         )}
       </div>
@@ -233,60 +231,58 @@ export const ActivityListSearch = ({
             </ScrollArea>
 
             <DialogFooter>
-              <Button
+              <a-button
                 variant="outline"
                 onClick={() => {
-                  clearSortAndFilter();
+                  clearSortAndFilter()
                 }}
                 className="w-full flex-1 px-6 py-2 sm:w-auto"
               >
                 Clear
-              </Button>
-              <Button
+              </a-button>
+              <a-button
                 variant="secondary"
                 className="w-full flex-1 px-6 py-2 sm:w-auto"
                 data-testid="subject-sort-option-Confidence-ascending"
                 onClick={() => {
-                  setIsModalOpen(false);
+                  setIsModalOpen(false)
                 }}
               >
                 Ok
-              </Button>
+              </a-button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         <span className="ml-1">
           (
-          {filteredSubjects?.filter((e) => e.rating && e.rating.rating !== '0')
+          {filteredSubjects?.filter((e) => e.rating && e.rating.rating !== "0")
             .length ??
             itemsOriginal?.length ??
-            '...'}{' '}
+            "..."}{" "}
           result
           {(filteredSubjects?.filter((e) => e.rating).length ??
             itemsOriginal?.length) !== 1
-            ? 's'
-            : ''}
+            ? "s"
+            : ""}
           )
         </span>
       </div>
 
-      <div className="input-wrapper-focus flex max-h-[175px] flex-1 flex-col justify-center gap-4 rounded-lg border bg-card p-1 text-card-foreground">
-        <div className="card__input flex items-center gap-2 rounded px-3.5">
-          <img
-            className="h-4 w-4"
-            src="/assets/images/Shared/search-icon.svg"
-            alt=""
-          />
-          <input
-            className="h-11 w-full bg-card text-sm font-medium text-card-foreground placeholder-black2 focus:outline-none dark:placeholder:text-gray-50"
-            type="text"
-            placeholder="Search in these results"
-            value={searchString}
-            onChange={(e) => setSearchString(e.target.value)}
-          />
-        </div>
-      </div>
+      <a-input
+        className="h-11 w-full bg-card text-sm font-medium text-card-foreground placeholder-black2 focus:outline-none dark:placeholder:text-gray-50"
+        type="text"
+        placeholder="Search in these results"
+        value={searchString}
+        onChange={(e) => setSearchString(e.target.value)}
+      >
+        <img
+          slot="prefix"
+          className="h-4 w-4"
+          src="/assets/images/Shared/search-icon.svg"
+          alt=""
+        />
+      </a-input>
     </>
-  );
-};
+  )
+}

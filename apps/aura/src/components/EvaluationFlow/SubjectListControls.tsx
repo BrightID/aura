@@ -1,20 +1,20 @@
-import { FiltersModal } from 'components/EvaluationFlow/FiltersModal';
-import { SortsModal } from 'components/EvaluationFlow/SortsModal';
-import { useSubjectsListContext } from 'contexts/SubjectsListContext';
-import { useMyEvaluations } from 'hooks/useMyEvaluations';
-import { RefreshCcwIcon, Search } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { FiltersModal } from "components/EvaluationFlow/FiltersModal"
+import { SortsModal } from "components/EvaluationFlow/SortsModal"
+import { useSubjectsListContext } from "contexts/SubjectsListContext"
+import { useMyEvaluations } from "hooks/useMyEvaluations"
+import { RefreshCcwIcon, Search } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router"
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils"
 
-import useBrightIdBackupWithAuraConnectionData from '../../hooks/useBrightIdBackupWithAuraConnectionData';
-import { AuraSortId } from '../../hooks/useSorts';
-import useViewMode from '../../hooks/useViewMode';
-import { AuraFilterDropdownOption } from '../../types';
-import { PreferredView } from '../../types/dashboard';
-import Dropdown from '../Shared/Dropdown';
-import { Button } from '../ui/button';
+import useBrightIdBackupWithAuraConnectionData from "../../hooks/useBrightIdBackupWithAuraConnectionData"
+import { AuraSortId } from "../../hooks/useSorts"
+import useViewMode from "../../hooks/useViewMode"
+import { AuraFilterDropdownOption } from "../../types"
+import { PreferredView } from "../../types/dashboard"
+import Dropdown from "../Shared/Dropdown"
+import { Button } from "../ui/button"
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Separator } from '../ui/separator';
-import { ScrollArea } from '../ui/scroll-area';
+} from "../ui/dialog"
+import { ScrollArea } from "../ui/scroll-area"
+import { Separator } from "../ui/separator"
 
 function FilterAndSortModalBody({ isPlayerMode }: { isPlayerMode: boolean }) {
   const {
@@ -34,7 +34,7 @@ function FilterAndSortModalBody({ isPlayerMode }: { isPlayerMode: boolean }) {
     setSelectedSort,
     filters,
     sorts,
-  } = useSubjectsListContext();
+  } = useSubjectsListContext()
 
   return (
     <div>
@@ -42,7 +42,7 @@ function FilterAndSortModalBody({ isPlayerMode }: { isPlayerMode: boolean }) {
       <Separator className="my-4" />
       <FiltersModal
         includeConnectionFilters={isPlayerMode}
-        testidPrefix={'subject-filter'}
+        testidPrefix={"subject-filter"}
         filters={filters}
         selectedFilterIds={selectedFilterIds}
         toggleFiltersById={toggleFiltersById}
@@ -53,21 +53,21 @@ function FilterAndSortModalBody({ isPlayerMode }: { isPlayerMode: boolean }) {
       <Separator className="my-4" />
       <SortsModal
         includeLastConnectionFilter={isPlayerMode}
-        testidPrefix={'subject-sort'}
+        testidPrefix={"subject-sort"}
         sorts={sorts}
         selectedSort={selectedSort}
         setSelectedSort={setSelectedSort}
       />
     </div>
-  );
+  )
 }
 
 export const SubjectListControls = ({
   refreshBrightIdBackup,
   loading: contextLoading,
 }: {
-  refreshBrightIdBackup: () => void;
-  loading?: boolean;
+  refreshBrightIdBackup: () => void
+  loading?: boolean
 }) => {
   const {
     searchString,
@@ -77,17 +77,17 @@ export const SubjectListControls = ({
     clearSortAndFilter,
     toggleFiltersById,
     setSelectedSort,
-  } = useSubjectsListContext();
-  const { refreshOutboundRatings, loading } = useMyEvaluations();
+  } = useSubjectsListContext()
+  const { refreshOutboundRatings, loading } = useMyEvaluations()
 
-  const brightIdBackup = useBrightIdBackupWithAuraConnectionData();
+  const brightIdBackup = useBrightIdBackupWithAuraConnectionData()
 
-  const { currentViewMode, setPreferredView } = useViewMode();
+  const { currentViewMode, setPreferredView } = useViewMode()
 
-  const [params] = useSearchParams();
+  const [params] = useSearchParams()
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const customViewOption = useMemo(
     () => ({
@@ -98,7 +98,7 @@ export const SubjectListControls = ({
       onClick: () => setIsModalOpen(true),
     }),
     [],
-  );
+  )
   const defaultOption = useMemo(
     () => ({
       value: 0,
@@ -108,10 +108,10 @@ export const SubjectListControls = ({
       onClick: () => clearSortAndFilter(),
     }),
     [clearSortAndFilter],
-  );
+  )
 
   const dropdownOptions: AuraFilterDropdownOption[] = useMemo(() => {
-    if (params.has('subjectId') || currentViewMode === PreferredView.PLAYER) {
+    if (params.has("subjectId") || currentViewMode === PreferredView.PLAYER) {
       return [
         defaultOption,
         ...[
@@ -125,12 +125,12 @@ export const SubjectListControls = ({
         ].map((item) => ({
           ...item,
           onClick: () => {
-            toggleFiltersById(item.filterIds, true);
-            setSelectedSort(item.sortId, item.ascending);
+            toggleFiltersById(item.filterIds, true)
+            setSelectedSort(item.sortId, item.ascending)
           },
         })),
         customViewOption,
-      ];
+      ]
     }
 
     return [
@@ -145,12 +145,12 @@ export const SubjectListControls = ({
       ].map((item) => ({
         ...item,
         onClick: () => {
-          toggleFiltersById(item.filterIds, true);
-          setSelectedSort(item.sortId, item.ascending);
+          toggleFiltersById(item.filterIds, true)
+          setSelectedSort(item.sortId, item.ascending)
         },
       })),
       customViewOption,
-    ];
+    ]
   }, [
     currentViewMode,
     customViewOption,
@@ -158,12 +158,12 @@ export const SubjectListControls = ({
     params,
     setSelectedSort,
     toggleFiltersById,
-  ]);
+  ])
 
   const selectedItem: AuraFilterDropdownOption = useMemo(() => {
     if (!selectedFilters && !selectedSort) {
-      if (params.has('subjectId') || currentViewMode === PreferredView.PLAYER)
-        return defaultOption;
+      if (params.has("subjectId") || currentViewMode === PreferredView.PLAYER)
+        return defaultOption
 
       return {
         value: 2,
@@ -172,28 +172,28 @@ export const SubjectListControls = ({
         sortId: AuraSortId.ConnectionRecentEvaluation,
         ascending: false,
         onClick: () => {
-          toggleFiltersById(null, true);
-          setSelectedSort(AuraSortId.ConnectionRecentEvaluation, false);
+          toggleFiltersById(null, true)
+          setSelectedSort(AuraSortId.ConnectionRecentEvaluation, false)
         },
-      };
+      }
     }
 
     const selectedItem = dropdownOptions.find((item) => {
       const isSelectedSort =
         selectedSort?.id === item.sortId &&
         item.ascending ===
-          (selectedSort.defaultAscending !== selectedSort.isReversed);
-      if (!isSelectedSort) return false;
-      if (!selectedFilters) return !item.filterIds;
-      if (!item.filterIds) return false;
-      const selectedFilterIdsSorted = selectedFilters.map((f) => f.id).sort();
-      const itemFilterIdsSorted = [...item.filterIds].sort();
+          (selectedSort.defaultAscending !== selectedSort.isReversed)
+      if (!isSelectedSort) return false
+      if (!selectedFilters) return !item.filterIds
+      if (!item.filterIds) return false
+      const selectedFilterIdsSorted = selectedFilters.map((f) => f.id).sort()
+      const itemFilterIdsSorted = [...item.filterIds].sort()
       for (let i = 0; i < selectedFilterIdsSorted.length; i++) {
-        if (itemFilterIdsSorted[i] !== selectedFilterIdsSorted[i]) return false;
+        if (itemFilterIdsSorted[i] !== selectedFilterIdsSorted[i]) return false
       }
-      return true;
-    });
-    return selectedItem ?? customViewOption;
+      return true
+    })
+    return selectedItem ?? customViewOption
   }, [
     currentViewMode,
     customViewOption,
@@ -204,29 +204,29 @@ export const SubjectListControls = ({
     selectedSort,
     setSelectedSort,
     toggleFiltersById,
-  ]);
+  ])
 
   useEffect(() => {
-    if (params.has('subjectId') || currentViewMode === PreferredView.PLAYER) {
+    if (params.has("subjectId") || currentViewMode === PreferredView.PLAYER) {
       // if (selectedSort?.id === AuraSortId.ConnectionRecentEvaluation)
       //   setSelectedSort(null);
-      return;
+      return
     }
 
     if (!selectedSort?.id)
-      setSelectedSort(AuraSortId.ConnectionRecentEvaluation);
-  }, [currentViewMode, selectedSort, params, setSelectedSort]);
+      setSelectedSort(AuraSortId.ConnectionRecentEvaluation)
+  }, [currentViewMode, selectedSort, params, setSelectedSort])
 
   useEffect(() => {
-    if (!params.get('search')) {
-      setSearchString('');
-      return;
+    if (!params.get("search")) {
+      setSearchString("")
+      return
     }
 
-    setSearchString(params.get('search') || '');
-  }, [params, setSearchString]);
+    setSearchString(params.get("search") || "")
+  }, [params, setSearchString])
 
-  const { itemsFiltered: filteredSubjects } = useSubjectsListContext();
+  const { itemsFiltered: filteredSubjects } = useSubjectsListContext()
 
   return (
     <>
@@ -250,13 +250,13 @@ export const SubjectListControls = ({
       ].includes(currentViewMode) && (
         <div className="mt-2 flex items-center justify-between text-sm">
           <p className="font-semibold">
-            Showing{' '}
+            Showing{" "}
             {currentViewMode === PreferredView.MANAGER_EVALUATING_TRAINER
-              ? 'Trainer '
-              : 'Manager '}{' '}
+              ? "Trainer "
+              : "Manager "}{" "}
             evaluations
           </p>
-          <Button
+          <a-button
             size="sm"
             onClick={() =>
               setPreferredView(
@@ -269,9 +269,9 @@ export const SubjectListControls = ({
             className=""
           >
             {currentViewMode === PreferredView.MANAGER_EVALUATING_TRAINER
-              ? 'View Managers'
-              : 'View Trainers'}
-          </Button>
+              ? "View Managers"
+              : "View Trainers"}
+          </a-button>
         </div>
       )}
 
@@ -316,26 +316,26 @@ export const SubjectListControls = ({
             </ScrollArea>
 
             <DialogFooter>
-              <Button
+              <a-button
                 variant="outline"
                 data-testid="custom-view-clear-button"
                 onClick={() => {
-                  clearSortAndFilter();
+                  clearSortAndFilter()
                 }}
                 className="w-full flex-1 px-6 py-2 sm:w-auto"
               >
                 Clear
-              </Button>
-              <Button
+              </a-button>
+              <a-button
                 variant="secondary"
                 className="w-full flex-1 px-6 py-2 sm:w-auto"
                 data-testid="custom-view-ok-button"
                 onClick={() => {
-                  setIsModalOpen(false);
+                  setIsModalOpen(false)
                 }}
               >
                 Ok
-              </Button>
+              </a-button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -343,32 +343,32 @@ export const SubjectListControls = ({
           (
           {filteredSubjects?.length ??
             brightIdBackup?.connections.length ??
-            '...'}{' '}
+            "..."}{" "}
           result
           {(filteredSubjects?.length ?? brightIdBackup?.connections.length) !==
           1
-            ? 's'
-            : ''}
+            ? "s"
+            : ""}
           )
         </span>
-        <Button
+        <a-button
           onClick={() => {
-            refreshBrightIdBackup();
-            refreshOutboundRatings();
+            refreshBrightIdBackup()
+            refreshOutboundRatings()
           }}
           disabled={loading || contextLoading}
           className="ml-1"
           variant="outline"
-          size={'icon'}
+          size={"icon"}
         >
           <RefreshCcwIcon
             className={cn(
-              'h-7 w-7 cursor-pointer',
-              (loading || contextLoading) && 'animate-spin',
+              "h-7 w-7 cursor-pointer",
+              (loading || contextLoading) && "animate-spin",
             )}
           />
-        </Button>
+        </a-button>
       </div>
     </>
-  );
-};
+  )
+}

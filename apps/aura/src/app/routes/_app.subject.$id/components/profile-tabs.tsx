@@ -1,25 +1,24 @@
-import useViewMode from '@/hooks/useViewMode';
-import { ProfileTab, PreferredView } from '@/types/dashboard';
-import { ArrowDownRight, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowDownLeft, ArrowDownRight, ArrowUpRight } from "lucide-react"
+import useViewMode from "@/hooks/useViewMode"
+import { PreferredView, ProfileTab } from "@/types/dashboard"
 
 export default function ProfileTabs({
   selectedTab,
   setSelectedTab,
 }: {
-  selectedTab: ProfileTab;
-  setSelectedTab: (value: ProfileTab) => void;
+  selectedTab: ProfileTab
+  setSelectedTab: (value: ProfileTab) => void
 }) {
-  const { currentViewMode } = useViewMode();
+  const { currentViewMode } = useViewMode()
   return (
     <div
-      className={`min-h-[52px] w-full rounded-lg border bg-white-90-card px-1.5 py-1.5 dark:bg-dark-primary`}
+      className={`min-h-13 w-full rounded-lg border border-border px-1.5 py-1.5 dark:bg-dark-primary`}
     >
       <div
         className={`flex h-full min-w-full flex-row gap-1.5`}
-        // TODO: refactor this to tailwindcss class and values
         style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#C9A2FF rgba(209, 213, 219, 0.5)',
+          scrollbarWidth: "thin",
+          scrollbarColor: "#C9A2FF rgba(209, 213, 219, 0.5)",
         }}
       >
         <button
@@ -27,8 +26,8 @@ export default function ProfileTabs({
           data-testid="table-view-switch-option-one"
           className={`flex h-[38px] w-full min-w-[100px] cursor-pointer items-center justify-center rounded-md transition-all duration-300 ease-in-out ${
             selectedTab === ProfileTab.OVERVIEW
-              ? 'background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black'
-              : 'bg-transparent font-medium text-black dark:text-white'
+              ? "background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black"
+              : "bg-transparent font-medium text-black dark:text-white"
           }`}
         >
           Overview
@@ -37,8 +36,8 @@ export default function ProfileTabs({
           <button
             className={`flex h-[38px] w-full min-w-[100px] cursor-pointer items-center justify-center rounded-md transition-all duration-300 ease-in-out ${
               selectedTab === ProfileTab.CONNECTIONS
-                ? 'background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black'
-                : 'bg-transparent font-medium text-black dark:text-white'
+                ? "background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black"
+                : "bg-transparent font-medium text-black dark:text-white"
             }`}
             onClick={() => setSelectedTab(ProfileTab.CONNECTIONS)}
             data-testid="table-view-switch-option-one"
@@ -51,8 +50,8 @@ export default function ProfileTabs({
             className={`flex min-h-max w-full min-w-[100px] cursor-pointer items-center justify-center rounded-md transition-all duration-300 ease-in-out ${
               selectedTab === ProfileTab.ACTIVITY ||
               selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS
-                ? 'background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black'
-                : 'bg-transparent font-medium text-black dark:text-white'
+                ? "background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black"
+                : "bg-transparent font-medium text-black dark:text-white"
             }`}
             onClick={() => setSelectedTab(ProfileTab.ACTIVITY)}
             data-testid="table-view-switch-option-one"
@@ -64,8 +63,8 @@ export default function ProfileTabs({
         <button
           className={`flex w-full min-w-[100px] cursor-pointer items-center justify-center rounded-md transition-all duration-300 ease-in-out ${
             selectedTab === ProfileTab.EVALUATIONS
-              ? 'background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black'
-              : 'bg-transparent font-medium text-black dark:text-white'
+              ? "background bg-button-primary font-bold text-white dark:bg-slate-200 dark:text-black"
+              : "bg-transparent font-medium text-black dark:text-white"
           }`}
           onClick={() => setSelectedTab(ProfileTab.EVALUATIONS)}
           data-testid="table-view-switch-option-two"
@@ -75,5 +74,5 @@ export default function ProfileTabs({
         </button>
       </div>
     </div>
-  );
+  )
 }

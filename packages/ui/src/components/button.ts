@@ -1,7 +1,14 @@
 import { css, html, LitElement } from "lit"
 import { customElement, property } from "lit/decorators.js"
 
-export type ButtonVariant = "default" | "secondary" | "ghost"
+export type ButtonVariant = "default" | "secondary" | "ghost" | "outline"
+export type ButtonSize = "sm" | "md" | "lg" | "icon" | "icon-sm" | "icon-lg"
+export type ButtonColors =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "warning"
+  | "destructive"
 
 @customElement("a-button")
 export class ButtonElement extends LitElement {
@@ -9,25 +16,21 @@ export class ButtonElement extends LitElement {
   variant: ButtonVariant = "default"
 
   @property({ reflect: true })
-  size: "sm" | "md" | "lg" = "md"
+  size: ButtonSize = "md"
 
   @property({ reflect: true })
-  color: "primary" | "secondary" | "success" | "warning" | "destructive" =
-    "primary"
+  color: ButtonColors = "primary"
 
   @property({ type: Boolean, reflect: true })
   disabled: boolean = false
 
   static styles = css`
-    /* :host only handles layout and display */
     :host {
       display: inline-flex;
-      /* Optional: allow external styling via CSS variables or part */
     }
 
-    /* The real button inside Shadow DOM - fully isolated from Tailwind */
     button {
-      all: unset; /* Strong reset */
+      all: unset;
       box-sizing: border-box;
 
       display: inline-flex;
@@ -38,7 +41,9 @@ export class ButtonElement extends LitElement {
       font-weight: 500;
       transition:
         transform 0.15s ease,
-        background-color 0.15s ease;
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
       cursor: pointer;
 
       border: 1px solid var(--border);
@@ -61,7 +66,6 @@ export class ButtonElement extends LitElement {
       outline-offset: 2px;
     }
 
-    /* Pressed effect */
     button:active:not(:disabled) {
       transform: scale(0.95);
     }
@@ -83,6 +87,38 @@ export class ButtonElement extends LitElement {
       height: 3rem;
       padding: 0 1.5rem;
       font-size: 1rem;
+    }
+
+    :host([size="icon-sm"]) button {
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+    }
+    :host([size="icon-sm"]) {
+      --icon-size: 1rem;
+      --icon-gap: 0;
+    }
+
+    /* icon: 2.5rem square (matches md height) */
+    :host([size="icon"]) button {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+    }
+    :host([size="icon"]) {
+      --icon-size: 1.125rem;
+      --icon-gap: 0;
+    }
+
+    /* icon-lg: 3rem square (matches lg height) */
+    :host([size="icon-lg"]) button {
+      width: 3rem;
+      height: 3rem;
+      padding: 0;
+    }
+    :host([size="icon-lg"]) {
+      --icon-size: 1.25rem;
+      --icon-gap: 0;
     }
 
     /* ==================== COLOR PALETTE ==================== */
@@ -112,33 +148,56 @@ export class ButtonElement extends LitElement {
     }
 
     /* ==================== VARIANTS ==================== */
+
+    /* Default (filled) */
     :host([variant="default"]) button {
       --bg: var(--color);
       --fg: var(--color-fg);
+      --border: transparent;
     }
 
     :host([variant="default"]) button:hover:not(:disabled) {
       --bg: oklch(from var(--color) calc(l + 0.05) c h);
     }
 
+    /* Secondary */
     :host([variant="secondary"]) button {
       --bg: color-mix(in oklch, var(--color) 15%, transparent);
       --fg: var(--color);
+      --border: transparent;
     }
 
     :host([variant="secondary"]) button:hover:not(:disabled) {
       --bg: color-mix(in oklch, var(--color) 25%, transparent);
     }
 
+    /* Ghost */
     :host([variant="ghost"]) button {
       --bg: transparent;
       --fg: var(--color);
-      border-color: transparent;
+      --border: transparent;
     }
 
     :host([variant="ghost"]) button:hover:not(:disabled) {
       --bg: color-mix(in oklch, var(--color) 20%, transparent);
     }
+
+    /* NEW: Outline variant */
+    :host([variant="outline"]) button {
+      --bg: transparent;
+      --fg: var(--color);
+      --border: var(--color);
+    }
+
+    :host([variant="outline"]) button:hover:not(:disabled) {
+      --bg: color-mix(in oklch, var(--color) 10%, transparent);
+    }
+
+    /* Optional: stronger hover for outline */
+    /* :host([variant="outline"]) button:hover:not(:disabled) {
+      --bg: color-mix(in oklch, var(--color) 15%, transparent);
+      --border: oklch(from var(--color) calc(l - 0.05) c h);
+    } */
   `
 
   protected render() {

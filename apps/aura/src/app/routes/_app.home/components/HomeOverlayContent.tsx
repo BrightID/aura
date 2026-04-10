@@ -1,22 +1,21 @@
-import { resetStore } from '@/BrightID/actions';
-import { MoveUpIn } from '@/components/animations';
-import Modal from '@/components/Shared/Modal';
-import { preferredViewIcon } from '@/constants';
-import RoleSelectModal from '@/app/routes/_app.dashboard/components/RoleSelectModal';
-import { selectPreferredView } from '@/store/profile/selectors';
-import { PreferredView } from '@/types/dashboard';
-import { RoutePath } from '@/types/router';
-import { __DEV__ } from '@/utils/env';
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router';
-import { Button } from '@/components/ui/button';
+import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { Link } from "react-router"
+import RoleSelectModal from "@/app/routes/_app.dashboard/components/RoleSelectModal"
+import { resetStore } from "@/BrightID/actions"
+import { MoveUpIn } from "@/components/animations"
+import Modal from "@/components/Shared/Modal"
+import { preferredViewIcon } from "@/constants"
+import { selectPreferredView } from "@/store/profile/selectors"
+import { PreferredView } from "@/types/dashboard"
+import { RoutePath } from "@/types/router"
+import { __DEV__ } from "@/utils/env"
 
 export const HomeOverlayContent = () => {
-  const preferredView = useSelector(selectPreferredView);
-  const [isRoleSelectModalOpen, setIsRoleSelectModalOpen] = useState(false);
+  const preferredView = useSelector(selectPreferredView)
+  const [isRoleSelectModalOpen, setIsRoleSelectModalOpen] = useState(false)
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   return (
     <MoveUpIn duration={0.4} delay={0.1} y={20}>
       <div className="row mb-4">
@@ -30,15 +29,18 @@ export const HomeOverlayContent = () => {
         <div className="card">
           <p className="mb-5">Preferred view</p>
           <img
-            className="icon mx-auto mb-7 !h-10 !w-10"
+            className="icon mx-auto mb-7 h-10! w-10!"
             src={preferredViewIcon[preferredView]}
             alt=""
           />
           <span className="mt-auto flex w-full items-center justify-between">
             <p className="font-bold">{preferredView}</p>
-            <Button size="icon" onClick={() => setIsRoleSelectModalOpen(true)}>
+            <a-button
+              size="icon"
+              onClick={() => setIsRoleSelectModalOpen(true)}
+            >
               <img src="/assets/images/Dashboard/refresh-icon.svg" alt="" />
-            </Button>
+            </a-button>
           </span>
         </div>
       </div>
@@ -121,15 +123,15 @@ export const HomeOverlayContent = () => {
             alt=""
           />
           <p className="mt-auto text-right text-[18px] text-gray20">
-            {' '}
+            {" "}
             <br /> Settings
           </p>
         </div>
         {(__DEV__ ||
-          process.env.VITE_REACT_APP_IS_CYPRESS === 'true' ||
-          process.env.REACT_APP_ENABLE_LOGOUT === 'true') && (
+          process.env.VITE_REACT_APP_IS_CYPRESS === "true" ||
+          process.env.REACT_APP_ENABLE_LOGOUT === "true") && (
           <button
-            className={'btn'}
+            className={"btn"}
             onClick={() => dispatch(resetStore())}
             data-testid="logout-button"
           >
@@ -138,7 +140,7 @@ export const HomeOverlayContent = () => {
         )}
       </div>
       <Modal
-        title={'Role Selection'}
+        title={"Role Selection"}
         isOpen={isRoleSelectModalOpen}
         noButtonPadding={true}
         closeModalHandler={() => setIsRoleSelectModalOpen(false)}
@@ -149,5 +151,5 @@ export const HomeOverlayContent = () => {
         />
       </Modal>
     </MoveUpIn>
-  );
-};
+  )
+}

@@ -498,7 +498,7 @@
 }
 
 .card {
-  @apply bg-card flex flex-1 flex-col justify-center rounded-md px-[18px] py-4 dark:text-white;
+  @apply bg-card flex flex-1 flex-col justify-center rounded-md px-4.5 py-4 dark:text-white border-border;
 }
 
 .icon {

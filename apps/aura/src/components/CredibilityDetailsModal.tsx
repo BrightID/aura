@@ -1,85 +1,84 @@
-import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
-import { useInboundEvaluations } from 'hooks/useSubjectEvaluations';
-import { useSubjectName } from 'hooks/useSubjectName';
+import { useMyEvaluationsContext } from "contexts/MyEvaluationsContext"
+import { useInboundEvaluations } from "hooks/useSubjectEvaluations"
+import { useSubjectName } from "hooks/useSubjectName"
 import {
   useImpactPercentage,
   useSubjectVerifications,
-} from 'hooks/useSubjectVerifications';
-import { PencilIcon } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { useSelector } from 'store/hooks';
-import { selectAuthData } from 'store/profile/selectors';
-import { EvaluationCategory } from 'types/dashboard';
-import { compactFormat } from '@/utils/number';
-import { calculateUserScorePercentage } from '@/utils/score';
-
-import { SubjectInboundEvaluationsContextProvider } from '@/contexts/SubjectInboundEvaluationsContext';
+} from "hooks/useSubjectVerifications"
+import { PencilIcon } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { Link, useNavigate } from "react-router"
+import { useSelector } from "store/hooks"
+import { selectAuthData } from "store/profile/selectors"
+import { EvaluationCategory } from "types/dashboard"
+import { SubjectInboundEvaluationsContextProvider } from "@/contexts/SubjectInboundEvaluationsContext"
+import { compactFormat } from "@/utils/number"
+import { calculateUserScorePercentage } from "@/utils/score"
 
 import {
   getRawTextClassNameOfAuraRatingNumber,
   getViewModeSubjectTextColorClass,
   viewAsToViewMode,
-} from '../constants';
-import { CredibilityDetailsProps } from '../types';
-import EvaluationFlow from './EvaluationFlow/EvaluationFlow';
-import { HorizontalProgressBar } from './Shared/HorizontalProgressBar';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import BrightIdProfilePicture from './BrightIdProfilePicture';
-import { Skeleton } from './ui/skeleton';
-import { EvaluationsChart } from './Shared/ProfileOverview/evaluations-chart';
+} from "../constants"
+import { CredibilityDetailsProps } from "../types"
+import BrightIdProfilePicture from "./BrightIdProfilePicture"
+import EvaluationFlow from "./EvaluationFlow/EvaluationFlow"
+import { HorizontalProgressBar } from "./Shared/HorizontalProgressBar"
+import { EvaluationsChart } from "./Shared/ProfileOverview/evaluations-chart"
+import { Button } from "./ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
+import { Skeleton } from "./ui/skeleton"
 
 const views = [
   EvaluationCategory.SUBJECT,
   EvaluationCategory.PLAYER,
   EvaluationCategory.TRAINER,
   EvaluationCategory.MANAGER,
-];
+]
 
 const CredibilityDetailsForRole = ({
   subjectId,
   roleEvaluationCategory,
   onClose,
 }: {
-  subjectId: string;
-  roleEvaluationCategory: EvaluationCategory;
-  onClose: () => void;
+  subjectId: string
+  roleEvaluationCategory: EvaluationCategory
+  onClose: () => void
 }) => {
-  const authData = useSelector(selectAuthData);
+  const authData = useSelector(selectAuthData)
   const { auraLevel, auraScore, auraImpacts, refresh } =
-    useSubjectVerifications(subjectId, roleEvaluationCategory);
-  const [showEvaluationFlow, setShowEvaluationFlow] = useState(false);
+    useSubjectVerifications(subjectId, roleEvaluationCategory)
+  const [showEvaluationFlow, setShowEvaluationFlow] = useState(false)
   const { ratings, inboundRatingsStatsString } = useInboundEvaluations({
     subjectId,
     evaluationCategory: roleEvaluationCategory,
-  });
-  const impactPercentage = useImpactPercentage(auraImpacts, authData?.brightId);
+  })
+  const impactPercentage = useImpactPercentage(auraImpacts, authData?.brightId)
 
   const { loading, myRatingToSubject, myConfidenceValueInThisSubjectRating } =
     useMyEvaluationsContext({
       subjectId,
       evaluationCategory: roleEvaluationCategory,
-    });
+    })
   const auraImpactsSorted = useMemo(
     () =>
       (auraImpacts ?? [])
         .filter((item) => item.impact !== 0)
         .sort((a, b) => a.impact - b.impact),
     [auraImpacts],
-  );
-  const link = '/subject/' + subjectId;
-  const navigate = useNavigate();
+  )
+  const link = "/subject/" + subjectId
+  const navigate = useNavigate()
 
   const progress = calculateUserScorePercentage(
     roleEvaluationCategory,
     auraScore ?? 0,
-  );
+  )
 
   return (
     <>
       <div className="text-l font-bold">
-        As a{' '}
+        As a{" "}
         <span
           className={getViewModeSubjectTextColorClass(
             viewAsToViewMode[roleEvaluationCategory],
@@ -95,22 +94,22 @@ const CredibilityDetailsForRole = ({
       </div>
       <div className="flex w-full items-center gap-2">
         <div>
-          Score:{' '}
+          Score:{" "}
           <span className="font-medium">
-            {auraScore ? compactFormat(auraScore) : '-'}
+            {auraScore ? compactFormat(auraScore) : "-"}
           </span>
         </div>
         <HorizontalProgressBar percentage={progress} />
       </div>
       <div>
-        Evaluations:{' '}
+        Evaluations:{" "}
         <span className="font-bold">
-          {ratings !== null ? ratings.length : '...'} (
+          {ratings !== null ? ratings.length : "..."} (
           {inboundRatingsStatsString})
         </span>
       </div>
       <div>
-        Your Evaluation:{' '}
+        Your Evaluation:{" "}
         <span className="font-bold">
           {loading ? (
             <span className="text-gray20">...</span>
@@ -121,7 +120,7 @@ const CredibilityDetailsForRole = ({
               )}`}
             >
               Positive - {myConfidenceValueInThisSubjectRating} (
-              {(Number(myRatingToSubject.rating) > 0 ? '+' : '') +
+              {(Number(myRatingToSubject.rating) > 0 ? "+" : "") +
                 Number(myRatingToSubject.rating)}
               )
             </span>
@@ -135,7 +134,7 @@ const CredibilityDetailsForRole = ({
               {Number(myRatingToSubject.rating)})
             </span>
           ) : (
-            '-'
+            "-"
           )}
         </span>
       </div>
@@ -150,7 +149,7 @@ const CredibilityDetailsForRole = ({
         />
       </SubjectInboundEvaluationsContextProvider>
       <div>
-        Your Evaluation Impact:{' '}
+        Your Evaluation Impact:{" "}
         {loading ? (
           <span className="text-gray20">...</span>
         ) : myRatingToSubject && Number(myRatingToSubject.rating) !== 0 ? (
@@ -158,7 +157,7 @@ const CredibilityDetailsForRole = ({
             <span
               className={`font-bold`}
               style={{
-                color: '#6C34B3',
+                color: "#6C34B3",
               }}
             >
               {(Number(myRatingToSubject.rating) > 0 ? 1 : -1) *
@@ -166,17 +165,17 @@ const CredibilityDetailsForRole = ({
               %
             </span>
 
-            <Button
+            <a-button
               onClick={() => setShowEvaluationFlow(true)}
               variant="secondary"
               size="icon"
             >
               <PencilIcon width={10} height={10} />
-            </Button>
+            </a-button>
           </div>
         ) : (
           <span>
-            none.{' '}
+            none.{" "}
             <button
               disabled={subjectId === authData?.brightId}
               onClick={() => setShowEvaluationFlow(true)}
@@ -192,83 +191,83 @@ const CredibilityDetailsForRole = ({
         loading={loading}
         impacts={auraImpactsSorted}
         onBarClick={(entry: any) => {
-          onClose();
+          onClose()
           navigate(
             `/subject/${entry.evaluated}?viewas=${roleEvaluationCategory}`,
-          );
+          )
         }}
       />
       <Link
-        to={link + '?viewas=' + roleEvaluationCategory}
+        to={link + "?viewas=" + roleEvaluationCategory}
         className="btn mt-auto flex w-full justify-center"
         onClick={(e) => {
-          e.preventDefault();
-          onClose();
-          navigate(link + '?viewas=' + roleEvaluationCategory);
+          e.preventDefault()
+          onClose()
+          navigate(link + "?viewas=" + roleEvaluationCategory)
         }}
       >
-        View{' '}
+        View{" "}
         {String(roleEvaluationCategory)[0].toUpperCase() +
-          String(roleEvaluationCategory).slice(1)}{' '}
+          String(roleEvaluationCategory).slice(1)}{" "}
         Profile
       </Link>
     </>
-  );
-};
+  )
+}
 
 const CredibilityDetails = ({
   credibilityDetailsProps,
   onClose,
 }: {
-  credibilityDetailsProps: CredibilityDetailsProps;
-  onClose: () => void;
+  credibilityDetailsProps: CredibilityDetailsProps
+  onClose: () => void
 }) => {
   const [evaluationCategory, setEvaluationCategory] = useState(
     credibilityDetailsProps.evaluationCategory,
-  );
+  )
 
   const playerEvaluation = useSubjectVerifications(
     credibilityDetailsProps.subjectId,
     EvaluationCategory.PLAYER,
-  );
+  )
 
   const trainerEvaluation = useSubjectVerifications(
     credibilityDetailsProps.subjectId,
     EvaluationCategory.TRAINER,
-  );
+  )
 
   const managerEvaluation = useSubjectVerifications(
     credibilityDetailsProps.subjectId,
     EvaluationCategory.MANAGER,
-  );
+  )
 
   const authorizedTabs = useMemo(() => {
-    const tabs = [EvaluationCategory.SUBJECT];
+    const tabs = [EvaluationCategory.SUBJECT]
 
     if (playerEvaluation.auraLevel && playerEvaluation.auraLevel > 0)
-      tabs.push(EvaluationCategory.PLAYER);
+      tabs.push(EvaluationCategory.PLAYER)
 
     if (trainerEvaluation.auraLevel && trainerEvaluation.auraLevel > 0)
-      tabs.push(EvaluationCategory.TRAINER);
+      tabs.push(EvaluationCategory.TRAINER)
 
     if (managerEvaluation.auraLevel && managerEvaluation.auraLevel > 0)
-      tabs.push(EvaluationCategory.MANAGER);
+      tabs.push(EvaluationCategory.MANAGER)
 
-    return tabs;
-  }, [playerEvaluation, trainerEvaluation, managerEvaluation]);
+    return tabs
+  }, [playerEvaluation, trainerEvaluation, managerEvaluation])
 
   const isLoading =
     managerEvaluation.loading ||
     trainerEvaluation.loading ||
-    playerEvaluation.loading;
+    playerEvaluation.loading
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading) return
 
     if (!authorizedTabs.includes(evaluationCategory)) {
-      setEvaluationCategory(authorizedTabs[0]);
+      setEvaluationCategory(authorizedTabs[0])
     }
-  }, [isLoading, authorizedTabs, evaluationCategory]);
+  }, [isLoading, authorizedTabs, evaluationCategory])
 
   if (isLoading)
     return (
@@ -280,8 +279,8 @@ const CredibilityDetails = ({
             className={`flex h-full min-w-full flex-row gap-2 overflow-x-auto overflow-y-hidden pb-1`}
             // TODO: refactor this to tailwindcss class and values
             style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#292534 rgba(209, 213, 219, 0.5)',
+              scrollbarWidth: "thin",
+              scrollbarColor: "#292534 rgba(209, 213, 219, 0.5)",
             }}
           >
             {views.map((_, key) => (
@@ -293,7 +292,7 @@ const CredibilityDetails = ({
           </div>
         </div>
       </div>
-    );
+    )
 
   return (
     <div className="flex min-h-[450px] w-full flex-col">
@@ -304,17 +303,17 @@ const CredibilityDetails = ({
           className={`flex h-full min-w-full overflow-x-auto overflow-y-hidden pb-1 md:flex-nowrap`}
           // TODO: refactor this to tailwindcss class and values
           style={{
-            scrollbarWidth: 'thin',
-            scrollbarColor: '#292534 rgba(209, 213, 219, 0.5)',
+            scrollbarWidth: "thin",
+            scrollbarColor: "#292534 rgba(209, 213, 219, 0.5)",
           }}
         >
           <p
             className={`rounded-md ${
-              authorizedTabs.length > 0 ? '' : 'hidden'
+              authorizedTabs.length > 0 ? "" : "hidden"
             } flex h-9 w-full min-w-[100px] cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
               evaluationCategory === EvaluationCategory.SUBJECT
-                ? 'background bg-orange font-bold text-white dark:text-black'
-                : 'bg-transparent font-medium text-black dark:text-white'
+                ? "background bg-orange font-bold text-white dark:text-black"
+                : "bg-transparent font-medium text-black dark:text-white"
             }`}
             onClick={() => setEvaluationCategory(EvaluationCategory.SUBJECT)}
             data-testid="table-view-switch-option-one"
@@ -322,8 +321,8 @@ const CredibilityDetails = ({
             <img
               src={
                 evaluationCategory === EvaluationCategory.SUBJECT
-                  ? '/assets/images/Shared/brightid-icon-white.svg'
-                  : '/assets/images/Shared/brightid-icon.svg'
+                  ? "/assets/images/Shared/brightid-icon-white.svg"
+                  : "/assets/images/Shared/brightid-icon.svg"
               }
               alt=""
             />
@@ -331,11 +330,11 @@ const CredibilityDetails = ({
           </p>
           <p
             className={`rounded-md ${
-              authorizedTabs.length > 1 ? '' : 'hidden'
+              authorizedTabs.length > 1 ? "" : "hidden"
             } flex h-9 w-full min-w-[100px] cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
               evaluationCategory === EvaluationCategory.PLAYER
-                ? 'background bg-purple font-bold text-white'
-                : 'bg-transparent font-medium text-black dark:text-white'
+                ? "background bg-purple font-bold text-white"
+                : "bg-transparent font-medium text-black dark:text-white"
             }`}
             onClick={() => setEvaluationCategory(EvaluationCategory.PLAYER)}
             data-testid="table-view-switch-option-one"
@@ -345,11 +344,11 @@ const CredibilityDetails = ({
           </p>
           <p
             className={`rounded-md ${
-              authorizedTabs.length > 2 ? '' : 'hidden'
+              authorizedTabs.length > 2 ? "" : "hidden"
             } flex h-9 w-full min-w-[100px] cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
               evaluationCategory === EvaluationCategory.TRAINER
-                ? 'background bg-green font-bold text-white'
-                : 'bg-transparent font-medium text-black dark:text-white'
+                ? "background bg-green font-bold text-white"
+                : "bg-transparent font-medium text-black dark:text-white"
             }`}
             onClick={() => setEvaluationCategory(EvaluationCategory.TRAINER)}
             data-testid="table-view-switch-option-two"
@@ -359,11 +358,11 @@ const CredibilityDetails = ({
           </p>
           <p
             className={`rounded-md ${
-              authorizedTabs.length > 3 ? '' : 'hidden'
+              authorizedTabs.length > 3 ? "" : "hidden"
             } flex h-9 w-full min-w-[100px] cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
               evaluationCategory === EvaluationCategory.MANAGER
-                ? 'background bg-blue font-bold text-white'
-                : 'bg-transparent font-medium text-black dark:text-white'
+                ? "background bg-blue font-bold text-white"
+                : "bg-transparent font-medium text-black dark:text-white"
             }`}
             onClick={() => setEvaluationCategory(EvaluationCategory.MANAGER)}
             data-testid="table-view-switch-option-two"
@@ -383,16 +382,16 @@ const CredibilityDetails = ({
         onClose={onClose}
       />
     </div>
-  );
-};
+  )
+}
 const CredibilityDetailsModal = ({
   credibilityDetailsProps,
   onClose,
 }: {
-  credibilityDetailsProps: CredibilityDetailsProps;
-  onClose: () => void;
+  credibilityDetailsProps: CredibilityDetailsProps
+  onClose: () => void
 }) => {
-  const name = useSubjectName(credibilityDetailsProps.subjectId);
+  const name = useSubjectName(credibilityDetailsProps.subjectId)
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent aria-describedby={`${name} subject credebility details`}>
@@ -413,7 +412,7 @@ const CredibilityDetailsModal = ({
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default CredibilityDetailsModal;
+export default CredibilityDetailsModal

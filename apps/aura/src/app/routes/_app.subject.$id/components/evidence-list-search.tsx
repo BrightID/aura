@@ -1,14 +1,14 @@
-import { FiltersModal } from 'components/EvaluationFlow/FiltersModal';
-import { SortsModal } from 'components/EvaluationFlow/SortsModal';
-import { useSubjectInboundEvaluationsContext } from 'contexts/SubjectInboundEvaluationsContext';
-import { useMemo, useState } from 'react';
-
-import Dropdown from 'components/Shared/Dropdown';
-import Modal from 'components/Shared/Modal';
-import { AuraFilterId } from 'hooks/useFilters';
-import { AuraSortId } from 'hooks/useSorts';
-import useViewMode from 'hooks/useViewMode';
-import { AuraFilterDropdownOption } from 'types';
+import { FiltersModal } from "components/EvaluationFlow/FiltersModal"
+import { SortsModal } from "components/EvaluationFlow/SortsModal"
+import Dropdown from "components/Shared/Dropdown"
+import Modal from "components/Shared/Modal"
+import { useSubjectInboundEvaluationsContext } from "contexts/SubjectInboundEvaluationsContext"
+import { AuraFilterId } from "hooks/useFilters"
+import { AuraSortId } from "hooks/useSorts"
+import useViewMode from "hooks/useViewMode"
+import { useMemo, useState } from "react"
+import { AuraFilterDropdownOption } from "types"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -16,10 +16,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog"
 
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
   const {
@@ -29,14 +28,14 @@ function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
     setSelectedSort,
     filters,
     sorts,
-  } = useSubjectInboundEvaluationsContext({ subjectId });
+  } = useSubjectInboundEvaluationsContext({ subjectId })
 
   return (
     <div>
       <p className="font-bold text-black2 dark:text-gray-100">Filters</p>
       <a-separator className="my-5" />
       <FiltersModal
-        testidPrefix={'subject-filter'}
+        testidPrefix={"subject-filter"}
         filters={filters}
         selectedFilterIds={selectedFilterIds}
         toggleFiltersById={toggleFiltersById}
@@ -47,17 +46,17 @@ function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
       <a-separator className="my-5" />
 
       <SortsModal
-        testidPrefix={'subject-sort'}
+        testidPrefix={"subject-sort"}
         sorts={sorts}
         selectedSort={selectedSort}
         setSelectedSort={setSelectedSort}
       />
     </div>
-  );
+  )
 }
 
 export const EvidenceListSearch = ({ subjectId }: { subjectId: string }) => {
-  const { currentEvaluationCategory } = useViewMode();
+  const { currentEvaluationCategory } = useViewMode()
 
   const {
     itemsOriginal,
@@ -72,10 +71,10 @@ export const EvidenceListSearch = ({ subjectId }: { subjectId: string }) => {
   } = useSubjectInboundEvaluationsContext({
     subjectId,
     evaluationCategory: currentEvaluationCategory,
-  });
+  })
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const customViewOption = useMemo(
     () => ({
@@ -86,7 +85,7 @@ export const EvidenceListSearch = ({ subjectId }: { subjectId: string }) => {
       onClick: () => setIsModalOpen(true),
     }),
     [],
-  );
+  )
   const defaultOption = useMemo(
     () => ({
       value: 0,
@@ -96,7 +95,7 @@ export const EvidenceListSearch = ({ subjectId }: { subjectId: string }) => {
       onClick: () => clearSortAndFilter(),
     }),
     [clearSortAndFilter],
-  );
+  )
   const dropdownOptions: AuraFilterDropdownOption[] = useMemo(
     () => [
       defaultOption,
@@ -134,42 +133,42 @@ export const EvidenceListSearch = ({ subjectId }: { subjectId: string }) => {
       ].map((item) => ({
         ...item,
         onClick: () => {
-          toggleFiltersById(item.filterIds, true);
-          setSelectedSort(item.sortId, item.ascending);
+          toggleFiltersById(item.filterIds, true)
+          setSelectedSort(item.sortId, item.ascending)
         },
       })),
       customViewOption,
     ],
     [customViewOption, defaultOption, setSelectedSort, toggleFiltersById],
-  );
+  )
 
   const selectedItem: AuraFilterDropdownOption = useMemo(() => {
     if (!selectedFilters && !selectedSort) {
-      return defaultOption;
+      return defaultOption
     }
     const selectedItem = dropdownOptions.find((item) => {
       const isSelectedSort =
         selectedSort?.id === item.sortId &&
         item.ascending ===
-          (selectedSort.defaultAscending !== selectedSort.isReversed);
-      if (!isSelectedSort) return false;
-      if (!selectedFilters) return !item.filterIds;
-      if (!item.filterIds) return false;
-      const selectedFilterIdsSorted = selectedFilters.map((f) => f.id).sort();
-      const itemFilterIdsSorted = [...item.filterIds].sort();
+          (selectedSort.defaultAscending !== selectedSort.isReversed)
+      if (!isSelectedSort) return false
+      if (!selectedFilters) return !item.filterIds
+      if (!item.filterIds) return false
+      const selectedFilterIdsSorted = selectedFilters.map((f) => f.id).sort()
+      const itemFilterIdsSorted = [...item.filterIds].sort()
       for (let i = 0; i < selectedFilterIdsSorted.length; i++) {
-        if (itemFilterIdsSorted[i] !== selectedFilterIdsSorted[i]) return false;
+        if (itemFilterIdsSorted[i] !== selectedFilterIdsSorted[i]) return false
       }
-      return true;
-    });
-    return selectedItem ?? customViewOption;
+      return true
+    })
+    return selectedItem ?? customViewOption
   }, [
     customViewOption,
     defaultOption,
     dropdownOptions,
     selectedFilters,
     selectedSort,
-  ]);
+  ])
 
   return (
     <>
@@ -207,59 +206,57 @@ export const EvidenceListSearch = ({ subjectId }: { subjectId: string }) => {
             </ScrollArea>
 
             <DialogFooter>
-              <Button
+              <a-button
                 variant="outline"
                 onClick={() => {
-                  clearSortAndFilter();
+                  clearSortAndFilter()
                 }}
                 className="w-full flex-1 px-6 py-2 sm:w-auto"
               >
                 Clear
-              </Button>
-              <Button
+              </a-button>
+              <a-button
                 variant="secondary"
                 className="w-full flex-1 px-6 py-2 sm:w-auto"
                 data-testid="subject-sort-option-Confidence-ascending"
                 onClick={() => {
-                  setIsModalOpen(false);
+                  setIsModalOpen(false)
                 }}
               >
                 Ok
-              </Button>
+              </a-button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
         <span className="ml-auto">
           (
-          {filteredSubjects?.filter((e) => e.rating && e.rating.rating !== '0')
+          {filteredSubjects?.filter((e) => e.rating && e.rating.rating !== "0")
             .length ??
             itemsOriginal?.length ??
-            '...'}{' '}
+            "..."}{" "}
           result
-          {(filteredSubjects?.filter((e) => e.rating && e.rating.rating !== '0')
+          {(filteredSubjects?.filter((e) => e.rating && e.rating.rating !== "0")
             .length ?? itemsOriginal?.length) !== 1
-            ? 's'
-            : ''}
+            ? "s"
+            : ""}
           )
         </span>
       </div>
 
-      <div className="input-wrapper-focus flex max-h-[175px] flex-1 flex-col justify-center gap-4 rounded-lg border bg-card p-1 text-card-foreground">
-        <div className="card__input flex items-center gap-2 rounded px-3.5">
-          <img
-            className="h-4 w-4"
-            src="/assets/images/Shared/search-icon.svg"
-            alt=""
-          />
-          <input
-            className="h-11 w-full bg-card text-sm font-medium text-card-foreground placeholder-black2 focus:outline-none dark:placeholder:text-gray-50"
-            type="text"
-            placeholder="Search in these results"
-            value={searchString}
-            onChange={(e) => setSearchString(e.target.value)}
-          />
-        </div>
-      </div>
+      <a-input
+        className="h-11 w-full bg-card text-sm font-medium text-card-foreground placeholder-black2 focus:outline-none dark:placeholder:text-gray-50"
+        type="text"
+        placeholder="Search in these results"
+        value={searchString}
+        onChange={(e) => setSearchString(e.target.value)}
+      >
+        <img
+          slot="prefix"
+          className="h-4 w-4"
+          src="/assets/images/Shared/search-icon.svg"
+          alt=""
+        />
+      </a-input>
     </>
-  );
-};
+  )
+}

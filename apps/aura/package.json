@@ -1,6 +1,6 @@
 {
   "name": "@aura/aura",
-  "version": "0.4.82",
+  "version": "0.4.83",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "packageManager": "bun@1.2.4",

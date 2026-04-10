@@ -1,23 +1,22 @@
-import { Button } from '@/components/ui/button';
-import { MdRefresh } from 'react-icons/md';
 import {
-  ZoomInIcon,
-  ZoomOutIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
-} from 'lucide-react';
+  ZoomInIcon,
+  ZoomOutIcon,
+} from "lucide-react"
+import { MdRefresh } from "react-icons/md"
 
 export type ZoomControlsProps = {
-  onReset: () => void;
-  onZoomIn: () => void;
-  onZoomOut: () => void;
-  onPanLeft: () => void;
-  onPanRight: () => void;
-  disabledZoomIn: boolean;
-  disabledZoomOut: boolean;
-  disabledPanLeft: boolean;
-  disabledPanRight: boolean;
-};
+  onReset: () => void
+  onZoomIn: () => void
+  onZoomOut: () => void
+  onPanLeft: () => void
+  onPanRight: () => void
+  disabledZoomIn: boolean
+  disabledZoomOut: boolean
+  disabledPanLeft: boolean
+  disabledPanRight: boolean
+}
 
 const ZoomControls = ({
   onReset,
@@ -31,52 +30,52 @@ const ZoomControls = ({
   disabledPanRight,
 }: ZoomControlsProps) => (
   <div className="my-2 flex justify-end sm:mb-4">
-    <Button
+    <a-button
       variant="ghost"
       size="icon"
       onClick={onReset}
       disabled={disabledZoomIn}
       className="h-6 w-6 text-xs sm:text-sm"
     >
-      <MdRefresh className="h-2 w-2" />
-    </Button>
-    <Button
+      <MdRefresh className="size-4" />
+    </a-button>
+    <a-button
       size="icon"
       className="h-6 w-6 text-xs sm:text-sm"
       variant="ghost"
       onClick={onZoomIn}
       disabled={disabledZoomIn}
     >
-      <ZoomInIcon className="h-2 w-2" />
-    </Button>
-    <Button
+      <ZoomInIcon className="size-4" />
+    </a-button>
+    <a-button
       size="icon"
       className="h-6 w-6 text-xs sm:text-sm"
       variant="ghost"
       onClick={onZoomOut}
       disabled={disabledZoomOut}
     >
-      <ZoomOutIcon className="h-2 w-2" />
-    </Button>
-    <Button
+      <ZoomOutIcon className="size-4" />
+    </a-button>
+    <a-button
       size="icon"
       className="h-6 w-6 text-xs sm:text-sm"
       variant="ghost"
       onClick={onPanLeft}
       disabled={disabledPanLeft}
     >
-      <ArrowLeftIcon className="h-2 w-2" />
-    </Button>
-    <Button
+      <ArrowLeftIcon className="size-4" />
+    </a-button>
+    <a-button
       size="icon"
       className="h-6 w-6 text-xs sm:text-sm"
       variant="ghost"
       onClick={onPanRight}
       disabled={disabledPanRight}
     >
-      <ArrowRightIcon className="h-2 w-2" />
-    </Button>
+      <ArrowRightIcon className="size-4" />
+    </a-button>
   </div>
-);
+)
 
-export default ZoomControls;
+export default ZoomControls

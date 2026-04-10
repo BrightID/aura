@@ -1,18 +1,20 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { type CSSResultGroup, css, html, LitElement } from "lit"
+import { customElement, property, state } from "lit/decorators.js"
 
 @customElement("a-input")
 export class InputElement extends LitElement {
-  @property() type: "text" | "email" | "password" | "number" = "text";
-  @property() label?: string;
-  @property() name: string = "input-text";
-  @property() placeholder = "";
-  @property({ reflect: true }) value = "";
-  @property({ type: Boolean }) disabled = false;
+  @property() type: "text" | "email" | "password" | "number" = "text"
+  @property() label?: string
+  @property() name: string = "input-text"
+  @property() placeholder = ""
 
-  @state() private _hasIcon = false;
+  @property({ reflect: true }) value = ""
+  @property({ type: Boolean }) disabled = false
 
-  private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`;
+  @state() private _hasPrefix = false
+  @state() private _hasSuffix = false
+
+  private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`
 
   static styles: CSSResultGroup = css`
     :host {
@@ -32,12 +34,15 @@ export class InputElement extends LitElement {
 
     .input-wrapper {
       position: relative;
+      display: flex;
+      align-items: center;
     }
 
-    ::slotted([slot="icon"]) {
+    /* Icon Slots */
+    ::slotted([slot="prefix"]),
+    ::slotted([slot="suffix"]) {
       position: absolute;
       top: 50%;
-      left: 0.875rem;
       transform: translateY(-50%);
       color: var(--muted);
       pointer-events: none;
@@ -45,7 +50,17 @@ export class InputElement extends LitElement {
       z-index: 1;
       width: 1.1em;
       height: 1.1em;
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    ::slotted([slot="prefix"]) {
+      left: 0.875rem;
+    }
+
+    ::slotted([slot="suffix"]) {
+      right: 0.875rem;
     }
 
     input {
@@ -71,9 +86,16 @@ export class InputElement extends LitElement {
         background-color 0.18s ease;
     }
 
-    /* When icon is present → extra left padding to clear the icon */
-    input.has-icon {
+    /* Adjust padding when prefix/suffix exists */
+    input.has-prefix {
       padding-left: 2.75rem;
+    }
+    input.has-suffix {
+      padding-right: 2.75rem;
+    }
+    input.has-prefix.has-suffix {
+      padding-left: 2.75rem;
+      padding-right: 2.75rem;
     }
 
     input::placeholder {
@@ -98,18 +120,13 @@ export class InputElement extends LitElement {
       transform: translateY(-0.5px);
     }
 
-    input:focus-visible {
-      border-color: var(--ring);
-      box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 35%, transparent);
-    }
-
     input:disabled {
       opacity: 0.52;
       cursor: not-allowed;
       background: color-mix(in oklch, var(--background) 90%, transparent);
       border-color: color-mix(in oklch, var(--border) 60%, transparent);
     }
-  `;
+  `
 
   render() {
     return html`
@@ -118,11 +135,17 @@ export class InputElement extends LitElement {
         : ""}
 
       <div class="input-wrapper">
-        <slot name="icon" @slotchange=${this._onIconSlotChange}></slot>
+        <!-- Prefix Icon Slot -->
+        <slot name="prefix" @slotchange=${this._onPrefixSlotChange}></slot>
 
         <input
           id=${this._inputId}
-          class=${this._hasIcon ? "has-icon" : ""}
+          class=${[
+            this._hasPrefix ? "has-prefix" : "",
+            this._hasSuffix ? "has-suffix" : "",
+          ]
+            .join(" ")
+            .trim()}
           .value=${this.value}
           @input=${this.onInputChange}
           .type=${this.type}
@@ -130,32 +153,39 @@ export class InputElement extends LitElement {
           ?disabled=${this.disabled}
           name=${this.name}
         />
+
+        <!-- Suffix Icon Slot -->
+        <slot name="suffix" @slotchange=${this._onSuffixSlotChange}></slot>
       </div>
-    `;
+    `
   }
 
-  private _onIconSlotChange(e: Event) {
-    const slot = e.target as HTMLSlotElement;
-    this._hasIcon = slot.assignedElements().length > 0;
+  private _onPrefixSlotChange(e: Event) {
+    const slot = e.target as HTMLSlotElement
+    this._hasPrefix = slot.assignedElements().length > 0
+  }
+
+  private _onSuffixSlotChange(e: Event) {
+    const slot = e.target as HTMLSlotElement
+    this._hasSuffix = slot.assignedElements().length > 0
   }
 
   private onInputChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    this.value = target.value; // optional: two-way binding support
+    const target = e.target as HTMLInputElement
+    this.value = target.value
 
     this.dispatchEvent(
       new CustomEvent("change", {
-        // more standard name than "onChange"
         detail: target.value,
         bubbles: true,
         composed: true,
       }),
-    );
+    )
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-input": InputElement;
+    "a-input": InputElement
   }
 }
