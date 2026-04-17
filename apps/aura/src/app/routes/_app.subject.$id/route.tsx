@@ -1,4 +1,3 @@
-import { skipToken } from "@reduxjs/toolkit/query"
 import CredibilityDetailsModal from "components/CredibilityDetailsModal"
 import EvaluateOverlayCard from "components/EvaluationFlow/EvaluateOverlayCard"
 import EvaluationFlow from "components/EvaluationFlow/EvaluationFlow"
@@ -26,9 +25,8 @@ import { useMyEvaluations } from "hooks/useMyEvaluations"
 import useViewMode from "hooks/useViewMode"
 import { ArrowDownLeft, ArrowDownRight, ArrowUpRight } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
-import { useSelector } from "react-redux"
 import { useNavigate, useParams, useSearchParams } from "react-router"
-import { selectAuthData } from "store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import { CredibilityDetailsProps } from "types"
 import {
   EvaluationCategory,
@@ -36,10 +34,10 @@ import {
   PreferredView,
   ProfileTab,
 } from "types/dashboard"
-import { Verifications } from "@/api/auranode.service"
+import { Verifications } from '@/types/aura'
 import ProfileEvaluation from "@/components/Shared/ProfileEvaluation"
 import { viewModeToSubjectViewMode, viewModeToViewAs } from "@/constants/index"
-import { useGetGravatarProfileByHashedEmailQuery } from "@/store/api/profile"
+import { useGetGravatarProfileByHashedEmailQuery } from "@/hooks/queries/profile"
 import { ActivityListSearch } from "./components/activity-list-search"
 import { ConnectionListSearch } from "./components/connection-list-search"
 import EvidenceHelpModal from "./components/evidence-help-modal"
@@ -77,9 +75,8 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
 
   const name = useMemo(() => query.get("name"), [query])
 
-  const profilePhotoFetch = useGetGravatarProfileByHashedEmailQuery(
-    query.has("gravatar") ? query.get("gravatar")! : skipToken,
-  )
+  const gravatarHash = query.has("gravatar") ? query.get("gravatar")! : ""
+  const profilePhotoFetch = useGetGravatarProfileByHashedEmailQuery(gravatarHash)
 
   const {
     currentViewMode,
@@ -466,7 +463,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
 }
 const SubjectProfile = () => {
   const { id } = useParams()
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
   const subjectId = useMemo(
     () => id ?? authData?.brightId,
     [authData?.brightId, id],

@@ -1,4 +1,4 @@
-import { AuraImpact } from '@/api/auranode.service';
+import { AuraImpact } from '@/types/aura';
 import {
   findNearestColor,
   subjectRatingColorMap,

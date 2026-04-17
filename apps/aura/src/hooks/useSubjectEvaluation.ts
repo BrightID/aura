@@ -1,7 +1,7 @@
 import { getConfidenceValueOfAuraRatingObject } from '@/constants/index';
-import { SubjectInboundEvaluationsContext } from 'contexts/SubjectInboundEvaluationsContext';
-import { SubjectOutboundEvaluationsContext } from 'contexts/SubjectOutboundEvaluationsContext';
-import { useContext, useMemo } from 'react';
+import { useSubjectInboundEvaluationsContextSafe } from 'contexts/SubjectInboundEvaluationsContext';
+import { useOutboundEvaluationsContextSafe } from 'contexts/SubjectOutboundEvaluationsContext';
+import { useMemo } from 'react';
 
 import { EvaluationCategory } from '../types/dashboard';
 import useViewMode from './useViewMode';
@@ -13,43 +13,30 @@ export const useSubjectConnectionInfoFromContext = ({
   fromSubjectId: string | undefined;
   toSubjectId: string;
 }) => {
-  const inboundEvaluationsContext = useContext(
-    SubjectInboundEvaluationsContext,
-  );
-  const outboundEvaluationsContext = useContext(
-    SubjectOutboundEvaluationsContext,
-  );
+  const inboundData = useSubjectInboundEvaluationsContextSafe(toSubjectId);
+  const outboundData = useOutboundEvaluationsContextSafe(fromSubjectId ?? '');
+
   const connectionInfo = useMemo(() => {
-    if (inboundEvaluationsContext?.subjectId === toSubjectId) {
-      const ratingObject = inboundEvaluationsContext.connections?.find(
+    if (inboundData) {
+      const ratingObject = inboundData.connections?.find(
         (conn) => conn.id === fromSubjectId,
       );
-      if (ratingObject) {
-        return ratingObject;
-      }
+      if (ratingObject) return ratingObject;
     }
-    if (outboundEvaluationsContext?.subjectId === fromSubjectId) {
-      const ratingObject = outboundEvaluationsContext?.connections?.find(
+    if (outboundData && fromSubjectId) {
+      const ratingObject = outboundData.connections?.find(
         (conn) => conn.id === toSubjectId,
       );
-      if (ratingObject) {
-        return ratingObject;
-      }
+      if (ratingObject) return ratingObject;
     }
     return null;
-  }, [
-    fromSubjectId,
-    inboundEvaluationsContext,
-    outboundEvaluationsContext,
-    toSubjectId,
-  ]);
+  }, [fromSubjectId, inboundData, outboundData, toSubjectId]);
+
   return {
     connectionInfo,
     loading:
-      (inboundEvaluationsContext?.subjectId === toSubjectId &&
-        inboundEvaluationsContext?.loading) ||
-      (outboundEvaluationsContext?.subjectId === fromSubjectId &&
-        outboundEvaluationsContext?.loading),
+      (inboundData?.loading ?? false) ||
+      (outboundData?.loading ?? false),
   };
 };
 
@@ -62,45 +49,35 @@ export const useSubjectEvaluationFromContext = ({
   toSubjectId: string;
   evaluationCategory: EvaluationCategory;
 }) => {
-  const inboundEvaluationsContext = useContext(
-    SubjectInboundEvaluationsContext,
-  );
-  const outboundEvaluationsContext = useContext(
-    SubjectOutboundEvaluationsContext,
-  );
+  const inboundData = useSubjectInboundEvaluationsContextSafe(toSubjectId);
+  const outboundData = useOutboundEvaluationsContextSafe(fromSubjectId ?? '');
 
   const { currentEvaluationCategory } = useViewMode();
+
   const rating = useMemo(() => {
     if (!fromSubjectId) return null;
-    if (inboundEvaluationsContext?.subjectId === toSubjectId) {
-      const ratingObject = inboundEvaluationsContext.ratings?.find(
+    if (inboundData) {
+      const ratingObject = inboundData.ratings?.find(
         (r) =>
           r.fromBrightId === fromSubjectId &&
           r.category === (evaluationCategory ?? currentEvaluationCategory),
       );
-      if (ratingObject) {
-        return ratingObject;
-      }
+      if (ratingObject) return ratingObject;
     }
-    if (outboundEvaluationsContext?.subjectId === fromSubjectId) {
-      const ratingObject = outboundEvaluationsContext?.ratings?.find(
+    if (outboundData && fromSubjectId) {
+      const ratingObject = outboundData.ratings?.find(
         (r) =>
           r.toBrightId === toSubjectId &&
           r.category === (evaluationCategory ?? currentEvaluationCategory),
       );
-      if (ratingObject) {
-        return ratingObject;
-      }
+      if (ratingObject) return ratingObject;
     }
     return null;
-  }, [
-    currentEvaluationCategory,
-    evaluationCategory,
-    fromSubjectId,
-    inboundEvaluationsContext,
-    outboundEvaluationsContext,
-    toSubjectId,
-  ]);
+  }, [currentEvaluationCategory, evaluationCategory, fromSubjectId, inboundData, outboundData, toSubjectId]);
+
+  if (!inboundData && !outboundData) {
+    throw new Error('proper EvaluationsContext not provided');
+  }
 
   const confidenceValue = useMemo(
     () => getConfidenceValueOfAuraRatingObject(rating),
@@ -112,20 +89,9 @@ export const useSubjectEvaluationFromContext = ({
     [rating],
   );
 
-  if (
-    inboundEvaluationsContext?.subjectId !== toSubjectId &&
-    outboundEvaluationsContext?.subjectId !== fromSubjectId
-  ) {
-    throw new Error('proper EvaluationsContext not provided');
-  }
-
   return {
     rating,
-    loading:
-      (inboundEvaluationsContext?.subjectId === toSubjectId &&
-        inboundEvaluationsContext?.loading) ||
-      (outboundEvaluationsContext?.subjectId === fromSubjectId &&
-        outboundEvaluationsContext?.loading),
+    loading: (inboundData?.loading ?? false) || (outboundData?.loading ?? false),
     ratingNumber,
     confidenceValue,
   };

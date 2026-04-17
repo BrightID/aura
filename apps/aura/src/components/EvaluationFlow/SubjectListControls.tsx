@@ -358,12 +358,12 @@ export const SubjectListControls = ({
           }}
           disabled={loading || contextLoading}
           className="ml-1"
-          variant="outline"
+          variant="default"
           size={"icon"}
         >
           <RefreshCcwIcon
             className={cn(
-              "h-7 w-7 cursor-pointer",
+              "h-3 w-3 cursor-pointer",
               (loading || contextLoading) && "animate-spin",
             )}
           />

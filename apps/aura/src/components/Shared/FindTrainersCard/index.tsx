@@ -21,7 +21,7 @@ import LinkCard from '@/app/routes/_app.home/components/LinkCard';
 
 const FindTrainersCard = ({ subjectId }: { subjectId: string }) => {
   return (
-    <div className="card !bg-[#ECECEC] dark:!bg-[#1f1f1f]">
+    <a-card>
       <div className="mb-4.5 text-lg font-bold">Find Trainers</div>
       <div className="flex flex-col gap-2.5">
         <PotentialEvaluatorsListBrief
@@ -44,7 +44,7 @@ const FindTrainersCard = ({ subjectId }: { subjectId: string }) => {
           <LinkCard />
         </div>
       </div>
-    </div>
+    </a-card>
   );
 };
 
@@ -80,7 +80,7 @@ const PotentialEvaluatorsListBrief = ({
       <div className="font-medium text-black2 dark:text-gray-300">
         {description}
       </div>
-      <div className="flex flex-col gap-2 rounded-[8px] bg-white p-3 dark:bg-card">
+      <a-card className="flex flex-col gap-2" style={{ padding: '0.75rem' }}>
         <div className="flex flex-row justify-between">
           <div className="flex flex-row gap-2.5">
             {!isExpanded && (
@@ -106,19 +106,13 @@ const PotentialEvaluatorsListBrief = ({
             </div>
           </div>
           {isExpanded ? (
-            <img
-              src="/assets/images/Shared/minus-purple-icon.svg"
-              alt=""
-              className="-mt-2 cursor-pointer"
-              onClick={() => setIsExpanded(false)}
-            />
+            <a-button variant="ghost" size="sm" onClick={() => setIsExpanded(false)}>
+              <a-icon name="minus" size="sm" />
+            </a-button>
           ) : (
-            <div
-              className="cursor-pointer font-medium"
-              onClick={() => setIsExpanded(true)}
-            >
+            <a-button variant="ghost" size="sm" onClick={() => setIsExpanded(true)}>
               Show All
-            </div>
+            </a-button>
           )}
         </div>
         {isExpanded && (
@@ -133,7 +127,7 @@ const PotentialEvaluatorsListBrief = ({
             ))}
           </div>
         )}
-      </div>
+      </a-card>
     </div>
   );
 };

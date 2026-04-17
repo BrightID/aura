@@ -1,25 +1,24 @@
-import { skipToken } from '@reduxjs/toolkit/query';
 import { BarSeriesOption, EChartsOption } from 'echarts';
 import useParseBrightIdVerificationData from 'hooks/useParseBrightIdVerificationData';
 import { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
-import { useGetBrightIDProfileQuery } from 'store/api/profile';
-import { selectAuthData, selectBrightIdBackup } from 'store/profile/selectors';
+import { useGetBrightIDProfileQuery } from '@/hooks/queries/connections';
+import { useProfileStore } from '@/store/profile.store';
+import { useSettingsStore } from '@/store/settings.store';
+import { decryptUserData } from '@/utils/crypto';
 import { hash } from '@/utils/crypto';
 import { createBlockiesImage, renderImageCover } from '@/utils/image';
-import { AuraImpact, AuraImpactRaw } from '../api/auranode.service';
+import { AuraImpact, AuraImpactRaw } from '@/types/aura';
 import { EvaluationCategory } from '../types/dashboard';
-import { selectPreferredTheme } from '@/BrightID/actions';
-import { useDispatch } from '@/store/hooks';
-import { getProfilePhoto } from '@/store/api/backup';
+import { useGetProfilePhotoQuery } from '@/hooks/queries/backup';
 import { getBarChartColor } from '@/utils/connection';
+import type { BrightIdBackup } from '@/types';
 
 export const useSubjectVerifications = (
   subjectId: string | null | undefined,
   evaluationCategory: EvaluationCategory,
 ) => {
-  const profileQuery = useGetBrightIDProfileQuery(subjectId ?? skipToken);
+  const profileQuery = useGetBrightIDProfileQuery(subjectId ?? '');
 
   const verifications = profileQuery.data?.verifications;
   const parsedData = useParseBrightIdVerificationData(
@@ -81,10 +80,12 @@ export const useImpactEChartOption = (
   impactChartSmallOption: EChartsOption;
 } => {
   const { subjectIdProp: focusedSubjectId } = useParams();
-  const preferredTheme = useSelector(selectPreferredTheme);
-  const authData = useSelector(selectAuthData);
-  const brightIdBackup = useSelector(selectBrightIdBackup);
-  const dispatch = useDispatch();
+  const preferredTheme = useSettingsStore((s) => s.prefferedTheme);
+  const authData = useProfileStore((s) => s.authData);
+  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
+  const brightIdBackup = brightIdBackupEncrypted && authData?.password
+    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
+    : null;
 
   const auraTopImpacts = useMemo(
     () =>
@@ -131,14 +132,10 @@ export const useImpactEChartOption = (
         try {
           let imageData: string;
           try {
-            const res = await dispatch(
-              getProfilePhoto.initiate({
-                brightId: impact.evaluator,
-                key,
-                password: authData.password,
-              }),
-            );
-            const profilePhoto = res.data;
+            const res = await fetch(`/brightid/backups/${key}/${impact.evaluator}`);
+            const text = await res.text();
+            const { decryptData } = await import('@/utils/crypto');
+            const profilePhoto = decryptData(text, authData.password);
             if (!profilePhoto) throw new Error('No image response');
             imageData = await renderImageCover(
               profilePhoto,
@@ -174,7 +171,6 @@ export const useImpactEChartOption = (
     authData,
     brightIdBackup,
     displayImages,
-    dispatch,
   ]);
 
   const richLabels = displayImages

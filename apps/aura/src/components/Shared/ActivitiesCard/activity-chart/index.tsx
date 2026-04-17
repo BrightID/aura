@@ -3,11 +3,11 @@ import ZoomControls from './zoom-controls';
 import ChartArea from './chart-area';
 import SkeletonChart from './sekeleton-chart';
 import { calculateRatingsImpact } from './utils';
-import { ChartConfig, ChartContainer } from '@/components/ui/chart';
-import { AuraRating, AuraNodeBrightIdConnection } from '@/types';
+import { ChartConfig } from '@/components/ui/chart';
+import { AuraRating, AuraNodeBrightIdConnection, BrightIdBackup } from '@/types';
 import { EvaluationCategory } from '@/types/dashboard';
-import { useSelector } from '@/store/hooks';
-import { selectBrightIdBackup } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
+import { decryptUserData } from '@/utils/crypto';
 
 export interface ActivityChartProps {
   ratings: AuraRating[] | null;
@@ -42,7 +42,11 @@ export const ActivityChart = ({
   const [endIndex, setEndIndex] = useState<number>(0);
   const [isSelecting, setIsSelecting] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
-  const brightIdBackup = useSelector(selectBrightIdBackup);
+  const authData = useProfileStore((s) => s.authData);
+  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
+  const brightIdBackup = brightIdBackupEncrypted && authData?.password
+    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
+    : null;
 
   const chartData = useMemo(
     () =>
@@ -166,7 +170,7 @@ export const ActivityChart = ({
   if (ratingsLoading) return <SkeletonChart />;
 
   return (
-    <ChartContainer config={chartConfig} className="mb-12 h-52 w-full">
+    <div className="relative mb-12 h-52 w-full">
       <div
         data-testid="activity-chart-container"
         className="h-full"
@@ -217,6 +221,6 @@ export const ActivityChart = ({
           onBarClick={onBarClick}
         />
       </div>
-    </ChartContainer>
+    </div>
   );
 };

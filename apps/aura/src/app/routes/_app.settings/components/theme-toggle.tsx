@@ -1,17 +1,16 @@
-import { selectPreferredTheme, setPrefferedTheme } from '@/BrightID/actions';
-import { useDispatch, useSelector } from '@/store/hooks';
-import { FaMoon, FaSun } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from "motion/react"
+import { FaMoon, FaSun } from "react-icons/fa"
+import { useSettingsStore } from "@/store/settings.store"
 
 export default function ToggleTheme() {
-  const dispatch = useDispatch();
-  const prefferedTheme = useSelector(selectPreferredTheme);
-  const isDark = prefferedTheme === 'dark';
+  const prefferedTheme = useSettingsStore((s) => s.prefferedTheme)
+  const setPrefferedTheme = useSettingsStore((s) => s.setPrefferedTheme)
+  const isDark = prefferedTheme === "dark"
 
   return (
     <a-card
       data-testid="toggle-theme-btn"
-      onClick={() => dispatch(setPrefferedTheme(isDark ? 'light' : 'dark'))}
+      onClick={() => setPrefferedTheme(isDark ? "light" : "dark")}
       className="flex cursor-pointer items-center justify-between rounded-lg py-3.5 pl-5 pr-5 transition-colors duration-500"
     >
       <span className="flex items-center gap-2">
@@ -51,5 +50,5 @@ export default function ToggleTheme() {
         {prefferedTheme.toUpperCase()}
       </motion.small>
     </a-card>
-  );
+  )
 }

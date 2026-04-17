@@ -1,9 +1,8 @@
 import { useEffect } from "react"
-import { useSelector } from "react-redux"
-import { selectPreferredTheme } from "@/BrightID/actions"
+import { useSettingsStore } from "@/store/settings.store"
 
 export default function ThemeResolver() {
-  const preferredTheme = useSelector(selectPreferredTheme)
+  const preferredTheme = useSettingsStore((s) => s.prefferedTheme)
 
   useEffect(() => {
     if (preferredTheme === "dark") {

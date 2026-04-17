@@ -49,13 +49,13 @@ export function SortsModal<T>({
       {(Object.keys(filteredCategories) as SortCategoryId[]).map((category) => (
         <div className="flex flex-col gap-3" key={category}>
           {category !== SortCategoryId.Default && (
-            <p className="text-black2">{category}</p>
+            <a-text variant="muted">{category}</a-text>
           )}
           {filteredCategories[category]?.map((item) => (
             <div key={item.id}>
-              <p className="text-black2 dark:text-gray-100 pb-2">
+              <a-text variant="muted" className="pb-2">
                 {item.title}
-              </p>
+              </a-text>
               <div className="flex flex-row gap-2">
                 <ModalSortItem
                   testidPrefix={testidPrefix}

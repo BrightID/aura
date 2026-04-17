@@ -1,47 +1,9 @@
-import React, {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
+// Re-exports from zustand store — kept for backwards compatibility
+export { useRefreshStore as useRefreshEvaluationsContext } from '@/store/refresh.store';
 
-// Define the context
-export const RefreshEvaluationsContext = createContext<{
-  refreshCounter: number;
-  refreshEvaluations: () => void;
-} | null>(null);
+import type { ReactNode } from 'react';
 
-interface ProviderProps {
-  children: ReactNode;
+// Provider is now a no-op wrapper; state lives in useRefreshStore
+export function RefreshEvaluationsContextProvider({ children }: { children: ReactNode }) {
+  return <>{children}</>;
 }
-
-// Define the Provider component
-export const RefreshEvaluationsContextProvider: React.FC<ProviderProps> = ({
-  children,
-}) => {
-  const [refreshCounter, setRefreshCounter] = useState(0);
-  const refreshEvaluations = useCallback(() => {
-    setRefreshCounter((c) => c + 1);
-  }, []);
-  return (
-    <RefreshEvaluationsContext.Provider
-      value={{
-        refreshCounter,
-        refreshEvaluations,
-      }}
-    >
-      {children}
-    </RefreshEvaluationsContext.Provider>
-  );
-};
-
-export const useRefreshEvaluationsContext = () => {
-  const context = useContext(RefreshEvaluationsContext);
-  if (context === null) {
-    throw new Error(
-      'RefreshEvaluationsContext must be used within a RefreshEvaluationsContextProvider',
-    );
-  }
-  return context;
-};

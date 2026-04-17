@@ -1,10 +1,9 @@
 import { FadeIn, Scale } from "components/animations"
 import CustomTrans from "components/CustomTrans"
-import { useDispatch } from "store/hooks"
-import { setSplashScreenShown } from "store/profile"
+import { useProfileStore } from "@/store/profile.store"
 
 const Spalsh = () => {
-  const dispatch = useDispatch()
+  const setSplashScreenShown = useProfileStore((s) => s.setSplashScreenShown)
   return (
     <div className="page flex min-h-screen flex-col px-5.5! pt-22.5! pb-4">
       <section className="content pl-5 pr-12">
@@ -33,7 +32,7 @@ const Spalsh = () => {
           <button
             className="btn btn--big w-full max-w-67.5 text-white!"
             data-testid="splash-dismiss-btn"
-            onClick={() => dispatch(setSplashScreenShown(true))}
+            onClick={() => setSplashScreenShown(true)}
           >
             Get Started
           </button>

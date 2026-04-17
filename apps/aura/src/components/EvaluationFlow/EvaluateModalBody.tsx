@@ -3,8 +3,7 @@ import { useSubjectInboundEvaluationsContext } from 'contexts/SubjectInboundEval
 import { useEvaluateSubject } from 'hooks/useEvaluateSubject';
 import { useSubjectName } from 'hooks/useSubjectName';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
 
 import { viewModeSubjectString } from '@/constants';
 import { EvaluationCategory, PreferredView } from '@/types/dashboard';
@@ -31,7 +30,7 @@ const EvaluateModalBody = ({
     subjectId,
     evaluationCategory,
   });
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
   const prevRating = useMemo(
     () => (myRatingObject ? Number(myRatingObject.rating) : undefined),
     [myRatingObject],

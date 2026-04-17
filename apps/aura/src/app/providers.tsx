@@ -1,40 +1,34 @@
-import { PropsWithChildren } from "react"
-import { Provider } from "react-redux"
-import { PersistGate } from "redux-persist/lib/integration/react"
+import { type PropsWithChildren } from "react"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import NodeApiGateContextProvider from "@/BrightID/components/NodeApiGate"
 import UpdatePrompt from "@/components/Shared/UpdatePrompt"
 import { BrowserHistoryContextProvider } from "@/contexts/BrowserHistoryContext"
-import { MyEvaluationsContextProvider } from "@/contexts/MyEvaluationsContext"
-import { RefreshEvaluationsContextProvider } from "@/contexts/RefreshEvaluationsContext"
 import { SubjectsListContextProvider } from "@/contexts/SubjectsListContext"
-import { configureAppStore } from "@/store"
+import { queryClient } from "@/lib/queryClient"
+import { migrateLegacyReduxStore } from "@/store/migration"
 
-const { persistor, store } = configureAppStore()
+migrateLegacyReduxStore();
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <RefreshEvaluationsContextProvider>
-          <a-toaster />
-          <UpdatePrompt />
-          {children}
-        </RefreshEvaluationsContextProvider>
-      </PersistGate>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
+      <a-toaster />
+      <UpdatePrompt />
+      {children}
+    </QueryClientProvider>
   )
 }
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
-    <MyEvaluationsContextProvider>
-      <SubjectsListContextProvider>
-        <NodeApiGateContextProvider>
-          <BrowserHistoryContextProvider>
-            {children}
-          </BrowserHistoryContextProvider>
-        </NodeApiGateContextProvider>
-      </SubjectsListContextProvider>
-    </MyEvaluationsContextProvider>
+    <SubjectsListContextProvider>
+      <NodeApiGateContextProvider>
+        <BrowserHistoryContextProvider>
+          {children}
+        </BrowserHistoryContextProvider>
+      </NodeApiGateContextProvider>
+    </SubjectsListContextProvider>
   )
 }

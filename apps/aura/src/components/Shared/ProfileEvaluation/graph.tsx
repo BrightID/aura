@@ -1,4 +1,4 @@
-import { Verifications } from '@/api/auranode.service';
+import { Verifications } from '@/types/aura';
 import { viewModeToSubjectViewMode, viewModeToViewAs } from '@/constants';
 import useParseBrightIdVerificationData from '@/hooks/useParseBrightIdVerificationData';
 import { useImpactEChartOption } from '@/hooks/useSubjectVerifications';

@@ -1,8 +1,7 @@
 import { Pencil } from "lucide-react"
 import { useMemo } from "react"
-import { useSelector } from "react-redux"
 import { Link } from "react-router"
-import { Verifications } from "@/api/auranode.service"
+import { Verifications } from '@/types/aura'
 import { Button } from "@/components/ui/button"
 import {
   getBgClassNameOfAuraRatingObject,
@@ -17,7 +16,7 @@ import { getAuraVerification } from "@/hooks/useParseBrightIdVerificationData"
 import { useSubjectName } from "@/hooks/useSubjectName"
 import { useImpactPercentage } from "@/hooks/useSubjectVerifications"
 import useViewMode from "@/hooks/useViewMode"
-import { selectAuthData } from "@/store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import { EvidenceViewMode } from "@/types/dashboard"
 import { connectionLevelIcons } from "@/utils/connection"
 import Tooltip from "../Tooltip"
@@ -55,7 +54,7 @@ const ConnectionInfo = ({
 
   const auraImpacts = verification?.impacts
 
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
   const impactPercentage = useImpactPercentage(
     auraImpacts ?? [],
     authData?.brightId,

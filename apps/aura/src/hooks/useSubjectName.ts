@@ -1,18 +1,18 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-
-import {
-  selectAuthData,
-  selectBrightIdBackup,
-} from '../store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
+import { decryptUserData } from '@/utils/crypto';
+import { BrightIdBackup } from '@/types';
 
 export const useSubjectName = (
   subjectId: string | null | undefined,
 ): string => {
   if (!subjectId) return '';
 
-  const authData = useSelector(selectAuthData);
-  const brightIdBackup = useSelector(selectBrightIdBackup);
+  const authData = useProfileStore((s) => s.authData);
+  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
+  const brightIdBackup = brightIdBackupEncrypted && authData?.password
+    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
+    : null;
 
   const profileInfo = useMemo(
     () =>

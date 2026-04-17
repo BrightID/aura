@@ -1,29 +1,24 @@
 import { NodeApiContext } from '@/BrightID/components/NodeApiGate';
-import {
-  addOperation,
-  Operation,
-  selectOperationByHash,
-} from '@/BrightID/reducer/operationsSlice';
 import { operation_states } from '@/BrightID/utils/constants';
 import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'store/hooks';
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
+import { useOperationsStore, Operation } from '@/store/operations.store';
 
 export function ConnectionLevel({ subjectId }: { subjectId: string }) {
   const { myConnectionToSubject: connection } = useMyEvaluationsContext({
     subjectId,
   });
 
-  const dispatch = useDispatch();
   const api = useContext(NodeApiContext);
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
+  const addOperation = useOperationsStore((s) => s.addOperation);
 
   const [loading, setLoading] = useState(false);
 
   const [connectionOpHash, setConnectionOpHash] = useState<string>('');
-  const connectionOp = useSelector((state) =>
-    selectOperationByHash(state, connectionOpHash),
+  const connectionOp = useOperationsStore((s) =>
+    connectionOpHash ? (s[connectionOpHash as keyof typeof s] as Operation | undefined) : undefined,
   );
 
   const setRandomConnectionLevel = useCallback(async () => {
@@ -41,13 +36,13 @@ export function ConnectionLevel({ subjectId }: { subjectId: string }) {
         Date.now(),
       )) as Operation;
       op.state = operation_states.UNKNOWN;
-      dispatch(addOperation(op));
+      addOperation(op);
       setConnectionOpHash(op.hash);
     } catch (e) {
       setLoading(false);
       alert(String(e));
     }
-  }, [api, authData, connection, dispatch]);
+  }, [api, authData, connection, addOperation]);
 
   useEffect(() => {
     async function getData() {
@@ -57,7 +52,7 @@ export function ConnectionLevel({ subjectId }: { subjectId: string }) {
     }
 
     getData();
-  }, [authData, connectionOp?.state, dispatch]);
+  }, [authData, connectionOp?.state]);
 
   return (
     <div className="card flex flex-col gap-2.5 dark:bg-dark-primary">

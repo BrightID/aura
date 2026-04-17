@@ -5,9 +5,8 @@ import {
 } from 'hooks/useSubjectVerifications';
 import useViewMode from 'hooks/useViewMode';
 import { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router';
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
 import { PreferredView, ProfileTab } from 'types/dashboard';
 
 import {
@@ -78,7 +77,7 @@ const ProfileOverview = ({
 
   const { currentRoleEvaluatorEvaluationCategory } = useViewMode();
 
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
 
   const onChartClick = (params: any) => {
     setCredibilityDetailsProps({

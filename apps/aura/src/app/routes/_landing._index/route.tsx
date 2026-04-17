@@ -1,10 +1,6 @@
 import useRedirectAfterLogin from "hooks/useRedirectAfterLogin"
 import { useEffect, useState } from "react"
-import { useSelector } from "store/hooks"
-import {
-  selectIsLoggedIn,
-  selectSplashScreenShown,
-} from "store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import RecoveryCodeScreen from "@/BrightID/components/Onboarding/RecoveryFlow/RecoveryCodeScreen"
 
 import CustomTrans from "@/components/CustomTrans"
@@ -12,8 +8,9 @@ import { checkIndexedDB } from "@/utils/check-db"
 import Splash from "./components/splash"
 
 const Login = () => {
-  const userIsLogged = useSelector(selectIsLoggedIn)
-  const splashScreenShown = useSelector(selectSplashScreenShown)
+  const authData = useProfileStore((s) => s.authData)
+  const splashScreenShown = useProfileStore((s) => s.splashScreenShown)
+  const userIsLogged = !!authData
   const redirectAfterLogin = useRedirectAfterLogin()
 
   const [isDbHealthy, setIsDbHealthy] = useState(false)

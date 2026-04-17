@@ -1,27 +1,45 @@
-import * as React from "react"
-import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
+import * as React from 'react'
+import { cn } from '@/lib/utils'
 
-import { cn } from "@/lib/utils"
+type HoverCardProps = React.HTMLAttributes<HTMLElement> & {
+  openDelay?: number
+  closeDelay?: number
+  side?: 'top' | 'bottom' | 'left' | 'right'
+}
 
-const HoverCard = HoverCardPrimitive.Root
+function HoverCard({ children, openDelay, closeDelay, side, ...props }: HoverCardProps) {
+  return (
+    <a-hover-card openDelay={openDelay} closeDelay={closeDelay} side={side} {...props}>
+      {children}
+    </a-hover-card>
+  )
+}
 
-const HoverCardTrigger = HoverCardPrimitive.Trigger
+function HoverCardTrigger({
+  children,
+  asChild: _,
+}: {
+  children?: React.ReactNode
+  asChild?: boolean
+}) {
+  return <a-hover-card-trigger slot="trigger">{children}</a-hover-card-trigger>
+}
 
-const HoverCardContent = React.forwardRef<
-  React.ElementRef<typeof HoverCardPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
->(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
-  <HoverCardPrimitive.Content
-    ref={ref}
-    align={align}
-    sideOffset={sideOffset}
-    className={cn(
-      "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-      className
-    )}
-    {...props}
-  />
-))
-HoverCardContent.displayName = HoverCardPrimitive.Content.displayName
+function HoverCardContent({
+  children,
+  className,
+  align: _,
+  sideOffset: __,
+  ...props
+}: React.HTMLAttributes<HTMLElement> & {
+  align?: 'start' | 'center' | 'end'
+  sideOffset?: number
+}) {
+  return (
+    <a-hover-card-content slot="content" className={cn(className)} {...props}>
+      {children}
+    </a-hover-card-content>
+  )
+}
 
 export { HoverCard, HoverCardTrigger, HoverCardContent }

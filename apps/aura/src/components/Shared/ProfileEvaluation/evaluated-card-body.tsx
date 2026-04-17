@@ -2,7 +2,7 @@ import UserName from './user-name';
 import UserInformation from './user-information';
 import BrightIdProfilePicture from '@/components/BrightIdProfilePicture';
 import { EvidenceType, EvidenceViewMode } from '@/types/dashboard';
-import { Verifications } from '@/api/auranode.service';
+import { Verifications } from '@/types/aura';
 import {
   getViewModeBorderColorClass,
   getViewModeSubjectBorderColorClass,

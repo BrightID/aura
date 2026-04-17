@@ -3,7 +3,6 @@
 import { PhoneCall, Plus } from "lucide-react"
 import { useState } from "react"
 import { MdEmail } from "react-icons/md"
-import { useSelector } from "react-redux"
 import DefaultHeader from "@/components/Header/DefaultHeader"
 import { Card } from "@/components/ui/card"
 import {
@@ -15,9 +14,8 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useStoreNewContactMutation } from "@/store/api/get-verified"
-import { addContactInfo, selectContacts } from "@/store/contacts"
-import { useDispatch } from "@/store/hooks"
+import { useStoreNewContactMutation } from "@/hooks/queries/get-verified"
+import { useContactsStore } from "@/store/contacts.store"
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -33,10 +31,10 @@ export default function ContactPage() {
   const [value, setValue] = useState("")
   const [error, setError] = useState("")
 
-  const contacts = useSelector(selectContacts)
-  const dispatch = useDispatch()
+  const contacts = useContactsStore((s) => s.storedInfoHashed)
+  const addContactInfo = useContactsStore((s) => s.addContactInfo)
 
-  const [mutate, { isLoading }] = useStoreNewContactMutation()
+  const { mutate, isPending: isLoading } = useStoreNewContactMutation()
 
   const handleAdd = async () => {
     if (type === "email" && !isValidEmail(value)) {
@@ -48,17 +46,15 @@ export default function ContactPage() {
       return
     }
 
-    mutate(value).then((res) => {
-      if (res.error) {
-        setError((res.error as { message: string })?.message?.toString())
-
-        return
-      }
-
-      dispatch(addContactInfo({ type, value }))
-
-      setValue("")
-      setError("")
+    mutate(value, {
+      onSuccess: () => {
+        addContactInfo({ type, value })
+        setValue("")
+        setError("")
+      },
+      onError: (err: any) => {
+        setError(err?.message?.toString() ?? "Unknown error")
+      },
     })
   }
 

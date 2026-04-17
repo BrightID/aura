@@ -9,7 +9,7 @@ import { EvidenceViewMode } from 'types/dashboard';
 
 import ConnectedCardBody from './connected-card-body';
 import EvaluatedCardBody from './evaluated-card-body';
-import { Verifications } from '@/api/auranode.service';
+import { Verifications } from '@/types/aura';
 
 const ProfileEvaluation = ({
   fromSubjectId,

@@ -1,14 +1,13 @@
 import { useMemo, useState } from "react"
-import { useSelector } from "react-redux"
 import EvaluationsDetailsPerformance from "@/app/routes/_app.home/components/EvaluationsDetailsPerformance"
 import { useSubjectInboundEvaluationsContext } from "../contexts/SubjectInboundEvaluationsContext"
 import useViewMode from "../hooks/useViewMode"
-import { selectAuthData } from "../store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import { PreferredView } from "../types/dashboard"
 import FindTrainersCard from "./Shared/FindTrainersCard"
 
 export default function LevelUp({ subjectId }: { subjectId: string }) {
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
 
   const { currentViewMode, currentRoleEvaluatorEvaluationCategory } =
     useViewMode()

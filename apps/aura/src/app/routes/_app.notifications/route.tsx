@@ -7,7 +7,6 @@ import {
 } from "lucide-react"
 import React, { useMemo } from "react"
 import { Fragment } from "react/jsx-runtime"
-import { useStore } from "react-redux"
 import { Link } from "react-router"
 import BrightIdProfilePicture from "@/components/BrightIdProfilePicture"
 import DefaultHeader from "@/components/Header/DefaultHeader"
@@ -17,15 +16,12 @@ import {
 } from "@/constants"
 import { useBrightIdBackupConnectionResolver } from "@/hooks/useBrightIdBackupWithAuraConnectionData"
 import { cn } from "@/lib/utils"
-import { useDispatch, useSelector } from "@/store/hooks"
 import {
-  alertsSelector,
-  markAllAsRead,
-  markAsRead,
+  useNotificationsStore,
   NotificationObject,
   NotificationType,
-} from "@/store/notifications"
-import { selectAuthData } from "@/store/profile/selectors"
+} from "@/store/notifications.store"
+import { useProfileStore } from "@/store/profile.store"
 import { BrightIdBackupConnection } from "@/types"
 import { EvaluationCategory } from "@/types/dashboard"
 import { shortenBrightIdName } from "@/utils/connection"
@@ -116,11 +112,12 @@ export function parseTitleAndDescription(
 }
 
 export default function NotificationsPage() {
-  const notifications = useSelector(alertsSelector)
-  // const isLoading = useSelector(alertLoadingSelector);
-  const authData = useSelector(selectAuthData)
+  const notifications = useNotificationsStore((s) => s.alerts)
+  // const isLoading = useNotificationsStore((s) => s.inboundLoading || s.outboundLoading);
+  const authData = useProfileStore((s) => s.authData)
   const { resolve } = useBrightIdBackupConnectionResolver()
-  const { getState, dispatch } = useStore()
+  const markAllAsRead = useNotificationsStore((s) => s.markAllAsRead)
+  const markAsRead = useNotificationsStore((s) => s.markAsRead)
 
   // Define the order of categories for tabs
   const categories: EvaluationCategory[] = [
@@ -176,7 +173,7 @@ export default function NotificationsPage() {
         </a-button> */}
         {notifications.filter((item) => !item.viewed).length > 0 && (
           <div className="flex justify-end">
-            <a-button size="sm" onClick={() => dispatch(markAllAsRead())}>
+            <a-button size="sm" onClick={() => markAllAsRead()}>
               Mark all as read
             </a-button>
           </div>
@@ -237,6 +234,7 @@ export default function NotificationsPage() {
                             notification={n}
                             resolve={resolve}
                             brightId={authData?.brightId}
+                            markAsRead={markAsRead}
                           />
                         </Fragment>
                       )
@@ -256,12 +254,13 @@ function NotificationCard({
   notification,
   resolve,
   brightId,
+  markAsRead,
 }: {
   notification: NotificationObject
   resolve: (key: string) => BrightIdBackupConnection
   brightId: string | undefined
+  markAsRead: (id: string) => void
 }) {
-  const dispatch = useDispatch()
   return (
     <Link to={`/subject/${notification.from}?viewas=${notification.category}`}>
       <a-card
@@ -327,7 +326,7 @@ function NotificationCard({
                 onClick={(e: React.MouseEvent) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  dispatch(markAsRead(notification.id))
+                  markAsRead(notification.id)
                 }}
               >
                 Mark as read

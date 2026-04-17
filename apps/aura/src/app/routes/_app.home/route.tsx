@@ -4,7 +4,6 @@ import { useMyEvaluationsContext } from "contexts/MyEvaluationsContext"
 import { SubjectInboundEvaluationsContextProvider } from "contexts/SubjectInboundEvaluationsContext"
 import useViewMode from "hooks/useViewMode"
 import { useCallback, useEffect, useState } from "react"
-import { useSelector } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router"
 import { RoutePath } from "types/router"
 import InfiniteScrollLocal from "@/components/InfiniteScrollLocal"
@@ -12,9 +11,7 @@ import LevelUp from "@/components/LevelUp"
 import { EmptySubjectList } from "@/components/Shared/EmptyAndLoadingStates/EmptySubjectList"
 import { LoadingList } from "@/components/Shared/EmptyAndLoadingStates/LoadingList"
 import { useSubjectsListContext } from "@/contexts/SubjectsListContext"
-import { useDispatch } from "@/store/hooks"
-import { getBrightIdBackupThunk } from "@/store/profile/actions"
-import { selectAuthData } from "@/store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import { hash } from "@/utils/crypto"
 import { useLevelupProgress } from "@/utils/score"
 import HomeHeader from "./components/header"
@@ -40,7 +37,8 @@ const Home = () => {
     }
   }, [query, navigate])
 
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
+  const getBrightIdBackup = useProfileStore((s) => s.getBrightIdBackup)
   const { currentRoleEvaluatorEvaluationCategory } = useViewMode()
 
   const {
@@ -50,14 +48,13 @@ const Home = () => {
   } = useSubjectsListContext()
 
   const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch()
   const refreshBrightIdBackup = useCallback(async () => {
     if (!authData) return
     setLoading(true)
     const authKey = hash(authData.brightId + authData.password)
-    await dispatch(getBrightIdBackupThunk({ authKey }))
+    await getBrightIdBackup(authKey)
     setLoading(false)
-  }, [authData, dispatch])
+  }, [authData, getBrightIdBackup])
 
   const { loading: loadingMyEvaluations } = useMyEvaluationsContext()
 
@@ -77,7 +74,10 @@ const Home = () => {
     <LoadingList />
   ) : (
     <SubjectInboundEvaluationsContextProvider subjectId={authData.brightId}>
-      <div id="scrollable-div" className="page flex flex-col gap-4">
+      <a-scroll-area
+        id="scrollable-div"
+        className="page *:overflow-x-visible h-screen *:flex *:flex-col gap-4"
+      >
         <ProfileHeaderCard subjectId={authData.brightId} />
         <ProfileInfoPerformance
           subjectId={authData.brightId}
@@ -155,7 +155,7 @@ const Home = () => {
             <LevelUp subjectId={authData.brightId} />
           </a-tab-panel>
         </a-tabs>
-      </div>
+      </a-scroll-area>
     </SubjectInboundEvaluationsContextProvider>
   )
 }

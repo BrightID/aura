@@ -1,18 +1,12 @@
 import { useRegisterSW } from "virtual:pwa-register/react"
-import { skipToken } from "@reduxjs/toolkit/query"
 import { Loader2 } from "lucide-react"
 import { MdUpdate } from "react-icons/md"
-import { useGetAppLatestVersionQuery } from "@/store/api/backup"
+import { useGetAppLatestVersionQuery } from "@/hooks/queries/backup"
 
 const isDevelopment = process.env.NODE_ENV === "development"
 
 export default function VersionCard() {
-  const { data, isLoading } = useGetAppLatestVersionQuery(
-    isDevelopment ? skipToken : undefined,
-    {
-      pollingInterval: 20000,
-    },
-  )
+  const { data, isLoading } = useGetAppLatestVersionQuery()
 
   const {
     offlineReady: [, setOfflineReady],

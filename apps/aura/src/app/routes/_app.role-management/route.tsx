@@ -1,9 +1,7 @@
 import { SubjectInboundConnectionsContextProvider } from 'contexts/SubjectInboundConnectionsContext';
 import { SubjectInboundEvaluationsContextProvider } from 'contexts/SubjectInboundEvaluationsContext';
 import { SubjectOutboundEvaluationsContextProvider } from 'contexts/SubjectOutboundEvaluationsContext';
-import { useSelector } from 'react-redux';
-
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
 import DefaultHeader from '@/components/Header/DefaultHeader';
 import { Link } from 'react-router';
 import PlayerRoleCard from './components/player-role-card';
@@ -11,7 +9,7 @@ import TrainerRoleCard from './components/trainer-role-card';
 import ManagerRoleCard from './components/manager-role-card';
 
 export default function RoleManagement() {
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
   const subjectId = authData!.brightId;
 
   return (

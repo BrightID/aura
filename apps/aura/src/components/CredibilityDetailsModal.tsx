@@ -8,8 +8,7 @@ import {
 import { PencilIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate } from "react-router"
-import { useSelector } from "store/hooks"
-import { selectAuthData } from "store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import { EvaluationCategory } from "types/dashboard"
 import { SubjectInboundEvaluationsContextProvider } from "@/contexts/SubjectInboundEvaluationsContext"
 import { compactFormat } from "@/utils/number"
@@ -45,7 +44,7 @@ const CredibilityDetailsForRole = ({
   roleEvaluationCategory: EvaluationCategory
   onClose: () => void
 }) => {
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
   const { auraLevel, auraScore, auraImpacts, refresh } =
     useSubjectVerifications(subjectId, roleEvaluationCategory)
   const [showEvaluationFlow, setShowEvaluationFlow] = useState(false)

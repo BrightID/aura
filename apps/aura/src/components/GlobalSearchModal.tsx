@@ -1,8 +1,6 @@
-import { selectIsSearchModalOpen, toggleSearchModal } from '@/BrightID/actions';
 import Modal from 'components/Shared/Modal';
 import { Search } from 'lucide-react';
 import { FC, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import {
   Dialog,
@@ -10,17 +8,17 @@ import {
   DialogDescription,
   DialogTitle,
 } from './ui/dialog';
-import { useSelector } from '@/store/hooks';
+import { useSettingsStore } from '@/store/settings.store';
 
 const GlobalSearchBody: FC = () => {
   const [searchString, setSearchString] = useState<string>('');
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const toggleSearchModal = useSettingsStore((s) => s.toggleSearchModal);
 
   const onSearch = () => {
     if (searchString) {
       navigate(`/home?search=${searchString}&tab=evaluate`);
-      dispatch(toggleSearchModal());
+      toggleSearchModal();
     }
   };
 
@@ -60,13 +58,13 @@ const GlobalSearchBody: FC = () => {
 };
 
 const GlobalSearchModal = ({}: {}) => {
-  const isSearchModalOpen = useSelector(selectIsSearchModalOpen);
-  const dispatch = useDispatch();
+  const isSearchModalOpen = useSettingsStore((s) => s.isSearchModalOpen);
+  const toggleSearchModal = useSettingsStore((s) => s.toggleSearchModal);
 
   return (
     <Dialog
       open={isSearchModalOpen}
-      onOpenChange={() => dispatch(toggleSearchModal())}
+      onOpenChange={() => toggleSearchModal()}
     >
       <DialogContent>
         <DialogTitle data-testid="global-search-modal-title">

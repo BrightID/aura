@@ -3,12 +3,11 @@ import { SortsModal } from "components/EvaluationFlow/SortsModal"
 import Dropdown from "components/Shared/Dropdown"
 import { useOutboundEvaluationsContext } from "contexts/SubjectOutboundEvaluationsContext"
 import { AuraFilterId } from "hooks/useFilters"
-import { AuraSelectedSort, AuraSortId } from "hooks/useSorts"
+import { AuraSortId } from "hooks/useSorts"
 import useViewMode from "hooks/useViewMode"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { AuraFilterDropdownOption } from "types"
 import { PreferredView, ProfileTab } from "types/dashboard"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,

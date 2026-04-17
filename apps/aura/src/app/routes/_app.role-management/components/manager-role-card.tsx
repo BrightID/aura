@@ -1,9 +1,8 @@
-import { selectHasManagerRole, toggleManagerRole } from '@/BrightID/actions';
+import { useSettingsStore, RoleStatus } from '@/store/settings.store';
 import { useSubjectVerifications } from '@/hooks/useSubjectVerifications';
 import { EvaluationCategory } from '@/types/dashboard';
 import { RefreshCcw } from 'lucide-react';
 import { FC } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { SubjectIdProps } from './player-role-card';
 import PlayerLevelAndScore from './score-and-level';
 
@@ -18,9 +17,8 @@ const ManagerRoleCard: FC<SubjectIdProps> = ({ subjectId }) => {
     EvaluationCategory.TRAINER,
   );
 
-  const hasManagerRole = useSelector(selectHasManagerRole);
-
-  const dispatch = useDispatch();
+  const hasManagerRole = useSettingsStore((s) => s.hasManagerRole !== RoleStatus.HIDE);
+  const toggleManagerRole = useSettingsStore((s) => s.toggleManagerRole);
 
   const hasNotReachedToLevelOne =
     !trainerEvaluation.auraLevel || trainerEvaluation.auraLevel < 1;
@@ -85,7 +83,7 @@ const ManagerRoleCard: FC<SubjectIdProps> = ({ subjectId }) => {
             <a-button
               data-testid="manager-role-hide-btn"
               color="destructive"
-              onClick={() => dispatch(toggleManagerRole())}
+              onClick={() => toggleManagerRole()}
             >
               Hide
             </a-button>
@@ -94,7 +92,7 @@ const ManagerRoleCard: FC<SubjectIdProps> = ({ subjectId }) => {
               data-testid="manager-role-show-btn"
               variant="secondary"
               className="bg-pl4"
-              onClick={() => dispatch(toggleManagerRole())}
+              onClick={() => toggleManagerRole()}
             >
               Show
             </a-button>

@@ -12,9 +12,8 @@ import {
 import LoadingSpinner from './Shared/LoadingSpinner';
 import Tooltip from './Shared/Tooltip';
 import { useImpactPercentage } from '@/hooks/useSubjectVerifications';
-import { useSelector } from '@/store/hooks';
-import { selectAuthData } from '@/store/profile/selectors';
-import { AuraImpact } from '@/api/auranode.service';
+import { useProfileStore } from '@/store/profile.store';
+import { AuraImpact } from '@/types/aura';
 
 export type SubjectIdProps = {
   subjectId: string;
@@ -116,7 +115,7 @@ export const ConnectionAndEvaluationStatus = ({
     myConfidenceValueInThisSubjectRating: confidenceValue,
   } = useMyEvaluationsContext({ subjectId });
 
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
 
   const impactPercentage = useImpactPercentage(auraImpacts, authData?.brightId);
 

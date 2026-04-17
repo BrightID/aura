@@ -1,13 +1,9 @@
-import {
-  RoleStatus,
-  selectManagerRoleState,
-  selectTrainerRoleState,
-} from '@/BrightID/actions';
+import { RoleStatus } from '@/store/settings.store';
 import { useOutboundEvaluationsContext } from 'contexts/SubjectOutboundEvaluationsContext';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import { useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
+import { useSettingsStore } from '@/store/settings.store';
 
 import { useOutboundEvaluations } from '@/hooks/useSubjectEvaluations';
 
@@ -111,11 +107,11 @@ export const HeaderPreferedView = {
   PreferedView: () => {
     const { currentViewMode, setPreferredView } = useViewMode();
 
-    const authData = useSelector(selectAuthData);
+    const authData = useProfileStore((s) => s.authData);
 
-    const managerRole = useSelector(selectManagerRoleState);
+    const managerRole = useSettingsStore((s) => s.hasManagerRole);
 
-    const trainerRole = useSelector(selectTrainerRoleState);
+    const trainerRole = useSettingsStore((s) => s.hasTrainerRole);
 
     const subjectId = authData!.brightId;
 

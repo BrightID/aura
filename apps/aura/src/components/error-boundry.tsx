@@ -1,7 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { apiSlice } from '@/store/api/slice';
-import { useDispatch } from '@/store/hooks';
-import { resetStore } from '@/store/profile/actions';
+import { resetAllStores } from '@/store/resetAllStores';
+import { queryClient } from '@/lib/queryClient';
 import { CopyIcon, DatabaseIcon, HomeIcon, TrashIcon } from 'lucide-react';
 import { FaDiscord } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router';
@@ -100,7 +99,6 @@ export const ErrorDetails: FC<{ title?: string; stack?: string }> = ({
 };
 
 export const ErrorRestoreActions = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
   const dialogRef = useRef<DialogElement>(null);
@@ -120,12 +118,12 @@ export const ErrorRestoreActions = () => {
 
   const onClearCache = () => {
     localStorage.clear();
+    queryClient.clear();
     navigate('/home');
-    dispatch(apiSlice.util.resetApiState());
   };
 
   const onClearData = () => {
-    dispatch(resetStore());
+    resetAllStores();
     navigate('/');
   };
 

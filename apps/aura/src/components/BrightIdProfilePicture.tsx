@@ -1,12 +1,10 @@
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { hash } from '@/utils/crypto';
 
 import { createBlockiesImage } from '@/utils/image';
 
-import { selectAuthData } from '../store/profile/selectors';
-import { skipToken } from '@reduxjs/toolkit/query';
-import { useGetProfilePhotoQuery } from '@/store/api/backup';
+import { useProfileStore } from '@/store/profile.store';
+import { useGetProfilePhotoQuery } from '@/hooks/queries/backup';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card';
 
 const DEFAULT_PROFILE_PICTURE = '/assets/images/avatar-thumb.jpg';
@@ -23,15 +21,12 @@ const BrightIdProfilePicture = ({
       subjectId ? createBlockiesImage(subjectId) : DEFAULT_PROFILE_PICTURE,
     [subjectId],
   );
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
+  const key = authData ? hash(authData.brightId + authData.password) : '';
   const { data } = useGetProfilePhotoQuery(
-    authData && subjectId
-      ? {
-          brightId: subjectId,
-          key: hash(authData.brightId + authData.password),
-          password: authData.password,
-        }
-      : skipToken,
+    key,
+    subjectId ?? '',
+    authData?.password ?? '',
   );
 
   const imageSource = data || imgSrc;
@@ -48,8 +43,6 @@ const BrightIdProfilePicture = ({
         src={imageSource || '/placeholder.svg'}
       />
     );
-
-  //TODO: use profile name in alt
 
   return (
     <HoverCard openDelay={100}>

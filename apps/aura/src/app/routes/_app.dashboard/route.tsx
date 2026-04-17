@@ -1,21 +1,18 @@
 import { Modal } from "components/Shared/Modal"
 import { useState } from "react"
 import { Link } from "react-router"
-import { useDispatch, useSelector } from "store/hooks"
-import { selectPreferredView } from "store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import { PreferredView } from "types/dashboard"
 import { RoutePath } from "types/router"
-import { resetStore } from "@/BrightID/actions"
+import { resetAllStores } from "@/store/resetAllStores"
 import { Button } from "@/components/ui/button"
 import { preferredViewIcon } from "@/constants/index"
 import { __DEV__ } from "@/utils/env"
 import RoleSelectModal from "./components/RoleSelectModal"
 
 const Dashboard = () => {
-  const preferredView = useSelector(selectPreferredView)
+  const preferredView = useProfileStore((s) => s.preferredView)
   const [isRoleSelectModalOpen, setIsRoleSelectModalOpen] = useState(false)
-
-  const dispatch = useDispatch()
   return (
     <div className="page">
       <div className="row mb-4">
@@ -132,7 +129,7 @@ const Dashboard = () => {
           process.env.REACT_APP_ENABLE_LOGOUT === "true") && (
           <button
             className={"btn"}
-            onClick={() => dispatch(resetStore())}
+            onClick={() => resetAllStores()}
             data-testid="logout-button"
           >
             Logout

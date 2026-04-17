@@ -1,5 +1,5 @@
 import { PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING } from '@/constants/index';
-import { useBrowserHistoryContext } from 'contexts/BrowserHistoryContext';
+import { useBrowserHistoryStore } from '@/store/browser-history.store';
 import { useNavigate } from 'react-router';
 import { RoutePath } from 'types/router';
 
@@ -11,7 +11,7 @@ const NewPlayerGuideAfterEvaluation = ({
   closeModalHandler?: () => void;
 }) => {
   const navigate = useNavigate();
-  const { isFirstVisitedRoute } = useBrowserHistoryContext();
+  const isFirstVisitedRoute = useBrowserHistoryStore((s) => s.isFirstVisitedRoute);
 
   if (ratingsDoneCount === null) return null;
   return ratingsDoneCount < PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING ? (

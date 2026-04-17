@@ -6,13 +6,12 @@ import {
 } from '@/constants/index';
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { useDispatch, useSelector } from 'store/hooks';
-import { setPreferredView as setPreferredViewAction } from 'store/profile';
-import { selectPreferredView } from 'store/profile/selectors';
-import { EvaluationCategory, PreferredView } from 'types/dashboard';
+import { useProfileStore } from '@/store/profile.store';
+import { EvaluationCategory, PreferredView } from '@/types/dashboard';
 
 export default function useViewMode() {
-  const preferredViewMode = useSelector(selectPreferredView);
+  const preferredViewMode = useProfileStore((s) => s.preferredView);
+  const setPreferredViewInStore = useProfileStore((s) => s.setPreferredView);
   const [query] = useSearchParams();
   const currentViewMode = useMemo(() => {
     const viewAs = query.get('viewas');
@@ -34,12 +33,11 @@ export default function useViewMode() {
     [currentViewMode],
   );
 
-  const dispatch = useDispatch();
   const setPreferredView = useCallback(
     (value: PreferredView) => {
-      dispatch(setPreferredViewAction(value));
+      setPreferredViewInStore(value);
     },
-    [dispatch],
+    [setPreferredViewInStore],
   );
 
   const subjectViewModeTitle = useMemo(

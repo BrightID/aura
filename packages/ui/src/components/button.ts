@@ -101,9 +101,9 @@ export class ButtonElement extends LitElement {
 
     /* icon: 2.5rem square (matches md height) */
     :host([size="icon"]) button {
-      width: 2.5rem;
-      height: 2.5rem;
-      padding: 0;
+      /* width: 2.5rem;
+      height: 2.5rem; */
+      padding: 0.5rem;
     }
     :host([size="icon"]) {
       --icon-size: 1.125rem;

@@ -1,4 +1,4 @@
-import { Verifications } from '@/api/auranode.service';
+import { Verifications } from '@/types/aura';
 import { JSX } from 'react';
 
 import { AuraFilterId } from '../hooks/useFilters';

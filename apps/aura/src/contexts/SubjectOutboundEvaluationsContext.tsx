@@ -1,57 +1,63 @@
-import useFilterAndSort from 'hooks/useFilterAndSort';
+import useFilterAndSort from "hooks/useFilterAndSort"
 import {
   AuraFilterId,
-  AuraFilterOptions,
+  type AuraFilterOptions,
   useOutboundEvaluationFilters,
-} from 'hooks/useFilters';
+} from "hooks/useFilters"
 import {
   AuraSortId,
-  AuraSortOptions,
+  type AuraSortOptions,
   useOutboundEvaluationSorts,
-} from 'hooks/useSorts';
-import { useOutboundEvaluations } from 'hooks/useSubjectEvaluations';
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react';
-import { useSelector } from 'react-redux';
-import { selectBrightIdBackup } from 'store/profile/selectors';
-import { AuraOutboundConnectionAndRatingData } from 'types';
+} from "hooks/useSorts"
+import { useOutboundEvaluations } from "hooks/useSubjectEvaluations"
+import { type ReactNode, useEffect, useMemo } from "react"
+import {
+  type AuraOutboundConnectionAndRatingData,
+  type BrightIdBackup,
+} from "types"
+import { create } from "zustand"
+import { useProfileStore } from "@/store/profile.store"
+import { useRefreshStore } from "@/store/refresh.store"
+import { decryptUserData } from "@/utils/crypto"
+import useViewMode from "../hooks/useViewMode"
+import { type EvaluationCategory } from "../types/dashboard"
 
-import useViewMode from '../hooks/useViewMode';
-import { EvaluationCategory } from '../types/dashboard';
-import { useRefreshEvaluationsContext } from './RefreshEvaluationsContext';
-
-type SubjectOutboundEvaluationsContextType = ReturnType<
+type SubjectOutboundEvaluationsData = ReturnType<
   typeof useOutboundEvaluations
 > & {
-  subjectId: string;
+  subjectId: string
 } & ReturnType<typeof useFilterAndSort<AuraOutboundConnectionAndRatingData>> & {
-    sorts: AuraSortOptions<AuraOutboundConnectionAndRatingData>;
-    filters: AuraFilterOptions<AuraOutboundConnectionAndRatingData>;
-  };
+    sorts: AuraSortOptions<AuraOutboundConnectionAndRatingData>
+    filters: AuraFilterOptions<AuraOutboundConnectionAndRatingData>
+  }
 
-// Define the context
-export const SubjectOutboundEvaluationsContext =
-  createContext<SubjectOutboundEvaluationsContextType | null>(null);
-
-interface ProviderProps {
-  subjectId: string;
-  children: ReactNode;
+type StoreState = {
+  data: Map<string, SubjectOutboundEvaluationsData>
+  set: (id: string, d: SubjectOutboundEvaluationsData) => void
 }
 
-// Define the Provider component
-export const SubjectOutboundEvaluationsContextProvider: React.FC<
-  ProviderProps
-> = ({ subjectId, children }) => {
-  const { refreshOutboundRatings, ...useOutboundEvaluationsHookData } =
-    useOutboundEvaluations({
-      subjectId,
-    });
-  const { ratings, connections } = useOutboundEvaluationsHookData;
+const useStore = create<StoreState>()((set) => ({
+  data: new Map(),
+  set: (id, d) =>
+    set((s) => {
+      const data = new Map(s.data)
+      data.set(id, d)
+      return { data }
+    }),
+}))
+
+export function SubjectOutboundEvaluationsContextProvider({
+  subjectId,
+  children,
+}: {
+  subjectId: string
+  children: ReactNode
+}) {
+  const { refreshOutboundRatings, ...hookData } = useOutboundEvaluations({
+    subjectId,
+  })
+  const { ratings, connections } = hookData
+
   const filters = useOutboundEvaluationFilters(
     [
       AuraFilterId.EvaluationPositiveEvaluations,
@@ -62,133 +68,140 @@ export const SubjectOutboundEvaluationsContextProvider: React.FC<
       AuraFilterId.EvaluationConfidenceVeryHigh,
     ],
     subjectId,
-  );
-
+  )
   const sorts = useOutboundEvaluationSorts([
     AuraSortId.RecentEvaluation,
-    // AuraSortId.EvaluationScore,
-    // AuraSortId.EvaluatorScore,
     AuraSortId.EvaluationConfidence,
-  ]);
+  ])
 
-  const brightIdBackup = useSelector(selectBrightIdBackup);
+  const authData = useProfileStore((s) => s.authData)
+  const brightIdBackupEncrypted = useProfileStore(
+    (s) => s.brightIdBackupEncrypted,
+  )
+  const brightIdBackup = useMemo(
+    () =>
+      brightIdBackupEncrypted && authData?.password
+        ? (decryptUserData(
+            brightIdBackupEncrypted,
+            authData.password,
+          ) as BrightIdBackup)
+        : null,
+    [brightIdBackupEncrypted, authData?.password],
+  )
 
-  const outboundOpinions: AuraOutboundConnectionAndRatingData[] =
-    useMemo(() => {
-      const outboundConnections = connections;
-      if (!outboundConnections || ratings === null || !brightIdBackup)
-        return [];
-      const outboundOpinions: AuraOutboundConnectionAndRatingData[] =
-        ratings.map((r) => ({
-          toSubjectId: r.toBrightId,
-          rating: r,
-          name: brightIdBackup.connections.find(
-            (conn) => conn.id === r.fromBrightId,
-          )?.name,
-          outboundConnection: outboundConnections.find(
-            (c) => c.id === r.fromBrightId,
-          ),
-          verifications: r.verifications,
-        }));
-      outboundConnections.forEach((c) => {
-        const notRated = ratings.findIndex((r) => r.toBrightId === c.id) === -1;
-        if (notRated) {
-          outboundOpinions.push({
-            toSubjectId: c.id,
-            name: brightIdBackup.connections.find((conn) => conn.id === c.id)
-              ?.name,
-            outboundConnection: c,
-            verifications: c.verifications,
-          });
-        }
-      });
-      return outboundOpinions.sort(
-        (a, b) =>
-          (a.rating?.timestamp ?? a.outboundConnection?.timestamp ?? 0) -
-          (b.rating?.timestamp ?? b.outboundConnection?.timestamp ?? 0),
-      );
-    }, [brightIdBackup, ratings, connections]);
+  const outboundOpinions = useMemo<
+    AuraOutboundConnectionAndRatingData[]
+  >(() => {
+    if (!connections || ratings === null || !brightIdBackup) return []
+    const opinions: AuraOutboundConnectionAndRatingData[] = ratings.map(
+      (r) => ({
+        toSubjectId: r.toBrightId,
+        rating: r,
+        name: brightIdBackup.connections.find((c) => c.id === r.fromBrightId)
+          ?.name,
+        outboundConnection: connections.find((c) => c.id === r.fromBrightId),
+        verifications: r.verifications,
+      }),
+    )
+    connections.forEach((c) => {
+      if (ratings.findIndex((r) => r.toBrightId === c.id) === -1) {
+        opinions.push({
+          toSubjectId: c.id,
+          name: brightIdBackup.connections.find((conn) => conn.id === c.id)
+            ?.name,
+          outboundConnection: c,
+          verifications: c.verifications,
+        })
+      }
+    })
+    return opinions.sort(
+      (a, b) =>
+        (a.rating?.timestamp ?? a.outboundConnection?.timestamp ?? 0) -
+        (b.rating?.timestamp ?? b.outboundConnection?.timestamp ?? 0),
+    )
+  }, [brightIdBackup, ratings, connections])
+
   const filterAndSortHookData = useFilterAndSort(
     outboundOpinions,
     filters,
     sorts,
-    useMemo(() => ['toSubjectId', 'name'], []),
-    'activityList|' + subjectId,
-  );
+    useMemo(() => ["toSubjectId", "name"], []),
+    "activityList|" + subjectId,
+  )
 
-  const { refreshCounter } = useRefreshEvaluationsContext();
+  const refreshCounter = useRefreshStore((s) => s.refreshCounter)
   useEffect(() => {
-    if (refreshCounter > 0) {
-      refreshOutboundRatings();
-    }
-  }, [refreshCounter, refreshOutboundRatings]);
+    if (refreshCounter > 0) refreshOutboundRatings()
+  }, [refreshCounter, refreshOutboundRatings])
 
-  return (
-    <SubjectOutboundEvaluationsContext.Provider
-      value={{
-        refreshOutboundRatings,
-        ...useOutboundEvaluationsHookData,
-        ...filterAndSortHookData,
-        sorts,
-        filters,
-        subjectId,
-      }}
-    >
-      {children}
-    </SubjectOutboundEvaluationsContext.Provider>
-  );
-};
+  const storeSet = useStore((s) => s.set)
+  const data = useMemo(
+    () => ({
+      refreshOutboundRatings,
+      ...hookData,
+      ...filterAndSortHookData,
+      sorts,
+      filters,
+      subjectId,
+    }),
+    [
+      refreshOutboundRatings,
+      hookData,
+      filterAndSortHookData,
+      sorts,
+      filters,
+      subjectId,
+    ],
+  )
+  storeSet(subjectId, data)
 
-export const useOutboundEvaluationsContext = (props: {
-  subjectId: string;
-  evaluationCategory?: EvaluationCategory;
-}): SubjectOutboundEvaluationsContextType => {
-  const context = useContext(SubjectOutboundEvaluationsContext);
-  if (context === null) {
+  return <>{children}</>
+}
+
+export function useOutboundEvaluationsContextSafe(subjectId: string) {
+  return useStore((s) => s.data.get(subjectId) ?? null)
+}
+
+export function useOutboundEvaluationsContext(props: {
+  subjectId: string
+  evaluationCategory?: EvaluationCategory
+}) {
+  const data = useStore((s) => s.data.get(props.subjectId))
+  if (!data)
     throw new Error(
-      'SubjectOutboundEvaluationsContext must be used within a SubjectOutboundEvaluationsContextProvider',
-    );
-  }
-  if (context.subjectId !== props.subjectId) {
-    throw new Error(
-      'SubjectOutboundEvaluationsContextProvider for ' +
-        props.subjectId +
-        'not provided',
-    );
-  }
-  const { currentEvaluationCategory } = useViewMode();
+      `SubjectOutboundEvaluationsContextProvider for ${props.subjectId} not mounted`,
+    )
+
+  const { currentEvaluationCategory } = useViewMode()
+
+  const ratings = useMemo(
+    () =>
+      data.ratings?.filter(
+        (r) =>
+          r.category ===
+          (props.evaluationCategory ?? currentEvaluationCategory),
+      ) ?? null,
+    [data.ratings, currentEvaluationCategory, props.evaluationCategory],
+  )
+
   const [itemsFiltered, itemsOriginal] = useMemo(
     () =>
-      [context.itemsFiltered, context.itemsOriginal].map(
+      [data.itemsFiltered, data.itemsOriginal].map(
         (items) =>
           items?.filter(
             (o) =>
               o.rating === undefined ||
               o.rating.category ===
-                (props?.evaluationCategory ?? currentEvaluationCategory),
-          ) || null,
+                (props.evaluationCategory ?? currentEvaluationCategory),
+          ) ?? null,
       ),
     [
-      context.itemsFiltered,
-      context.itemsOriginal,
+      data.itemsFiltered,
+      data.itemsOriginal,
       currentEvaluationCategory,
-      props?.evaluationCategory,
+      props.evaluationCategory,
     ],
-  );
-  return {
-    ...context,
-    itemsFiltered,
-    itemsOriginal,
-    ratings: useMemo(
-      () =>
-        context.ratings
-          ? context.ratings.filter(
-              (r) =>
-                r.category ===
-                (props?.evaluationCategory ?? currentEvaluationCategory),
-            )
-          : null,
-      [context.ratings, currentEvaluationCategory, props?.evaluationCategory],
-    ),
-  };
-};
+  )
+
+  return { ...data, itemsFiltered, itemsOriginal, ratings }
+}

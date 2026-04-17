@@ -1,51 +1,16 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useLocation } from 'react-router';
+import { useBrowserHistoryStore } from '@/store/browser-history.store';
 
-// Define the context
-const BrowserHistoryContext = createContext<{
-  isFirstVisitedRoute: boolean;
-} | null>(null);
+export { useBrowserHistoryStore as useBrowserHistoryContext } from '@/store/browser-history.store';
 
-interface ProviderProps {
-  children: ReactNode;
-}
-
-// Define the Provider component
-export const BrowserHistoryContextProvider: React.FC<ProviderProps> = ({
-  children,
-}) => {
+export function BrowserHistoryContextProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
-  const [firstPagePath, setFirstPagePath] = useState<string | null>(null);
+  const setFirstPagePath = useBrowserHistoryStore((s) => s.setFirstPagePath);
 
   useEffect(() => {
-    setFirstPagePath((value) => value ?? location.pathname);
-  }, [location]);
+    setFirstPagePath(location.pathname);
+  }, [location.pathname, setFirstPagePath]);
 
-  const isFirstVisitedRoute = useMemo(
-    () => !firstPagePath || location.pathname === firstPagePath,
-    [firstPagePath, location.pathname],
-  );
-
-  return (
-    <BrowserHistoryContext.Provider value={{ isFirstVisitedRoute }}>
-      {children}
-    </BrowserHistoryContext.Provider>
-  );
-};
-
-export const useBrowserHistoryContext = () => {
-  const context = useContext(BrowserHistoryContext);
-  if (context === null) {
-    throw new Error(
-      'BrowserHistoryContext must be used within a BrowserHistoryContextProvider',
-    );
-  }
-  return context;
-};
+  return <>{children}</>;
+}

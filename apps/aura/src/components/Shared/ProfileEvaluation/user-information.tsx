@@ -12,7 +12,7 @@ import {
 import { compactFormat } from '@/utils/number';
 import Tooltip from '../Tooltip';
 import { EvaluationCategory, EvidenceViewMode } from '@/types/dashboard';
-import { Verifications } from '@/api/auranode.service';
+import { Verifications } from '@/types/aura';
 import { FC, useMemo } from 'react';
 
 export interface UserInformationProps {

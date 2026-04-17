@@ -1,4 +1,4 @@
-import { Verifications } from '@/api/auranode.service';
+import { Verifications } from '@/types/aura';
 import BrightIdProfilePicture from '@/components/BrightIdProfilePicture';
 import {
   INBOUND_EVIDENCE_VIEW_MODES,

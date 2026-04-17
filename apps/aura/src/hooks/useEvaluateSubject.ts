@@ -1,26 +1,21 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'store/hooks';
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
+import { useOperationsStore, Operation } from '@/store/operations.store';
 
 import { NodeApiContext } from '../BrightID/components/NodeApiGate';
-import {
-  addOperation,
-  Operation,
-  selectOperationByHash,
-} from '../BrightID/reducer/operationsSlice';
 import { operation_states } from '../BrightID/utils/constants';
 import { EvaluationCategory, EvaluationValue } from '../types/dashboard';
 import useViewMode from './useViewMode';
 
 export function useEvaluateSubject(evaluationCategory?: EvaluationCategory) {
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
   const [loading, setLoading] = useState(false);
 
-  const dispatch = useDispatch();
+  const addOperation = useOperationsStore((s) => s.addOperation);
   const api = useContext(NodeApiContext);
   const [connectionOpHash, setConnectionOpHash] = useState<string>('');
-  const connectionOp = useSelector((state) =>
-    selectOperationByHash(state, connectionOpHash),
+  const connectionOp = useOperationsStore((s) =>
+    connectionOpHash ? (s[connectionOpHash as keyof typeof s] as Operation | undefined) : undefined,
   );
   useEffect(() => {
     async function getData() {
@@ -49,14 +44,14 @@ export function useEvaluateSubject(evaluationCategory?: EvaluationCategory) {
           Date.now(),
         )) as Operation;
         op.state = operation_states.UNKNOWN;
-        dispatch(addOperation(op));
+        addOperation(op);
         setConnectionOpHash(op.hash);
       } catch (e) {
         setLoading(false);
         throw e;
       }
     },
-    [api, authData, currentEvaluationCategory, dispatch, evaluationCategory],
+    [api, authData, currentEvaluationCategory, addOperation, evaluationCategory],
   );
 
   return { submitEvaluation, loading };

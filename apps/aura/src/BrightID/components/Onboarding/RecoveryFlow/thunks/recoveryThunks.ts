@@ -1,10 +1,8 @@
-import { setKeypair } from '@/BrightID/actions';
 import { verifyKeypair } from '@/BrightID/utils/cryptoHelper';
 import { urlSafeRandomKey } from '@/BrightID/utils/encoding';
-import { AppDispatch, GetState } from 'store';
+import { useKeypairStore } from '@/store/keypair.store';
+import { useRecoveryStore } from '@/store/recovery.store';
 import nacl from 'tweetnacl';
-
-import { init } from '../recoveryDataSlice';
 
 // HELPERS
 
@@ -12,36 +10,34 @@ const THREE_DAYS = 259200000;
 
 const pastLimit = (timestamp: number) => timestamp + THREE_DAYS < Date.now();
 
-// THUNKS
+// PLAIN ASYNC FUNCTIONS (converted from Redux thunks)
 
-export const setupRecovery =
-  () => async (dispatch: AppDispatch, getState: GetState) => {
-    console.log(`Setting up recovery...`);
-    const { recoveryData } = getState();
-    // setup recovery data
-    if (!recoveryData.timestamp || pastLimit(recoveryData.timestamp)) {
+export const setupRecovery = async () => {
+  console.log(`Setting up recovery...`);
+  const recoveryStore = useRecoveryStore.getState();
+  // setup recovery data
+  if (!recoveryStore.timestamp || pastLimit(recoveryStore.timestamp)) {
+    const { publicKey, secretKey } = await nacl.sign.keyPair();
+    const aesKey = await urlSafeRandomKey(16);
+    // setup recovery data slice with new keypair
+    recoveryStore.init({ publicKey, secretKey, aesKey });
+  } else {
+    // we should already have valid recovery data. double-check required data is available.
+    const { publicKey, secretKey } = recoveryStore;
+    try {
+      verifyKeypair({ publicKey, secretKey });
+    } catch (e) {
+      // Existing keys don't work, set up new keys.
       const { publicKey, secretKey } = await nacl.sign.keyPair();
       const aesKey = await urlSafeRandomKey(16);
       // setup recovery data slice with new keypair
-      dispatch(init({ publicKey, secretKey, aesKey }));
-    } else {
-      // we should already have valid recovery data. double-check required data is available.
-      const { publicKey, secretKey } = recoveryData;
-      try {
-        verifyKeypair({ publicKey, secretKey });
-      } catch (e) {
-        // Existing keys don't work, set up new keys.
-        const { publicKey, secretKey } = await nacl.sign.keyPair();
-        const aesKey = await urlSafeRandomKey(16);
-        // setup recovery data slice with new keypair
-        dispatch(init({ publicKey, secretKey, aesKey }));
-      }
+      recoveryStore.init({ publicKey, secretKey, aesKey });
     }
-  };
+  }
+};
 
-export const setRecoveryKeys =
-  () => (dispatch: AppDispatch, getState: GetState) => {
-    const { publicKey, secretKey } = getState().recoveryData;
-    verifyKeypair({ publicKey, secretKey });
-    dispatch(setKeypair({ publicKey, secretKey }));
-  };
+export const setRecoveryKeys = () => {
+  const { publicKey, secretKey } = useRecoveryStore.getState();
+  verifyKeypair({ publicKey, secretKey });
+  useKeypairStore.getState().setKeypair({ publicKey, secretKey: secretKey as unknown as Uint8Array });
+};

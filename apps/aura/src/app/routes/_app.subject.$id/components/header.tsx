@@ -7,12 +7,11 @@ import {
 } from '@/constants';
 import { useOutboundEvaluations } from '@/hooks/useSubjectEvaluations';
 import useViewMode from '@/hooks/useViewMode';
-import { selectAuthData } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
 import { PlayerHistorySequenceType } from '@/types';
 import { EvaluationCategory } from '@/types/dashboard';
 import { findLastIndex } from '@/utils';
 import { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 
 const views = [
@@ -32,7 +31,7 @@ export default function SubjectProfileHeader() {
   const { subjectViewModeTitle } = useViewMode();
   const params = useParams();
 
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
 
   const subjectIdProp = params['id'];
 

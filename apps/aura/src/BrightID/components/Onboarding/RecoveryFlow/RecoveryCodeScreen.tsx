@@ -4,19 +4,12 @@ import {
   pollImportChannel,
   setupSync,
 } from '@/BrightID/components/Onboarding/ImportFlow/thunks/channelThunks';
-import {
-  resetRecoveryData,
-  selectRecoveryStep,
-  setRecoverStep,
-  uploadCompletedByOtherSide,
-} from '@/BrightID/components/Onboarding/RecoveryFlow/recoveryDataSlice';
 import { RecoveryErrorType } from '@/BrightID/components/Onboarding/RecoveryFlow/RecoveryError';
 import { createRecoveryChannel } from '@/BrightID/components/Onboarding/RecoveryFlow/thunks/channelThunks';
 import {
   setRecoveryKeys,
   setupRecovery,
 } from '@/BrightID/components/Onboarding/RecoveryFlow/thunks/recoveryThunks';
-import { setUserId, userSelector } from '@/BrightID/reducer/userSlice';
 import {
   recover_steps,
   RecoveryCodeScreenAction,
@@ -24,12 +17,13 @@ import {
 } from '@/BrightID/utils/constants';
 import { buildRecoveryChannelQrUrl } from '@/BrightID/utils/recovery';
 import { AURA_NODE_URL, AURA_NODE_URL_PROXY } from '@/constants/urls';
+import { useRecoveryStore } from '@/store/recovery.store';
+import { useUserStore } from '@/store/user.store';
+import { useProfileStore } from '@/store/profile.store';
 import useRedirectAfterLogin from 'hooks/useRedirectAfterLogin';
 import { useEffect, useMemo, useState } from 'react';
 import { QRCode } from 'react-qrcode-logo';
 import { useParams } from 'react-router';
-import { useDispatch, useSelector } from 'store/hooks';
-import { loginThunk } from 'store/profile/actions';
 import { copyToClipboard } from '@/utils/copyToClipboard';
 import { __DEV__ } from '@/utils/env';
 import platform from 'platform';
@@ -52,57 +46,66 @@ const RecoveryCodeScreen = () => {
     [actionParam],
   );
   const [qrUrl, setQrUrl] = useState<{ href: string } | null>(null);
-  const recoveryData = useSelector((state) => state.recoveryData);
-  const { id } = useSelector(userSelector);
-  const isScanned = useSelector(
-    (state) =>
-      uploadCompletedByOtherSide(state) ||
-      state.recoveryData.recoveredConnections ||
-      state.recoveryData.recoveredGroups ||
-      state.recoveryData.recoveredBlindSigs,
-  );
-  const dispatch = useDispatch();
-  const step = useSelector(selectRecoveryStep);
+
+  const recoveryId = useRecoveryStore((s) => s.id);
+  const recoverStep = useRecoveryStore((s) => s.recoverStep);
+  const recoveryAesKey = useRecoveryStore((s) => s.aesKey);
+  const recoveryChannelUrl = useRecoveryStore((s) => s.channel.url);
+  const recoveryErrorType = useRecoveryStore((s) => s.errorType);
+  const recoveryErrorMessage = useRecoveryStore((s) => s.errorMessage);
+  const recoveredConnections = useRecoveryStore((s) => s.recoveredConnections);
+  const recoveredGroups = useRecoveryStore((s) => s.recoveredGroups);
+  const recoveredBlindSigs = useRecoveryStore((s) => s.recoveredBlindSigs);
+  const uploadCompletedBy = useRecoveryStore((s) => s.uploadCompletedBy);
+
+  const userId = useUserStore((s) => s.id);
+  const userPassword = useUserStore((s) => s.password);
+
+  const isScanned =
+    Object.keys(uploadCompletedBy).length > 0 ||
+    recoveredConnections > 0 ||
+    recoveredGroups > 0 ||
+    recoveredBlindSigs > 0;
 
   useEffect(() => {
-    let cleanupIntervalFn: CallableFunction;
+    let cleanupIntervalFn: (() => void) | undefined;
 
     const runImportEffect = async () => {
       // create publicKey, secretKey, aesKey for user
-      await dispatch(setupRecovery());
+      await setupRecovery();
       // create channel and upload new publicKey to be added as a new signing key by the scanner
-      await dispatch(createRecoveryChannel(window.location.origin));
+      await createRecoveryChannel(window.location.origin);
       // start polling channel to get connections/groups/blindsigs info
-      cleanupIntervalFn = await dispatch(pollImportChannel());
+      cleanupIntervalFn = pollImportChannel();
     };
     const runSyncEffect = async () => {
       // create a new aesKey
-      await dispatch(setupSync());
+      await setupSync();
       // create channel and upload lastSyncTime to the channel if it is not primary device
       // or poll lastSyncTime from other side if it is and then upload connections/groups/blindsigs
       // added after lastSyncTime to the channel
-      await dispatch(createSyncChannel());
+      await createSyncChannel();
       // start polling channel to get new connections/groups/blindsigs info
-      cleanupIntervalFn = await dispatch(pollImportChannel());
+      cleanupIntervalFn = pollImportChannel();
     };
 
     async function runEffect() {
-      if (step === recover_steps.NOT_STARTED) {
-        dispatch(setRecoverStep(recover_steps.INITIALIZING));
+      if (recoverStep === recover_steps.NOT_STARTED) {
+        useRecoveryStore.getState().setRecoverStep(recover_steps.INITIALIZING);
         try {
           if (action === RecoveryCodeScreenAction.ADD_SUPER_USER_APP) {
             console.log(`initializing import process`);
             await runImportEffect();
-            dispatch(setRecoverStep(recover_steps.INITIALIZED));
+            useRecoveryStore.getState().setRecoverStep(recover_steps.INITIALIZED);
           } else if (action === RecoveryCodeScreenAction.SYNC) {
             console.log(`initializing sync process`);
             await runSyncEffect();
-            dispatch(setRecoverStep(recover_steps.INITIALIZED));
+            useRecoveryStore.getState().setRecoverStep(recover_steps.INITIALIZED);
           } else {
-            dispatch(setRecoverStep(recover_steps.NOT_STARTED));
+            useRecoveryStore.getState().setRecoverStep(recover_steps.NOT_STARTED);
           }
         } catch (_e) {
-          dispatch(setRecoverStep(recover_steps.NOT_STARTED));
+          useRecoveryStore.getState().setRecoverStep(recover_steps.NOT_STARTED);
         }
       }
     }
@@ -112,11 +115,11 @@ const RecoveryCodeScreen = () => {
     return () => {
       cleanupIntervalFn?.();
     };
-  }, [action, dispatch, id]);
+  }, [action, userId]);
 
   useEffect(() => {
-    if (recoveryData.channel.url && recoveryData.aesKey) {
-      const channelUrl = recoveryData.channel.url;
+    if (recoveryChannelUrl && recoveryAesKey) {
+      const channelUrl = recoveryChannelUrl;
       const browser = platform.name;
       const os = platform.os?.family;
       const now = new Date();
@@ -128,7 +131,7 @@ const RecoveryCodeScreen = () => {
       const deviceInfo = `${browser} ${os} ${monthYear}`;
 
       const newQrUrl = buildRecoveryChannelQrUrl({
-        aesKey: recoveryData.aesKey,
+        aesKey: recoveryAesKey,
         url: channelUrl.href.startsWith('/')
           ? {
               href: channelUrl.href.replace(AURA_NODE_URL_PROXY, AURA_NODE_URL),
@@ -141,14 +144,14 @@ const RecoveryCodeScreen = () => {
 
       setQrUrl(newQrUrl);
     }
-  }, [action, recoveryData.aesKey, recoveryData.channel.url]);
+  }, [action, recoveryAesKey, recoveryChannelUrl]);
 
   // track errors
   useEffect(() => {
-    if (recoveryData.errorType !== RecoveryErrorType.NONE) {
+    if (recoveryErrorType !== RecoveryErrorType.NONE) {
       // something went wrong. Show error message to user and stop recovery process
       let message;
-      switch (recoveryData.errorType) {
+      switch (recoveryErrorType) {
         case RecoveryErrorType.MISMATCH_ID:
           message = 'Your recovery connections selected different accounts';
           break;
@@ -156,38 +159,38 @@ const RecoveryCodeScreen = () => {
         default:
           // use untranslated errorMessage from state if available, generic message otherwise
           message =
-            recoveryData.errorMessage !== ''
-              ? recoveryData.errorMessage
+            recoveryErrorMessage !== ''
+              ? recoveryErrorMessage
               : 'An unknown error occured';
       }
       alert('Account recovery failed: ' + message);
       if (action === RecoveryCodeScreenAction.ADD_SUPER_USER_APP) {
         clearImportChannel();
       }
-      dispatch(resetRecoveryData());
-      dispatch(setRecoverStep(recover_steps.ERROR));
+      useRecoveryStore.getState().resetRecoveryData();
+      useRecoveryStore.getState().setRecoverStep(recover_steps.ERROR);
     }
-  }, [action, dispatch, recoveryData.errorMessage, recoveryData.errorType]);
+  }, [action, recoveryErrorMessage, recoveryErrorType]);
 
-  const user = useSelector((state) => state.user);
   const [importedUserData, setImportedUserData] = useState(false);
   const redirectAfterLogin = useRedirectAfterLogin();
   useEffect(() => {
     if (action === RecoveryCodeScreenAction.ADD_SUPER_USER_APP) {
-      if (recoveryData.id && user.password) {
+      if (recoveryId && userPassword) {
         setImportedUserData(true);
         clearImportChannel();
-        dispatch(setRecoveryKeys());
-        dispatch(resetRecoveryData());
-        dispatch(setUserId(recoveryData.id));
-        dispatch(
-          loginThunk({ brightId: recoveryData.id, password: user.password }),
-        ).then(redirectAfterLogin);
+        setRecoveryKeys();
+        useRecoveryStore.getState().resetRecoveryData();
+        useUserStore.getState().setUserId(recoveryId);
+        useProfileStore
+          .getState()
+          .login({ brightId: recoveryId, password: userPassword })
+          .then(redirectAfterLogin);
       }
     } else if (action === RecoveryCodeScreenAction.SYNC && isScanned) {
       console.log('TODO: sync');
     }
-  }, [action, dispatch, isScanned, recoveryData.id, redirectAfterLogin, user]);
+  }, [action, isScanned, recoveryId, redirectAfterLogin, userPassword]);
   const universalLink = useMemo(
     () =>
       qrUrl

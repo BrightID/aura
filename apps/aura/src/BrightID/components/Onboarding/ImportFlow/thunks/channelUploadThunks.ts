@@ -1,4 +1,3 @@
-import { getProfilePhoto } from '@/store/api/backup';
 import ChannelAPI from '@/BrightID/api/channelService';
 import {
   IMPORT_PREFIX,
@@ -6,159 +5,98 @@ import {
 } from '@/BrightID/utils/constants';
 import { encryptData } from '@/BrightID/utils/cryptoHelper';
 import { b64ToUrlSafeB64 } from '@/BrightID/utils/encoding';
-import { AppDispatch, GetState, RootState } from 'store';
-import { AuthData } from 'types';
+import { useKeypairStore } from '@/store/keypair.store';
+import { useProfileStore } from '@/store/profile.store';
+import { useRecoveryStore } from '@/store/recovery.store';
+import { useSettingsStore } from '@/store/settings.store';
+import { useUserStore } from '@/store/user.store';
 import { hash } from '@/utils/crypto';
 
 export const getUserInfo = async (
-  user: RootState['user'],
-  authData: AuthData,
-  _dispatch: AppDispatch,
+  userId: string,
+  password: string,
 ) => {
-  const result = await _dispatch(
-    getProfilePhoto.initiate({
-      brightId: user.id,
-      key: hash(user.id + authData.password),
-      password: authData.password,
-    }),
-  );
-
-  const photo = result.data;
+  const userStore = useUserStore.getState();
+  let photo: string | undefined;
+  try {
+    const key = hash(userId + password);
+    const response = await fetch(`/brightid/backups/${key}/${userId}`);
+    if (response.ok) {
+      const text = await response.text();
+      const { decryptData: decryptFn } = await import('@/BrightID/utils/cryptoHelper');
+      photo = decryptFn(text, password) as string;
+    }
+  } catch (_e) {
+    // photo fetch failed, proceed without it
+  }
 
   return {
-    id: user.id,
-    name: user.name,
+    id: userStore.id,
+    name: userStore.name,
     photo,
-    isSponsored: user.isSponsored,
-    isSponsoredv6: user.isSponsoredv6,
-    backupCompleted: user.backupCompleted,
-    password: user.password,
-    updateTimestamps: user.updateTimestamps,
+    isSponsored: userStore.isSponsored,
+    isSponsoredv6: userStore.isSponsoredv6,
+    backupCompleted: userStore.backupCompleted,
+    password: userStore.password,
+    updateTimestamps: userStore.updateTimestamps,
   };
 };
 
-export const uploadAllInfoAfter =
-  (_after: number) => async (_dispatch: AppDispatch, getState: GetState) => {
-    const {
-      user,
-      profile: { authData },
-      keypair: { publicKey: signingKey },
-      // groups: { groups },
-      recoveryData: {
-        channel: { url, channelId },
-        aesKey,
-      },
-      // settings: { isPrimaryDevice },
-    } = getState();
-    // use keypair for sync and recovery for import
-    if (authData && url) {
-      const channelApi = new ChannelAPI(url.href);
+export const uploadAllInfoAfter = async (_after: number) => {
+  const userStore = useUserStore.getState();
+  const authData = useProfileStore.getState().authData;
+  const { publicKey: signingKey } = useKeypairStore.getState();
+  const recoveryStore = useRecoveryStore.getState();
+  const { channel: { url, channelId }, aesKey } = recoveryStore;
 
-      console.log('uploading user info');
+  // use keypair for sync and recovery for import
+  if (authData && url) {
+    const channelApi = new ChannelAPI(url.href);
 
-      const encrypted = encryptData(
-        await getUserInfo(user, authData, _dispatch),
-        aesKey,
-      );
-      const userDataId = `${IMPORT_PREFIX}userinfo_${user.id}:${b64ToUrlSafeB64(
-        signingKey,
-      )}`;
-      await channelApi.upload({
-        channelId,
-        dataId: userDataId,
-        data: encrypted,
-      });
+    console.log('uploading user info');
 
-      // console.log('uploading connections');
-      // const connections = selectAllConnections(getState()).filter(
-      //   (conn) => conn.timestamp > after,
-      // );
-      // for (const conn of connections) {
-      //   await uploadConnection({
-      //     conn,
-      //     channelApi,
-      //     aesKey,
-      //     signingKey,
-      //   });
-      // }
-      //
-      // console.log('uploading groups');
-      // for (const group of groups) {
-      //   if (group.joined > after) {
-      //     await uploadGroup({
-      //       group,
-      //       channelApi,
-      //       aesKey,
-      //       signingKey,
-      //     });
-      //   }
-      // }
-      //
-      // console.log('uploading linked contexts');
-      // const linkedContexts = selectAllLinkedContexts(getState()).filter(
-      //   (linkedContext) =>
-      //     linkedContext.dateAdded > after && linkedContext.state === 'applied',
-      // );
-      // for (const contextInfo of linkedContexts) {
-      //   await uploadContextInfo({
-      //     contextInfo,
-      //     channelApi,
-      //     aesKey,
-      //     signingKey,
-      //     prefix: IMPORT_PREFIX,
-      //   });
-      // }
-
-      // console.log('uploading blind sigs');
-      // if (isPrimaryDevice) {
-      //   const sigs = selectAllSigs(getState());
-      //   for (const sig of sigs) {
-      //     if (sig.signedTimestamp > after || sig.linkedTimestamp > after) {
-      //       await uploadBlindSig({
-      //         sig,
-      //         channelApi,
-      //         aesKey,
-      //         signingKey,
-      //         prefix: IMPORT_PREFIX,
-      //       });
-      //     }
-      //   }
-      // }
-
-      console.log('uploading completed flag');
-      const completeDataId = `${IMPORT_PREFIX}completed_${
-        user.id
-      }:${b64ToUrlSafeB64(signingKey)}`;
-      await channelApi.upload({
-        channelId,
-        dataId: completeDataId,
-        data: 'completed',
-      });
-    }
-  };
-
-export const uploadDeviceInfo =
-  () => async (_dispatch: AppDispatch, getState: GetState) => {
-    const {
-      recoveryData: {
-        channel: { url, channelId },
-        publicKey: signingKey,
-      },
-      settings: { lastSyncTime, isPrimaryDevice },
-    } = getState();
-    const dataObj: SyncDeviceInfo = {
+    const encrypted = encryptData(
+      await getUserInfo(userStore.id, authData.password),
+      aesKey,
+    );
+    const userDataId = `${IMPORT_PREFIX}userinfo_${userStore.id}:${b64ToUrlSafeB64(
       signingKey,
-      lastSyncTime,
-      isPrimaryDevice,
-    };
-    const data = JSON.stringify(dataObj);
-    if (url) {
-      const channelApi = new ChannelAPI(url.href);
-      await channelApi.upload({
-        channelId,
-        data,
-        dataId: `${IMPORT_PREFIX}data`,
-        requestedTtl: RECOVERY_CHANNEL_TTL,
-      });
-    }
+    )}`;
+    await channelApi.upload({
+      channelId,
+      dataId: userDataId,
+      data: encrypted,
+    });
+
+    console.log('uploading completed flag');
+    const completeDataId = `${IMPORT_PREFIX}completed_${
+      userStore.id
+    }:${b64ToUrlSafeB64(signingKey)}`;
+    await channelApi.upload({
+      channelId,
+      dataId: completeDataId,
+      data: 'completed',
+    });
+  }
+};
+
+export const uploadDeviceInfo = async () => {
+  const recoveryStore = useRecoveryStore.getState();
+  const { channel: { url, channelId }, publicKey: signingKey } = recoveryStore;
+  const { lastSyncTime, isPrimaryDevice } = useSettingsStore.getState();
+  const dataObj: SyncDeviceInfo = {
+    signingKey,
+    lastSyncTime,
+    isPrimaryDevice,
   };
+  const data = JSON.stringify(dataObj);
+  if (url) {
+    const channelApi = new ChannelAPI(url.href);
+    await channelApi.upload({
+      channelId,
+      data,
+      dataId: `${IMPORT_PREFIX}data`,
+      requestedTtl: RECOVERY_CHANNEL_TTL,
+    });
+  }
+};

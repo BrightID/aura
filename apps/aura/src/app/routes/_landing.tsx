@@ -1,9 +1,8 @@
-import { selectPreferredTheme } from '@/BrightID/reducer/settingsSlice';
-import { useSelector } from 'react-redux';
+import { useSettingsStore } from '@/store/settings.store';
 import { Outlet } from 'react-router';
 
 export default function LandingLayout() {
-  const preferredTheme = useSelector(selectPreferredTheme);
+  const preferredTheme = useSettingsStore((s) => s.prefferedTheme);
 
   return (
     <div

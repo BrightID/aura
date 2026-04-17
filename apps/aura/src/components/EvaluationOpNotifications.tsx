@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   EvaluateSubmittedOperation,
   selectEvaluateOperations,
-} from '@/BrightID/reducer/operationsSlice';
+  useOperationsStore,
+} from '@/store/operations.store';
 import { operation_states } from '../BrightID/utils/constants';
 import {
   getBgClassNameOfAuraRatingNumber,
@@ -13,13 +14,11 @@ import {
   subjectViewAsIconColored,
   viewAsToViewMode,
 } from '../constants';
-import { useRefreshEvaluationsContext } from '../contexts/RefreshEvaluationsContext';
+import { useRefreshStore } from '@/store/refresh.store';
 import { useSubjectName } from '../hooks/useSubjectName';
-import { useDispatch, useSelector } from '../store/hooks';
 import BrightIdProfilePicture from './BrightIdProfilePicture';
 import EvaluationThumb from './Shared/EvaluationThumb';
-import { connectionsApi } from '@/store/api/connections';
-import { profileApi } from '@/store/api/profile';
+import { queryClient } from '@/lib/queryClient';
 
 type EvaluateOpNotificationData = {
   text: string;
@@ -93,22 +92,16 @@ function EvaluateOpNotification({
           {notification.text}
         </p>
       </div>
-      {/*TODO: Handle failed notifications*/}
-      {/*<div className="flex w-full justify-between items-center">*/}
-      {/*<div className="flex gap-0.5">*/}
-      {/*  <p className="font-medium text-sm text-nl3">Try Again</p>*/}
-      {/*  <img src="/assets/images/Shared/refresh-red.svg" alt="" />*/}
-      {/*</div>*/}
-      {/*</div>*/}
     </div>
   );
 }
 
 export default function EvaluationOpNotifications() {
-  const operations = useSelector(selectEvaluateOperations);
+  // Subscribe to operations store to react to changes
+  useOperationsStore((s) => s);
+  const operations = selectEvaluateOperations();
 
   const prevOperationsRef = useRef<EvaluateSubmittedOperation[] | null>(null);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const storedOperations = localStorage.getItem('prevOperations');
@@ -127,10 +120,6 @@ export default function EvaluationOpNotifications() {
 
   const removeNotification = useCallback((id: string) => {
     setNotifications((currentNotifications) => {
-      console.log({
-        currentNotifications,
-        id,
-      });
       return currentNotifications.filter((n) => n.id !== id);
     });
   }, []);
@@ -152,7 +141,7 @@ export default function EvaluationOpNotifications() {
     },
     [removeNotification],
   );
-  const { refreshEvaluations } = useRefreshEvaluationsContext();
+  const { refreshEvaluations } = useRefreshStore();
   useEffect(() => {
     const prevOperations = prevOperationsRef.current;
     if (prevOperations) {
@@ -169,9 +158,9 @@ export default function EvaluationOpNotifications() {
           prevOperation.state !== operation_states.APPLIED &&
           operation.state === operation_states.APPLIED
         ) {
-          dispatch(connectionsApi.util.invalidateTags([{ type: 'BrightID' }]));
-
-          dispatch(profileApi.util.invalidateTags([{ type: 'BrightID' }]));
+          queryClient.invalidateQueries({ queryKey: ['connections'] });
+          queryClient.invalidateQueries({ queryKey: ['brightid-profile'] });
+          queryClient.invalidateQueries({ queryKey: ['connections-info'] });
 
           addNotification({
             operation,
@@ -190,10 +179,9 @@ export default function EvaluationOpNotifications() {
       });
     }
 
-    // Update ref and localStorage with the latest operations
     prevOperationsRef.current = operations;
     localStorage.setItem('prevOperations', JSON.stringify(operations));
-  }, [addNotification, operations, refreshEvaluations, dispatch]);
+  }, [addNotification, operations, refreshEvaluations]);
 
   return (
     <div className="w-full">

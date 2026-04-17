@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
 import { EvaluationCategory } from 'types/dashboard';
 
 const LinkCard = () => {
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
   const evaluationLink = useMemo(
     () =>
       `${window.location.origin}/subject/${authData?.brightId}?viewas=${EvaluationCategory.PLAYER}`,

@@ -1,20 +1,21 @@
-import { setBulkSubjectsCache } from '@/store/cache';
-import { selectCachedProfiles } from '@/store/cache/selectors';
-import { useDispatch } from '@/store/hooks';
-import { getBrightIdBackupThunk } from '@/store/profile/actions';
-import { hash } from '@/utils/crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { selectAuthData, selectBrightIdBackup } from 'store/profile/selectors';
 import {
-  AuraNodeBrightIdConnectionWithBackupData,
-  BrightIdBackupConnection,
-  BrightIdBackupWithAuraConnectionData,
+  type AuraNodeBrightIdConnectionWithBackupData,
+  type BrightIdBackup,
+  type BrightIdBackupConnection,
+  type BrightIdBackupWithAuraConnectionData,
 } from 'types';
+import { useCacheStore } from '@/store/cache.store';
+import { useProfileStore } from '@/store/profile.store';
+import { decryptUserData, hash } from '@/utils/crypto';
 import { useMyEvaluations } from './useMyEvaluations';
 
 export function useBrightIdBackupConnectionResolver() {
-  const brightIdBackup = useSelector(selectBrightIdBackup);
+  const authData = useProfileStore((s) => s.authData);
+  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
+  const brightIdBackup = brightIdBackupEncrypted && authData?.password
+    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
+    : null;
 
   const backupConnectionKeys = useMemo(() => {
     return (
@@ -34,10 +35,14 @@ export function useBrightIdBackupConnectionResolver() {
 }
 
 export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBackupWithAuraConnectionData | null {
-  const dispatch = useDispatch();
-  const brightIdBackup = useSelector(selectBrightIdBackup);
-  const authData = useSelector(selectAuthData);
-  const cachedBrightIdProfiles = useSelector(selectCachedProfiles);
+  const authData = useProfileStore((s) => s.authData);
+  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
+  const brightIdBackup = brightIdBackupEncrypted && authData?.password
+    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
+    : null;
+  const cachedBrightIdProfiles = useCacheStore((s) => s.fetchedSubjectsFromProfile);
+  const setBulkSubjectsCache = useCacheStore((s) => s.setBulkSubjectsCache);
+  const getBrightIdBackup = useProfileStore((s) => s.getBrightIdBackup);
   const { myConnections } = useMyEvaluations();
 
   const [loading, setLoading] = useState(false);
@@ -59,13 +64,9 @@ export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBacku
     if (!authData) return;
 
     setLoading(true);
-    await dispatch(
-      getBrightIdBackupThunk({
-        authKey: hash(authData.brightId + authData.password),
-      }),
-    );
+    await getBrightIdBackup(hash(authData.brightId + authData.password));
     setLoading(false);
-  }, [authData, dispatch]);
+  }, [authData, getBrightIdBackup]);
 
   useEffect(() => {
     if (
@@ -96,16 +97,16 @@ export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBacku
         {} as Record<string, number>,
       );
 
-      dispatch(setBulkSubjectsCache(connectionTimestamps));
+      setBulkSubjectsCache(connectionTimestamps);
     });
   }, [
     loading,
     hasFetched,
-    myConnections?.length,
+    myConnections,
     cachedBrightIdProfiles,
     backupConnectionKeys,
     refreshBrightIdBackup,
-    dispatch,
+    setBulkSubjectsCache,
   ]);
 
   return useMemo(() => {

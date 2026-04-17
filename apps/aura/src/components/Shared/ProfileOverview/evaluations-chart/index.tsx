@@ -3,11 +3,12 @@ import ZoomControls from './zoom-controls';
 import ChartArea from './chart-area';
 import SkeletonChart from './sekeleton-chart';
 import { calculateRatingsImpact } from './utils';
-import { ChartConfig, ChartContainer } from '@/components/ui/chart';
+import { ChartConfig } from '@/components/ui/chart';
 import { EvaluationCategory } from '@/types/dashboard';
-import { useSelector } from '@/store/hooks';
-import { selectBrightIdBackup } from '@/store/profile/selectors';
-import { AuraImpact } from '@/api/auranode.service';
+import { useProfileStore } from '@/store/profile.store';
+import { decryptUserData } from '@/utils/crypto';
+import type { BrightIdBackup } from '@/types';
+import { AuraImpact } from '@/types/aura';
 
 export interface EvaluationsChartProps {
   evaluationCategory: EvaluationCategory;
@@ -35,7 +36,11 @@ export const EvaluationsChart = ({
   const [endIndex, setEndIndex] = useState<number>(0);
   const [isSelecting, setIsSelecting] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
-  const brightIdBackup = useSelector(selectBrightIdBackup);
+  const authData = useProfileStore((s) => s.authData);
+  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
+  const brightIdBackup = brightIdBackupEncrypted && authData?.password
+    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
+    : null;
   const chartData = useMemo(
     () => calculateRatingsImpact(impacts, evaluationCategory, brightIdBackup),
     [evaluationCategory, brightIdBackup, impacts],
@@ -158,7 +163,7 @@ export const EvaluationsChart = ({
   if (impactsLoading) return <SkeletonChart />;
 
   return (
-    <ChartContainer config={chartConfig} className="mb-12 h-52 w-full">
+    <div className="relative mb-12 h-52 w-full">
       <div
         className="h-full"
         onWheel={handleZoom}
@@ -208,6 +213,6 @@ export const EvaluationsChart = ({
           onBarClick={onBarClick}
         />
       </div>
-    </ChartContainer>
+    </div>
   );
 };

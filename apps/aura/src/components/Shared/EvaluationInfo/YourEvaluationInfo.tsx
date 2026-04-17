@@ -1,7 +1,6 @@
 import EvaluationInfo from "components/Shared/EvaluationInfo/EvaluationInfo"
 import { PencilIcon } from "lucide-react"
-import { useSelector } from "store/hooks"
-import { selectAuthData } from "store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 
 import { Button } from "@/components/ui/button"
 
@@ -17,7 +16,7 @@ export const YourEvaluationInfo = ({
   setShowEvaluationFlow: (value: boolean) => void
   evaluationCategory: EvaluationCategory
 }) => {
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
   if (!authData) return <></>
   return (
     <div className="flex gap-2">

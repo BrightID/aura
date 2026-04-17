@@ -1,34 +1,32 @@
-import { skipToken } from '@reduxjs/toolkit/query/react';
-import { useMemo } from 'react';
+import { useMemo } from "react"
 import {
   useGetInboundConnectionsQuery,
   useGetOutboundConnectionsQuery,
-} from 'store/api/connections';
+} from "@/hooks/queries/connections"
 
-import { selectEvaluateOperations } from '../BrightID/reducer/operationsSlice';
-import { pendingOperationStates } from '../constants';
-import { useSelector } from '../store/hooks';
-import { AuraRating } from '../types';
-import { EvaluationCategory, EvaluationValue } from '../types/dashboard';
+import { selectEvaluateOperations } from "@/store/operations.store"
+import { pendingOperationStates } from "../constants"
+import { AuraRating } from "../types"
+import { EvaluationCategory, EvaluationValue } from "../types/dashboard"
 
 export const useInboundEvaluations = ({
   subjectId,
   evaluationCategory,
 }: {
-  subjectId: string | null | undefined;
-  evaluationCategory?: EvaluationCategory;
+  subjectId: string | null | undefined
+  evaluationCategory?: EvaluationCategory
 }) => {
   const {
     data,
     isLoading: loading,
     refetch,
-  } = useGetInboundConnectionsQuery(subjectId ? { id: subjectId } : skipToken);
+  } = useGetInboundConnectionsQuery(subjectId ?? "")
 
-  const operations = useSelector(selectEvaluateOperations);
+  const operations = selectEvaluateOperations()
 
   const inboundRatings: AuraRating[] | null = useMemo(() => {
-    if (!data || !subjectId) return null;
-    const pendingRatings: AuraRating[] = [];
+    if (!data || !subjectId) return null
+    const pendingRatings: AuraRating[] = []
     operations
       .filter(
         (op) =>
@@ -48,7 +46,7 @@ export const useInboundEvaluations = ({
         ) {
           pendingRatings.unshift({
             rating: `${
-              ratingOp.evaluation === EvaluationValue.NEGATIVE ? '-' : ''
+              ratingOp.evaluation === EvaluationValue.NEGATIVE ? "-" : ""
             }${ratingOp.confidence}`,
             category: ratingOp.category,
             fromBrightId: ratingOp.evaluator,
@@ -57,9 +55,9 @@ export const useInboundEvaluations = ({
             createdAt: new Date(ratingOp.timestamp).toISOString(),
             updatedAt: new Date(ratingOp.timestamp).toISOString(),
             timestamp: ratingOp.timestamp,
-          });
+          })
         }
-      });
+      })
 
     return data
       .reduce(
@@ -94,23 +92,23 @@ export const useInboundEvaluations = ({
         [] as AuraRating[],
       )
       .concat(pendingRatings)
-      .sort((a, b) => a.timestamp - b.timestamp);
-  }, [evaluationCategory, data, operations, subjectId]);
+      .sort((a, b) => a.timestamp - b.timestamp)
+  }, [evaluationCategory, data, operations, subjectId])
 
   const inboundPositiveRatingsCount = useMemo(
     () => inboundRatings?.filter((r) => Number(r.rating) > 0).length,
     [inboundRatings],
-  );
+  )
   const inboundNegativeRatingsCount = useMemo(
     () => inboundRatings?.filter((r) => Number(r.rating) < 0).length,
     [inboundRatings],
-  );
+  )
 
   const inboundRatingsStatsString = useMemo(() => {
-    return `${inboundPositiveRatingsCount ?? '...'} Pos / ${
-      inboundNegativeRatingsCount ?? '...'
-    } Neg`;
-  }, [inboundNegativeRatingsCount, inboundPositiveRatingsCount]);
+    return `${inboundPositiveRatingsCount ?? "..."} Pos / ${
+      inboundNegativeRatingsCount ?? "..."
+    } Neg`
+  }, [inboundNegativeRatingsCount, inboundPositiveRatingsCount])
 
   return {
     connections: data,
@@ -120,26 +118,27 @@ export const useInboundEvaluations = ({
     inboundPositiveRatingsCount,
     inboundNegativeRatingsCount,
     inboundRatingsStatsString,
-  };
-};
+  }
+}
 
 export const useOutboundEvaluations = ({
   subjectId,
   evaluationCategory,
 }: {
-  subjectId: string | null | undefined;
-  evaluationCategory?: EvaluationCategory;
+  subjectId: string | null | undefined
+  evaluationCategory?: EvaluationCategory
 }) => {
   const {
     data,
     refetch,
     isLoading: loading,
-  } = useGetOutboundConnectionsQuery(subjectId ? { id: subjectId } : skipToken);
+  } = useGetOutboundConnectionsQuery(subjectId ?? "")
 
-  const operations = useSelector(selectEvaluateOperations);
+  const operations = selectEvaluateOperations()
   const outboundRatings: AuraRating[] | null = useMemo(() => {
-    if (!data || !subjectId) return null;
-    const pendingRatings: AuraRating[] = [];
+    if (!data || !subjectId) return null
+    const pendingRatings: AuraRating[] = []
+
     operations
       .filter(
         (op) =>
@@ -159,7 +158,7 @@ export const useOutboundEvaluations = ({
         ) {
           pendingRatings.unshift({
             rating: `${
-              ratingOp.evaluation === EvaluationValue.NEGATIVE ? '-' : ''
+              ratingOp.evaluation === EvaluationValue.NEGATIVE ? "-" : ""
             }${ratingOp.confidence}`,
             category: ratingOp.category,
             fromBrightId: ratingOp.evaluator,
@@ -168,9 +167,9 @@ export const useOutboundEvaluations = ({
             createdAt: new Date(ratingOp.timestamp).toISOString(),
             updatedAt: new Date(ratingOp.timestamp).toISOString(),
             timestamp: ratingOp.timestamp,
-          });
+          })
         }
-      });
+      })
     return data
       .reduce(
         (a, c) =>
@@ -204,22 +203,22 @@ export const useOutboundEvaluations = ({
         [] as AuraRating[],
       )
       .concat(pendingRatings)
-      .sort((a, b) => a.timestamp - b.timestamp);
-  }, [evaluationCategory, operations, data, subjectId]);
+      .sort((a, b) => a.timestamp - b.timestamp)
+  }, [evaluationCategory, operations, data, subjectId])
 
   return {
     loading,
     connections: data,
     refreshOutboundRatings: refetch,
     ratings: outboundRatings,
-  };
-};
+  }
+}
 
 export const useSubjectEvaluations = (props: {
-  subjectId: string | null | undefined;
-  evaluationCategory?: EvaluationCategory;
+  subjectId: string | null | undefined
+  evaluationCategory?: EvaluationCategory
 }) => {
-  const inboundConnectionsData = useInboundEvaluations(props);
-  const outboundConnectionsData = useOutboundEvaluations(props);
-  return { ...inboundConnectionsData, ...outboundConnectionsData };
-};
+  const inboundConnectionsData = useInboundEvaluations(props)
+  const outboundConnectionsData = useOutboundEvaluations(props)
+  return { ...inboundConnectionsData, ...outboundConnectionsData }
+}

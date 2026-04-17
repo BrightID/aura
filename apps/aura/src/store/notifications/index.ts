@@ -5,7 +5,7 @@ import { connectionsApi } from '../api/connections';
 import { AuraNodeBrightIdConnection } from '@/types';
 import { getAuraVerification } from '@/hooks/useParseBrightIdVerificationData';
 import { profileApi } from '../api/profile';
-import { AuraImpactRaw } from '@/api/auranode.service';
+import { AuraImpactRaw } from '@/types/aura';
 
 export const ALERT_THRESHOLDS = {
   LEVEL_CHANGE: 1,

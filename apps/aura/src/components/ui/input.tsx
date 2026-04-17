@@ -1,22 +1,38 @@
-import * as React from "react"
+import * as React from 'react'
 
-import { cn } from "@/lib/utils"
+export interface InputProps {
+  type?: 'text' | 'email' | 'password' | 'number'
+  label?: string
+  name?: string
+  placeholder?: string
+  value?: string
+  disabled?: boolean
+  id?: string
+  className?: string
+  onChange?: (e: { target: { value: string } }) => void
+}
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, ...props }, ref) => {
-    return (
-      <input
-        type={type}
-        className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-          className
-        )}
-        ref={ref}
-        {...props}
-      />
-    )
+const Input = React.forwardRef<HTMLElement, InputProps>(({ onChange, ...props }, ref) => {
+  const innerRef = React.useRef<any>(null)
+
+  React.useEffect(() => {
+    const el = innerRef.current
+    if (!el || !onChange) return
+    const handler = (e: Event) => {
+      onChange({ target: { value: (e as CustomEvent<string>).detail } })
+    }
+    el.addEventListener('change', handler)
+    return () => el.removeEventListener('change', handler)
+  }, [onChange])
+
+  const mergedRef = (node: any) => {
+    innerRef.current = node
+    if (typeof ref === 'function') ref(node)
+    else if (ref) (ref as React.RefObject<any>).current = node
   }
-)
-Input.displayName = "Input"
+
+  return <a-input ref={mergedRef} {...props} />
+})
+Input.displayName = 'Input'
 
 export { Input }

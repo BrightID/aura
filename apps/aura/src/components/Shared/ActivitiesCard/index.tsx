@@ -8,8 +8,7 @@ import {
 } from '../../../constants';
 import { CredibilityDetailsProps } from '../../../types';
 import { PreferredView } from '../../../types/dashboard';
-import { useGetBrightIDProfileQuery } from '@/store/api/profile';
-import { useGetOutboundConnectionsQuery } from '@/store/api/connections';
+import { useGetBrightIDProfileQuery, useGetOutboundConnectionsQuery } from '@/hooks/queries/connections';
 import { ActivityChart, ActivityChartProps } from './activity-chart';
 import { ArrowDownLeft } from 'lucide-react';
 
@@ -31,7 +30,7 @@ const ActivitiesCard = ({
     evaluationCategory: viewModeToViewAs[viewModeToSubjectViewMode[viewMode]],
   });
 
-  const { data, isLoading } = useGetOutboundConnectionsQuery({ id: subjectId });
+  const { data, isLoading } = useGetOutboundConnectionsQuery(subjectId);
   const profileFetch = useGetBrightIDProfileQuery(subjectId);
 
   const outboundActiveRatings = useMemo(

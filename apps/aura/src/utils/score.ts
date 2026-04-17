@@ -2,12 +2,11 @@ import { PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING } from '@/constants/ind
 import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
 import { EvaluationCategory } from 'types/dashboard';
 
 import { userLevelPoints } from '../constants/levels';
-import { AuraImpactRaw } from '@/api/auranode.service';
+import { AuraImpactRaw } from '@/types/aura';
 
 export const calculateImpact = (score: number, rating: number) => {
   if (rating > 0) {
@@ -77,7 +76,7 @@ export const useLevelupProgress = ({
 }: {
   evaluationCategory: EvaluationCategory;
 }) => {
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
 
   const subjectId = authData?.brightId;
 

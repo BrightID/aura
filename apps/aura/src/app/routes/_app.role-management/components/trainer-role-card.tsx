@@ -1,9 +1,8 @@
-import { selectTrainerRole, toggleTrainerRole } from '@/BrightID/actions';
 import { useSubjectVerifications } from '@/hooks/useSubjectVerifications';
+import { useSettingsStore, RoleStatus } from '@/store/settings.store';
 import { EvaluationCategory } from '@/types/dashboard';
 import { RefreshCcw } from 'lucide-react';
 import { FC } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { SubjectIdProps } from './player-role-card';
 import PlayerLevelAndScore from './score-and-level';
 
@@ -12,9 +11,8 @@ const TrainerRoleCard: FC<SubjectIdProps> = ({ subjectId }) => {
     subjectId,
     EvaluationCategory.TRAINER,
   );
-  const dispatch = useDispatch();
-
-  const hasTrainerRole = useSelector(selectTrainerRole);
+  const hasTrainerRole = useSettingsStore((s) => s.hasTrainerRole !== RoleStatus.HIDE);
+  const toggleTrainerRole = useSettingsStore((s) => s.toggleTrainerRole);
 
   const playerEvaluation = useSubjectVerifications(
     subjectId,
@@ -85,7 +83,7 @@ const TrainerRoleCard: FC<SubjectIdProps> = ({ subjectId }) => {
             <a-button
               data-testid="trainer-role-hide-btn"
               color="destructive"
-              onClick={() => dispatch(toggleTrainerRole())}
+              onClick={() => toggleTrainerRole()}
             >
               Hide
             </a-button>
@@ -94,7 +92,7 @@ const TrainerRoleCard: FC<SubjectIdProps> = ({ subjectId }) => {
               data-testid="trainer-role-show-btn"
               variant="secondary"
               className="bg-pl4"
-              onClick={() => dispatch(toggleTrainerRole())}
+              onClick={() => toggleTrainerRole()}
             >
               Show
             </a-button>

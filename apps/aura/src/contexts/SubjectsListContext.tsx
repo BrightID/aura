@@ -1,34 +1,24 @@
 import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
 import useFilterAndSort from 'hooks/useFilterAndSort';
-import {
-  AuraFilterId,
-  AuraFilterOptions,
-  useSubjectFilters,
-} from 'hooks/useFilters';
+import { AuraFilterId, AuraFilterOptions, useSubjectFilters } from 'hooks/useFilters';
 import { AuraSortId, AuraSortOptions, useSubjectSorts } from 'hooks/useSorts';
-import React, { createContext, ReactNode, useContext, useMemo } from 'react';
-import { AuraNodeBrightIdConnectionWithBackupData } from 'types';
+import { useMemo, type ReactNode } from 'react';
+import { create } from 'zustand';
+import { type AuraNodeBrightIdConnectionWithBackupData } from 'types';
 import useBrightIdBackupWithUpdatedConnectionData from 'hooks/useBrightIdBackupWithAuraConnectionData';
 
-// Define the context
-const SubjectsListContext = createContext<
-  | (ReturnType<
-      typeof useFilterAndSort<AuraNodeBrightIdConnectionWithBackupData>
-    > & {
-      sorts: AuraSortOptions<AuraNodeBrightIdConnectionWithBackupData>;
-      filters: AuraFilterOptions<AuraNodeBrightIdConnectionWithBackupData>;
-    })
-  | null
->(null);
+type SubjectsListState = ReturnType<
+  typeof useFilterAndSort<AuraNodeBrightIdConnectionWithBackupData>
+> & {
+  sorts: AuraSortOptions<AuraNodeBrightIdConnectionWithBackupData>;
+  filters: AuraFilterOptions<AuraNodeBrightIdConnectionWithBackupData>;
+};
 
-interface ProviderProps {
-  children: ReactNode;
-}
+const useSubjectsListStore = create<{ data: SubjectsListState | null; set: (d: SubjectsListState) => void }>()(
+  (set) => ({ data: null, set: (data) => set({ data }) }),
+);
 
-// Define the Provider component
-export const SubjectsListContextProvider: React.FC<ProviderProps> = ({
-  children,
-}) => {
+export function SubjectsListContextProvider({ children }: { children: ReactNode }) {
   const brightIdBackup = useBrightIdBackupWithUpdatedConnectionData();
 
   const filters = useSubjectFilters(
@@ -51,15 +41,14 @@ export const SubjectsListContextProvider: React.FC<ProviderProps> = ({
       [],
     ),
   );
+
   const sorts = useSubjectSorts(
     useMemo(
       () => [
         AuraSortId.ConnectionLastUpdated,
-        // AuraSortId.ConnectionMostEvaluations,
         AuraSortId.EvaluationConfidence,
         AuraSortId.ConnectionScore,
         AuraSortId.ConnectionRecentEvaluation,
-        // AuraSortId.MostMutualConnections,
       ],
       [],
     ),
@@ -68,38 +57,28 @@ export const SubjectsListContextProvider: React.FC<ProviderProps> = ({
   const { loading, myRatings } = useMyEvaluationsContext();
 
   const connectionsSortedDefault = useMemo(() => {
-    if (!brightIdBackup?.connections || loading || myRatings === null)
-      return null;
+    if (!brightIdBackup?.connections || loading || myRatings === null) return null;
 
     const uniqueConnections = [
-      ...new Map(
-        brightIdBackup.connections.map((item) => [item.id, item]),
-      ).values(),
+      ...new Map(brightIdBackup.connections.map((item) => [item.id, item])).values(),
     ];
 
-    const connections = uniqueConnections.sort(
-      (a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0),
-    );
+    const connections = uniqueConnections.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
 
-    const result = connections.reduce(
-      (acc, c) => {
-        const ratingIndex = myRatings.findIndex((r) => r.toBrightId === c.id);
-
-        if (
-          ratingIndex === -1 &&
-          (c.level === 'already known' || c.level === 'recovery')
-        )
-          acc[0].push(c);
-        else acc[1].push(c);
-        return acc;
-      },
-      [[], []] as [
-        AuraNodeBrightIdConnectionWithBackupData[],
-        AuraNodeBrightIdConnectionWithBackupData[],
-      ],
-    );
-
-    return result.flat();
+    return connections
+      .reduce(
+        (acc, c) => {
+          const ratingIndex = myRatings.findIndex((r) => r.toBrightId === c.id);
+          if (ratingIndex === -1 && (c.level === 'already known' || c.level === 'recovery')) {
+            acc[0].push(c);
+          } else {
+            acc[1].push(c);
+          }
+          return acc;
+        },
+        [[], []] as [AuraNodeBrightIdConnectionWithBackupData[], AuraNodeBrightIdConnectionWithBackupData[]],
+      )
+      .flat();
   }, [brightIdBackup, loading, myRatings]);
 
   const filterAndSortHookData = useFilterAndSort(
@@ -110,21 +89,15 @@ export const SubjectsListContextProvider: React.FC<ProviderProps> = ({
     'subjectsList',
   );
 
-  return (
-    <SubjectsListContext.Provider
-      value={{ ...filterAndSortHookData, filters, sorts }}
-    >
-      {children}
-    </SubjectsListContext.Provider>
-  );
-};
+  const store = useSubjectsListStore((s) => s.set);
+  const data = useMemo(() => ({ ...filterAndSortHookData, filters, sorts }), [filterAndSortHookData, filters, sorts]);
+  store(data);
 
-export const useSubjectsListContext = () => {
-  const context = useContext(SubjectsListContext);
-  if (context === null) {
-    throw new Error(
-      'SubjectsListContext must be used within a SubjectsListContextProvider',
-    );
-  }
-  return context;
-};
+  return <>{children}</>;
+}
+
+export function useSubjectsListContext() {
+  const data = useSubjectsListStore((s) => s.data);
+  if (!data) throw new Error('SubjectsListContextProvider not mounted');
+  return data;
+}

@@ -7,8 +7,7 @@ import 'swiper/css/scrollbar';
 import { SUBJECTS_EVALUATION_ONBOARDING_GUIDE_STEP_COUNT } from '@/constants/index';
 import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { useDispatch } from 'store/hooks';
-import { setPlayerOnboardingScreenShown } from 'store/profile';
+import { useProfileStore } from '@/store/profile.store';
 import { A11y, Navigation, Pagination, Scrollbar } from 'swiper/modules';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import { RoutePath } from 'types/router';
@@ -22,7 +21,7 @@ const Onboarding = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const stepNumber = Number(searchParams.get('step')) || 1;
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const setPlayerOnboardingScreenShown = useProfileStore((s) => s.setPlayerOnboardingScreenShown);
 
   const swiperRef = useRef<SwiperRef>(null);
 
@@ -37,7 +36,7 @@ const Onboarding = () => {
   };
 
   const handleFinish = () => {
-    dispatch(setPlayerOnboardingScreenShown(true));
+    setPlayerOnboardingScreenShown(true);
     navigate(RoutePath.HOME);
   };
 

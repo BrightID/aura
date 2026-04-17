@@ -1,21 +1,18 @@
 import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router"
 import RoleSelectModal from "@/app/routes/_app.dashboard/components/RoleSelectModal"
-import { resetStore } from "@/BrightID/actions"
+import { resetAllStores } from "@/store/resetAllStores"
 import { MoveUpIn } from "@/components/animations"
 import Modal from "@/components/Shared/Modal"
 import { preferredViewIcon } from "@/constants"
-import { selectPreferredView } from "@/store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
 import { PreferredView } from "@/types/dashboard"
 import { RoutePath } from "@/types/router"
 import { __DEV__ } from "@/utils/env"
 
 export const HomeOverlayContent = () => {
-  const preferredView = useSelector(selectPreferredView)
+  const preferredView = useProfileStore((s) => s.preferredView)
   const [isRoleSelectModalOpen, setIsRoleSelectModalOpen] = useState(false)
-
-  const dispatch = useDispatch()
   return (
     <MoveUpIn duration={0.4} delay={0.1} y={20}>
       <div className="row mb-4">
@@ -132,7 +129,7 @@ export const HomeOverlayContent = () => {
           process.env.REACT_APP_ENABLE_LOGOUT === "true") && (
           <button
             className={"btn"}
-            onClick={() => dispatch(resetStore())}
+            onClick={() => resetAllStores()}
             data-testid="logout-button"
           >
             Logout

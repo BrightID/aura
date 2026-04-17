@@ -1,9 +1,8 @@
 import { useOutboundEvaluations } from 'hooks/useSubjectEvaluations';
-import { useSelector } from 'react-redux';
-import { selectAuthData } from 'store/profile/selectors';
+import { useProfileStore } from '@/store/profile.store';
 
 export const useMyEvaluations = () => {
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
   const outboundEvaluations = useOutboundEvaluations({
     subjectId: authData?.brightId,
   });

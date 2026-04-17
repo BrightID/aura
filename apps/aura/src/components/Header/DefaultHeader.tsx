@@ -1,18 +1,16 @@
-import { toggleSearchModal } from '@/BrightID/actions';
-import { useDispatch } from '@/store/hooks';
-import { selectAuthData } from '@/store/profile/selectors';
+import { useSettingsStore } from '@/store/settings.store';
+import { useProfileStore } from '@/store/profile.store';
+import { useNotificationsStore } from '@/store/notifications.store';
 import { RoutePath } from '@/types/router';
 import { BellIcon, SearchIcon, SettingsIcon } from 'lucide-react';
 import { FC, PropsWithChildren, ReactNode } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 import { FaHome } from 'react-icons/fa';
-import { alertsSelector } from '@/store/notifications';
 
 export const HeaderBody: FC<
   PropsWithChildren & { title?: string; beforeTitle?: ReactNode }
 > = ({ title, children, beforeTitle }) => {
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
   const subjectId = authData?.brightId;
 
   if (!subjectId) return null;
@@ -41,10 +39,9 @@ export default function DefaultHeader({
   beforeTitle?: ReactNode;
   breadcrumbs?: ReactNode;
 } & PropsWithChildren) {
-  const dispatch = useDispatch();
-  const notificationsCount = useSelector(alertsSelector).filter(
-    (item) => !item.viewed,
-  ).length;
+  const toggleSearchModal = useSettingsStore((s) => s.toggleSearchModal);
+  const alerts = useNotificationsStore((s) => s.alerts);
+  const notificationsCount = alerts.filter((item) => !item.viewed).length;
 
   return (
     <div className="flex flex-col gap-2.5 px-1 pt-3 md:px-4 md:pt-9">
@@ -57,7 +54,7 @@ export default function DefaultHeader({
         <span className="header-right ml-auto flex items-center">
           <button
             data-testid="global-search-btn"
-            onClick={() => dispatch(toggleSearchModal())}
+            onClick={() => toggleSearchModal()}
             className="header-icon mr-2 dark:text-white"
           >
             <SearchIcon size={20} />

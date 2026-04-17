@@ -35,9 +35,9 @@ export function FiltersModal<T>({
       {(Object.keys(filteredCategories) as FilterCategoryId[]).map(
         (category) => (
           <div className="flex flex-col gap-3" key={category}>
-            <p className="text-black2 dark:text-gray-200">
+            <a-text variant="muted">
               {category !== FilterCategoryId.Default && category}
-            </p>
+            </a-text>
             <div className="flex flex-row flex-wrap gap-2">
               {res[category]?.map((item) => (
                 <ModalItem

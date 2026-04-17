@@ -1,10 +1,7 @@
 import { useEffect } from "react"
-import { useSelector } from "react-redux"
 import {
   RoleStatus,
-  selectManagerRoleState,
-  selectTrainerRoleState,
-} from "@/BrightID/actions"
+} from "@/store/settings.store"
 import DefaultHeader from "@/components/Header/DefaultHeader"
 import Tooltip from "@/components/Shared/Tooltip"
 import { getViewModeBackgroundColorClass, preferredViewIcon } from "@/constants"
@@ -15,7 +12,8 @@ import {
 } from "@/contexts/SubjectOutboundEvaluationsContext"
 import { useSubjectVerifications } from "@/hooks/useSubjectVerifications"
 import useViewMode from "@/hooks/useViewMode"
-import { selectAuthData } from "@/store/profile/selectors"
+import { useProfileStore } from "@/store/profile.store"
+import { useSettingsStore } from "@/store/settings.store"
 import { EvaluationCategory, PreferredView } from "@/types/dashboard"
 
 const ViewTooltip = ({
@@ -58,11 +56,11 @@ const ViewTooltip = ({
 function HomeHeaderItems() {
   const { currentViewMode, setPreferredView } = useViewMode()
 
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
 
-  const managerRole = useSelector(selectManagerRoleState)
+  const managerRole = useSettingsStore((s) => s.hasManagerRole)
 
-  const trainerRole = useSelector(selectTrainerRoleState)
+  const trainerRole = useSettingsStore((s) => s.hasTrainerRole)
 
   const subjectId = authData!.brightId
 
@@ -154,7 +152,7 @@ function HomeHeaderItems() {
 }
 
 export const HeaderBody = () => {
-  const authData = useSelector(selectAuthData)
+  const authData = useProfileStore((s) => s.authData)
   const subjectId = authData?.brightId
 
   if (!subjectId) return null

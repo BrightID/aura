@@ -1,7 +1,7 @@
 import { getViewModeSubjectBorderColorClass } from '@/constants/index';
 import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
 import { useSubjectInboundConnectionsContext } from 'contexts/SubjectInboundConnectionsContext';
-import { SubjectInboundEvaluationsContext } from 'contexts/SubjectInboundEvaluationsContext';
+import { useSubjectInboundEvaluationsContextSafe } from 'contexts/SubjectInboundEvaluationsContext';
 import { useOutboundEvaluationsContext } from 'contexts/SubjectOutboundEvaluationsContext';
 import { AuraFilterId } from 'hooks/useFilters';
 import { AuraSortId } from 'hooks/useSorts';
@@ -9,9 +9,8 @@ import { useSubjectName } from 'hooks/useSubjectName';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import useViewMode from 'hooks/useViewMode';
 import moment from 'moment';
-import { FC, useContext, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { selectAuthData } from 'store/profile/selectors';
+import { FC, useMemo } from 'react';
+import { useProfileStore } from '@/store/profile.store';
 import { EvaluationCategory, ProfileTab } from 'types/dashboard';
 import { connectionLevelIcons } from '@/utils/connection';
 import { compactFormat } from '@/utils/number';
@@ -42,7 +41,7 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
 }) => {
   const { currentViewMode, currentEvaluationCategory, updateViewAs } =
     useViewMode();
-  const authData = useSelector(selectAuthData);
+  const authData = useProfileStore((s) => s.authData);
 
   const { userHasRecovery, auraLevel, auraScore } = useSubjectVerifications(
     subjectId,
@@ -50,9 +49,7 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
   );
 
   const name = useSubjectName(subjectId);
-  const inboundEvaluationsContext = useContext(
-    SubjectInboundEvaluationsContext,
-  );
+  const inboundEvaluationsData = useSubjectInboundEvaluationsContextSafe(subjectId);
   const { myConnectionToSubject, myRatingNumberToSubject, loading } =
     useMyEvaluationsContext({
       subjectId,
@@ -91,7 +88,7 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
   const isVisitingYourPage = authData?.brightId === subjectId;
 
   return (
-    <div className="card flex flex-col gap-3 border dark:bg-dark-primary">
+    <a-card className="flex flex-col gap-3">
       <div className="card--header flex w-full items-center justify-between">
         <div className="card--header__left flex gap-4">
           {injectedProfileImage ? (
@@ -143,7 +140,9 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
 
         <div className="flex min-w-[90px] flex-col items-end gap-1.5 text-sm text-black dark:text-white">
           {userHasRecovery !== null && (
-            <div
+            <a-badge
+              variant={userHasRecovery ? 'accent' : 'secondary'}
+              size="sm"
               onClick={() => {
                 if (userHasRecovery) {
                   updateViewAs(EvaluationCategory.SUBJECT);
@@ -152,20 +151,14 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
                   setSelectedSort(AuraSortId.ConnectionLastUpdated);
                 }
               }}
-              className={`${
+              style={
                 userHasRecovery
-                  ? 'bg-orange font-bold text-white'
-                  : 'bg-gray-300 text-black'
-              } ${
-                userHasRecovery && !isPerformance && inboundEvaluationsContext
-                  ? 'cursor-pointer'
-                  : ''
-              } rounded px-2 py-1.5`}
+                  ? { background: 'var(--aura-warning)', borderColor: 'var(--aura-warning)', color: 'white', cursor: userHasRecovery && !isPerformance && inboundEvaluationsData ? 'pointer' : 'default' }
+                  : undefined
+              }
             >
-              <p className="text-xs">
-                {userHasRecovery ? 'Has Recovery' : 'No Recovery'}
-              </p>
-            </div>
+              {userHasRecovery ? 'Has Recovery' : 'No Recovery'}
+            </a-badge>
           )}
           <p className="truncate text-sm font-light">
             Last Activity: <span className="font-medium">{lastActivity}</span>
@@ -190,7 +183,7 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
             evaluationCategory={currentEvaluationCategory}
           />
         ))}
-    </div>
+    </a-card>
   );
 };
 
