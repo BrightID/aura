@@ -1,4 +1,4 @@
-import BrightIdProfilePicture from 'components/BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { HorizontalProgressBar } from 'components/Shared/HorizontalProgressBar';
 import {
   getViewModeSubjectBorderColorClass,

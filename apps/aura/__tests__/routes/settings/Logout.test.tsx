@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react';
 import { renderWithRouterAndRedux } from '../../utils/app';
 import LogoutButton from '@/app/routes/_app.settings/components/logout';
 import userEvent from '@testing-library/user-event';
-import * as resetModule from '@/BrightID/actions';
+import * as resetModule from '@/features/brightid/actions';
 
 describe('Logout button', () => {
   it('Should render the logout button', async () => {

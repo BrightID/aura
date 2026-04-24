@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import { RecoveryErrorType } from '@/BrightID/components/Onboarding/RecoveryFlow/RecoveryError';
-import { recover_steps, RECOVERY_CHANNEL_TTL } from '@/BrightID/utils/constants';
-import { uInt8ArrayToB64 } from '@/BrightID/utils/encoding';
-import type { RecoverStep_Type } from '@/BrightID/reducer/types';
+import { RecoveryErrorType } from '@/features/brightid/components/Onboarding/RecoveryFlow/RecoveryError';
+import { recover_steps, RECOVERY_CHANNEL_TTL } from '@/features/brightid/utils/constants';
+import { uInt8ArrayToB64 } from '@/features/brightid/utils/encoding';
+import type { RecoverStep_Type } from '@/features/brightid/reducer/types';
 
 export interface RecoveryState {
   recoverStep: RecoverStep_Type;

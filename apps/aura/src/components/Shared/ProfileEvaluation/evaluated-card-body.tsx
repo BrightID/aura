@@ -1,6 +1,6 @@
 import UserName from './user-name';
 import UserInformation from './user-information';
-import BrightIdProfilePicture from '@/components/BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { EvidenceType, EvidenceViewMode } from '@/types/dashboard';
 import { Verifications } from '@/types/aura';
 import {

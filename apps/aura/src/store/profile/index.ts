@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RESET_STORE } from '@/BrightID/actions';
+import { RESET_STORE } from '@/features/brightid/actions';
 import { PreferredView } from '@/types/dashboard';
 
 import { AuthData } from '../../types';

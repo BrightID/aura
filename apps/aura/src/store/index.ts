@@ -14,7 +14,7 @@ import {
   REGISTER,
 } from 'redux-persist';
 
-import reducers from '@/BrightID/reducer';
+import reducers from '@/features/brightid/reducer';
 import { __DEV__ } from '@/utils/env';
 import { apiSlice } from './api/slice';
 import { migrations } from './migrations';
@@ -25,7 +25,7 @@ import {
   createStateSyncMiddleware,
   initMessageListener,
 } from 'redux-state-sync';
-import { operationsSlice } from '@/BrightID/actions';
+import { operationsSlice } from '@/features/brightid/actions';
 import { cacheSlice } from './cache';
 import localforage from 'localforage';
 import { notificationsSlice } from './notifications';

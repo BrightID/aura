@@ -1,5 +1,5 @@
 import { Outlet } from "react-router"
-import EvaluationOpNotifications from "@/components/EvaluationOpNotifications"
+import EvaluationOpNotifications from "@/components/Shared/EvaluationOpNotifications"
 import NotificationsChecker from "@/components/notifications/notifications-checker"
 import { IS_PRODUCTION } from "@/utils/env"
 

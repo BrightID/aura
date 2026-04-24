@@ -16,7 +16,7 @@ import { useSubjectName } from '../../../hooks/useSubjectName';
 import { useSubjectVerifications } from '../../../hooks/useSubjectVerifications';
 import { PreferredView } from '../../../types/dashboard';
 import { connectionLevelIcons } from '../../../utils/connection';
-import BrightIdProfilePicture from '../../BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import LinkCard from '@/app/routes/_app.home/components/LinkCard';
 
 const FindTrainersCard = ({ subjectId }: { subjectId: string }) => {

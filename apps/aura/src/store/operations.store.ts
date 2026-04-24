@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import localforage from 'localforage';
-import { LOCAL_OPERATION_KEEP_THRESHOLD, operation_states } from '@/BrightID/utils/constants';
-import type { EvaluateOp, SubmittedOp } from '@/BrightID/api/operation_types';
+import { LOCAL_OPERATION_KEEP_THRESHOLD, operation_states } from '@/features/brightid/utils/constants';
+import type { EvaluateOp, SubmittedOp } from '@/features/brightid/api/operation_types';
 
 export type Operation = SubmittedOp & {
   state: (typeof operation_states)[keyof typeof operation_states];

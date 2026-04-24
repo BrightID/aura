@@ -2,8 +2,8 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { useProfileStore } from '@/store/profile.store';
 import { useOperationsStore, Operation } from '@/store/operations.store';
 
-import { NodeApiContext } from '../BrightID/components/NodeApiGate';
-import { operation_states } from '../BrightID/utils/constants';
+import { NodeApiContext } from '@/features/brightid/components/NodeApiGate';
+import { operation_states } from '@/features/brightid/utils/constants';
 import { EvaluationCategory, EvaluationValue } from '../types/dashboard';
 import useViewMode from './useViewMode';
 

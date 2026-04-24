@@ -1,4 +1,4 @@
-import CustomTrans from 'components/CustomTrans';
+import CustomTrans from '@/components/Shared/CustomTrans';
 import { useState } from 'react';
 
 import { BookOpen, FadeIn, Scale } from 'components/animations';

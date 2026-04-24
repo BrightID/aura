@@ -8,7 +8,7 @@ export default function SphereComponent({ className }: { className?: string }) {
     let initialized = false;
     let isMounted = true;
 
-    import('@/components/Shared/shaders/shpere').then(({ Sphere }) => {
+    import('@/components/Shared/shaders/sphere').then(({ Sphere }) => {
       if (!sphereWrapper.current || initialized || !isMounted) return;
       sphereWrapper.current.innerHTML = '';
 

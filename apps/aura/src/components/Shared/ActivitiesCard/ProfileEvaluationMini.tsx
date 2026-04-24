@@ -10,7 +10,7 @@ import {
 } from '../../../constants';
 import useViewMode from '../../../hooks/useViewMode';
 import { EvaluationCategory } from '../../../types/dashboard';
-import BrightIdProfilePicture from '../../BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import Tooltip from '../Tooltip';
 
 const ProfileEvaluationMini = ({

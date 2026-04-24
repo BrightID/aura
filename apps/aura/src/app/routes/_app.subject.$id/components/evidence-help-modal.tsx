@@ -5,8 +5,8 @@ import { Link } from 'react-router';
 import { A11y, Navigation, Pagination, Scrollbar } from 'swiper/modules';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 
-import AnimatedNodeCircles from '@/components/AnimatedNodeCircles';
-import StepsPagination from '@/components/Pagination';
+import AnimatedNodeCircles from '@/components/Shared/AnimatedNodeCircles';
+import StepsPagination from '@/components/Shared/Pagination';
 
 export const gitBookLinks = [
   'https://brightid.gitbook.io/aura/how-to-play/connections',

@@ -1,7 +1,7 @@
 import { useMyEvaluationsContext } from "contexts/MyEvaluationsContext"
 import { useCallback, useContext, useEffect, useState } from "react"
-import { NodeApiContext } from "@/BrightID/components/NodeApiGate"
-import { operation_states } from "@/BrightID/utils/constants"
+import { NodeApiContext } from "@/features/brightid/components/NodeApiGate"
+import { operation_states } from "@/features/brightid/utils/constants"
 import { Operation, useOperationsStore } from "@/store/operations.store"
 import { useProfileStore } from "@/store/profile.store"
 

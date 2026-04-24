@@ -13,7 +13,7 @@ import EvaluationsChartTooltip from './chart-tooltip';
 import { ChartTooltip } from '@/components/ui/chart';
 import { ChartAreaProps } from '../../ActivitiesCard/activity-chart/chart-area';
 import { cn } from '@/lib/utils';
-import BrightIdProfilePicture from '@/components/BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { FC } from 'react';
 
 export interface EvaluationChartAreaProps extends ChartAreaProps {}

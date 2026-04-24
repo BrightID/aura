@@ -1,7 +1,7 @@
 import { type PropsWithChildren } from "react"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
-import NodeApiGateContextProvider from "@/BrightID/components/NodeApiGate"
+import NodeApiGateContextProvider from "@/features/brightid/components/NodeApiGate"
 import UpdatePrompt from "@/components/Shared/UpdatePrompt"
 import { BrowserHistoryContextProvider } from "@/contexts/BrowserHistoryContext"
 import { SubjectsListContextProvider } from "@/contexts/SubjectsListContext"

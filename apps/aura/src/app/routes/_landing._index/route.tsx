@@ -1,9 +1,9 @@
 import useRedirectAfterLogin from "hooks/useRedirectAfterLogin"
 import { useEffect, useState } from "react"
 import { useProfileStore } from "@/store/profile.store"
-import RecoveryCodeScreen from "@/BrightID/components/Onboarding/RecoveryFlow/RecoveryCodeScreen"
+import RecoveryCodeScreen from "@/features/brightid/components/Onboarding/RecoveryFlow/RecoveryCodeScreen"
 
-import CustomTrans from "@/components/CustomTrans"
+import CustomTrans from "@/components/Shared/CustomTrans"
 import { checkIndexedDB } from "@/utils/check-db"
 import Splash from "./components/splash"
 

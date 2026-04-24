@@ -12,7 +12,7 @@ import useViewMode from "@/hooks/useViewMode"
 import { useProfileStore } from "@/store/profile.store"
 import { PlayerHistorySequenceType } from "@/types"
 import { EvaluationCategory } from "@/types/dashboard"
-import { findLastIndex } from "@/utils"
+import { findLastIndex } from "@/utils/array"
 
 const views = [
   EvaluationCategory.PLAYER,

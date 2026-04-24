@@ -8,7 +8,7 @@ import {
 import React, { useMemo } from "react"
 import { Fragment } from "react/jsx-runtime"
 import { Link } from "react-router"
-import BrightIdProfilePicture from "@/components/BrightIdProfilePicture"
+import BrightIdProfilePicture from "@/components/Shared/BrightIdProfilePicture"
 import DefaultHeader from "@/components/Header/DefaultHeader"
 import {
   getBgClassNameOfAuraRatingObject,

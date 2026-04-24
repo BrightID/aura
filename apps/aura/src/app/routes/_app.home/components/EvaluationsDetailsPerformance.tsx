@@ -1,4 +1,4 @@
-import CredibilityDetailsModal from '@/components/CredibilityDetailsModal';
+import CredibilityDetailsModal from '@/components/Shared/CredibilityDetailsModal';
 import ProfileOverview from '@/components/Shared/ProfileOverview';
 import { viewModeToEvaluatorViewMode } from '@/constants';
 import useViewMode from '@/hooks/useViewMode';

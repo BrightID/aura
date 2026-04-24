@@ -1,4 +1,4 @@
-import CustomTrans from 'components/CustomTrans';
+import CustomTrans from '@/components/Shared/CustomTrans';
 
 import { AnimatedText, FadeIn, MoveUpIn, MoveX } from 'components/animations';
 

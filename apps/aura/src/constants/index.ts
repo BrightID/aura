@@ -5,7 +5,7 @@ import {
   PreferredView,
 } from 'types/dashboard';
 
-import { operation_states } from '../BrightID/utils/constants';
+import { operation_states } from '@/features/brightid/utils/constants';
 
 export const CONNECTION_SEARCH_SEED = 5;
 

@@ -1,5 +1,5 @@
 import { FadeIn, Scale } from "components/animations"
-import CustomTrans from "components/CustomTrans"
+import CustomTrans from "@/components/Shared/CustomTrans"
 import { useProfileStore } from "@/store/profile.store"
 
 const Spalsh = () => {

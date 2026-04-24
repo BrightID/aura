@@ -1,5 +1,5 @@
-import BrightIdProfilePicture from "components/BrightIdProfilePicture"
-import { ConnectionAndEvaluationStatus } from "components/ConnectionAndEvaluationStatus"
+import BrightIdProfilePicture from "@/components/Shared/BrightIdProfilePicture"
+import { ConnectionAndEvaluationStatus } from "@/components/Shared/ConnectionAndEvaluationStatus"
 import ReactECharts from "echarts-for-react"
 import { useSubjectName } from "hooks/useSubjectName"
 import useViewMode from "hooks/useViewMode"

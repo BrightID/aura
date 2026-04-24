@@ -12,14 +12,14 @@ import { Route } from "@/../.react-router/types/src/app/+types/root"
 import ThemeResolver from "@/components/ui/theme-resolver"
 import "./index.css"
 
-import ErrorBoundryUi from "@/components/error-boundry"
-import GlobalSearchModal from "@/components/GlobalSearchModal"
+import ErrorBoundryUi from "@/components/Shared/error-boundary"
+import GlobalSearchModal from "@/components/Shared/GlobalSearchModal"
 import DebugToolbar from "@/components/ux/debug-toolbar"
 import Providers, { AppProviders } from "./providers"
 
 import "swiper/css"
 import "../assets/fonts/fonts.css"
-import "./i18n"
+import "@/lib/i18n"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

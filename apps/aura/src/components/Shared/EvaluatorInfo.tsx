@@ -1,4 +1,4 @@
-import BrightIdProfilePicture from 'components/BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { getConfidenceValueOfAuraRatingNumber } from '@/constants/index';
 import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
 import { useSubjectName } from 'hooks/useSubjectName';

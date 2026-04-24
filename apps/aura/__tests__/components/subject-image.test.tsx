@@ -6,7 +6,7 @@ import {
 } from '../utils/api/profile';
 import { setupServer } from 'msw/node';
 import { renderWithRouterAndRedux } from '../utils/app';
-import BrightIdProfilePicture from '@/components/BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { screen, waitFor } from '@testing-library/react';
 import { encryptData } from '@/utils/crypto';
 

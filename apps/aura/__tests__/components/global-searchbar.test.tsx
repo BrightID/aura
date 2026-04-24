@@ -19,7 +19,7 @@ import { SubjectsListContextProvider } from '@/contexts/SubjectsListContext';
 import HomePage from '@/app/routes/_app.home/route';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import GlobalSearchModal from '@/components/GlobalSearchModal';
+import GlobalSearchModal from '@/components/Shared/GlobalSearchModal';
 
 export const customConnectionsInterceptor = http.get(
   `/auranode-test/brightid/v6/users/${TEST_BRIGHT_ID}/profile`,

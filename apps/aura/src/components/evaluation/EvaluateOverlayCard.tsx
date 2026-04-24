@@ -1,4 +1,4 @@
-import BrightIdProfilePicture from 'components/BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { useSubjectName } from 'hooks/useSubjectName';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import { getViewModeSubjectBorderColorClass } from '@/constants/index';

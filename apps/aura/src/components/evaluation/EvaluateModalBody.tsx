@@ -9,7 +9,7 @@ import { viewModeSubjectString } from '@/constants';
 import { EvaluationCategory, PreferredView } from '@/types/dashboard';
 
 import useViewMode from '../../hooks/useViewMode';
-import CustomTrans from '../CustomTrans';
+import CustomTrans from '../Shared/CustomTrans';
 import { toast } from '@aura/ui';
 
 const EvaluateModalBody = ({

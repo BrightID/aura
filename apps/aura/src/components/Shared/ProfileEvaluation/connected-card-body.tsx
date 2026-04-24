@@ -1,5 +1,5 @@
 import { Verifications } from '@/types/aura';
-import BrightIdProfilePicture from '@/components/BrightIdProfilePicture';
+import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import {
   INBOUND_EVIDENCE_VIEW_MODES,
   viewModeSubjectString,
