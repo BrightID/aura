@@ -1,6 +1,7 @@
 import BrightIdProfilePicture from 'components/BrightIdProfilePicture';
 import { useSubjectName } from 'hooks/useSubjectName';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
+import { getViewModeSubjectBorderColorClass } from '@/constants/index';
 import { useProfileStore } from '@/store/profile.store';
 
 import useViewMode from '../../hooks/useViewMode';
@@ -9,16 +10,14 @@ const EvaluateOverlayCard = ({
   className,
   isPerformance = false,
   subjectId,
-  color = 'pastel-green',
   setShowEvaluationFlow,
 }: {
   className?: string;
   isPerformance?: boolean;
   subjectId: string | undefined;
-  color?: string;
   setShowEvaluationFlow: (value: boolean) => void;
 }) => {
-  const { currentEvaluationCategory } = useViewMode();
+  const { currentEvaluationCategory, currentViewMode } = useViewMode();
   const { auraLevel } = useSubjectVerifications(
     subjectId,
     currentEvaluationCategory,
@@ -29,13 +28,11 @@ const EvaluateOverlayCard = ({
   if (authData?.brightId === subjectId) return null;
 
   return (
-    <div className={`card dark:dark-primary border bg-white ${className}`}>
+    <div className={`card border bg-card text-card-foreground ${className}`}>
       <div className="card--header flex w-full items-center justify-between">
         <div className="card--header__left flex gap-4">
           <BrightIdProfilePicture
-            className={`card--header__left__avatar rounded-full border-[3px] ${
-              isPerformance ? 'border-' + color : 'border-pastel-purple'
-            } h-[51px] w-[51px]`}
+            className={`card--header__left__avatar rounded-full border-[3px] ${getViewModeSubjectBorderColorClass(currentViewMode)} h-[51px] w-[51px]`}
             subjectId={subjectId}
           />
           <div className="card--header__left__info flex flex-col justify-center">

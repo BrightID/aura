@@ -88,7 +88,7 @@ const EvaluatedCardBody = ({
             </div>
           </Tooltip>
         </div>
-        <span className="divider pl-.5 mr-1.5 h-full border-r border-dashed border-gray00"></span>
+        <span className="divider pl-.5 mr-1.5 h-full border-r border-dashed border-border"></span>
       </div>
       <div className="card__right-column flex w-[40%] flex-col gap-1">
         <EvidenceInformation

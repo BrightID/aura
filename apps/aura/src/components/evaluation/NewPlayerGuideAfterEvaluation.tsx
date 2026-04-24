@@ -1,32 +1,34 @@
-import { PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING } from '@/constants/index';
-import { useBrowserHistoryStore } from '@/store/browser-history.store';
-import { useNavigate } from 'react-router';
-import { RoutePath } from 'types/router';
+import { useNavigate } from "react-router"
+import { RoutePath } from "types/router"
+import { PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING } from "@/constants/index"
+import { useBrowserHistoryStore } from "@/store/browser-history.store"
 
 const NewPlayerGuideAfterEvaluation = ({
   ratingsDoneCount,
   closeModalHandler,
 }: {
-  ratingsDoneCount: number | null;
-  closeModalHandler?: () => void;
+  ratingsDoneCount: number | null
+  closeModalHandler?: () => void
 }) => {
-  const navigate = useNavigate();
-  const isFirstVisitedRoute = useBrowserHistoryStore((s) => s.isFirstVisitedRoute);
+  const navigate = useNavigate()
+  const isFirstVisitedRoute = useBrowserHistoryStore(
+    (s) => s.isFirstVisitedRoute,
+  )
 
-  if (ratingsDoneCount === null) return null;
+  if (ratingsDoneCount === null) return null
   return ratingsDoneCount < PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING ? (
     <div>
       <div className="mt-36 text-center text-xl">
         <p className="font-semibold">Great job!</p>
         <p>
-          You&apos;ve just completed{' '}
-          {ratingsDoneCount === 1 ? 'your first' : 'an'} evaluation. You need{' '}
+          You&apos;ve just completed{" "}
+          {ratingsDoneCount === 1 ? "your first" : "an"} evaluation. You need{" "}
           <span data-testid="ratings-remaining-before-training">
             {PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING - ratingsDoneCount}
-          </span>{' '}
+          </span>{" "}
           more before you can start getting feedback from Aura trainers
         </p>
-        <div className="mt-[20px] h-[14px] grow overflow-hidden rounded-xl bg-[#D9D9D9]">
+        <div className="mt-5 h-3.5 grow overflow-hidden rounded-xl bg-[#D9D9D9]">
           <span
             className={`flex h-[inherit] rounded-xl bg-pastel-purple w-[${Math.ceil(
               (ratingsDoneCount * 100) /
@@ -41,9 +43,9 @@ const NewPlayerGuideAfterEvaluation = ({
           className="btn btn--big w-full"
           onClick={() => {
             if (isFirstVisitedRoute) {
-              navigate(RoutePath.HOME);
+              navigate(RoutePath.HOME)
             } else {
-              navigate(-1);
+              navigate(-1)
             }
           }}
         >
@@ -56,11 +58,11 @@ const NewPlayerGuideAfterEvaluation = ({
       <div className="mt-36 text-center text-xl">
         <p className="font-semibold">Great job!</p>
         <p>
-          You completed{' '}
-          <span data-testid="ratings-done-count">{ratingsDoneCount}</span>{' '}
+          You completed{" "}
+          <span data-testid="ratings-done-count">{ratingsDoneCount}</span>{" "}
           evaluations. Start getting feedback from Aura trainers!
         </p>
-        <div className="mt-[20px] h-[14px] grow overflow-hidden rounded-xl bg-[#D9D9D9]">
+        <div className="mt-5 h-3.5 grow overflow-hidden rounded-xl bg-[#D9D9D9]">
           <span
             className={`flex h-[inherit] w-full rounded-xl bg-pastel-purple`}
           ></span>
@@ -71,14 +73,14 @@ const NewPlayerGuideAfterEvaluation = ({
           data-testid="find-trainers-button"
           className="btn btn--big w-full"
           onClick={() => {
-            navigate(RoutePath.HOME + '?tab=levelup');
+            navigate(RoutePath.HOME + "?tab=levelup")
           }}
         >
           Find Trainers
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NewPlayerGuideAfterEvaluation;
+export default NewPlayerGuideAfterEvaluation

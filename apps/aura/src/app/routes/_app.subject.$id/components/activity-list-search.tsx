@@ -1,5 +1,5 @@
-import { FiltersModal } from "components/EvaluationFlow/FiltersModal"
-import { SortsModal } from "components/EvaluationFlow/SortsModal"
+import { FiltersModal } from "components/evaluation/FiltersModal"
+import { SortsModal } from "components/evaluation/SortsModal"
 import Dropdown from "components/Shared/Dropdown"
 import { useOutboundEvaluationsContext } from "contexts/SubjectOutboundEvaluationsContext"
 import { AuraFilterId } from "hooks/useFilters"
@@ -164,7 +164,7 @@ export const ActivityListSearch = ({
   ])
 
   return (
-    <>
+    <section className="flex flex-col gap-4">
       <div className="text-right text-sm font-semibold">
         {currentViewMode === PreferredView.MANAGER_EVALUATING_MANAGER && (
           <div className="flex items-center justify-between">
@@ -269,7 +269,7 @@ export const ActivityListSearch = ({
       </div>
 
       <a-input
-        className="h-11 w-full bg-card text-sm font-medium text-card-foreground placeholder-black2 focus:outline-none dark:placeholder:text-gray-50"
+        className="h-11 w-full text-sm font-medium text-card-foreground placeholder-black2 focus:outline-none dark:placeholder:text-gray-50"
         type="text"
         placeholder="Search in these results"
         value={searchString}
@@ -282,6 +282,6 @@ export const ActivityListSearch = ({
           alt=""
         />
       </a-input>
-    </>
+    </section>
   )
 }

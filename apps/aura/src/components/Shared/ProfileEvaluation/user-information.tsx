@@ -50,7 +50,7 @@ const UserInformation: FC<UserInformationProps> = ({
   const auraLevel = verificartions?.level;
 
   return (
-    <div className="mb-1.5 flex items-center justify-between gap-0.5 rounded bg-gray00 p-1 pr-2 text-white">
+    <div className="mb-1.5 flex items-center justify-between gap-0.5 rounded bg-muted p-1 pr-2 text-muted-foreground">
       <img
         src={
           evidenceViewMode === EvidenceViewMode.INBOUND_CONNECTION

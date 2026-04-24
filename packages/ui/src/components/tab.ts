@@ -20,7 +20,7 @@ export class TabsElement extends LitElement {
     .tab-list {
       position: relative;
       display: flex;
-      gap: 0.25rem;
+      /* gap: 0.25rem; */
       padding: 0.25rem;
       border-radius: var(--radius, 0.5rem);
       background: color-mix(in oklch, var(--background, #fff) 75%, transparent);
@@ -29,17 +29,20 @@ export class TabsElement extends LitElement {
     }
     .indicator {
       position: absolute;
-      inset: 0.25rem;
-      height: calc(100% - 0.5rem);
-      border-radius: calc(var(--radius, 0.5rem) - 0.125rem);
+      top: 0.25rem; /* or inset-inline-start: 0; if you want logical props */
+      bottom: 0.25rem;
       left: 0;
+      height: auto; /* let top/bottom control it */
+      border-radius: calc(var(--radius, 0.5rem) - 0.125rem);
       background: var(--primary, #0066cc);
       transition:
         transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
         width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 0;
       will-change: transform, width;
+      /* pointer-events: none; */ /* often useful */
     }
+
     ::slotted(a-tab) {
       position: relative;
       z-index: 1;
@@ -93,7 +96,7 @@ export class TabsElement extends LitElement {
     const tabRect = activeTab.getBoundingClientRect()
     const containerRect = container.getBoundingClientRect()
 
-    const left = tabRect.left - containerRect.left
+    const left = tabRect.left - containerRect.left + container.scrollLeft
     const width = tabRect.width
 
     indicator.style.width = `${width}px`
@@ -166,17 +169,24 @@ export class TabElement extends LitElement {
   @property({ type: Boolean, reflect: true })
   disabled = false
 
+  @property({})
+  class: string | undefined
+
   static styles = css`
     :host {
       display: block;
       flex: 1 1 auto;
+      width: 100%;
     }
     button {
-      height: 2rem;
+      min-height: 2rem;
+      height: 100%;
       padding: 0 0.875rem;
       display: flex;
       align-items: center;
       gap: 0.25rem;
+      justify-content: center;
+      text-align: center;
       width: 100%;
       border: none;
       border-radius: calc(var(--radius, 0.5rem) - 0.125rem);
@@ -214,6 +224,7 @@ export class TabElement extends LitElement {
   render() {
     return html`
       <button
+        .class=${this.class}
         role="tab"
         aria-selected=${this.active ? "true" : "false"}
         aria-disabled=${this.disabled ? "true" : "false"}

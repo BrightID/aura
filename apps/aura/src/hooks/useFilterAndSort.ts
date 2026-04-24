@@ -1,6 +1,7 @@
 import { AuraFilterId, AuraFilterOptions } from 'hooks/useFilters';
 import { AuraSelectedSort, AuraSortId, AuraSortOptions } from 'hooks/useSorts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Fuse from 'fuse.js';
 
 export enum SortCategoryId {
   Default = 'Default',
@@ -176,16 +177,24 @@ export default function useFilterAndSort<T>(
     return null;
   }, [isSortReversed, selectedSortId, sorts]);
 
+  const fuse = useMemo(
+    () =>
+      items && searchKeys?.length
+        ? new Fuse(items, {
+            keys: searchKeys as string[],
+            threshold: 0.35,
+            ignoreLocation: true,
+            minMatchCharLength: 1,
+          })
+        : null,
+    [items, searchKeys],
+  );
+
   const itemsFiltered: T[] | null = useMemo(() => {
     if (items === null) return null;
     let result = [...items];
-    if (searchString && searchKeys?.length) {
-      const searchStringFinal = searchString.trim().toLowerCase();
-      result = result.filter((item) =>
-        searchKeys.some((key) =>
-          String(item[key]).toLowerCase().includes(searchStringFinal),
-        ),
-      );
+    if (searchString.trim() && fuse) {
+      result = fuse.search(searchString.trim()).map((r) => r.item);
     } else if (selectedFilters) {
       const filtersByCategory: {
         [category in FilterCategoryId]: AuraFilterOptions<T>;
@@ -224,7 +233,7 @@ export default function useFilterAndSort<T>(
       result.sort(selectedSort?.func);
     }
     return selectedSort?.isReversed ? result.reverse() : result;
-  }, [items, searchString, searchKeys, selectedFilters, selectedSort]);
+  }, [items, searchString, fuse, selectedFilters, selectedSort]);
 
   const clearSort = useCallback(() => {
     setSelectedSort(null);

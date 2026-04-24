@@ -24,6 +24,9 @@ export class ButtonElement extends LitElement {
   @property({ type: Boolean, reflect: true })
   disabled: boolean = false
 
+  @property({ type: String })
+  class: string | undefined = ""
+
   static styles = css`
     :host {
       display: inline-flex;
@@ -202,7 +205,7 @@ export class ButtonElement extends LitElement {
 
   protected render() {
     return html`
-      <button ?disabled=${this.disabled} part="button">
+      <button .class=${this.class} ?disabled=${this.disabled} part="button">
         <slot></slot>
       </button>
     `

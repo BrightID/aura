@@ -8,9 +8,9 @@ import {
 import { PencilIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate } from "react-router"
-import { useProfileStore } from "@/store/profile.store"
 import { EvaluationCategory } from "types/dashboard"
 import { SubjectInboundEvaluationsContextProvider } from "@/contexts/SubjectInboundEvaluationsContext"
+import { useProfileStore } from "@/store/profile.store"
 import { compactFormat } from "@/utils/number"
 import { calculateUserScorePercentage } from "@/utils/score"
 
@@ -21,10 +21,9 @@ import {
 } from "../constants"
 import { CredibilityDetailsProps } from "../types"
 import BrightIdProfilePicture from "./BrightIdProfilePicture"
-import EvaluationFlow from "./EvaluationFlow/EvaluationFlow"
+import EvaluationFlow from "./evaluation/EvaluationFlow"
 import { HorizontalProgressBar } from "./Shared/HorizontalProgressBar"
 import { EvaluationsChart } from "./Shared/ProfileOverview/evaluations-chart"
-import { Button } from "./ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Skeleton } from "./ui/skeleton"
 

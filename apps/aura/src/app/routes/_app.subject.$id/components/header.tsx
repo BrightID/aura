@@ -1,53 +1,53 @@
-import { PlayerHistorySequence } from '@/components/Header/PlayerHistorySequence';
-import DefaultHeader from '@/components/Header/DefaultHeader';
-import Tooltip from '@/components/Shared/Tooltip';
+import { useEffect, useMemo, useState } from "react"
+import { useParams } from "react-router"
+import DefaultHeader from "@/components/Header/DefaultHeader"
+import { PlayerHistorySequence } from "@/components/Header/PlayerHistorySequence"
+import Tooltip from "@/components/Shared/Tooltip"
 import {
-  viewModeSubjectBackgroundColorClass,
   subjectViewAsIcon,
-} from '@/constants';
-import { useOutboundEvaluations } from '@/hooks/useSubjectEvaluations';
-import useViewMode from '@/hooks/useViewMode';
-import { useProfileStore } from '@/store/profile.store';
-import { PlayerHistorySequenceType } from '@/types';
-import { EvaluationCategory } from '@/types/dashboard';
-import { findLastIndex } from '@/utils';
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
+  viewModeSubjectBackgroundColorClass,
+} from "@/constants"
+import { useOutboundEvaluations } from "@/hooks/useSubjectEvaluations"
+import useViewMode from "@/hooks/useViewMode"
+import { useProfileStore } from "@/store/profile.store"
+import { PlayerHistorySequenceType } from "@/types"
+import { EvaluationCategory } from "@/types/dashboard"
+import { findLastIndex } from "@/utils"
 
 const views = [
   EvaluationCategory.PLAYER,
   EvaluationCategory.TRAINER,
   EvaluationCategory.MANAGER,
-];
+]
 
 const viewsLabel = {
-  [EvaluationCategory.MANAGER]: 'Manager',
-  [EvaluationCategory.PLAYER]: 'Player',
-  [EvaluationCategory.TRAINER]: 'Trainer',
-  [EvaluationCategory.SUBJECT]: 'Subject',
-};
+  [EvaluationCategory.MANAGER]: "Manager",
+  [EvaluationCategory.PLAYER]: "Player",
+  [EvaluationCategory.TRAINER]: "Trainer",
+  [EvaluationCategory.SUBJECT]: "Subject",
+}
 
 export default function SubjectProfileHeader() {
-  const { subjectViewModeTitle } = useViewMode();
-  const params = useParams();
+  const { subjectViewModeTitle } = useViewMode()
+  const params = useParams()
 
-  const authData = useProfileStore((s) => s.authData);
+  const authData = useProfileStore((s) => s.authData)
 
-  const subjectIdProp = params['id'];
+  const subjectIdProp = params["id"]
 
   const subjectId = useMemo(
     () => subjectIdProp ?? authData?.brightId,
     [authData?.brightId, subjectIdProp],
-  );
+  )
 
   const [playerHistorySequence, setPlayerHistorySequence] = useState<
     PlayerHistorySequenceType[]
-  >([]);
-  const [isSequenceOpen, setIsSequenceOpen] = useState(false);
-  const { currentEvaluationCategory } = useViewMode();
+  >([])
+  const [isSequenceOpen, setIsSequenceOpen] = useState(false)
+  const { currentEvaluationCategory } = useViewMode()
 
   useEffect(() => {
-    if (!subjectId) return;
+    if (!subjectId) return
     setPlayerHistorySequence((prevSequence) => {
       if (
         findLastIndex(prevSequence, (h) => h.subjectId === subjectId) ===
@@ -59,14 +59,14 @@ export default function SubjectProfileHeader() {
             subjectId,
             evaluationCategory: currentEvaluationCategory,
           },
-        ];
+        ]
       }
       const index = findLastIndex(
         prevSequence,
         (h) =>
           h.subjectId === subjectId &&
           h.evaluationCategory === currentEvaluationCategory,
-      );
+      )
       if (index === -1) {
         return [
           ...prevSequence,
@@ -74,13 +74,13 @@ export default function SubjectProfileHeader() {
             subjectId,
             evaluationCategory: currentEvaluationCategory,
           },
-        ];
+        ]
       }
-      return prevSequence.slice(0, index + 1);
-    });
-  }, [currentEvaluationCategory, subjectId]);
+      return prevSequence.slice(0, index + 1)
+    })
+  }, [currentEvaluationCategory, subjectId])
 
-  if (!subjectId) return null;
+  if (!subjectId) return null
 
   return (
     <>
@@ -98,8 +98,8 @@ export default function SubjectProfileHeader() {
               className="mr-1 h-[18px] w-6 cursor-pointer"
               src={
                 isSequenceOpen
-                  ? '/assets/images/Header/close-sequence.svg'
-                  : '/assets/images/Header/sequence.svg'
+                  ? "/assets/images/Header/close-sequence.svg"
+                  : "/assets/images/Header/sequence.svg"
               }
               alt=""
               onClick={() => setIsSequenceOpen(!isSequenceOpen)}
@@ -113,47 +113,45 @@ export default function SubjectProfileHeader() {
         </div>
       </DefaultHeader>
     </>
-  );
+  )
 }
 
 export function SubjectHeaderBody({ subjectId }: { subjectId: string }) {
   const { updateViewAs, currentViewMode, currentEvaluationCategory } =
-    useViewMode();
+    useViewMode()
 
   const playerActivity = useOutboundEvaluations({
     subjectId,
     evaluationCategory: EvaluationCategory.PLAYER,
-  });
+  })
 
   const trainerActivity = useOutboundEvaluations({
     subjectId,
     evaluationCategory: EvaluationCategory.TRAINER,
-  });
+  })
 
   const managerActivity = useOutboundEvaluations({
     subjectId,
     evaluationCategory: EvaluationCategory.MANAGER,
-  });
+  })
 
   const authorizedTabs = useMemo(() => {
-    const tabs = [];
+    const tabs = []
 
     if ((playerActivity.ratings?.length ?? 0) > 0)
-      tabs.push(EvaluationCategory.PLAYER);
+      tabs.push(EvaluationCategory.PLAYER)
 
     if ((trainerActivity.ratings?.length ?? 0) > 0)
-      tabs.push(EvaluationCategory.TRAINER);
+      tabs.push(EvaluationCategory.TRAINER)
 
     if ((managerActivity.ratings?.length ?? 0) > 0)
-      tabs.push(EvaluationCategory.MANAGER);
+      tabs.push(EvaluationCategory.MANAGER)
 
-    return tabs;
-  }, [playerActivity, trainerActivity, managerActivity]);
+    return tabs
+  }, [playerActivity, trainerActivity, managerActivity])
 
   const isLoading =
-    managerActivity.loading ||
-    trainerActivity.loading ||
-    playerActivity.loading;
+    managerActivity.loading || trainerActivity.loading || playerActivity.loading
 
   return (
     <>
@@ -161,7 +159,7 @@ export function SubjectHeaderBody({ subjectId }: { subjectId: string }) {
         className={`rounded p-1 ${
           currentEvaluationCategory === EvaluationCategory.SUBJECT
             ? viewModeSubjectBackgroundColorClass[currentViewMode]
-            : 'bg-gray100'
+            : "bg-gray100"
         } ml-2 cursor-pointer`}
         position="bottom"
         content={viewsLabel[EvaluationCategory.SUBJECT]}
@@ -189,7 +187,7 @@ export function SubjectHeaderBody({ subjectId }: { subjectId: string }) {
               className={`rounded p-1 ${
                 currentEvaluationCategory === subjectViewMode
                   ? viewModeSubjectBackgroundColorClass[currentViewMode]
-                  : 'bg-gray100'
+                  : "bg-gray100"
               } ml-2 cursor-pointer`}
               position="bottom"
               key={subjectViewMode}
@@ -205,5 +203,5 @@ export function SubjectHeaderBody({ subjectId }: { subjectId: string }) {
             </Tooltip>
           ))}
     </>
-  );
+  )
 }

@@ -22,7 +22,7 @@ export interface ActivityChartProps {
 const chartConfig = {
   evaluations: {
     label: 'Evaluations',
-    color: 'hsl(var(--primary))',
+    color: 'var(--primary)',
   },
 } satisfies ChartConfig;
 

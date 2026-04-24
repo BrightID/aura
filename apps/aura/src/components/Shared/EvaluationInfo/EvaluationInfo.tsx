@@ -78,14 +78,14 @@ export default function EvaluationInfo({
     }
     if (loading) {
       return {
-        bgAndTextColor: 'bg-gray20 text-white',
-        iconBgColor: 'bg-gray50',
+        bgAndTextColor: 'bg-muted text-muted-foreground',
+        iconBgColor: 'bg-muted-foreground/30',
         text: '...',
       };
     }
     return {
-      bgAndTextColor: 'bg-gray20 text-white',
-      iconBgColor: 'bg-gray50',
+      bgAndTextColor: 'bg-muted text-muted-foreground',
+      iconBgColor: 'bg-muted-foreground/30',
       text: 'Checking for evaluation…',
     };
   }, [rating, loading]);

@@ -1,15 +1,14 @@
+import { useSubjectEvaluationFromContext } from "hooks/useSubjectEvaluation"
+import useViewMode from "hooks/useViewMode"
+import { EvidenceViewMode } from "types/dashboard"
 import {
   INBOUND_EVIDENCE_VIEW_MODES,
   viewModeToSubjectViewMode,
   viewModeToViewAs,
-} from '@/constants/index';
-import { useSubjectEvaluationFromContext } from 'hooks/useSubjectEvaluation';
-import useViewMode from 'hooks/useViewMode';
-import { EvidenceViewMode } from 'types/dashboard';
-
-import ConnectedCardBody from './connected-card-body';
-import EvaluatedCardBody from './evaluated-card-body';
-import { Verifications } from '@/types/aura';
+} from "@/constants/index"
+import { Verifications } from "@/types/aura"
+import ConnectedCardBody from "./connected-card-body"
+import EvaluatedCardBody from "./evaluated-card-body"
 
 const ProfileEvaluation = ({
   fromSubjectId,
@@ -18,13 +17,13 @@ const ProfileEvaluation = ({
   evidenceViewMode,
   connection,
 }: {
-  fromSubjectId: string;
-  toSubjectId: string;
-  onClick: () => void;
-  evidenceViewMode: EvidenceViewMode;
-  connection?: { verifications: Verifications };
+  fromSubjectId: string
+  toSubjectId: string
+  onClick: () => void
+  evidenceViewMode: EvidenceViewMode
+  connection?: { verifications: Verifications }
 }) => {
-  const { currentViewMode, currentEvaluationCategory } = useViewMode();
+  const { currentViewMode, currentEvaluationCategory } = useViewMode()
   const { loading, ratingNumber } = useSubjectEvaluationFromContext({
     fromSubjectId,
     toSubjectId,
@@ -33,15 +32,15 @@ const ProfileEvaluation = ({
       evidenceViewMode === EvidenceViewMode.OUTBOUND_ACTIVITY_ON_MANAGERS
         ? currentEvaluationCategory
         : viewModeToViewAs[viewModeToSubjectViewMode[currentViewMode]],
-  });
+  })
 
   return (
     <div
       onClick={onClick}
-      className={`profile-evaluation-card card gap-.5 cursor-pointer !flex-row border pb-3 pl-2 pr-[14px] pt-[11px]`}
+      className={`profile-evaluation-card card gap-0.5 cursor-pointer flex-row! border bg-card text-card-foreground pb-3 pl-2 pr-3.5 pt-[11px]`}
     >
       {loading ? (
-        'Loading...'
+        "Loading..."
       ) : ratingNumber &&
         evidenceViewMode !== EvidenceViewMode.INBOUND_CONNECTION ? (
         <EvaluatedCardBody
@@ -59,7 +58,7 @@ const ProfileEvaluation = ({
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ProfileEvaluation;
+export default ProfileEvaluation

@@ -434,7 +434,7 @@ export function ZoomableChart({
                 x1={chartData[Math.min(refAreaLeft, refAreaRight)].timestamp}
                 x2={chartData[Math.max(refAreaLeft, refAreaRight)].timestamp}
                 strokeOpacity={0.3}
-                fill="hsl(var(--foreground))"
+                fill="var(--foreground)"
                 fillOpacity={0.05}
               />
             )}

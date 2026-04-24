@@ -1,6 +1,6 @@
 import CredibilityDetailsModal from "components/CredibilityDetailsModal"
-import EvaluateOverlayCard from "components/EvaluationFlow/EvaluateOverlayCard"
-import EvaluationFlow from "components/EvaluationFlow/EvaluationFlow"
+import EvaluateOverlayCard from "components/evaluation/EvaluateOverlayCard"
+import EvaluationFlow from "components/evaluation/EvaluationFlow"
 import InfiniteScrollLocal from "components/InfiniteScrollLocal"
 import { EmptyActivitiesList } from "components/Shared/EmptyAndLoadingStates/EmptyActivitiesList"
 import { EmptyEvaluationsList } from "components/Shared/EmptyAndLoadingStates/EmptyEvaluationsList"
@@ -26,7 +26,6 @@ import useViewMode from "hooks/useViewMode"
 import { ArrowDownLeft, ArrowDownRight, ArrowUpRight } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router"
-import { useProfileStore } from "@/store/profile.store"
 import { CredibilityDetailsProps } from "types"
 import {
   EvaluationCategory,
@@ -34,10 +33,11 @@ import {
   PreferredView,
   ProfileTab,
 } from "types/dashboard"
-import { Verifications } from '@/types/aura'
 import ProfileEvaluation from "@/components/Shared/ProfileEvaluation"
 import { viewModeToSubjectViewMode, viewModeToViewAs } from "@/constants/index"
 import { useGetGravatarProfileByHashedEmailQuery } from "@/hooks/queries/profile"
+import { useProfileStore } from "@/store/profile.store"
+import { Verifications } from "@/types/aura"
 import { ActivityListSearch } from "./components/activity-list-search"
 import { ConnectionListSearch } from "./components/connection-list-search"
 import EvidenceHelpModal from "./components/evidence-help-modal"
@@ -76,7 +76,8 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
   const name = useMemo(() => query.get("name"), [query])
 
   const gravatarHash = query.has("gravatar") ? query.get("gravatar")! : ""
-  const profilePhotoFetch = useGetGravatarProfileByHashedEmailQuery(gravatarHash)
+  const profilePhotoFetch =
+    useGetGravatarProfileByHashedEmailQuery(gravatarHash)
 
   const {
     currentViewMode,
@@ -241,10 +242,8 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
           alt=""
         />
       </div>
-      {/* <ProfileTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} /> */}
       <a-tabs
         onChange={(e) => {
-          console.log(e)
           setSelectedTab((e.target.value as ProfileTab) ?? selectedTab)
         }}
         value={selectedTab}

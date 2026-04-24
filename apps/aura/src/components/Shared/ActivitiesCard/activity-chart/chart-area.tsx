@@ -46,6 +46,12 @@ export const ActivityChartArea = ({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
+        <defs>
+          <linearGradient id="colorEvaluations" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+          </linearGradient>
+        </defs>
         <XAxis
           dataKey="index"
           tickLine={false}
@@ -85,7 +91,7 @@ export const ActivityChartArea = ({
           data-testid="activity-chart-area"
           type="linear"
           dataKey="rating"
-          stroke="hsl(var(--primary))"
+          stroke="var(--primary)"
           fillOpacity={1}
           dot={{ r: zoomedData.length > 50 ? 1 : 2, fill: 'white' }}
           fill="url(#colorEvaluations)"
@@ -98,7 +104,7 @@ export const ActivityChartArea = ({
             x1={Math.min(refAreaLeft, refAreaRight)}
             x2={Math.max(refAreaLeft, refAreaRight)}
             strokeOpacity={0.3}
-            fill="hsl(var(--foreground))"
+            fill="var(--foreground)"
             fillOpacity={0.1}
           />
         )}

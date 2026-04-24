@@ -5,9 +5,9 @@ import { useSubjectName } from "hooks/useSubjectName"
 import useViewMode from "hooks/useViewMode"
 import { memo } from "react"
 import { Link } from "react-router"
-import { Verifications } from '@/types/aura'
 import { getViewModeSubjectBorderColorClass } from "@/constants/index"
 import useParseBrightIdVerificationData from "@/hooks/useParseBrightIdVerificationData"
+import { Verifications } from "@/types/aura"
 import { compactFormat } from "@/utils/number"
 import { calculateUserScorePercentage } from "@/utils/score"
 import { useImpactEChartOption } from "../../hooks/useSubjectVerifications"
@@ -61,7 +61,7 @@ export const SubjectCardSkeleton = ({
 
         {/* Chart skeleton */}
         <div className="evaluation-right flex flex-col items-end">
-          <div className="bg-muted h-12 w-[100px] animate-pulse rounded-sm" />
+          <div className="bg-muted h-12 w-25 animate-pulse rounded-sm" />
         </div>
       </div>
     </div>

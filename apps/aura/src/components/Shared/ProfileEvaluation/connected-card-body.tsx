@@ -3,8 +3,12 @@ import BrightIdProfilePicture from '@/components/BrightIdProfilePicture';
 import {
   INBOUND_EVIDENCE_VIEW_MODES,
   viewModeSubjectString,
+  getViewModeBorderColorClass,
+  getViewModeSubjectBorderColorClass,
+  viewModeToSubjectViewMode,
 } from '@/constants';
 import { useSubjectName } from '@/hooks/useSubjectName';
+import useViewMode from '@/hooks/useViewMode';
 import { EvidenceViewMode, EvidenceType } from '@/types/dashboard';
 import { useMemo } from 'react';
 import ConnectionInformation from './connection-information';
@@ -43,13 +47,19 @@ const ConnectedCardBody = ({
         : fromSubjectId,
     [evidenceViewMode, fromSubjectId, toSubjectId],
   );
+  const { currentViewMode } = useViewMode();
+
   return (
     <>
       <div className="card__left-column flex w-[60%] gap-1.5">
         <div className="flex w-[50px] flex-col gap-1.5">
           <BrightIdProfilePicture
             subjectId={leftCardSide}
-            className={`h-[46px] w-[46px] !min-w-[46px] rounded-lg border-2 border-pastel-purple`}
+            className={`h-[46px] w-[46px] !min-w-[46px] rounded-lg border-2 ${
+              INBOUND_EVIDENCE_VIEW_MODES.includes(evidenceViewMode)
+                ? getViewModeBorderColorClass(currentViewMode)
+                : getViewModeSubjectBorderColorClass(viewModeToSubjectViewMode[currentViewMode])
+            }`}
           />
           <ConnectionInfo
             connection={connection}
@@ -74,7 +84,7 @@ const ConnectedCardBody = ({
             </div>
           </Tooltip>
         </div>
-        <span className="divider pl-.5 mr-1.5 h-full border-r border-dashed border-gray00"></span>
+        <span className="divider pl-.5 mr-1.5 h-full border-r border-dashed border-border"></span>
       </div>
       <div className="card__right-column flex w-[40%] flex-col gap-1">
         <EvidenceInformation
@@ -97,7 +107,7 @@ export const EvidenceUserProfile = ({ subjectId }: { subjectId: string }) => {
     <div className="img ml-auto">
       <BrightIdProfilePicture
         subjectId={subjectId}
-        className="h-8 w-8 rounded-full border border-gray60"
+        className="h-8 w-8 rounded-full border border-border"
       />
     </div>
   );

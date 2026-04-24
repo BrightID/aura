@@ -1,5 +1,5 @@
-import { FiltersModal } from "components/EvaluationFlow/FiltersModal"
-import { SortsModal } from "components/EvaluationFlow/SortsModal"
+import { FiltersModal } from "components/evaluation/FiltersModal"
+import { SortsModal } from "components/evaluation/SortsModal"
 import { useSubjectsListContext } from "contexts/SubjectsListContext"
 import { useMyEvaluations } from "hooks/useMyEvaluations"
 import { RefreshCcwIcon, Search } from "lucide-react"
@@ -14,7 +14,6 @@ import useViewMode from "../../hooks/useViewMode"
 import { AuraFilterDropdownOption } from "../../types"
 import { PreferredView } from "../../types/dashboard"
 import Dropdown from "../Shared/Dropdown"
-import { Button } from "../ui/button"
 import {
   Dialog,
   DialogContent,
@@ -230,20 +229,17 @@ export const SubjectListControls = ({
 
   return (
     <>
-      <div className="input-wrapper-focus flex max-h-[175px] flex-1 flex-col justify-center gap-4 rounded-lg border bg-card p-1 text-card-foreground">
-        <div className="card__input flex items-center gap-2 rounded px-3.5">
-          <Search className="text-stone-700" />
+      <a-input
+        className="text-sm h-11 font-medium"
+        type="text"
+        data-testid="home-searchbar"
+        placeholder="Subject name or ID ..."
+        value={searchString}
+        onChange={(e) => setSearchString(e.target.value)}
+      >
+        <Search className="text-stone-700" slot="prefix" />
+      </a-input>
 
-          <input
-            className="h-11 w-full bg-transparent text-sm font-medium text-card-foreground placeholder-black2 focus:outline-none dark:placeholder:text-gray-50"
-            type="text"
-            data-testid="home-searchbar"
-            placeholder="Subject name or ID ..."
-            value={searchString}
-            onChange={(e) => setSearchString(e.target.value)}
-          />
-        </div>
-      </div>
       {[
         PreferredView.MANAGER_EVALUATING_MANAGER,
         PreferredView.MANAGER_EVALUATING_TRAINER,

@@ -18,7 +18,7 @@ export const HorizontalProgressBar = ({
         style={{
           width: `${percentage}%`,
         }}
-        className={`absolute bg-green10 rounded-sm h-full`}
+        className={`absolute bg-green-10 rounded-sm h-full`}
       ></div>
     </div>
   );

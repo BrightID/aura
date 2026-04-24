@@ -1,7 +1,4 @@
 import { useEffect } from "react"
-import {
-  RoleStatus,
-} from "@/store/settings.store"
 import DefaultHeader from "@/components/Header/DefaultHeader"
 import Tooltip from "@/components/Shared/Tooltip"
 import { getViewModeBackgroundColorClass, preferredViewIcon } from "@/constants"
@@ -13,7 +10,7 @@ import {
 import { useSubjectVerifications } from "@/hooks/useSubjectVerifications"
 import useViewMode from "@/hooks/useViewMode"
 import { useProfileStore } from "@/store/profile.store"
-import { useSettingsStore } from "@/store/settings.store"
+import { RoleStatus, useSettingsStore } from "@/store/settings.store"
 import { EvaluationCategory, PreferredView } from "@/types/dashboard"
 
 const ViewTooltip = ({
@@ -37,18 +34,23 @@ const ViewTooltip = ({
     <Tooltip
       content={content}
       data-testid={`hometab-${content}`}
-      className={`h-6 w-6 rounded p-1 ${
-        currentViewMode === view || activeView
-          ? getViewModeBackgroundColorClass(currentViewMode)
-          : "bg-gray100"
-      } ml-2 cursor-pointer`}
       onClick={() => setPreferredView(view ?? views![0])}
     >
-      <img
-        className="h-4 w-4"
-        src={preferredViewIcon[view ?? views![0]]}
-        alt=""
-      />
+      <a-button
+        variant="secondary"
+        className={`rounded-lg ${
+          currentViewMode === view || activeView
+            ? getViewModeBackgroundColorClass(currentViewMode)
+            : "bg-gray100"
+        } cursor-pointer `}
+        size="icon"
+      >
+        <img
+          className="h-4 w-4"
+          src={preferredViewIcon[view ?? views![0]]}
+          alt=""
+        />
+      </a-button>
     </Tooltip>
   )
 }
@@ -128,7 +130,7 @@ function HomeHeaderItems() {
   ])
 
   return (
-    <>
+    <div className="flex ml-2 items-center gap-2">
       <ViewTooltip
         view={PreferredView.PLAYER}
         content="Player"
@@ -147,7 +149,7 @@ function HomeHeaderItems() {
         content="Manager"
         condition={canShowManagerTooltip}
       />
-    </>
+    </div>
   )
 }
 

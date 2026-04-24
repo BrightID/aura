@@ -290,17 +290,17 @@
   --color-pastel-purple-25: var(--pastel-purple-25);
   --color-pastel-orange: var(--pastel-orange);
   --color-pastel-blue: var(--pastel-blue);
-  --color-pl-1: var(--pl1);
-  --color-pl-2: var(--pl2);
-  --color-pl-3: var(--pl3);
-  --color-pl-4: var(--pl4);
-  --color-pl-1-dark: var(--pl1-dark);
-  --color-pl-3-dark: var(--pl3-dark);
-  --color-pl-4-dark: var(--pl4-dark);
-  --color-nl-1: var(--nl1);
-  --color-nl-2: var(--nl2);
-  --color-nl-3: var(--nl3);
-  --color-nl-4: var(--nl4);
+  --color-pl1: var(--pl1);
+  --color-pl2: var(--pl2);
+  --color-pl3: var(--pl3);
+  --color-pl4: var(--pl4);
+  --color-pl1-dark: var(--pl1-dark);
+  --color-pl3-dark: var(--pl3-dark);
+  --color-pl4-dark: var(--pl4-dark);
+  --color-nl1: var(--nl1);
+  --color-nl2: var(--nl2);
+  --color-nl3: var(--nl3);
+  --color-nl4: var(--nl4);
   --color-primary-l1: var(--primary-l1);
   --color-primary-d1: var(--primary-d1);
   --color-primary-d2: var(--primary-d2);
@@ -407,11 +407,11 @@
 }
 
 .app {
-  @apply mx-auto flex min-h-screen w-screen max-w-[460px] flex-col;
+  @apply mx-auto flex h-screen overflow-x-visible w-screen max-w-[460px] flex-col;
 }
 
 .page {
-  @apply overflow-y-auto px-1 pb-4 md:px-5;
+  @apply overflow-x-visible px-1 pb-4 md:px-5;
 }
 
 .no-scrollbar::-webkit-scrollbar {

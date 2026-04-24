@@ -1,12 +1,11 @@
-import { FiltersModal } from "components/EvaluationFlow/FiltersModal"
-import { SortsModal } from "components/EvaluationFlow/SortsModal"
+import { FiltersModal } from "components/evaluation/FiltersModal"
+import { SortsModal } from "components/evaluation/SortsModal"
 import Dropdown from "components/Shared/Dropdown"
 import { useSubjectInboundConnectionsContext } from "contexts/SubjectInboundConnectionsContext"
 import { AuraFilterId } from "hooks/useFilters"
 import { AuraSortId } from "hooks/useSorts"
 import { useMemo, useState } from "react"
 import { AuraFilterDropdownOption } from "types"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,

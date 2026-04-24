@@ -5,12 +5,12 @@ export const LoadingList = () => {
         <SimpleSubjectCardSkeleton key={key} />
       ))}
     </div>
-  );
-};
+  )
+}
 
 export const SimpleSubjectCardSkeleton = () => {
   return (
-    <div className="b-4 flex w-full !flex-row items-center !justify-between gap-1 rounded-lg border bg-card p-4">
+    <div className="b-4 flex w-full flex-row! items-center justify-between! gap-1 rounded-lg border border-border bg-card p-4">
       <div className="evaluation-left flex flex-col gap-2">
         <div className="evaluation-left__top flex gap-3">
           {/* Profile picture skeleton */}
@@ -42,5 +42,5 @@ export const SimpleSubjectCardSkeleton = () => {
         <div className="h-[48px] w-[100px] animate-pulse rounded-sm bg-gray-200 dark:bg-gray-700" />
       </div>
     </div>
-  );
-};
+  )
+}

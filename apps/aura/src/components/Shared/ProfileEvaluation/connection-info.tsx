@@ -101,7 +101,7 @@ const ConnectionInfo = ({
           onClick={(e) => e.stopPropagation()}
         >
           <a-button variant={"outline"} size={"icon"}>
-            <Pencil className="h-4 w-4 text-white" />
+            <Pencil className="h-4 w-4 text-foreground" />
           </a-button>
         </Link>
       </Tooltip>
