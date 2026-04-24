@@ -1,3 +1,6 @@
+import { SignalWatcher } from '@lit-labs/signals'
+import { type CSSResultGroup, css, html, LitElement, PropertyValues } from 'lit'
+import { customElement, property, query, state } from 'lit/decorators.js'
 import { focusedProject } from '@/lib/projects'
 import { projects } from '@/states/projects'
 import { userBrightId } from '@/states/user'
@@ -6,16 +9,12 @@ import { getProjects } from '@/utils/apis'
 import { EvaluationCategory } from '@/utils/aura'
 import { getLevelupProgress } from '@/utils/score'
 import { getSubjectVerifications } from '@/utils/subject'
-import { SignalWatcher } from '@lit-labs/signals'
-import { css, type CSSResultGroup, html, LitElement, PropertyValues } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
 
 import './edit-profile'
 import './evaluations-step'
 import './find-players'
 import './footer'
 import './how-it-works'
-import './intro-step'
 import './login'
 import './progress-step'
 import type { ProgressStepData } from './progress-step'
@@ -23,7 +22,6 @@ import './score-step'
 import './success-step'
 
 export type Step =
-  | 'intro'
   | 'connect'
   | 'progress'
   | 'success'
@@ -41,11 +39,17 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   @property({ type: Number })
   height: number = 550
 
+  /** Testing/demo hooks — when `mock` is true, skip API calls and use the provided mock data */
+  @property({ type: Boolean }) mock = false
+  @property({ type: Object }) mockData: ProgressStepData | null = null
+  @property({ type: Object }) mockProject: Project | null = null
+  @property({ type: String }) initialStep: Step | null = null
+
   @query('#scrollbar')
   private scrollbar!: HTMLElement
 
-  @state() private step: Step = 'intro'
-  @state() private previousStep: Step = 'intro'
+  @state() private step: Step = 'connect'
+  @state() private previousStep: Step = 'connect'
   @state() private isLoadingVerification = false
   @state() private verificationData: ProgressStepData | null = null
 
@@ -104,7 +108,27 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
 
   connectedCallback(): void {
     super.connectedCallback()
+    if (this.mock) {
+      this._applyMock()
+      return
+    }
     this._fetchProjects()
+  }
+
+  protected updated(changed: PropertyValues): void {
+    if (!this.mock) return
+    if (changed.has('mockData') || changed.has('mockProject') || changed.has('initialStep')) {
+      this._applyMock()
+    }
+  }
+
+  private _applyMock() {
+    if (this.mockProject) focusedProject.set(this.mockProject)
+    this.verificationData = this.mockData
+    const requiredLevel = this.mockProject?.requirementLevel ?? 1
+    const auraLevel = this.mockData?.auraLevel ?? 0
+    const next = this.initialStep ?? (auraLevel >= requiredLevel ? 'success' : 'progress')
+    this._goToStep(next)
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -186,7 +210,10 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
 
   private _handleContinue() {
     window.parent.postMessage(
-      JSON.stringify({ type: 'verification-success', app: 'aura-get-verified' }),
+      JSON.stringify({
+        type: 'verification-success',
+        app: 'aura-get-verified'
+      }),
       '*'
     )
   }
@@ -217,20 +244,13 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     const requiredLevel = (project?.requirementLevel ?? 1) as 1 | 2 | 3 | 4
 
     switch (this.step) {
-      case 'intro':
+      case 'connect':
         return html`
-          <verification-intro
+          <verification-connect
             .appName=${appName}
             .appDescription=${appDescription}
             .appLogo=${appLogo}
             .requiredLevel=${requiredLevel}
-            @continue=${() => this._goToStep('connect')}
-            @how-it-works=${() => this._goToStep('how-it-works')}
-          ></verification-intro>
-        `
-      case 'connect':
-        return html`
-          <verification-connect
             @connected=${() => this._handleConnected()}
             @how-it-works=${() => this._goToStep('how-it-works')}
           ></verification-connect>
@@ -238,7 +258,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       case 'progress':
         return html`
           <verification-progress
-            .data=${this.verificationData}
+            .data=${this.verificationData!}
             .requiredLevel=${requiredLevel}
             .appName=${appName}
             @disconnect=${() => this._handleDisconnect()}

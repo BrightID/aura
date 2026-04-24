@@ -8,14 +8,27 @@ import {
   registerWithPasskey
 } from '@aura/sdk/auth/passkeys'
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { customElement, property, state } from 'lit/decorators.js'
 import './brightid-qr'
+import './level-badge'
 
 type ConnectMethod = 'brightid' | 'passkey' | null
 type View = 'options' | 'brightid-qr' | 'passkey-choice'
 
+const levelDescriptions: Record<number, string> = {
+  1: 'Basic verification for general access',
+  2: 'Enhanced verification for trusted features',
+  3: 'Premium verification for full access',
+  4: 'Highest verification tier'
+}
+
 @customElement('verification-connect')
 export class VerificationConnectElement extends LitElement {
+  @property() appName = ''
+  @property() appDescription?: string
+  @property() appLogo?: string
+  @property({ type: Number }) requiredLevel: 1 | 2 | 3 | 4 = 1
+
   @state() private connecting: ConnectMethod = null
   @state() private view: View = 'options'
   @state() private error = ''
@@ -207,6 +220,93 @@ export class VerificationConnectElement extends LitElement {
       font-size: 0.75em;
       color: var(--destructive);
     }
+
+    /* App header (merged from intro) */
+    .app-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75em;
+    }
+    .app-logo-img {
+      width: 3em;
+      height: 3em;
+      flex-shrink: 0;
+      border-radius: var(--radius, 0.75rem);
+      object-fit: cover;
+    }
+    .app-logo-text {
+      width: 3em;
+      height: 3em;
+      flex-shrink: 0;
+      border-radius: var(--radius, 0.75rem);
+      background: var(--secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125em;
+      font-weight: bold;
+      color: var(--foreground);
+    }
+    .app-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .app-name {
+      margin: 0 0 0.25em;
+      font-size: 1em;
+      font-weight: 600;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .app-desc {
+      margin: 0;
+      font-size: 0.875em;
+      color: var(--muted-foreground);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* Required verification card */
+    .req-card {
+      padding: 0.75em 0.875em;
+      background: var(--secondary);
+      border-radius: var(--radius, 0.75rem);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75em;
+    }
+    .req-card-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .req-label {
+      font-size: 0.7em;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+    .req-desc {
+      margin: 0.2em 0 0;
+      font-size: 0.8em;
+      color: var(--foreground);
+    }
+
+    /* Options heading */
+    .options-label {
+      font-size: 0.7em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0.25em 0 -0.25em;
+    }
   `
 
   protected render() {
@@ -227,12 +327,40 @@ export class VerificationConnectElement extends LitElement {
 
     return html`
       <div class="stack">
-        <div class="header">
-          <img src="/aura2.png" class="logo" alt="Aura" />
-          <h2 class="heading">Connect to Aura</h2>
-          <p class="subheading">Verify your unique humanity to continue</p>
-        </div>
+        ${this.appName
+          ? html`
+              <div class="app-header">
+                ${this.appLogo
+                  ? html`<img src=${this.appLogo} alt=${this.appName} class="app-logo-img" />`
+                  : html`<div class="app-logo-text">${this.appName.charAt(0)}</div>`}
+                <div class="app-info">
+                  <h2 class="app-name">${this.appName}</h2>
+                  ${this.appDescription
+                    ? html`<p class="app-desc">${this.appDescription}</p>`
+                    : ''}
+                </div>
+              </div>
 
+              <div class="req-card">
+                <div class="req-card-text">
+                  <div class="req-label">Required verification</div>
+                  <p class="req-desc">${levelDescriptions[this.requiredLevel]}</p>
+                </div>
+                <verification-level-badge
+                  .level=${this.requiredLevel}
+                  size="sm"
+                ></verification-level-badge>
+              </div>
+            `
+          : html`
+              <div class="header">
+                <img src="/aura2.png" class="logo" alt="Aura" />
+                <h2 class="heading">Connect to Aura</h2>
+                <p class="subheading">Verify your unique humanity to continue</p>
+              </div>
+            `}
+
+        <p class="options-label">Continue with</p>
         <div class="options">
           <button
             class="option-btn"

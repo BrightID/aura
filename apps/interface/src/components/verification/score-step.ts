@@ -1,8 +1,8 @@
+import { SignalWatcher } from '@lit-labs/signals'
+import { type CSSResultGroup, css, html, LitElement, svg } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
 import { askedEvaluationPlayers, foundAuraPlayersFromContact } from '@/lib/data/contacts'
 import type { AuraImpact } from '@/types/evaluation'
-import { SignalWatcher } from '@lit-labs/signals'
-import { css, type CSSResultGroup, html, LitElement, svg } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
 
 const SLICE_COLORS = [
   '#6366f1',
@@ -236,7 +236,13 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
       const color = SLICE_COLORS[idx % SLICE_COLORS.length]
       const contact = contacts.find((c) => c.value === impact.evaluator)
       const name = contact ? contact.name : `${impact.evaluator.slice(0, 8)}…`
-      return { impact, fraction, color, path: donutSlicePath(CX, CY, R, RI, start, end), name }
+      return {
+        impact,
+        fraction,
+        color,
+        path: donutSlicePath(CX, CY, R, RI, start, end),
+        name
+      }
     })
 
     const totalDisplay =
@@ -262,7 +268,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
                 <svg class="chart-svg" viewBox="0 0 100 100">
                   ${slices.length === 1
                     ? svg`
-                        <circle cx="${CX}" cy="${CY}" r="${R}" fill="${slices[0].color}" />
+                        <circle cx="${CX}" cy="${CY}" r="${R}" fill="${slices[0]?.color}" />
                         <circle cx="${CX}" cy="${CY}" r="${RI}" style="fill: var(--card, #fff)" />
                       `
                     : slices.map((s) => svg`<path d="${s.path}" fill="${s.color}" />`)}

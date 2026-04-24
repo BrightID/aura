@@ -1,6 +1,51 @@
 import { userBrightId } from '@/states/user'
+import type { AuraImpact } from '@/types/evaluation'
 import { EvaluationCategory } from './aura'
 import { getSubjectVerifications } from './subject'
+
+export type Requirement = { reason: string; status: 'passed' | 'incomplete'; level: number }
+
+export function computeRequirements(score: number, auraImpacts: AuraImpact[] = []): Requirement[] {
+  const lowFromL1 = auraImpacts.some((i) => (i.level ?? 0) >= 1 && (i.confidence ?? 0) >= 1)
+  const mediumFromL1 = auraImpacts.some((i) => (i.level ?? 0) >= 1 && (i.confidence ?? 0) >= 2)
+  const highFromL2 = auraImpacts.some((i) => (i.level ?? 0) >= 2 && (i.confidence ?? 0) >= 3)
+  const mediumFromL2Count = auraImpacts.filter(
+    (i) => (i.level ?? 0) >= 2 && (i.confidence ?? 0) >= 2
+  ).length
+  const highFromL3 = auraImpacts.some((i) => (i.level ?? 0) >= 3 && (i.confidence ?? 0) >= 3)
+  const mediumFromL3Count = auraImpacts.filter(
+    (i) => (i.level ?? 0) >= 3 && (i.confidence ?? 0) >= 2
+  ).length
+
+  return [
+    { reason: 'Score of 10M+', status: score >= 10_000_000 ? 'passed' : 'incomplete', level: 1 },
+    {
+      reason: 'One low+ confidence evaluation from a level 1+ player',
+      status: lowFromL1 ? 'passed' : 'incomplete',
+      level: 1
+    },
+    { reason: 'Score of 50M+', status: score >= 50_000_000 ? 'passed' : 'incomplete', level: 2 },
+    {
+      reason: 'One medium+ confidence evaluation from a level 1+ player',
+      status: mediumFromL1 ? 'passed' : 'incomplete',
+      level: 2
+    },
+    { reason: 'Score of 100M+', status: score >= 100_000_000 ? 'passed' : 'incomplete', level: 3 },
+    {
+      reason:
+        'One high+ confidence evaluation from a level 2+ player, or two medium+ from level 2+ players',
+      status: highFromL2 || mediumFromL2Count >= 2 ? 'passed' : 'incomplete',
+      level: 3
+    },
+    { reason: 'Score of 150M+', status: score >= 150_000_000 ? 'passed' : 'incomplete', level: 4 },
+    {
+      reason:
+        'One high+ confidence evaluation from a level 3+ player, or two medium+ from level 3+ players',
+      status: highFromL3 || mediumFromL3Count >= 2 ? 'passed' : 'incomplete',
+      level: 4
+    }
+  ]
+}
 
 // https://hackmd.io/optceo8uQpOW0NqGJjYTag
 // Level 1
@@ -25,73 +70,16 @@ export const getLevelupProgress = async ({
   const profileQuery = await getSubjectVerifications(subjectId, evaluationCategory)
   if (!profileQuery) return { isUnlocked: false, percent: 0, requirements: [] }
 
-  const { auraLevel, auraScore, auraImpacts } = profileQuery
-
   if (evaluationCategory !== EvaluationCategory.SUBJECT) {
     throw new Error('Evaluation category is only supported for subject for now')
   }
 
-  const requirements: { reason: string; status: 'passed' | 'incomplete'; level: number }[] = []
-  let percent = 0
-  let isUnlocked = false
-
-  const level = auraLevel || 0
-
-  const score = auraScore || 0
-
-  requirements.push({
-    reason: 'One low+ evaluation from a player',
-    status: level > 0 ? 'passed' : 'incomplete',
-    level: 1
-  })
-
-  requirements.push({
-    reason: 'Score of 10M+ for levelup',
-    status: score > 10_000_000 ? 'passed' : 'incomplete',
-    level: 2
-  })
-
-  const lowEvaluation = auraImpacts?.find((item) => item.level && item.level >= 1)
-
-  requirements.push({
-    reason: 'One low+ confidence evaluation from one level 1+ player',
-    status: lowEvaluation ? 'passed' : 'incomplete',
-    level: 2
-  })
-  requirements.push({
-    reason: 'Score of 50M+ for levelup',
-    status: score >= 50_000_000 ? 'passed' : 'incomplete',
-    level: 3
-  })
-
-  const mediumEvaluations =
-    auraImpacts?.filter((item) => item.level && item.level >= 1 && item.confidence >= 2).length ?? 0
-
-  requirements.push({
-    reason: 'One medium+ confidence evaluation from one level 1+ player',
-    status: mediumEvaluations > 0 ? 'passed' : 'incomplete',
-    level: 3
-  })
-
-  requirements.push({
-    reason: 'Score of 100M+ for levelup',
-    status: score >= 100_000_000 ? 'passed' : 'incomplete',
-    level: 4
-  })
-
-  const highEvaluations =
-    auraImpacts?.filter((item) => item.level && item.level >= 2 && item.confidence >= 3).length ?? 0
-
-  requirements.push({
-    reason:
-      'One high+ confidence evaluation from one level 2+ player OR two medium confidence evaluations from two level 2+ players',
-    status: highEvaluations > 0 || mediumEvaluations > 1 ? 'passed' : 'incomplete',
-    level: 4
-  })
-
-  isUnlocked = requirements.every((r) => r.status === 'passed')
-  percent = Math.round(
-    (requirements.filter((r) => r.status === 'passed').length / requirements.length) * 100
-  )
-  return { isUnlocked, percent, requirements }
+  const { auraScore, auraImpacts } = profileQuery
+  const requirements = computeRequirements(auraScore || 0, auraImpacts ?? [])
+  const passed = requirements.filter((r) => r.status === 'passed').length
+  return {
+    isUnlocked: passed === requirements.length,
+    percent: Math.round((passed / requirements.length) * 100),
+    requirements
+  }
 }

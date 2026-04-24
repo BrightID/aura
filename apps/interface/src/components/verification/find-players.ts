@@ -16,14 +16,14 @@ async function getGravatarHash(email: string): Promise<string> {
     .join('')
 }
 
-import { clientAPI } from '@/utils/apis'
-import { parseContactsFile } from '@/utils/integrations/contacts-file'
-import type { Contact } from '@/utils/integrations/contacts'
-import { getContactsList } from '@/utils/integrations/google'
 import { Mutation } from '@aura/query'
 import { SignalWatcher } from '@lit-labs/signals'
-import { css, type CSSResultGroup, html, LitElement } from 'lit'
+import { type CSSResultGroup, css, html, LitElement } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
+import { clientAPI } from '@/utils/apis'
+import type { Contact } from '@/utils/integrations/contacts'
+import { parseContactsFile } from '@/utils/integrations/contacts-file'
+import { getContactsList } from '@/utils/integrations/google'
 import './level-badge'
 import type { ContactsHashWorkerOutput } from '@/workers/contacts-hash.worker'
 
@@ -33,7 +33,11 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
   @state() private searchQuery = ''
   @state() private _copied = false
-  @state() private _shareTarget: { name: string; value: string; photo?: string } | null = null
+  @state() private _shareTarget: {
+    name: string
+    value: string
+    photo?: string
+  } | null = null
   @state() private _shareTargetCopied = false
   @state() private _myProfileUrl = ''
 
@@ -942,7 +946,12 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     const idx = asked.findIndex((p) => p.value === player.value)
     if (idx >= 0) {
       const updated = [...asked]
-      updated[idx] = { ...updated[idx], askedAt: Date.now() }
+      updated[idx] = {
+        name: updated[idx]?.name ?? '',
+        value: updated[idx]?.value ?? '',
+        photo: updated[idx]?.photo,
+        askedAt: Date.now()
+      }
       askedEvaluationPlayers.set(updated)
     } else {
       askedEvaluationPlayers.set([...asked, { ...player, askedAt: Date.now() }])
@@ -1004,7 +1013,11 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     if (!url) return
     if (navigator.share) {
       navigator
-        .share({ title: 'Aura Profile', text: 'Check out my Aura profile!', url })
+        .share({
+          title: 'Aura Profile',
+          text: 'Check out my Aura profile!',
+          url
+        })
         .catch(() => {})
     } else {
       navigator.clipboard.writeText(url)

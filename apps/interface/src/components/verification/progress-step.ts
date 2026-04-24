@@ -1,9 +1,9 @@
+import { SignalWatcher } from '@lit-labs/signals'
+import { type CSSResultGroup, css, html, LitElement } from 'lit'
+import { customElement, property, state } from 'lit/decorators.js'
 import { askedEvaluationPlayers } from '@/lib/data/contacts'
 import { userFirstName, userLastName, userProfilePicture } from '@/states/user'
 import type { AuraImpact } from '@/types/evaluation'
-import { SignalWatcher } from '@lit-labs/signals'
-import { css, type CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
 import './level-badge'
 
 export interface ProgressStepData {
@@ -12,14 +12,19 @@ export interface ProgressStepData {
   auraScore: number
   evaluationsReceived: number
   auraImpacts: AuraImpact[]
-  requirements: { reason: string; status: 'passed' | 'incomplete'; level: number }[]
+  requirements: {
+    reason: string
+    status: 'passed' | 'incomplete'
+    level: number
+  }[]
 }
 
+// Score thresholds required to ENTER each level (per Aura leveling spec)
 const scoreThresholds: Record<number, number> = {
-  1: 1_000_000,
-  2: 10_000_000,
-  3: 50_000_000,
-  4: 100_000_000
+  1: 10_000_000,
+  2: 50_000_000,
+  3: 100_000_000,
+  4: 150_000_000
 }
 
 @customElement('verification-progress')
@@ -27,6 +32,8 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
   @property({ type: Object }) data!: ProgressStepData
   @property({ type: Number }) requiredLevel = 1
   @property() appName = ''
+
+  @state() private _askedExpanded = false
 
   static styles: CSSResultGroup = css`
     :host {
@@ -215,190 +222,180 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       transition: width 0.4s;
     }
 
-    /* Next steps */
-    .next-steps {
-      padding: 1em;
-      background: var(--secondary);
-      border-radius: 0.5em;
+    /* Current step card (focused next-action) */
+    .step-card {
       display: flex;
       flex-direction: column;
       gap: 0.75em;
+      padding: 0.875em;
+      background: color-mix(in srgb, var(--primary) 6%, var(--secondary));
+      border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+      border-radius: 0.625em;
     }
-    .next-steps-title {
+    .step-card-top {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 0.5em;
-      font-size: 0.875em;
-      font-weight: 500;
-      color: var(--foreground);
+    }
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      padding: 0.2em 0.55em;
+      border-radius: 9999px;
+      background: color-mix(in srgb, var(--primary) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--primary) 32%, transparent);
+      font-size: 0.62em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+    }
+    .stepper-dot {
+      width: 0.45em;
+      height: 0.45em;
+      border-radius: 9999px;
+      background: color-mix(in srgb, var(--muted-foreground) 35%, transparent);
+      transition:
+        background 0.2s,
+        transform 0.2s;
+    }
+    .stepper-dot.done {
+      background: var(--aura-success);
+    }
+    .stepper-dot.active {
+      background: var(--primary);
+      transform: scale(1.5);
+    }
+    .step-title {
       margin: 0;
+      font-size: 0.875em;
+      font-weight: 600;
+      color: var(--foreground);
+      line-height: 1.3;
     }
-    .next-steps-title svg {
-      width: 1em;
-      height: 1em;
-      color: var(--aura-warning);
-      flex-shrink: 0;
-    }
-    .next-steps-desc {
+    .step-desc {
+      margin: 0;
       font-size: 0.75em;
       color: var(--muted-foreground);
       line-height: 1.5;
-      margin: 0;
     }
-    .action-row {
-      display: flex;
-      gap: 0.5em;
+    .step-cta {
+      margin-top: 0.25em;
     }
-    .action-row a-button {
-      flex: 1;
+    .step-cta a-button {
+      width: 100%;
+    }
+    .step-skip {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.7em;
+      color: var(--muted-foreground);
+      padding: 0.2em 0;
+      align-self: center;
+      transition: color 0.15s;
+    }
+    .step-skip:hover {
+      color: var(--foreground);
     }
 
-    /* Requirements checklist */
+    /* Requirements checklist (grouped by target level) */
     .requirements {
       display: flex;
       flex-direction: column;
+      gap: 0.875em;
+    }
+    .req-group {
+      border: 1px solid var(--border);
+      border-radius: 0.625em;
+      overflow: hidden;
+      background: var(--card);
+    }
+    .req-group-header {
+      display: flex;
+      align-items: center;
       gap: 0.5em;
+      padding: 0.5em 0.75em;
+      background: color-mix(in srgb, var(--primary) 6%, var(--secondary));
+      border-bottom: 1px solid var(--border);
+    }
+    .req-group-header.done {
+      background: color-mix(in srgb, var(--aura-success) 8%, var(--secondary));
+    }
+    .req-group-title {
+      flex: 1;
+      font-size: 0.75em;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+    .req-group-count {
+      font-size: 0.65em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      padding: 0.15em 0.5em;
+      border-radius: 9999px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+    }
+    .req-group-count.done {
+      color: var(--aura-success);
+      border-color: color-mix(in srgb, var(--aura-success) 30%, transparent);
+      background: color-mix(in srgb, var(--aura-success) 12%, transparent);
+    }
+    .req-items {
+      display: flex;
+      flex-direction: column;
     }
     .req-item {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 0.625em;
       padding: 0.625em 0.75em;
-      border-radius: 0.5em;
-      border: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       font-size: 0.75em;
+      transition: background 0.15s;
     }
-    .req-item.passed {
-      border-color: rgba(74, 222, 128, 0.25);
-      background: rgba(74, 222, 128, 0.05);
+    .req-item:last-child {
+      border-bottom: none;
     }
-    .req-item.incomplete {
-      background: var(--secondary);
+    .req-item.passed .req-reason {
+      color: var(--muted-foreground);
+      text-decoration: line-through;
+      text-decoration-color: color-mix(in srgb, var(--muted-foreground) 50%, transparent);
     }
-    .req-dot {
-      width: 1.25em;
-      height: 1.25em;
+    .req-check {
+      width: 1.125em;
+      height: 1.125em;
       border-radius: 9999px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 0.0625em;
     }
-    .req-dot.passed {
+    .req-check.passed {
       background: var(--aura-success);
+      color: white;
     }
-    .req-dot.incomplete {
-      border: 2px solid var(--muted-foreground);
+    .req-check.incomplete {
+      border: 1.5px dashed color-mix(in srgb, var(--muted-foreground) 55%, transparent);
       background: transparent;
     }
-    .req-dot.passed::after {
-      content: '';
-      width: 0.3125em;
-      height: 0.5625em;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg) translate(-1px, -1px);
+    .req-check iconify-icon {
+      width: 0.75em;
+      height: 0.75em;
     }
     .req-reason {
       flex: 1;
       color: var(--foreground);
-    }
-    .req-status {
-      font-size: 0.875em;
-      color: var(--muted-foreground);
-      margin-top: 0.125em;
-    }
-
-    /* Verification guide */
-    .guide-section {
-      border: 1px solid var(--border);
-      border-radius: 0.625em;
-      overflow: hidden;
-    }
-    .guide-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      padding: 0.625em 0.875em;
-      background: color-mix(in srgb, var(--primary) 8%, transparent);
-      border-bottom: 1px solid var(--border);
-    }
-    .guide-header-text {
-      font-size: 0.8em;
-      font-weight: 600;
-      color: var(--foreground);
-    }
-    .guide-header-sub {
-      font-size: 0.7em;
-      color: var(--muted-foreground);
-      margin-left: auto;
-    }
-    .guide-steps {
-      display: flex;
-      flex-direction: column;
-    }
-    .guide-step {
-      display: flex;
-      align-items: center;
-      gap: 0.75em;
-      padding: 0.625em 0.875em;
-      background: none;
-      border: none;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      text-align: left;
-      font: inherit;
-      transition: background 0.15s;
-      width: 100%;
-    }
-    .guide-step:last-child {
-      border-bottom: none;
-    }
-    .guide-step:hover {
-      background: color-mix(in srgb, var(--secondary) 70%, var(--foreground) 4%);
-    }
-    .guide-step-num {
-      flex-shrink: 0;
-      width: 1.5em;
-      height: 1.5em;
-      border-radius: 9999px;
-      background: color-mix(in srgb, var(--primary) 15%, transparent);
-      border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7em;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    .guide-step-num.done {
-      background: rgba(74, 222, 128, 0.12);
-      border-color: rgba(74, 222, 128, 0.3);
-      color: var(--aura-success);
-    }
-    .guide-step-content {
-      flex: 1;
-      min-width: 0;
-    }
-    .guide-step-title {
-      font-size: 0.8em;
-      font-weight: 500;
-      color: var(--foreground);
-    }
-    .guide-step-desc {
-      font-size: 0.7em;
-      color: var(--muted-foreground);
-      margin-top: 0.1em;
-      line-height: 1.4;
-    }
-    .guide-step-arrow {
-      flex-shrink: 0;
-      color: var(--muted-foreground);
-      transition: transform 0.15s;
-    }
-    .guide-step:hover .guide-step-arrow {
-      transform: translateX(2px);
+      line-height: 1.35;
     }
 
     /* Success state */
@@ -454,16 +451,6 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       width: 0.875em;
       height: 0.875em;
       flex-shrink: 0;
-    }
-    .next-steps-title iconify-icon {
-      width: 1em;
-      height: 1em;
-      color: var(--aura-warning);
-      flex-shrink: 0;
-    }
-    .guide-step-arrow iconify-icon {
-      width: 0.875em;
-      height: 0.875em;
     }
     .success-icon iconify-icon {
       color: var(--aura-success);
@@ -596,6 +583,63 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       width: 0.65em;
       height: 0.65em;
     }
+
+    /* Compact asked summary (widget-friendly) */
+    .asked-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.625em;
+      padding: 0.5em 0.75em;
+      border-radius: 0.5em;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    .asked-summary:hover {
+      background: color-mix(in srgb, var(--secondary) 70%, var(--foreground) 4%);
+    }
+    .avatar-stack {
+      display: flex;
+      flex-shrink: 0;
+    }
+    .avatar-stack .asked-avatar {
+      border: 2px solid var(--card);
+      margin-left: -0.4em;
+    }
+    .avatar-stack .asked-avatar:first-child {
+      margin-left: 0;
+    }
+    .asked-summary-text {
+      flex: 1;
+      min-width: 0;
+      font-size: 0.75em;
+      color: var(--foreground);
+    }
+    .asked-summary-text strong {
+      font-weight: 600;
+    }
+    .asked-summary-sub {
+      display: block;
+      font-size: 0.9em;
+      color: var(--muted-foreground);
+      margin-top: 0.1em;
+    }
+    .asked-chevron {
+      flex-shrink: 0;
+      color: var(--muted-foreground);
+      transition: transform 0.2s;
+    }
+    .asked-chevron iconify-icon {
+      width: 0.875em;
+      height: 0.875em;
+    }
+    .asked-summary[aria-expanded='true'] .asked-chevron {
+      transform: rotate(180deg);
+    }
   `
 
   protected render() {
@@ -612,8 +656,10 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     const evalTarget = nextLevel >= 4 ? 2 : 1
     const evalProgress = Math.min((evaluationsReceived / evalTarget) * 100, 100)
     const needsMore = this.requiredLevel - auraLevel
-    // Show only requirements up to the required level — what the user must pass
-    const activeRequirements = requirements.filter((r) => r.level <= this.requiredLevel)
+    // Show only requirements for levels the user has NOT yet reached, up to the required level
+    const activeRequirements = requirements.filter(
+      (r) => r.level > auraLevel && r.level <= this.requiredLevel
+    )
 
     return html`
       <div class="stack">
@@ -656,20 +702,21 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
 
         ${isMet
           ? this._renderSuccess()
-          : this._renderProgress(
-              levelProgress,
-              scoreProgress,
-              scoreNeeded,
-              evalProgress,
-              evaluationsReceived,
-              needsMore,
-              activeRequirements,
-              auraLevel,
-              auraScore,
-              evalTarget,
-              hasScoreReq
-            )}
-        ${this._renderAskedPlayers()}
+          : html`
+              ${this._renderCurrentStep(evaluationsReceived, auraLevel)}
+              ${this._renderRequirements(activeRequirements)} ${this._renderAskedPlayers()}
+              ${this._renderProgress(
+                levelProgress,
+                scoreProgress,
+                scoreNeeded,
+                evalProgress,
+                evaluationsReceived,
+                auraLevel,
+                auraScore,
+                evalTarget,
+                hasScoreReq
+              )}
+            `}
       </div>
     `
   }
@@ -680,8 +727,6 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     scoreNeeded: number | null,
     evalProgress: number,
     evaluationsReceived: number,
-    needsMore: number,
-    activeRequirements: { reason: string; status: 'passed' | 'incomplete'; level: number }[],
     auraLevel: number,
     auraScore: number,
     evalTarget: number,
@@ -754,130 +799,129 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
             : ''}
         </div>
       </div>
+    `
+  }
 
-      <div class="next-steps">
-        <h3 class="next-steps-title">
-          <iconify-icon icon="lucide:zap"></iconify-icon>
-          Reach Level ${this.requiredLevel} to continue
-        </h3>
-        <p class="next-steps-desc">
-          ${needsMore === 1
-            ? 'You need 1 more level. Get evaluated by people who know you to increase your score.'
-            : `You need ${needsMore} more levels. Complete evaluations and build your verification score.`}
-        </p>
-        <div class="action-row">
-          <!--<a-button size="sm" @click=${() => this._openGetVerified()}>
-            <iconify-icon
-              icon="lucide:external-link"
-              class="btn-icon"
-              width="1em"
-              height="1em"
-            ></iconify-icon>
-            Get Verified
-          </a-button>-->
-          <a-button variant="secondary" size="sm" @click=${() => this._emit('find-players')}>
-            <iconify-icon
-              icon="lucide:users"
-              class="btn-icon"
-              width="1em"
-              height="1em"
-            ></iconify-icon>
-            Find Players
-          </a-button>
-        </div>
-      </div>
+  private _renderRequirements(
+    activeRequirements: {
+      reason: string
+      status: 'passed' | 'incomplete'
+      level: number
+    }[]
+  ) {
+    if (activeRequirements.length === 0) return html``
 
-      ${activeRequirements.length > 0
-        ? html`
-            <div class="requirements">
-              ${activeRequirements.map(
-                (req) => html`
-                  <div class="req-item ${req.status}">
-                    <div class="req-dot ${req.status}"></div>
-                    <div>
-                      <div class="req-reason">${req.reason}</div>
-                      <div class="req-status">
-                        ${req.status === 'passed' ? 'Requirement met' : 'Action required'}
+    const byLevel = new Map<
+      number,
+      { reason: string; status: 'passed' | 'incomplete'; level: number }[]
+    >()
+    for (const req of activeRequirements) {
+      const arr = byLevel.get(req.level) ?? []
+      arr.push(req)
+      byLevel.set(req.level, arr)
+    }
+    const levels = Array.from(byLevel.keys()).sort((a, b) => a - b)
+
+    return html`
+      <div class="requirements">
+        ${levels.map((level) => {
+          const items = byLevel.get(level)!
+          const done = items.filter((r) => r.status === 'passed').length
+          const total = items.length
+          const allDone = done === total
+          return html`
+            <div class="req-group">
+              <div class="req-group-header ${allDone ? 'done' : ''}">
+                <span class="req-group-title">To reach Level ${level}</span>
+                <span class="req-group-count ${allDone ? 'done' : ''}">${done} / ${total}</span>
+              </div>
+              <div class="req-items">
+                ${items.map(
+                  (req) => html`
+                    <div class="req-item ${req.status}">
+                      <div class="req-check ${req.status}">
+                        ${req.status === 'passed'
+                          ? html`<iconify-icon icon="lucide:check"></iconify-icon>`
+                          : ''}
                       </div>
+                      <div class="req-reason">${req.reason}</div>
                     </div>
-                  </div>
-                `
-              )}
+                  `
+                )}
+              </div>
             </div>
           `
-        : ''}
+        })}
+      </div>
+    `
+  }
 
-      <div class="guide-section">
-        <div class="guide-header">
-          <iconify-icon
-            icon="streamline-sharp-color:star-2"
-            width="1.125em"
-            height="1.125em"
-          ></iconify-icon>
-          <span class="guide-header-text">How to get verified</span>
-          <span class="guide-header-sub">3 steps</span>
+  private _currentStepIndex(evaluationsReceived: number, auraLevel: number): 0 | 1 | 2 {
+    const asked = askedEvaluationPlayers.get().length
+    if (asked === 0 && evaluationsReceived === 0) return 0
+    if (evaluationsReceived === 0) return 1
+    if (auraLevel < this.requiredLevel) return 2
+    return 2
+  }
+
+  private _renderCurrentStep(evaluationsReceived: number, auraLevel: number) {
+    const idx = this._currentStepIndex(evaluationsReceived, auraLevel)
+    const steps = [
+      {
+        title: 'Find players who can evaluate you',
+        desc: 'Import Google Contacts or share your profile link with Aura players.',
+        ctaLabel: 'Find players',
+        ctaIcon: 'lucide:users',
+        action: () => this._emit('find-players')
+      },
+      {
+        title: 'Collect evaluations',
+        desc: 'Waiting for evaluations. Share with more players to speed things up.',
+        ctaLabel: 'Share with more',
+        ctaIcon: 'lucide:share-2',
+        action: () => this._emit('find-players')
+      },
+      {
+        title: `Reach Level ${this.requiredLevel}`,
+        desc:
+          evaluationsReceived > 0
+            ? `You have ${evaluationsReceived} evaluation${evaluationsReceived > 1 ? 's' : ''}. Higher-ranked verifiers give bigger score boosts.`
+            : 'Higher-ranked verifiers give bigger score boosts.',
+        ctaLabel: 'View score',
+        ctaIcon: 'lucide:trending-up',
+        action: () => this._emit('show-score')
+      }
+    ] as const
+    const step = steps[idx]
+    const pillLabel = `Step ${idx + 1} of 3`
+
+    return html`
+      <div class="step-card">
+        <div class="step-card-top">
+          <span class="step-pill">
+            <iconify-icon icon="lucide:zap" width="0.75em" height="0.75em"></iconify-icon>
+            ${pillLabel}
+          </span>
+          <div class="stepper" role="progressbar" aria-valuenow=${idx + 1} aria-valuemax="3">
+            ${[0, 1, 2].map(
+              (i) => html`
+                <span class="stepper-dot ${i < idx ? 'done' : i === idx ? 'active' : ''}"></span>
+              `
+            )}
+          </div>
         </div>
-        <div class="guide-steps">
-          <button class="guide-step" @click=${() => this._emit('find-players')}>
-            <div class="guide-step-num">1</div>
-            <div class="guide-step-content">
-              <div class="guide-step-title">Find players who can evaluate you</div>
-              <div class="guide-step-desc">
-                Import your Google Contacts or share your profile link with Aura players
-              </div>
-            </div>
-            <span class="guide-step-arrow">
-              <iconify-icon
-                icon="lucide:chevron-right"
-                width="0.875em"
-                height="0.875em"
-              ></iconify-icon>
-            </span>
-          </button>
-
-          <button class="guide-step" @click=${() => this._emit('show-evaluations')}>
-            <div class="guide-step-num ${evaluationsReceived > 0 ? 'done' : ''}">
-              ${evaluationsReceived > 0
-                ? html`<iconify-icon
-                    icon="lucide:check"
-                    width="0.75em"
-                    height="0.75em"
-                  ></iconify-icon>`
-                : '2'}
-            </div>
-            <div class="guide-step-content">
-              <div class="guide-step-title">Collect evaluations</div>
-              <div class="guide-step-desc">
-                ${evaluationsReceived > 0
-                  ? `You have ${evaluationsReceived} evaluation${evaluationsReceived > 1 ? 's' : ''}. Keep going to grow your score.`
-                  : 'Each evaluation from an Aura player raises your level and score'}
-              </div>
-            </div>
-            <span class="guide-step-arrow">
-              <iconify-icon
-                icon="lucide:chevron-right"
-                width="0.875em"
-                height="0.875em"
-              ></iconify-icon>
-            </span>
-          </button>
-
-          <button class="guide-step" @click=${() => this._emit('show-score')}>
-            <div class="guide-step-num">3</div>
-            <div class="guide-step-content">
-              <div class="guide-step-title">Grow your Aura score</div>
-              <div class="guide-step-desc">
-                Reach Level ${this.requiredLevel} — higher-ranked verifiers give bigger score boosts
-              </div>
-            </div>
-            <span class="guide-step-arrow">
-              <iconify-icon
-                icon="lucide:chevron-right"
-                width="0.875em"
-                height="0.875em"
-              ></iconify-icon>
-            </span>
-          </button>
+        <h3 class="step-title">${step.title}</h3>
+        <p class="step-desc">${step.desc}</p>
+        <div class="step-cta">
+          <a-button size="md" @click=${step.action}>
+            <iconify-icon
+              icon=${step.ctaIcon}
+              class="btn-icon"
+              width="1em"
+              height="1em"
+            ></iconify-icon>
+            ${step.ctaLabel}
+          </a-button>
         </div>
       </div>
     `
@@ -907,40 +951,60 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
         .slice(0, 2)
         .toUpperCase()
 
+    const stack = asked.slice(0, 3)
+    const count = asked.length
+    const expanded = this._askedExpanded
+
     return html`
       <div class="asked-section">
-        <span class="asked-section-title">
-          <iconify-icon icon="lucide:clock"></iconify-icon>
-          People You've Asked
-        </span>
-        ${asked.map(
-          (player) => html`
-            <div class="asked-player-row">
-              <div class="asked-avatar">
-                ${player.photo
-                  ? html`<img src=${player.photo} alt=${player.name} />`
-                  : getInitials(player.name)}
-              </div>
-              <div class="asked-player-info">
-                <div class="asked-player-name">${player.name}</div>
-                <div class="asked-player-sub">
-                  <iconify-icon icon="lucide:clock"></iconify-icon>
-                  Waiting for evaluation
+        <button
+          class="asked-summary"
+          aria-expanded=${expanded ? 'true' : 'false'}
+          @click=${() => (this._askedExpanded = !expanded)}
+        >
+          <div class="avatar-stack">
+            ${stack.map(
+              (p) => html`
+                <div class="asked-avatar">
+                  ${p.photo ? html`<img src=${p.photo} alt=${p.name} />` : getInitials(p.name)}
                 </div>
-              </div>
-              <span class="asked-status-badge waiting">
-                <iconify-icon icon="lucide:hourglass"></iconify-icon>
-                Waiting
-              </span>
-            </div>
-          `
-        )}
+              `
+            )}
+          </div>
+          <div class="asked-summary-text">
+            <strong>${count}</strong> ${count === 1 ? 'person' : 'people'} waiting to evaluate you
+            <span class="asked-summary-sub">Tap to ${expanded ? 'hide' : 'view'}</span>
+          </div>
+          <span class="asked-chevron">
+            <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+          </span>
+        </button>
+        ${expanded
+          ? asked.map(
+              (player) => html`
+                <div class="asked-player-row">
+                  <div class="asked-avatar">
+                    ${player.photo
+                      ? html`<img src=${player.photo} alt=${player.name} />`
+                      : getInitials(player.name)}
+                  </div>
+                  <div class="asked-player-info">
+                    <div class="asked-player-name">${player.name}</div>
+                    <div class="asked-player-sub">
+                      <iconify-icon icon="lucide:clock"></iconify-icon>
+                      Waiting for evaluation
+                    </div>
+                  </div>
+                  <span class="asked-status-badge waiting">
+                    <iconify-icon icon="lucide:hourglass"></iconify-icon>
+                    Waiting
+                  </span>
+                </div>
+              `
+            )
+          : ''}
       </div>
     `
-  }
-
-  private _openGetVerified() {
-    window.open('https://brightid.gitbook.io/aura/getting-started/get-brightid', '_blank')
   }
 
   private _emit(event: string, detail?: unknown) {
