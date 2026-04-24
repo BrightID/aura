@@ -35,13 +35,13 @@ const ZoomControls = ({
       size="icon"
       onClick={onReset}
       disabled={disabledZoomIn}
-      className="h-6 w-6 text-xs sm:text-sm"
+      className="text-xs sm:text-sm"
     >
       <MdRefresh className="size-4" />
     </a-button>
     <a-button
       size="icon"
-      className="h-6 w-6 text-xs sm:text-sm"
+      className="text-xs sm:text-sm"
       variant="ghost"
       onClick={onZoomIn}
       disabled={disabledZoomIn}
@@ -50,7 +50,7 @@ const ZoomControls = ({
     </a-button>
     <a-button
       size="icon"
-      className="h-6 w-6 text-xs sm:text-sm"
+      className="text-xs sm:text-sm"
       variant="ghost"
       onClick={onZoomOut}
       disabled={disabledZoomOut}
@@ -59,7 +59,7 @@ const ZoomControls = ({
     </a-button>
     <a-button
       size="icon"
-      className="h-6 w-6 text-xs sm:text-sm"
+      className="text-xs sm:text-sm"
       variant="ghost"
       onClick={onPanLeft}
       disabled={disabledPanLeft}
@@ -68,7 +68,7 @@ const ZoomControls = ({
     </a-button>
     <a-button
       size="icon"
-      className="h-6 w-6 text-xs sm:text-sm"
+      className="text-xs sm:text-sm"
       variant="ghost"
       onClick={onPanRight}
       disabled={disabledPanRight}

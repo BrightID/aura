@@ -312,6 +312,7 @@
   --color-white-90-card: var(--white-90-card);
   --color-neutral-l2: var(--neutral-l2);
   --color-neutral-l3: var(--neutral-l3);
+  --color-dark-bright: var(--dark-bright);
 
   /* Animations */
   --animate-spin-slow: spin 2s linear infinite;
@@ -394,9 +395,9 @@
   background-size: 100% 100%;
 }
 
-.app {
+/* .app {
   @apply mx-auto flex h-screen overflow-x-visible w-screen max-w-[460px] flex-col;
-}
+} */
 
 .page {
   @apply overflow-x-visible px-1 pb-4 md:px-5;

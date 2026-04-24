@@ -5,10 +5,10 @@ import { SubjectInboundEvaluationsContextProvider } from "contexts/SubjectInboun
 import useViewMode from "hooks/useViewMode"
 import { useCallback, useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router"
-import InfiniteScrollLocal from "@/components/Shared/InfiniteScrollLocal"
-import LevelUp from "@/components/Shared/LevelUp"
 import { EmptySubjectList } from "@/components/Shared/EmptyAndLoadingStates/EmptySubjectList"
 import { LoadingList } from "@/components/Shared/EmptyAndLoadingStates/LoadingList"
+import InfiniteScrollLocal from "@/components/Shared/InfiniteScrollLocal"
+import LevelUp from "@/components/Shared/LevelUp"
 import { useSubjectsListContext } from "@/contexts/SubjectsListContext"
 import { useProfileStore } from "@/store/profile.store"
 import { hash } from "@/utils/crypto"
@@ -71,11 +71,8 @@ const Home = () => {
     <LoadingList />
   ) : (
     <SubjectInboundEvaluationsContextProvider subjectId={authData.brightId}>
-      {/* <a-scroll-area
-        id="scrollable-div"
-        className="page *:overflow-x-visible h-screen *:flex *:flex-col *:gap-4"
-      > */}
       <ProfileHeaderCard subjectId={authData.brightId} />
+      <div className="my-5"></div>
       <ProfileInfoPerformance
         subjectId={authData.brightId}
         isPerformance={true}
@@ -139,7 +136,6 @@ const Home = () => {
           <LevelUp subjectId={authData.brightId} />
         </a-tab-panel>
       </a-tabs>
-      {/* </a-scroll-area> */}
     </SubjectInboundEvaluationsContextProvider>
   )
 }

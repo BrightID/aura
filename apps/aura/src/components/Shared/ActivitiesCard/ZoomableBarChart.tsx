@@ -335,13 +335,13 @@ export function ZoomableChart({
             size="icon"
             onClick={handleReset}
             disabled={startIndex === 0 && endIndex === chartData.length - 1}
-            className="h-6 w-6 text-xs sm:text-sm"
+            className="text-xs sm:text-sm"
           >
             <MdRefresh className="h-4 w-4" />
           </a-button>
           <a-button
             size="icon"
-            className="h-6 w-6 text-xs sm:text-sm"
+            className="text-xs sm:text-sm"
             variant="ghost"
             onClick={zoomIn}
             disabled={startIndex === endIndex - 1}
@@ -350,7 +350,7 @@ export function ZoomableChart({
           </a-button>
           <a-button
             size="icon"
-            className="h-6 w-6 text-xs sm:text-sm"
+            className="text-xs sm:text-sm"
             variant="ghost"
             onClick={zoomOut}
             disabled={startIndex === 0 && endIndex === chartData.length - 1}
@@ -359,7 +359,7 @@ export function ZoomableChart({
           </a-button>
           <a-button
             size="icon"
-            className="h-6 w-6 text-xs sm:text-sm"
+            className="text-xs sm:text-sm"
             variant="ghost"
             onClick={panLeft}
             disabled={startIndex === 0}
@@ -368,7 +368,7 @@ export function ZoomableChart({
           </a-button>
           <a-button
             size="icon"
-            className="h-6 w-6 text-xs sm:text-sm"
+            className="text-xs sm:text-sm"
             variant="ghost"
             onClick={panRight}
             disabled={endIndex === chartData.length - 1}

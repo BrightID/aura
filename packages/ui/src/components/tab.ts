@@ -7,7 +7,7 @@ import {
 
 @customElement("a-tabs")
 export class TabsElement extends LitElement {
-  @property({ type: String, reflect: true })
+  @property({ type: String })
   value = ""
 
   @queryAssignedElements({ selector: "a-tab" })
