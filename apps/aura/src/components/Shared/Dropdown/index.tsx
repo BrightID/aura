@@ -44,7 +44,7 @@ export default function Dropdown<T extends DropdownItem>({
       >
         <SelectValue />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="z-[100]">
         {items.map((item) => (
           <SelectItem
             data-testid={`dropdown-option-${item.value}`}
