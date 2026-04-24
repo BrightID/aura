@@ -36,7 +36,7 @@ const DomainOverview = () => {
               <p className="mb-2.5 font-bold">Core</p>
             </span>
             <span className="flex-1">
-              <button className="btn">Change</button>
+              <button type="button" className="btn">Change</button>
             </span>
           </span>
           <p className="text-sm">About</p>

@@ -77,8 +77,6 @@ export async function updateInboundData(
     ),
   );
 
-  console.log({ data });
-
   const inbounds: Map<string, InboundProfile> = state.alerts
     .inboundTrackedProfiles.profiles.size
     ? new Map(state.alerts.inboundTrackedProfiles.profiles)

@@ -13,24 +13,29 @@ export default function StepsPagination({
     <section className="actions px-5 flex justify-between items-center w-full text-center">
       <div className="step-anotators flex gap-2">
         {Array.from(new Array(pages)).map((_, step) => (
-          <span
+          <button
             key={step}
+            type="button"
+            aria-label={`Go to step ${step + 1}`}
+            aria-current={activePage === step ? 'step' : undefined}
             onClick={() => {
               setPageNumber(step);
             }}
-            className={`transition-all w-2.5 h-2.5 rounded-full cursor-pointer bg-stone-700 ${activePage === step && '!w-10 !bg-pastel-purple dark:!bg-purple'
+            className={`transition-all w-2.5 h-2.5 rounded-full cursor-pointer bg-stone-700 ${activePage === step && 'w-10! bg-pastel-purple! dark:bg-purple!'
               }`}
-          ></span>
+          />
         ))}
       </div>
       <button
+        type="button"
+        aria-label="Next page"
         disabled={activePage === pages - 1}
         onClick={() => {
           if (activePage < pages) {
             setPageNumber(activePage + 1);
           }
         }}
-        className={`bg-pastel-purple dark:!bg-purple disabled:opacity-60 p-3 w-10 h-10 rounded-3xl transition-all duration-400 `}
+        className="bg-pastel-purple dark:bg-purple! disabled:opacity-60 p-3 w-10 h-10 rounded-3xl transition-all duration-400"
       >
         <img
           src="/assets/images/Shared/next-page.svg"

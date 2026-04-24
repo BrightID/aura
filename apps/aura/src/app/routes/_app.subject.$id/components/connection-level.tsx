@@ -28,7 +28,6 @@ export function ConnectionLevel({ subjectId }: { subjectId: string }) {
     if (!connection || !api || !authData) return
     const level = connection.level === "just met" ? "already known" : "just met"
     if (!level) return
-    console.log(`Setting connection level '${level}'`)
     try {
       const op = (await api.addConnection(
         authData.brightId,
@@ -63,7 +62,7 @@ export function ConnectionLevel({ subjectId }: { subjectId: string }) {
       ) : (
         <div className="flex flex-col gap-2.5">
           {connection?.level ?? "..."}
-          <button onClick={setRandomConnectionLevel}>Change</button>
+          <button type="button" onClick={setRandomConnectionLevel}>Change</button>
         </div>
       )}
     </div>

@@ -19,7 +19,6 @@ export function useEvaluateSubject(evaluationCategory?: EvaluationCategory) {
   );
   useEffect(() => {
     async function getData() {
-      console.log({ connectionOp });
       if (connectionOp?.state === operation_states.APPLIED) {
         setLoading(false);
       }

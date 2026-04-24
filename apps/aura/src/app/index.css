@@ -316,7 +316,6 @@
   /* Animations */
   --animate-spin-slow: spin 2s linear infinite;
   --animate-spin-fast: spin 0.5s linear infinite;
-  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
 }
 
 @layer base {
@@ -366,17 +365,6 @@
   }
 }
 
-@keyframes spotlight {
-  from {
-    opacity: 0;
-    transform: translate(-72%, -62%) scale(0.5);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -40%) scale(1);
-  }
-}
-
 @utility font-weight-transition {
   transition-property: font-weight;
 }
@@ -412,10 +400,6 @@
 
 .page {
   @apply overflow-x-visible px-1 pb-4 md:px-5;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
 }
 
 .no-scrollbar {

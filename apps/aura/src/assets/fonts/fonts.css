@@ -23,39 +23,6 @@
 */
 
 
-/**
-* This is a variable font
-* You can controll variable axes as shown below:
-* font-variation-settings: 'wght' 900.0;
-*
-* available axes:
-
-* 'wght' (range from 300.0 to 900.0)
-
-*/
-
-@font-face {
-    font-family: 'Satoshi-Variable';
-    src: url('Satoshi/Satoshi-Variable.woff2') format('woff2'),
-    url('Satoshi/Satoshi-Variable.woff') format('woff'),
-    url('Satoshi/Satoshi-Variable.ttf') format('truetype');
-    font-weight: 300 900;
-    font-display: swap;
-    font-style: normal;
-}
-
-
-/**
-* This is a variable font
-* You can controll variable axes as shown below:
-* font-variation-settings: 'wght' 900.0;
-*
-* available axes:
-
-* 'wght' (range from 300.0 to 900.0)
-
-*/
-
 @font-face {
     font-family: Satoshi;
     src: url('Satoshi/Satoshi-VariableItalic.woff2') format('woff2'),

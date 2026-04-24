@@ -46,7 +46,7 @@ const AnimatedNodeCircles = () => {
       }
 
       nodes.push({
-        id: i,
+        id: i + 1,
         x: x!,
         y: y!,
         connected: Math.random() < 0.6,
@@ -84,13 +84,13 @@ const AnimatedNodeCircles = () => {
       style={{ width: 220, height: 150 }}
     >
       <svg className="absolute w-full h-full">
-        {nodes.map((node, index) => {
+        {nodes.map((node) => {
           if (!node.connected || node.id === 0) return null;
 
           const center = nodes[0];
           return (
             <path
-              key={index}
+              key={node.id}
               d={getCurvedPath(node.x, node.y, center.x, center.y)}
               fill="none"
               stroke="rgb(239 68 68)"
@@ -107,9 +107,9 @@ const AnimatedNodeCircles = () => {
         })}
       </svg>
 
-      {nodes.map((node, key) => (
+      {nodes.map((node) => (
         <div
-          key={key}
+          key={node.id}
           className={`absolute rounded-full transition-transform duration-300
             ${node.connected ? 'bg-red-500' : 'bg-red-200'} 
             transform -translate-x-1/2 -translate-y-1/2 shadow-sm

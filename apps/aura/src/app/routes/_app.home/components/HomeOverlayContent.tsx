@@ -21,7 +21,7 @@ export const HomeOverlayContent = () => {
           <p className="mb-2.5 font-bold">BrightID</p>
           <p className="text-sm">Energy Team</p>
           <p className="mb-5 font-bold">Core</p>
-          <button className="btn">Change</button>
+          <button type="button" className="btn">Change</button>
         </div>
         <div className="card">
           <p className="mb-5">Preferred view</p>

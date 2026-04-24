@@ -7,7 +7,7 @@ import { initReactI18next } from 'react-i18next';
  * Consumed by i18next.
  */
 // @ts-ignore
-import * as englishTranslation from './locales/en/translation.json';
+import * as englishTranslation from '@/locales/en/translation.json';
 
 export const translations = {
   en: {
