@@ -2,7 +2,7 @@ import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
 import useFilterAndSort from 'hooks/useFilterAndSort';
 import { AuraFilterId, AuraFilterOptions, useSubjectFilters } from 'hooks/useFilters';
 import { AuraSortId, AuraSortOptions, useSubjectSorts } from 'hooks/useSorts';
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { create } from 'zustand';
 import { type AuraNodeBrightIdConnectionWithBackupData } from 'types';
 import useBrightIdBackupWithUpdatedConnectionData from 'hooks/useBrightIdBackupWithAuraConnectionData';
@@ -91,7 +91,15 @@ export function SubjectsListContextProvider({ children }: { children: ReactNode 
 
   const store = useSubjectsListStore((s) => s.set);
   const data = useMemo(() => ({ ...filterAndSortHookData, filters, sorts }), [filterAndSortHookData, filters, sorts]);
-  store(data);
+
+  const didInit = useRef(false);
+  if (!didInit.current) {
+    didInit.current = true;
+    useSubjectsListStore.setState({ data });
+  }
+  useEffect(() => {
+    store(data);
+  }, [store, data]);
 
   return <>{children}</>;
 }

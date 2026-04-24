@@ -102,7 +102,7 @@ const Home = () => {
             />
             {filteredSubjects && !loading ? (
               filteredSubjects.length > 0 ? (
-                <div className="no-scrollbar grow overflow-auto">
+                <div className="grow">
                   <InfiniteScrollLocal
                     getScrollParent={() =>
                       document.getElementById("scrollable-div")

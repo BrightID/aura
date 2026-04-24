@@ -14,7 +14,7 @@ import { ChartTooltip } from '@/components/ui/chart';
 import { ChartAreaProps } from '../../ActivitiesCard/activity-chart/chart-area';
 import { cn } from '@/lib/utils';
 import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 
 export interface EvaluationChartAreaProps extends ChartAreaProps {}
 
@@ -72,7 +72,7 @@ export const EvaluationsChartArea = ({
   zoomedData,
   onBarClick,
 }: EvaluationChartAreaProps) => (
-  <ResponsiveContainer width="100%" height="100%">
+  <ResponsiveContainer width="100%" height={208} debounce={100}>
     <ComposedChart
       data={zoomedData}
       margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -145,4 +145,4 @@ export const EvaluationsChartArea = ({
   </ResponsiveContainer>
 );
 
-export default EvaluationsChartArea;
+export default memo(EvaluationsChartArea);

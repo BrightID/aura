@@ -24,8 +24,8 @@ export class ButtonElement extends LitElement {
   @property({ type: Boolean, reflect: true })
   disabled: boolean = false
 
-  @property({ type: String })
-  class: string | undefined = ""
+  @property({})
+  class: string | undefined
 
   static styles = css`
     :host {

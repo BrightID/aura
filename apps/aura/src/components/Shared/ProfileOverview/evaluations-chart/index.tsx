@@ -38,9 +38,17 @@ export const EvaluationsChart = ({
   const chartRef = useRef<HTMLDivElement>(null);
   const authData = useProfileStore((s) => s.authData);
   const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
-  const brightIdBackup = brightIdBackupEncrypted && authData?.password
-    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
-    : null;
+  const brightIdBackup = useMemo(() => {
+    if (!brightIdBackupEncrypted || !authData?.password) return null;
+    try {
+      return decryptUserData(
+        brightIdBackupEncrypted,
+        authData.password,
+      ) as BrightIdBackup;
+    } catch {
+      return null;
+    }
+  }, [brightIdBackupEncrypted, authData?.password]);
   const chartData = useMemo(
     () => calculateRatingsImpact(impacts, evaluationCategory, brightIdBackup),
     [evaluationCategory, brightIdBackup, impacts],
@@ -69,9 +77,7 @@ export const EvaluationsChart = ({
   );
 
   const scaleBarHeight = useCallback(
-    (data: any) => {
-      return (data.impactPercentage / maxAbs) * 4;
-    },
+    (data: any) => (maxAbs ? (data.impactPercentage / maxAbs) * 4 : 0),
     [maxAbs],
   );
 
@@ -163,9 +169,8 @@ export const EvaluationsChart = ({
   if (impactsLoading) return <SkeletonChart />;
 
   return (
-    <div className="relative mb-12 h-52 w-full">
+    <div className="relative mb-12 w-full">
       <div
-        className="h-full"
         onWheel={handleZoom}
         onTouchMove={handleZoom}
         ref={chartRef}
@@ -201,17 +206,19 @@ export const EvaluationsChart = ({
           disabledPanLeft={startIndex === 0}
           disabledPanRight={endIndex === chartData.length - 1}
         />
-        <ChartArea
-          data={chartData}
-          refAreaLeft={refAreaLeft}
-          refAreaRight={refAreaRight}
-          scaleBarHeight={scaleBarHeight}
-          handleMouseDown={handleMouseDown}
-          handleMouseMove={handleMouseMove}
-          handleMouseUp={handleMouseUp}
-          zoomedData={zoomedData}
-          onBarClick={onBarClick}
-        />
+        <div className="h-52 w-full">
+          <ChartArea
+            data={chartData}
+            refAreaLeft={refAreaLeft}
+            refAreaRight={refAreaRight}
+            scaleBarHeight={scaleBarHeight}
+            handleMouseDown={handleMouseDown}
+            handleMouseMove={handleMouseMove}
+            handleMouseUp={handleMouseUp}
+            zoomedData={zoomedData}
+            onBarClick={onBarClick}
+          />
+        </div>
       </div>
     </div>
   );

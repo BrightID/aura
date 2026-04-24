@@ -1,33 +1,33 @@
-import { useSettingsStore } from '@/store/settings.store';
-import { useProfileStore } from '@/store/profile.store';
-import { useNotificationsStore } from '@/store/notifications.store';
-import { RoutePath } from '@/types/router';
-import { BellIcon, SearchIcon, SettingsIcon } from 'lucide-react';
-import { FC, PropsWithChildren, ReactNode } from 'react';
-import { Link } from 'react-router';
-import { FaHome } from 'react-icons/fa';
+import { BellIcon, SearchIcon, SettingsIcon } from "lucide-react"
+import { FC, PropsWithChildren, ReactNode } from "react"
+import { FaHome } from "react-icons/fa"
+import { Link } from "react-router"
+import { useNotificationsStore } from "@/store/notifications.store"
+import { useProfileStore } from "@/store/profile.store"
+import { useSettingsStore } from "@/store/settings.store"
+import { RoutePath } from "@/types/router"
 
 export const HeaderBody: FC<
   PropsWithChildren & { title?: string; beforeTitle?: ReactNode }
 > = ({ title, children, beforeTitle }) => {
-  const authData = useProfileStore((s) => s.authData);
-  const subjectId = authData?.brightId;
+  const authData = useProfileStore((s) => s.authData)
+  const subjectId = authData?.brightId
 
-  if (!subjectId) return null;
+  if (!subjectId) return null
 
   return (
     <>
-      <Link to={'/home?tab=evaluate'} className="mr-2 flex items-center gap-1">
+      <Link to={"/home?tab=evaluate"} className="mr-2 flex items-center gap-1">
         <FaHome className="h-6 w-6" />
       </Link>
       {beforeTitle}
       <span data-testid="header-title" className="text-xl font-semibold">
-        {title ?? 'Home'}
+        {title ?? "Home"}
       </span>
       {children}
     </>
-  );
-};
+  )
+}
 
 export default function DefaultHeader({
   title,
@@ -35,13 +35,13 @@ export default function DefaultHeader({
   beforeTitle,
   breadcrumbs,
 }: {
-  title?: string;
-  beforeTitle?: ReactNode;
-  breadcrumbs?: ReactNode;
+  title?: string
+  beforeTitle?: ReactNode
+  breadcrumbs?: ReactNode
 } & PropsWithChildren) {
-  const toggleSearchModal = useSettingsStore((s) => s.toggleSearchModal);
-  const alerts = useNotificationsStore((s) => s.alerts);
-  const notificationsCount = alerts.filter((item) => !item.viewed).length;
+  const toggleSearchModal = useSettingsStore((s) => s.toggleSearchModal)
+  const alerts = useNotificationsStore((s) => s.alerts)
+  const notificationsCount = alerts.filter((item) => !item.viewed).length
 
   return (
     <div className="flex flex-col gap-2.5 px-1 pt-3 md:px-4 md:pt-9">
@@ -65,7 +65,10 @@ export default function DefaultHeader({
             to="/notifications"
           >
             {notificationsCount > 0 && (
-              <a-badge className="absolute -right-0 -top-3 grid h-5 min-w-5 place-items-center rounded-full bg-dark-bright px-1 font-mono">
+              <a-badge
+                className="absolute -top-3 right-0 grid size-5 place-items-center rounded-full bg-dark-bright font-mono"
+                size="xs"
+              >
                 {notificationsCount}
               </a-badge>
             )}
@@ -77,5 +80,5 @@ export default function DefaultHeader({
         </span>
       </header>
     </div>
-  );
+  )
 }

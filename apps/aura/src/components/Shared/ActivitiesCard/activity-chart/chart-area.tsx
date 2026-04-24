@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
   ComposedChart,
   XAxis,
@@ -37,7 +38,7 @@ export const ActivityChartArea = ({
   onBarClick,
 }: ChartAreaProps) => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height={208} debounce={100}>
       <ComposedChart
         data={zoomedData}
         margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -112,4 +113,4 @@ export const ActivityChartArea = ({
     </ResponsiveContainer>
   );
 };
-export default ActivityChartArea;
+export default memo(ActivityChartArea);

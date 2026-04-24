@@ -2,7 +2,7 @@ import useFilterAndSort from 'hooks/useFilterAndSort';
 import { AuraFilterId, type AuraFilterOptions, useInboundConnectionsFilters } from 'hooks/useFilters';
 import { AuraSortId, type AuraSortOptions, useInboundConnectionsSorts } from 'hooks/useSorts';
 import { useInboundEvaluations } from 'hooks/useSubjectEvaluations';
-import { useEffect, useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { create } from 'zustand';
 import { useProfileStore } from '@/store/profile.store';
 import { decryptUserData } from '@/utils/crypto';
@@ -78,7 +78,18 @@ export function SubjectInboundConnectionsContextProvider({ subjectId, children }
 
   const storeSet = useStore((s) => s.set);
   const data = useMemo(() => ({ refreshInboundRatings, ...hookData, ...filterAndSortHookData, sorts, filters, subjectId }), [refreshInboundRatings, hookData, filterAndSortHookData, sorts, filters, subjectId]);
-  storeSet(subjectId, data);
+  const didInit = useRef(false);
+  if (!didInit.current) {
+    didInit.current = true;
+    useStore.setState((s) => {
+      const m = new Map(s.data);
+      m.set(subjectId, data);
+      return { data: m };
+    });
+  }
+  useEffect(() => {
+    storeSet(subjectId, data);
+  }, [storeSet, subjectId, data]);
 
   return <>{children}</>;
 }

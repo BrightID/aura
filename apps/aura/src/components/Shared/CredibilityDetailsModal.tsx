@@ -9,23 +9,27 @@ import { PencilIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { EvaluationCategory } from "types/dashboard"
-import { SubjectInboundEvaluationsContextProvider } from "@/contexts/SubjectInboundEvaluationsContext"
-import { useProfileStore } from "@/store/profile.store"
-import { compactFormat } from "@/utils/number"
-import { calculateUserScorePercentage } from "@/utils/score"
-
+import EvaluationFlow from "@/components/evaluation/EvaluationFlow"
+import BrightIdProfilePicture from "@/components/Shared/BrightIdProfilePicture"
+import { HorizontalProgressBar } from "@/components/Shared/HorizontalProgressBar"
+import { EvaluationsChart } from "@/components/Shared/ProfileOverview/evaluations-chart"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   getRawTextClassNameOfAuraRatingNumber,
   getViewModeSubjectTextColorClass,
   viewAsToViewMode,
 } from "@/constants"
+import { SubjectInboundEvaluationsContextProvider } from "@/contexts/SubjectInboundEvaluationsContext"
+import { useProfileStore } from "@/store/profile.store"
 import { CredibilityDetailsProps } from "@/types"
-import BrightIdProfilePicture from "@/components/Shared/BrightIdProfilePicture"
-import EvaluationFlow from "@/components/evaluation/EvaluationFlow"
-import { HorizontalProgressBar } from "@/components/Shared/HorizontalProgressBar"
-import { EvaluationsChart } from "@/components/Shared/ProfileOverview/evaluations-chart"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Skeleton } from "@/components/ui/skeleton"
+import { compactFormat } from "@/utils/number"
+import { calculateUserScorePercentage } from "@/utils/score"
 
 const views = [
   EvaluationCategory.SUBJECT,
@@ -293,9 +297,9 @@ const CredibilityDetails = ({
     )
 
   return (
-    <div className="flex min-h-[450px] w-full flex-col">
+    <div className="flex min-h-112.5 w-full flex-col">
       <div
-        className={`mb-5 min-h-[52px] w-full rounded-lg bg-white-90-card p-1 px-1.5 py-1.5 dark:bg-dark-primary`}
+        className={`mb-5 min-h-13 w-full rounded-lg bg-white-90-card p-1 px-1.5 py-1.5 dark:bg-dark-primary`}
       >
         <div
           className={`flex h-full min-w-full overflow-x-auto overflow-y-hidden pb-1 md:flex-nowrap`}
@@ -308,7 +312,7 @@ const CredibilityDetails = ({
           <p
             className={`rounded-md ${
               authorizedTabs.length > 0 ? "" : "hidden"
-            } flex h-9 w-full min-w-[100px] cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
+            } flex h-9 w-full min-w-25 cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
               evaluationCategory === EvaluationCategory.SUBJECT
                 ? "background bg-orange font-bold text-white dark:text-black"
                 : "bg-transparent font-medium text-black dark:text-white"
@@ -329,7 +333,7 @@ const CredibilityDetails = ({
           <p
             className={`rounded-md ${
               authorizedTabs.length > 1 ? "" : "hidden"
-            } flex h-9 w-full min-w-[100px] cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
+            } flex h-9 w-full min-w-25 cursor-pointer items-center justify-center gap-1 transition-all duration-300 ease-in-out ${
               evaluationCategory === EvaluationCategory.PLAYER
                 ? "background bg-purple font-bold text-white"
                 : "bg-transparent font-medium text-black dark:text-white"
@@ -392,7 +396,10 @@ const CredibilityDetailsModal = ({
   const name = useSubjectName(credibilityDetailsProps.subjectId)
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent aria-describedby={`${name} subject credebility details`}>
+      <DialogContent
+        className="min-w-md"
+        aria-describedby={`${name} subject credebility details`}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BrightIdProfilePicture

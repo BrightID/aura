@@ -10,7 +10,7 @@ import {
   useOutboundEvaluationSorts,
 } from "hooks/useSorts"
 import { useOutboundEvaluations } from "hooks/useSubjectEvaluations"
-import { type ReactNode, useEffect, useMemo } from "react"
+import { type ReactNode, useEffect, useMemo, useRef } from "react"
 import {
   type AuraOutboundConnectionAndRatingData,
   type BrightIdBackup,
@@ -153,7 +153,18 @@ export function SubjectOutboundEvaluationsContextProvider({
       subjectId,
     ],
   )
-  storeSet(subjectId, data)
+  const didInit = useRef(false)
+  if (!didInit.current) {
+    didInit.current = true
+    useStore.setState((s) => {
+      const m = new Map(s.data)
+      m.set(subjectId, data)
+      return { data: m }
+    })
+  }
+  useEffect(() => {
+    storeSet(subjectId, data)
+  }, [storeSet, subjectId, data])
 
   return <>{children}</>
 }

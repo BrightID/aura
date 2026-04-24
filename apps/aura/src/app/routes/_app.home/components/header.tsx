@@ -38,7 +38,7 @@ const ViewTooltip = ({
     >
       <a-button
         variant="secondary"
-        className={`rounded-lg ${
+        className={`rounded-xl ${
           currentViewMode === view || activeView
             ? getViewModeBackgroundColorClass(currentViewMode)
             : "bg-gray100"
