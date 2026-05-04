@@ -166,6 +166,7 @@
     "postcss": "^8.5.6",
     "shadcn": "^2.4.0-canary.12",
     "tailwindcss": "^4.1.18",
+    "undici": "^8.2.0",
     "vite-plugin-glsl": "^1.4.0",
     "vite-plugin-pwa": "^0.21.1",
     "vite-tsconfig-paths": "^5.1.4",

@@ -1,6 +1,6 @@
 # Aura: Decentralized Expert Evaluation Platform
 
-[![Tests](https://github.com/Meta-Node/aura-frontend/actions/workflows/test.yml/badge.svg)](https://github.com/Meta-Node/aura-frontend/actions/workflows/test.yml)
+[![Tests](https://github.com/BrightID/aura/actions/workflows/test.yml/badge.svg)](https://github.com/BrightID/aura/actions/workflows/test.yml)
 
 Aura is a decentralized platform where experts assess each other and evaluate subjects across various domains, producing digital attestations that bring authenticity to online activities.
 
