@@ -1,19 +1,8 @@
-// MyEvaluationsContext replaced by direct hook usage.
-// TanStack Query deduplicates fetches, so calling useMyEvaluations() from
-// multiple components is safe and efficient.
-//
-// Migration: replace useMyEvaluationsContext() with useMyEvaluations() and
-// useMyEvaluationsContext({ subjectId }) with inline derivation.
-
 import { getConfidenceValueOfAuraRatingObject } from '@/constants/index';
 import { useMyEvaluations } from 'hooks/useMyEvaluations';
-import { useMemo, type ReactNode } from 'react';
-import useViewMode from '../hooks/useViewMode';
+import { useMemo } from 'react';
+import useViewMode from './useViewMode';
 import { type EvaluationCategory } from '../types/dashboard';
-
-export function MyEvaluationsContextProvider({ children }: { children: ReactNode }) {
-  return <>{children}</>;
-}
 
 export function useMyEvaluationsContext(props?: {
   subjectId?: string;

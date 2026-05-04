@@ -1,4 +1,4 @@
-import { useSubjectInboundEvaluationsContext } from 'contexts/SubjectInboundEvaluationsContext';
+import { useSubjectInboundEvaluationsContext } from '@/hooks/useSubjectInboundEvaluationsContext';
 import {
   useSubjectVerifications,
   useTotalImpact,

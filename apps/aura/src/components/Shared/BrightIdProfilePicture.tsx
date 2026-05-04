@@ -1,7 +1,6 @@
 import React, { useMemo } from "react"
 import { useGetProfilePhotoQuery } from "@/hooks/queries/backup"
 import { useProfileStore } from "@/store/profile.store"
-import { hash } from "@/utils/crypto"
 import { createBlockiesImage } from "@/utils/image"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
@@ -19,12 +18,12 @@ const BrightIdProfilePicture = ({
       subjectId ? createBlockiesImage(subjectId) : DEFAULT_PROFILE_PICTURE,
     [subjectId],
   )
-  const authData = useProfileStore((s) => s.authData)
-  const key = authData ? hash(authData.brightId + authData.password) : ""
+  const authKey = useProfileStore((s) => s.authKey)
+  const password = useProfileStore((s) => s.authData?.password ?? "")
   const { data } = useGetProfilePhotoQuery(
-    key,
+    authKey ?? "",
     subjectId ?? "",
-    authData?.password ?? "",
+    password,
   )
 
   const imageSource = data || imgSrc

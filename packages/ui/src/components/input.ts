@@ -1,5 +1,6 @@
 import { type CSSResultGroup, css, html, LitElement } from "lit"
 import { customElement, property, state } from "lit/decorators.js"
+import { live } from "lit/directives/live.js"
 
 @customElement("a-input")
 export class InputElement extends LitElement {
@@ -77,9 +78,6 @@ export class InputElement extends LitElement {
       border: 1px solid var(--border);
       border-radius: var(--radius);
 
-      backdrop-filter: blur(12px) saturate(1.25);
-      -webkit-backdrop-filter: blur(12px) saturate(1.25);
-
       transition:
         border-color 0.15s ease,
         box-shadow 0.15s ease,
@@ -146,8 +144,9 @@ export class InputElement extends LitElement {
           ]
             .join(" ")
             .trim()}
-          .value=${this.value}
+          .value=${live(this.value)}
           @input=${this.onInputChange}
+          @change=${(e: Event) => e.stopPropagation()}
           .type=${this.type}
           placeholder=${this.placeholder}
           ?disabled=${this.disabled}
@@ -177,8 +176,8 @@ export class InputElement extends LitElement {
     this.dispatchEvent(
       new CustomEvent("change", {
         detail: target.value,
-        bubbles: true,
-        composed: true,
+        bubbles: false,
+        composed: false,
       }),
     )
   }

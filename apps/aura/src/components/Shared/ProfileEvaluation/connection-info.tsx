@@ -11,7 +11,7 @@ import {
   viewModeToViewAs,
 } from "@/constants"
 import { ratingToText } from "@/constants/chart"
-import { useMyEvaluationsContext } from "@/contexts/MyEvaluationsContext"
+import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
 import { getAuraVerification } from "@/hooks/useParseBrightIdVerificationData"
 import { useSubjectName } from "@/hooks/useSubjectName"
 import { useImpactPercentage } from "@/hooks/useSubjectVerifications"

@@ -1,6 +1,5 @@
-import { SubjectInboundConnectionsContextProvider } from 'contexts/SubjectInboundConnectionsContext';
-import { SubjectInboundEvaluationsContextProvider } from 'contexts/SubjectInboundEvaluationsContext';
-import { SubjectOutboundEvaluationsContextProvider } from 'contexts/SubjectOutboundEvaluationsContext';
+import { useSubjectInboundConnectionsSetup } from '@/hooks/useSubjectInboundConnectionsContext';
+import { useSubjectInboundEvaluationsSetup } from '@/hooks/useSubjectInboundEvaluationsContext';
 import { useProfileStore } from '@/store/profile.store';
 import DefaultHeader from '@/components/Header/DefaultHeader';
 import { Link } from 'react-router';
@@ -11,6 +10,9 @@ import ManagerRoleCard from './components/manager-role-card';
 export default function RoleManagement() {
   const authData = useProfileStore((s) => s.authData);
   const subjectId = authData!.brightId;
+
+  useSubjectInboundEvaluationsSetup(subjectId);
+  useSubjectInboundConnectionsSetup(subjectId);
 
   return (
     <>
@@ -26,23 +28,17 @@ export default function RoleManagement() {
           </Link>
         }
       />
-      <SubjectOutboundEvaluationsContextProvider subjectId={subjectId!}>
-        <SubjectInboundEvaluationsContextProvider subjectId={subjectId!}>
-          <SubjectInboundConnectionsContextProvider subjectId={subjectId!}>
-            <div className="page flex flex-1 flex-col">
-              <section className="flex flex-col gap-3">
-                <PlayerRoleCard subjectId={subjectId} />
-                <TrainerRoleCard subjectId={subjectId} />
-                <ManagerRoleCard subjectId={subjectId} />
-              </section>
+      <div className="page flex flex-1 flex-col">
+        <section className="flex flex-col gap-3">
+          <PlayerRoleCard subjectId={subjectId} />
+          <TrainerRoleCard subjectId={subjectId} />
+          <ManagerRoleCard subjectId={subjectId} />
+        </section>
 
-              <section className="mt-auto flex w-full justify-center">
-                <p className="text-sm text-white">Aura version {APP_VERSION}</p>
-              </section>
-            </div>
-          </SubjectInboundConnectionsContextProvider>
-        </SubjectInboundEvaluationsContextProvider>
-      </SubjectOutboundEvaluationsContextProvider>
+        <section className="mt-auto flex w-full justify-center">
+          <p className="text-sm text-white">Aura version {APP_VERSION}</p>
+        </section>
+      </div>
     </>
   );
 }

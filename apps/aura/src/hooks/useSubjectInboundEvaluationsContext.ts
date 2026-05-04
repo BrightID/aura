@@ -1,39 +1,41 @@
 import useFilterAndSort from 'hooks/useFilterAndSort';
-import { AuraFilterId, type AuraFilterOptions, useInboundConnectionsFilters } from 'hooks/useFilters';
-import { AuraSortId, type AuraSortOptions, useInboundConnectionsSorts } from 'hooks/useSorts';
+import { AuraFilterId, type AuraFilterOptions, useInboundEvaluationsFilters } from 'hooks/useFilters';
+import { AuraSortId, type AuraSortOptions, useInboundEvaluationsSorts } from 'hooks/useSorts';
 import { useInboundEvaluations } from 'hooks/useSubjectEvaluations';
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { create } from 'zustand';
 import { useProfileStore } from '@/store/profile.store';
 import { decryptUserData } from '@/utils/crypto';
 import { type AuraInboundConnectionAndRatingData, type AuraRating, type BrightIdBackup } from 'types';
+import { viewAsToEvaluatorViewAs } from '../constants';
+import { getAuraVerification } from '../hooks/useParseBrightIdVerificationData';
 import useViewMode from '../hooks/useViewMode';
 import { type EvaluationCategory } from '../types/dashboard';
 import { useRefreshStore } from '@/store/refresh.store';
 
-type SubjectInboundConnectionsData = ReturnType<typeof useInboundEvaluations> & {
+type SubjectInboundEvaluationsData = ReturnType<typeof useInboundEvaluations> & {
   subjectId: string;
 } & ReturnType<typeof useFilterAndSort<AuraInboundConnectionAndRatingData>> & {
   sorts: AuraSortOptions<AuraInboundConnectionAndRatingData>;
   filters: AuraFilterOptions<AuraInboundConnectionAndRatingData>;
 };
 
-type StoreState = { data: Map<string, SubjectInboundConnectionsData>; set: (id: string, d: SubjectInboundConnectionsData) => void };
+type StoreState = { data: Map<string, SubjectInboundEvaluationsData>; set: (id: string, d: SubjectInboundEvaluationsData) => void };
 
 const useStore = create<StoreState>()((set) => ({
   data: new Map(),
   set: (id, d) => set((s) => { const data = new Map(s.data); data.set(id, d); return { data }; }),
 }));
 
-export function SubjectInboundConnectionsContextProvider({ subjectId, children }: { subjectId: string; children: ReactNode }) {
+export function useSubjectInboundEvaluationsSetup(subjectId: string | undefined) {
   const { refreshInboundRatings, ...hookData } = useInboundEvaluations({ subjectId });
   const { ratings, connections } = hookData;
 
-  const filters = useInboundConnectionsFilters(
-    [AuraFilterId.EvaluationMutualConnections, AuraFilterId.ConnectionTypeSuspiciousOrReported, AuraFilterId.ConnectionTypeJustMet, AuraFilterId.ConnectionTypeAlreadyKnownPlus, AuraFilterId.ConnectionTypeRecovery, AuraFilterId.TheirRecovery],
-    subjectId,
+  const filters = useInboundEvaluationsFilters(
+    [AuraFilterId.EvaluationPositiveEvaluations, AuraFilterId.EvaluationNegativeEvaluations, AuraFilterId.EvaluationConfidenceLow, AuraFilterId.EvaluationConfidenceMedium, AuraFilterId.EvaluationConfidenceHigh, AuraFilterId.EvaluationConfidenceVeryHigh, AuraFilterId.EvaluationEvaluatorLevelNegative, AuraFilterId.EvaluationEvaluatorLevelZero, AuraFilterId.EvaluationEvaluatorLevelOne, AuraFilterId.EvaluationEvaluatorLevelTwo, AuraFilterId.EvaluationEvaluatorLevelThree, AuraFilterId.EvaluationEvaluatorLevelFour],
+    subjectId ?? '',
   );
-  const sorts = useInboundConnectionsSorts([AuraSortId.ConnectionLastUpdated]);
+  const sorts = useInboundEvaluationsSorts([AuraSortId.RecentEvaluation, AuraSortId.EvaluationConfidence, AuraSortId.EvaluatorScore]);
 
   const authData = useProfileStore((s) => s.authData);
   const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
@@ -43,7 +45,7 @@ export function SubjectInboundConnectionsContextProvider({ subjectId, children }
   );
 
   const inboundOpinions = useMemo<AuraInboundConnectionAndRatingData[]>(() => {
-    if (!connections || ratings === null || !brightIdBackup) return [];
+    if (!subjectId || !connections || ratings === null || !brightIdBackup) return [];
     const opinions: AuraInboundConnectionAndRatingData[] = ratings.map((r) => ({
       fromSubjectId: r.fromBrightId,
       rating: r,
@@ -53,33 +55,29 @@ export function SubjectInboundConnectionsContextProvider({ subjectId, children }
     }));
     connections.forEach((c) => {
       if (ratings.findIndex((r) => r.fromBrightId === c.id) === -1) {
-        opinions.push({ fromSubjectId: c.id, name: brightIdBackup.connections.find((conn) => conn.id === c.id)?.name, inboundConnection: c, verifications: c.verifications! });
+        opinions.push({ fromSubjectId: c.id, name: brightIdBackup.connections.find((conn) => conn.id === c.id)?.name, inboundConnection: c, verifications: c.verifications });
       }
     });
-    return opinions
-      .sort((a, b) => (a.inboundConnection?.timestamp ?? 0) - (b.inboundConnection?.timestamp ?? 0))
-      .reduce(
-        (acc, o) => {
-          const myConn = brightIdBackup.connections.find((c) => c.id === o.inboundConnection?.id);
-          if (myConn?.level === 'already known' || myConn?.level === 'recovery') acc[0].push(o);
-          else if (o.inboundConnection?.level === 'already known' || o.inboundConnection?.level === 'recovery') acc[1].push(o);
-          else acc[2].push(o);
-          return acc;
-        },
-        [[], [], []] as AuraInboundConnectionAndRatingData[][],
-      )
-      .flat();
-  }, [brightIdBackup, ratings, connections]);
+    return opinions.sort(
+      (a, b) =>
+        ((b.inboundConnection && b.rating && getAuraVerification(b.inboundConnection.verifications, viewAsToEvaluatorViewAs[b.rating.category])?.level) || 0) -
+        ((a.inboundConnection && a.rating && getAuraVerification(a.inboundConnection.verifications, viewAsToEvaluatorViewAs[a.rating.category])?.level) || 0),
+    );
+  }, [subjectId, brightIdBackup, ratings, connections]);
 
-  const filterAndSortHookData = useFilterAndSort(inboundOpinions, filters, sorts, useMemo(() => ['fromSubjectId', 'name'], []), 'evaluationList|' + subjectId);
+  const filterAndSortHookData = useFilterAndSort(inboundOpinions, filters, sorts, useMemo(() => ['fromSubjectId', 'name'], []), 'evaluation|' + (subjectId ?? ''));
 
   const refreshCounter = useRefreshStore((s) => s.refreshCounter);
-  useEffect(() => { if (refreshCounter > 0) refreshInboundRatings(); }, [refreshCounter, refreshInboundRatings]);
+  useEffect(() => { if (refreshCounter > 0 && subjectId) refreshInboundRatings(); }, [refreshCounter, refreshInboundRatings, subjectId]);
 
   const storeSet = useStore((s) => s.set);
-  const data = useMemo(() => ({ refreshInboundRatings, ...hookData, ...filterAndSortHookData, sorts, filters, subjectId }), [refreshInboundRatings, hookData, filterAndSortHookData, sorts, filters, subjectId]);
+  const data = useMemo(
+    () => subjectId ? ({ refreshInboundRatings, ...hookData, ...filterAndSortHookData, sorts, filters, subjectId }) : null,
+    [refreshInboundRatings, hookData, filterAndSortHookData, sorts, filters, subjectId],
+  );
+
   const didInit = useRef(false);
-  if (!didInit.current) {
+  if (!didInit.current && subjectId && data) {
     didInit.current = true;
     useStore.setState((s) => {
       const m = new Map(s.data);
@@ -88,15 +86,17 @@ export function SubjectInboundConnectionsContextProvider({ subjectId, children }
     });
   }
   useEffect(() => {
-    storeSet(subjectId, data);
+    if (subjectId && data) storeSet(subjectId, data);
   }, [storeSet, subjectId, data]);
-
-  return <>{children}</>;
 }
 
-export function useSubjectInboundConnectionsContext(props: { subjectId: string; evaluationCategory?: EvaluationCategory }) {
+export function useSubjectInboundEvaluationsContextSafe(subjectId: string) {
+  return useStore((s) => s.data.get(subjectId) ?? null);
+}
+
+export function useSubjectInboundEvaluationsContext(props: { subjectId: string; evaluationCategory?: EvaluationCategory }) {
   const data = useStore((s) => s.data.get(props.subjectId));
-  if (!data) throw new Error(`SubjectInboundConnectionsContextProvider for ${props.subjectId} not mounted`);
+  if (!data) throw new Error(`useSubjectInboundEvaluationsSetup for ${props.subjectId} not called in a parent component`);
 
   const { currentEvaluationCategory } = useViewMode();
   const authData = useProfileStore((s) => s.authData);
@@ -122,9 +122,7 @@ export function useSubjectInboundConnectionsContext(props: { subjectId: string; 
     () =>
       [data.itemsFiltered, data.itemsOriginal].map(
         (items) =>
-          items?.filter(
-            (o) => Boolean(o.inboundConnection) && (o.rating === undefined || o.rating.category === (props.evaluationCategory ?? currentEvaluationCategory)),
-          ) ?? null,
+          items?.filter((o) => o.rating === undefined || o.rating.category === (props.evaluationCategory ?? currentEvaluationCategory)) ?? null,
       ),
     [data.itemsFiltered, data.itemsOriginal, currentEvaluationCategory, props.evaluationCategory],
   );

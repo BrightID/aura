@@ -14,13 +14,12 @@
 //   removeActiveNotification,
 // } from './notifications';
 
-export { RESET_STORE, resetStore } from './resetStore';
-
 // export * from '../reducer/appsSlice';
 // export * from '../reducer/connectionsSlice';
 // export * from '../reducer/groupsSlice';
-export * from '../reducer/keypairSlice';
-export * from '../reducer/operationsSlice';
-export * from '../reducer/userSlice';
+export * from "../reducer/keypairSlice"
+export * from "../reducer/operationsSlice"
 // export * from '../reducer/devicesSlice';
-export * from '../reducer/settingsSlice';
+export * from "../reducer/settingsSlice"
+export * from "../reducer/userSlice"
+export { RESET_STORE, resetStore } from "./reset.store"

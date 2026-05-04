@@ -1,6 +1,6 @@
 import { getConfidenceValueOfAuraRatingObject } from '@/constants/index';
-import { useSubjectInboundEvaluationsContextSafe } from 'contexts/SubjectInboundEvaluationsContext';
-import { useOutboundEvaluationsContextSafe } from 'contexts/SubjectOutboundEvaluationsContext';
+import { useSubjectInboundEvaluationsContextSafe } from '@/hooks/useSubjectInboundEvaluationsContext';
+import { useOutboundEvaluationsContextSafe } from '@/hooks/useOutboundEvaluationsContext';
 import { useMemo } from 'react';
 
 import { EvaluationCategory } from '../types/dashboard';

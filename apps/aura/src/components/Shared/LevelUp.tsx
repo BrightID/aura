@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import EvaluationsDetailsPerformance from "@/app/routes/_app.home/components/EvaluationsDetailsPerformance"
-import { useSubjectInboundEvaluationsContext } from "@/contexts/SubjectInboundEvaluationsContext"
+import { useSubjectInboundEvaluationsContext } from "@/hooks/useSubjectInboundEvaluationsContext"
 import useViewMode from "@/hooks/useViewMode"
 import { useProfileStore } from "@/store/profile.store"
 import { PreferredView } from "@/types/dashboard"

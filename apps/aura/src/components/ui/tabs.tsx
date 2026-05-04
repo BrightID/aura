@@ -14,10 +14,8 @@ function Tabs({ value, defaultValue, onValueChange, children, className }: TabsP
 
   React.useEffect(() => {
     const el = ref.current
-    if (!el || !onValueChange) return
-    const handler = (e: Event) => {
-      onValueChange((e as CustomEvent<{ value: string }>).detail.value)
-    }
+    if (!el) return
+    const handler = (e: CustomEvent<{ value: string }>) => onValueChange?.(e.detail.value)
     el.addEventListener('change', handler)
     return () => el.removeEventListener('change', handler)
   }, [onValueChange])

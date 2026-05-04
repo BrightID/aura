@@ -1,7 +1,7 @@
 import { FiltersModal } from "components/evaluation/FiltersModal"
 import { SortsModal } from "components/evaluation/SortsModal"
 import Dropdown from "components/Shared/Dropdown"
-import { useOutboundEvaluationsContext } from "contexts/SubjectOutboundEvaluationsContext"
+import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
 import { AuraFilterId } from "hooks/useFilters"
 import { AuraSortId } from "hooks/useSorts"
 import useViewMode from "hooks/useViewMode"

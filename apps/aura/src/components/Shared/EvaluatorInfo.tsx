@@ -1,6 +1,6 @@
 import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { getConfidenceValueOfAuraRatingNumber } from '@/constants/index';
-import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
+import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
 import { useSubjectName } from 'hooks/useSubjectName';
 import { connectionLevelIcons } from '@/utils/connection';
 

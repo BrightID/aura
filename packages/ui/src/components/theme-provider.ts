@@ -4,8 +4,9 @@ import { customElement } from "lit/decorators.js"
 @customElement("a-theme-provider")
 export class ThemeProvider extends LitElement {
   static styles?: CSSResultGroup = css`
-    :host,
-    ::slotted(*) {
+    :host {
+      display: block;
+      box-sizing: border-box;
       --xs: 0.5rem;
       --sm: 0.75rem;
       --md: 1rem;
@@ -54,10 +55,6 @@ export class ThemeProvider extends LitElement {
       --sidebar-ring: oklch(0.708 0 0);
     }
 
-    :host,
-    ::slotted(*) {
-      box-sizing: border-box;
-    }
   `
 
   protected render(): unknown {

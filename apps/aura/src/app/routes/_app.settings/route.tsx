@@ -20,12 +20,13 @@ export default function Settings() {
       <div className="page flex w-full flex-1 flex-col gap-4 pt-4 dark:text-white">
         <section className="mt-20 flex w-full flex-col gap-4">
           <Link to="/contact-info">
-            <a-card className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-2">
+            <a-card variant="glass" className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-2">
               <MdContactMail size={20} />
               <p className="text-[20px] font-medium">Your Contact info</p>
             </a-card>
           </Link>
           <a-card
+            variant="glass"
             className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-2"
             onClick={() => navigate(RoutePath.ROLE_MANAGEMENT)}
           >
@@ -33,7 +34,7 @@ export default function Settings() {
             <p className="text-[20px] font-medium">Role Management</p>
           </a-card>
           <Link target="_blank" to="https://brightid.gitbook.io/aura">
-            <a-card className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-2">
+            <a-card variant="glass" className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-2">
               <SiGitbook size={20} />
               <p className="text-[20px] font-medium">Aura Guide</p>
             </a-card>
@@ -41,18 +42,19 @@ export default function Settings() {
 
           <ToggleTheme />
           <Link target="_blank" to="https://discord.gg/y24xeXq7mj">
-            <a-card className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-5">
+            <a-card variant="glass" className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-5">
               <FaDiscord size={20} className="w-7 cursor-pointer" />
               <p className="text-[20px] font-medium">Discord</p>
             </a-card>
           </Link>
 
           <Link target="_blank" to="https://x.com/brightidproject">
-            <a-card className="flex cursor-pointer items-center justify-between rounded-lg py-3.5 pl-5 pr-5">
+            <a-card variant="glass" className="flex cursor-pointer items-center justify-between rounded-lg py-3.5 pl-5 pr-5">
               <BsTwitterX size={25} />
             </a-card>
           </Link>
           <a-card
+            variant="glass"
             className="flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-2"
             onClick={() => navigate(`${RoutePath.ONBOARDING}?step=1`)}
           >

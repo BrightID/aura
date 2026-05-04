@@ -64,7 +64,7 @@ export default function ErrorBoundryUi({
                     discord channel:
                   </p>
                   <Link target="_blank" to="https://discord.gg/y24xeXq7mj">
-                    <a-card className="mt-5 flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-5">
+                    <a-card variant="glass" className="mt-5 flex cursor-pointer items-center gap-2 rounded-lg py-3.5 pl-5 pr-5">
                       <FaDiscord size={20} className="w-7 cursor-pointer" />
                       <p className="text-[20px] font-medium">Discord</p>
                     </a-card>

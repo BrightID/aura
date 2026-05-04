@@ -186,19 +186,53 @@ export class PopoverElement extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    document.addEventListener('click', this._handleOutsideClick)
-    document.addEventListener('keydown', this._handleEsc)
+    PopoverElement._register(this)
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
-    document.removeEventListener('click', this._handleOutsideClick)
-    document.removeEventListener('keydown', this._handleEsc)
+    PopoverElement._unregister(this)
+  }
+
+  private static _instances = new Set<PopoverElement>()
+  private static _listenersAttached = false
+
+  private static _onDocClick = (e: MouseEvent) => {
+    PopoverElement._instances.forEach((p) => p._handleOutsideClick(e))
+  }
+  private static _onDocKey = (e: KeyboardEvent) => {
+    PopoverElement._instances.forEach((p) => p._handleEsc(e))
+  }
+
+  private static _register(p: PopoverElement) {
+    PopoverElement._instances.add(p)
+    if (!PopoverElement._listenersAttached) {
+      document.addEventListener('click', PopoverElement._onDocClick)
+      document.addEventListener('keydown', PopoverElement._onDocKey)
+      PopoverElement._listenersAttached = true
+    }
+  }
+
+  private static _unregister(p: PopoverElement) {
+    PopoverElement._instances.delete(p)
+    if (PopoverElement._instances.size === 0 && PopoverElement._listenersAttached) {
+      document.removeEventListener('click', PopoverElement._onDocClick)
+      document.removeEventListener('keydown', PopoverElement._onDocKey)
+      PopoverElement._listenersAttached = false
+    }
+  }
+
+  private _internalChange = false
+
+  private _setOpenInternal(next: boolean) {
+    if (this.open === next) return
+    this._internalChange = true
+    this.open = next
   }
 
   private _handleTriggerClick = (e: Event) => {
     e.stopPropagation()
-    this.open = !this.open
+    this._setOpenInternal(!this.open)
   }
 
   private _handleOutsideClick = (e: MouseEvent) => {
@@ -211,12 +245,12 @@ export class PopoverElement extends LitElement {
       return
     }
 
-    this.open = false
+    this._setOpenInternal(false)
   }
 
   private _handleEsc = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && this.open) {
-      this.open = false
+      this._setOpenInternal(false)
       e.preventDefault()
     }
   }
@@ -232,8 +266,8 @@ export class PopoverElement extends LitElement {
   }
 
   updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has('open')) {
-      // Optional: dispatch event for controlled usage
+    if (changedProperties.has('open') && this._internalChange) {
+      this._internalChange = false
       this.dispatchEvent(
         new CustomEvent('open-changed', {
           detail: { open: this.open },

@@ -1,4 +1,4 @@
-import { useMyEvaluationsContext } from "contexts/MyEvaluationsContext"
+import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
 import { useInboundEvaluations } from "hooks/useSubjectEvaluations"
 import { useSubjectName } from "hooks/useSubjectName"
 import {
@@ -25,7 +25,7 @@ import {
   getViewModeSubjectTextColorClass,
   viewAsToViewMode,
 } from "@/constants"
-import { SubjectInboundEvaluationsContextProvider } from "@/contexts/SubjectInboundEvaluationsContext"
+import { useSubjectInboundEvaluationsSetup } from "@/hooks/useSubjectInboundEvaluationsContext"
 import { useProfileStore } from "@/store/profile.store"
 import { CredibilityDetailsProps } from "@/types"
 import { compactFormat } from "@/utils/number"
@@ -47,6 +47,7 @@ const CredibilityDetailsForRole = ({
   roleEvaluationCategory: EvaluationCategory
   onClose: () => void
 }) => {
+  useSubjectInboundEvaluationsSetup(subjectId)
   const authData = useProfileStore((s) => s.authData)
   const { auraLevel, auraScore, auraImpacts, refresh } =
     useSubjectVerifications(subjectId, roleEvaluationCategory)
@@ -140,16 +141,14 @@ const CredibilityDetailsForRole = ({
           )}
         </span>
       </div>
-      <SubjectInboundEvaluationsContextProvider subjectId={subjectId}>
-        <EvaluationFlow
-          refresh={refresh}
-          evaluationCategory={roleEvaluationCategory}
-          currentViewMode={viewAsToViewMode[roleEvaluationCategory]}
-          showEvaluationFlow={showEvaluationFlow}
-          setShowEvaluationFlow={setShowEvaluationFlow}
-          subjectId={subjectId}
-        />
-      </SubjectInboundEvaluationsContextProvider>
+      <EvaluationFlow
+        refresh={refresh}
+        evaluationCategory={roleEvaluationCategory}
+        currentViewMode={viewAsToViewMode[roleEvaluationCategory]}
+        showEvaluationFlow={showEvaluationFlow}
+        setShowEvaluationFlow={setShowEvaluationFlow}
+        subjectId={subjectId}
+      />
       <div>
         Your Evaluation Impact:{" "}
         {loading ? (

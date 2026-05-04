@@ -53,7 +53,7 @@ export class DialogElement extends LitElement {
         class="wrapper ${this.open || this._animatingOut ? "visible" : ""}"
         @click=${this._onBackdropClick}
       >
-        <div class="content" @click=${(e: Event) => e.stopPropagation()}>
+        <div class="content">
           <slot name="content"></slot>
         </div>
       </div>
@@ -61,6 +61,7 @@ export class DialogElement extends LitElement {
   }
 
   show() {
+    if (this.open && !this._animatingOut) return
     this.open = true
     this._animatingOut = false
 
@@ -74,6 +75,7 @@ export class DialogElement extends LitElement {
   }
 
   hide() {
+    if (!this.open || this._animatingOut) return
     this._animatingOut = true
 
     this.dispatchEvent(

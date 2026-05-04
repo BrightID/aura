@@ -1,13 +1,11 @@
 import { FiltersModal } from "components/evaluation/FiltersModal"
 import { SortsModal } from "components/evaluation/SortsModal"
-import { useSubjectsListContext } from "contexts/SubjectsListContext"
 import { useMyEvaluations } from "hooks/useMyEvaluations"
 import { RefreshCcwIcon, Search } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router"
-
+import { useSubjectsList } from "@/hooks/use-subjects-list"
 import { cn } from "@/lib/utils"
-
 import useBrightIdBackupWithAuraConnectionData from "../../hooks/useBrightIdBackupWithAuraConnectionData"
 import { AuraSortId } from "../../hooks/useSorts"
 import useViewMode from "../../hooks/useViewMode"
@@ -33,7 +31,7 @@ function FilterAndSortModalBody({ isPlayerMode }: { isPlayerMode: boolean }) {
     setSelectedSort,
     filters,
     sorts,
-  } = useSubjectsListContext()
+  } = useSubjectsList()
 
   return (
     <div>
@@ -76,7 +74,7 @@ export const SubjectListControls = ({
     clearSortAndFilter,
     toggleFiltersById,
     setSelectedSort,
-  } = useSubjectsListContext()
+  } = useSubjectsList()
   const { refreshOutboundRatings, loading } = useMyEvaluations()
 
   const brightIdBackup = useBrightIdBackupWithAuraConnectionData()
@@ -225,7 +223,7 @@ export const SubjectListControls = ({
     setSearchString(params.get("search") || "")
   }, [params, setSearchString])
 
-  const { itemsFiltered: filteredSubjects } = useSubjectsListContext()
+  const { itemsFiltered: filteredSubjects } = useSubjectsList()
 
   return (
     <>

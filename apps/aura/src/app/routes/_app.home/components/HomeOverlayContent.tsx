@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { Link } from "react-router"
-import RoleSelectModal from "@/app/routes/_app.dashboard/components/RoleSelectModal"
-import { resetAllStores } from "@/store/resetAllStores"
+import RoleSelectModal from "@/app/routes/_app.dashboard/components/role-select-modal"
 import { MoveUpIn } from "@/components/animations"
 import Modal from "@/components/Shared/Modal"
 import { preferredViewIcon } from "@/constants"
 import { useProfileStore } from "@/store/profile.store"
+import { resetAllStores } from "@/store/resetAllStores"
 import { PreferredView } from "@/types/dashboard"
 import { RoutePath } from "@/types/router"
 import { __DEV__ } from "@/utils/env"
@@ -21,7 +21,9 @@ export const HomeOverlayContent = () => {
           <p className="mb-2.5 font-bold">BrightID</p>
           <p className="text-sm">Energy Team</p>
           <p className="mb-5 font-bold">Core</p>
-          <button type="button" className="btn">Change</button>
+          <button type="button" className="btn">
+            Change
+          </button>
         </div>
         <div className="card">
           <p className="mb-5">Preferred view</p>
@@ -32,10 +34,7 @@ export const HomeOverlayContent = () => {
           />
           <span className="mt-auto flex w-full items-center justify-between">
             <p className="font-bold">{preferredView}</p>
-            <a-button
-              size="icon"
-              onClick={() => setIsRoleSelectModalOpen(true)}
-            >
+            <a-button size="icon" onClick={() => setIsRoleSelectModalOpen(true)}>
               <img src="/assets/images/Dashboard/refresh-icon.svg" alt="" />
             </a-button>
           </span>

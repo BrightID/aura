@@ -5,7 +5,7 @@ import {
   viewModeToEvaluatorViewMode,
   viewModeToViewAs,
 } from '../../../constants';
-import { useSubjectInboundEvaluationsContext } from '../../../contexts/SubjectInboundEvaluationsContext';
+import { useSubjectInboundEvaluationsContext } from '@/hooks/useSubjectInboundEvaluationsContext';
 import { getAuraVerification } from '../../../hooks/useParseBrightIdVerificationData';
 import { useSubjectConnectionInfoFromContext } from '../../../hooks/useSubjectEvaluation';
 import {
@@ -21,7 +21,7 @@ import LinkCard from '@/app/routes/_app.home/components/LinkCard';
 
 const FindTrainersCard = ({ subjectId }: { subjectId: string }) => {
   return (
-    <a-card>
+    <a-card variant="glass">
       <div className="mb-4.5 text-lg font-bold">Find Trainers</div>
       <div className="flex flex-col gap-2.5">
         <PotentialEvaluatorsListBrief
@@ -80,7 +80,7 @@ const PotentialEvaluatorsListBrief = ({
       <div className="font-medium text-black2 dark:text-gray-300">
         {description}
       </div>
-      <a-card className="flex flex-col gap-2" style={{ padding: '0.75rem' }}>
+      <a-card variant="glass" className="flex flex-col gap-2" style={{ padding: '0.75rem' }}>
         <div className="flex flex-row justify-between">
           <div className="flex flex-row gap-2.5">
             {!isExpanded && (

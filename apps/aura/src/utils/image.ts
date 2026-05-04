@@ -56,8 +56,13 @@ export function drawImageCover(
   ctx.restore();
 }
 
+const blockiesCache = new Map<string, string>()
+
 export const createBlockiesImage = (seed: string) => {
-  return makeBlockie(seed);
+  if (blockiesCache.has(seed)) return blockiesCache.get(seed)!
+  const result = makeBlockie(seed)
+  blockiesCache.set(seed, result)
+  return result
 };
 
 export async function renderImageCover(

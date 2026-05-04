@@ -34,7 +34,7 @@ const ProfileHeaderCard: FC<{
     <Link
       to={`/subject/${subjectId}?viewas=${viewModeToString[currentViewMode].toLowerCase()}`}
     >
-      <a-card className="relative p-4">
+      <a-card variant="glass" className="relative p-4">
         <div className="flex flex-col justify-center gap-2">
           <div className="flex flex-1 gap-3">
             <BrightIdProfilePicture

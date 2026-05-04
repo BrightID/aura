@@ -1,7 +1,5 @@
 import { SubjectCardMemo } from "components/evaluation/SubjectCard"
 import { SubjectListControls } from "components/evaluation/SubjectListControls"
-import { useMyEvaluationsContext } from "contexts/MyEvaluationsContext"
-import { SubjectInboundEvaluationsContextProvider } from "contexts/SubjectInboundEvaluationsContext"
 import useViewMode from "hooks/useViewMode"
 import { useCallback, useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router"
@@ -9,9 +7,10 @@ import { EmptySubjectList } from "@/components/Shared/EmptyAndLoadingStates/Empt
 import { LoadingList } from "@/components/Shared/EmptyAndLoadingStates/LoadingList"
 import InfiniteScrollLocal from "@/components/Shared/InfiniteScrollLocal"
 import LevelUp from "@/components/Shared/LevelUp"
-import { useSubjectsListContext } from "@/contexts/SubjectsListContext"
+import { useSubjectsList } from "@/hooks/use-subjects-list"
+import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
+import { useSubjectInboundEvaluationsSetup } from "@/hooks/useSubjectInboundEvaluationsContext"
 import { useProfileStore } from "@/store/profile.store"
-import { hash } from "@/utils/crypto"
 import { useLevelupProgress } from "@/utils/score"
 import HomeHeader from "./components/header"
 import ProfileHeaderCard from "./components/ProfileHeaderCard"
@@ -31,6 +30,7 @@ const Home = () => {
     searchParams.get("tab") === "evaluate" || !searchParams.get("tab") // default to evaluate if no tab
 
   const authData = useProfileStore((s) => s.authData)
+  const authKey = useProfileStore((s) => s.authKey)
   const getBrightIdBackup = useProfileStore((s) => s.getBrightIdBackup)
   const { currentRoleEvaluatorEvaluationCategory } = useViewMode()
 
@@ -38,16 +38,15 @@ const Home = () => {
     itemsFiltered: filteredSubjects,
     selectedFilterIds,
     clearSortAndFilter,
-  } = useSubjectsListContext()
+  } = useSubjectsList()
 
   const [loading, setLoading] = useState(false)
   const refreshBrightIdBackup = useCallback(async () => {
-    if (!authData) return
+    if (!authKey) return
     setLoading(true)
-    const authKey = hash(authData.brightId + authData.password)
     await getBrightIdBackup(authKey)
     setLoading(false)
-  }, [authData, getBrightIdBackup])
+  }, [authKey, getBrightIdBackup])
 
   const { loading: loadingMyEvaluations } = useMyEvaluationsContext()
 
@@ -63,6 +62,8 @@ const Home = () => {
     if (!authData?.brightId) navigate("/")
   }, [authData, navigate])
 
+  useSubjectInboundEvaluationsSetup(authData?.brightId)
+
   if (!authData?.brightId) {
     return <div>Not logged in</div>
   }
@@ -70,7 +71,7 @@ const Home = () => {
   return loadingMyEvaluations ? (
     <LoadingList />
   ) : (
-    <SubjectInboundEvaluationsContextProvider subjectId={authData.brightId}>
+    <>
       <ProfileHeaderCard subjectId={authData.brightId} />
       <div className="my-5"></div>
       <ProfileInfoPerformance
@@ -102,23 +103,21 @@ const Home = () => {
             />
             {filteredSubjects && !loading ? (
               filteredSubjects.length > 0 ? (
-                <div className="grow">
-                  <InfiniteScrollLocal
-                    getScrollParent={() =>
-                      document.getElementById("scrollable-div")
-                    }
-                    className={"flex flex-col gap-3"}
-                    items={filteredSubjects}
-                    renderItem={(conn, index) => (
-                      <SubjectCardMemo
-                        verifications={conn.verifications}
-                        key={conn.id}
-                        index={index}
-                        subjectId={conn.id}
-                      />
-                    )}
-                  />
-                </div>
+                <InfiniteScrollLocal
+                  getScrollParent={() =>
+                    document.getElementById("scrollable-div")
+                  }
+                  className={"flex grow flex-col gap-3"}
+                  items={filteredSubjects}
+                  renderItem={(conn, index) => (
+                    <SubjectCardMemo
+                      verifications={conn.verifications}
+                      key={conn.id}
+                      index={index}
+                      subjectId={conn.id}
+                    />
+                  )}
+                />
               ) : (
                 <EmptySubjectList
                   clearSortAndFilter={clearSortAndFilter}
@@ -136,7 +135,7 @@ const Home = () => {
           <LevelUp subjectId={authData.brightId} />
         </a-tab-panel>
       </a-tabs>
-    </SubjectInboundEvaluationsContextProvider>
+    </>
   )
 }
 

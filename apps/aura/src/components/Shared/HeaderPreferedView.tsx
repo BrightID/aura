@@ -1,5 +1,5 @@
 import { RoleStatus } from '@/store/settings.store';
-import { useOutboundEvaluationsContext } from 'contexts/SubjectOutboundEvaluationsContext';
+import { useOutboundEvaluationsContext } from '@/hooks/useOutboundEvaluationsContext';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import { useEffect, useMemo } from 'react';
 import { useProfileStore } from '@/store/profile.store';

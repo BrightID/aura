@@ -10,17 +10,14 @@ import Modal from "components/Shared/Modal"
 import { ProfileInfo } from "components/Shared/ProfileInfo"
 import ProfileOverview from "components/Shared/ProfileOverview"
 import {
-  SubjectInboundConnectionsContextProvider,
   useSubjectInboundConnectionsContext,
-} from "contexts/SubjectInboundConnectionsContext"
+  useSubjectInboundConnectionsSetup,
+} from "@/hooks/useSubjectInboundConnectionsContext"
 import {
-  SubjectInboundEvaluationsContextProvider,
   useSubjectInboundEvaluationsContext,
-} from "contexts/SubjectInboundEvaluationsContext"
-import {
-  SubjectOutboundEvaluationsContextProvider,
-  useOutboundEvaluationsContext,
-} from "contexts/SubjectOutboundEvaluationsContext"
+  useSubjectInboundEvaluationsSetup,
+} from "@/hooks/useSubjectInboundEvaluationsContext"
+import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
 import { useMyEvaluations } from "hooks/useMyEvaluations"
 import useViewMode from "hooks/useViewMode"
 import { ArrowDownLeft, ArrowDownRight, ArrowUpRight } from "lucide-react"
@@ -468,17 +465,16 @@ const SubjectProfile = () => {
     [authData?.brightId, id],
   )
 
+  useSubjectInboundEvaluationsSetup(subjectId)
+  useSubjectInboundConnectionsSetup(subjectId)
+
   return !subjectId ? (
     <div>Unknown subject id</div>
   ) : (
-    <SubjectOutboundEvaluationsContextProvider subjectId={subjectId}>
-      <SubjectInboundEvaluationsContextProvider subjectId={subjectId}>
-        <SubjectInboundConnectionsContextProvider subjectId={subjectId}>
-          <SubjectProfileHeader />
-          <SubjectProfileBody subjectId={subjectId} />
-        </SubjectInboundConnectionsContextProvider>
-      </SubjectInboundEvaluationsContextProvider>
-    </SubjectOutboundEvaluationsContextProvider>
+    <>
+      <SubjectProfileHeader />
+      <SubjectProfileBody subjectId={subjectId} />
+    </>
   )
 }
 

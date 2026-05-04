@@ -1,7 +1,7 @@
 import { FiltersModal } from "components/evaluation/FiltersModal"
 import { SortsModal } from "components/evaluation/SortsModal"
 import Dropdown from "components/Shared/Dropdown"
-import { useSubjectInboundConnectionsContext } from "contexts/SubjectInboundConnectionsContext"
+import { useSubjectInboundConnectionsContext } from "@/hooks/useSubjectInboundConnectionsContext"
 import { AuraFilterId } from "hooks/useFilters"
 import { AuraSortId } from "hooks/useSorts"
 import { useMemo, useState } from "react"

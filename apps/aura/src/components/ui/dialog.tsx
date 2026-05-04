@@ -13,10 +13,8 @@ function Dialog({ open, onOpenChange, children, ...props }: DialogProps) {
 
   React.useEffect(() => {
     const el = ref.current;
-    if (!el || !onOpenChange) return;
-    const handler = (e: Event) => {
-      onOpenChange((e as CustomEvent<{ open: boolean }>).detail.open);
-    };
+    if (!el) return;
+    const handler = (e: CustomEvent<{ open: boolean }>) => onOpenChange?.(e.detail.open);
     el.addEventListener('open-change', handler);
     return () => el.removeEventListener('open-change', handler);
   }, [onOpenChange]);

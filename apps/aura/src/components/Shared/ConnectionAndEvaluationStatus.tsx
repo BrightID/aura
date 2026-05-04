@@ -1,5 +1,5 @@
 import EvaluationThumb from 'components/Shared/EvaluationThumb';
-import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
+import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
 import { FC } from 'react';
 import { connectionLevelIcons } from '@/utils/connection';
 

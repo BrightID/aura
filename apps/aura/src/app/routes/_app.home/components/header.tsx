@@ -2,11 +2,8 @@ import { useEffect } from "react"
 import DefaultHeader from "@/components/Header/DefaultHeader"
 import Tooltip from "@/components/Shared/Tooltip"
 import { getViewModeBackgroundColorClass, preferredViewIcon } from "@/constants"
-import { SubjectInboundEvaluationsContextProvider } from "@/contexts/SubjectInboundEvaluationsContext"
-import {
-  SubjectOutboundEvaluationsContextProvider,
-  useOutboundEvaluationsContext,
-} from "@/contexts/SubjectOutboundEvaluationsContext"
+import { useSubjectInboundEvaluationsSetup } from "@/hooks/useSubjectInboundEvaluationsContext"
+import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
 import { useSubjectVerifications } from "@/hooks/useSubjectVerifications"
 import useViewMode from "@/hooks/useViewMode"
 import { useProfileStore } from "@/store/profile.store"
@@ -157,17 +154,11 @@ export const HeaderBody = () => {
   const authData = useProfileStore((s) => s.authData)
   const subjectId = authData?.brightId
 
+  useSubjectInboundEvaluationsSetup(subjectId)
+
   if (!subjectId) return null
 
-  return (
-    <>
-      <SubjectOutboundEvaluationsContextProvider subjectId={subjectId}>
-        <SubjectInboundEvaluationsContextProvider subjectId={subjectId}>
-          <HomeHeaderItems />
-        </SubjectInboundEvaluationsContextProvider>
-      </SubjectOutboundEvaluationsContextProvider>
-    </>
-  )
+  return <HomeHeaderItems />
 }
 
 export default function HomeHeader() {

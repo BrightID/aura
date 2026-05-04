@@ -6,7 +6,6 @@ import { useGetBrightIDProfileQuery } from '@/hooks/queries/connections';
 import { useProfileStore } from '@/store/profile.store';
 import { useSettingsStore } from '@/store/settings.store';
 import { decryptUserData } from '@/utils/crypto';
-import { hash } from '@/utils/crypto';
 import { createBlockiesImage, renderImageCover } from '@/utils/image';
 import { AuraImpact, AuraImpactRaw } from '@/types/aura';
 import { EvaluationCategory } from '../types/dashboard';
@@ -82,6 +81,7 @@ export const useImpactEChartOption = (
   const { subjectIdProp: focusedSubjectId } = useParams();
   const preferredTheme = useSettingsStore((s) => s.prefferedTheme);
   const authData = useProfileStore((s) => s.authData);
+  const authKey = useProfileStore((s) => s.authKey);
   const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
   const brightIdBackup = brightIdBackupEncrypted && authData?.password
     ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
@@ -125,7 +125,7 @@ export const useImpactEChartOption = (
   useEffect(() => {
     if (!displayImages) return;
     const abortController = new AbortController();
-    const key = hash(authData.brightId + authData.password);
+    const key = authKey;
 
     const fetchImages = async () => {
       for (const impact of auraTopImpacts) {

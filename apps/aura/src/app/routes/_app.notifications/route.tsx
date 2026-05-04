@@ -209,7 +209,7 @@ export default function NotificationsPage() {
                 value={category}
               >
                 {notificationsByCategory[category].length === 0 ? (
-                  <a-card className="p-6 text-center">
+                  <a-card variant="glass" className="p-6 text-center">
                     No notifications in this category.
                   </a-card>
                 ) : (
@@ -264,6 +264,7 @@ function NotificationCard({
   return (
     <Link to={`/subject/${notification.from}?viewas=${notification.category}`}>
       <a-card
+        variant="glass"
         className={cn(
           "my-2 flex gap-4 rounded-lg p-4",
           !notification.viewed && "bg-muted",

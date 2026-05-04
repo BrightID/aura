@@ -3,7 +3,7 @@ import {
   getViewModeUpArrowIcon,
   PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING,
 } from '@/constants/index';
-import { useMyEvaluationsContext } from 'contexts/MyEvaluationsContext';
+import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import useViewMode from 'hooks/useViewMode';
 import { useMemo } from 'react';

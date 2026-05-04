@@ -30,7 +30,7 @@ export default function VersionCard() {
   }
 
   return (
-    <a-card className="flex items-center justify-between gap-2 rounded-lg py-3.5 pl-5 pr-2">
+    <a-card variant="glass" className="flex items-center justify-between gap-2 rounded-lg py-3.5 pl-5 pr-2">
       <div>
         <div className="flex items-center gap-2">
           <MdUpdate size={20} />

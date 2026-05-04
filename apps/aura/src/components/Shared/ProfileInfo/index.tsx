@@ -1,7 +1,7 @@
-import { useMyEvaluationsContext } from "contexts/MyEvaluationsContext"
-import { useSubjectInboundConnectionsContext } from "contexts/SubjectInboundConnectionsContext"
-import { useSubjectInboundEvaluationsContextSafe } from "contexts/SubjectInboundEvaluationsContext"
-import { useOutboundEvaluationsContext } from "contexts/SubjectOutboundEvaluationsContext"
+import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
+import { useSubjectInboundConnectionsContext } from "@/hooks/useSubjectInboundConnectionsContext"
+import { useSubjectInboundEvaluationsContextSafe } from "@/hooks/useSubjectInboundEvaluationsContext"
+import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
 import { AuraFilterId } from "hooks/useFilters"
 import { AuraSortId } from "hooks/useSorts"
 import { useSubjectName } from "hooks/useSubjectName"
@@ -88,7 +88,7 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
   const isVisitingYourPage = authData?.brightId === subjectId
 
   return (
-    <a-card className="flex flex-col p-4 gap-3">
+    <a-card variant="glass" className="flex flex-col p-4 gap-3">
       <div className="card--header flex w-full items-center justify-between">
         <div className="card--header__left flex gap-4">
           {injectedProfileImage ? (

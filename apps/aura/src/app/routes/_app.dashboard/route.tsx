@@ -1,14 +1,13 @@
 import { Modal } from "components/Shared/Modal"
 import { useState } from "react"
 import { Link } from "react-router"
-import { useProfileStore } from "@/store/profile.store"
 import { PreferredView } from "types/dashboard"
 import { RoutePath } from "types/router"
-import { resetAllStores } from "@/store/resetAllStores"
-import { Button } from "@/components/ui/button"
 import { preferredViewIcon } from "@/constants/index"
+import { useProfileStore } from "@/store/profile.store"
+import { resetAllStores } from "@/store/resetAllStores"
 import { __DEV__ } from "@/utils/env"
-import RoleSelectModal from "./components/RoleSelectModal"
+import RoleSelectModal from "./components/role-select-modal"
 
 const Dashboard = () => {
   const preferredView = useProfileStore((s) => s.preferredView)
@@ -21,12 +20,14 @@ const Dashboard = () => {
           <p className="mb-2.5 font-bold">BrightID</p>
           <p className="text-sm">Energy Team</p>
           <p className="mb-5 font-bold">Core</p>
-          <button type="button" className="btn">Change</button>
+          <button type="button" className="btn">
+            Change
+          </button>
         </div>
         <div className="card">
           <p className="mb-5">Preferred view</p>
           <img
-            className="icon mx-auto mb-7 !h-10 !w-10"
+            className="icon mx-auto mb-7 h-10! w-10!"
             src={preferredViewIcon[preferredView]}
             alt=""
           />

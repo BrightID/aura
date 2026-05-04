@@ -1,4 +1,4 @@
-import { useOutboundEvaluationsContext } from 'contexts/SubjectOutboundEvaluationsContext';
+import { useOutboundEvaluationsContext } from '@/hooks/useOutboundEvaluationsContext';
 import { useMemo } from 'react';
 
 import {

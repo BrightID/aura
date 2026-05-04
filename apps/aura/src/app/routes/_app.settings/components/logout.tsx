@@ -7,6 +7,7 @@ export default function LogoutButton() {
 
   return (
     <a-card
+      variant="glass"
       className="cursor-pointer rounded-lg py-3.5 pl-5 pr-2"
       onClick={() => {
         resetAllStores();

@@ -9,6 +9,7 @@ import { hash } from '@/utils/crypto';
 
 export interface ProfileState {
   authData: AuthData | null;
+  authKey: string | null;
   brightIdBackupEncrypted: string | null;
   splashScreenShown: boolean;
   playerOnboardingScreenShown: boolean;
@@ -28,6 +29,7 @@ interface ProfileActions {
 
 const initialState: ProfileState = {
   authData: null,
+  authKey: null,
   brightIdBackupEncrypted: null,
   splashScreenShown: false,
   playerOnboardingScreenShown: false,
@@ -38,7 +40,7 @@ export const useProfileStore = create<ProfileState & ProfileActions>()(
   persist(
     (set) => ({
       ...initialState,
-      setAuthData: (authData) => set({ authData }),
+      setAuthData: (authData) => set({ authData, authKey: authData ? hash(authData.brightId + authData.password) : null }),
       setSplashScreenShown: (splashScreenShown) => set({ splashScreenShown }),
       setPlayerOnboardingScreenShown: (playerOnboardingScreenShown) =>
         set({ playerOnboardingScreenShown }),
@@ -55,7 +57,7 @@ export const useProfileStore = create<ProfileState & ProfileActions>()(
         const authKey = hash(brightId + password);
         const backupData = await queryClient.fetchQuery(encryptedUserDataQueryOptions(authKey));
         queryClient.removeQueries({ queryKey: ['profile-photo'] });
-        set({ brightIdBackupEncrypted: backupData, authData: { brightId, password } });
+        set({ brightIdBackupEncrypted: backupData, authData: { brightId, password }, authKey });
       },
       reset: () =>
         set((s) => ({

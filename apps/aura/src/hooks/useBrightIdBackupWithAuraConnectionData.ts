@@ -7,7 +7,7 @@ import {
 } from 'types';
 import { useCacheStore } from '@/store/cache.store';
 import { useProfileStore } from '@/store/profile.store';
-import { decryptUserData, hash } from '@/utils/crypto';
+import { decryptUserData } from '@/utils/crypto';
 import { useMyEvaluations } from './useMyEvaluations';
 
 export function useBrightIdBackupConnectionResolver() {
@@ -36,6 +36,7 @@ export function useBrightIdBackupConnectionResolver() {
 
 export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBackupWithAuraConnectionData | null {
   const authData = useProfileStore((s) => s.authData);
+  const authKey = useProfileStore((s) => s.authKey);
   const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
   const brightIdBackup = brightIdBackupEncrypted && authData?.password
     ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
@@ -61,12 +62,12 @@ export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBacku
   }, [brightIdBackup]);
 
   const refreshBrightIdBackup = useCallback(async () => {
-    if (!authData) return;
+    if (!authKey) return;
 
     setLoading(true);
-    await getBrightIdBackup(hash(authData.brightId + authData.password));
+    await getBrightIdBackup(authKey);
     setLoading(false);
-  }, [authData, getBrightIdBackup]);
+  }, [authKey, getBrightIdBackup]);
 
   useEffect(() => {
     if (
