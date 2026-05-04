@@ -1,41 +1,41 @@
-import { dynamicRoutes, staticRoutes } from 'virtual:vite-pwa/remix/sw';
-import { registerRoute } from 'workbox-routing';
-import { CacheableResponsePlugin } from 'workbox-cacheable-response';
-import { NetworkOnly, StaleWhileRevalidate } from 'workbox-strategies';
-import type { RouteConfig } from '@react-router/dev/routes';
+import { dynamicRoutes, staticRoutes } from "virtual:vite-pwa/remix/sw"
+import type { RouteConfig } from "@react-router/dev/routes"
+import { CacheableResponsePlugin } from "workbox-cacheable-response"
+import { registerRoute } from "workbox-routing"
+import { NetworkOnly, StaleWhileRevalidate } from "workbox-strategies"
 
 export async function resolveRoutePath(r: RouteConfig) {
-  const resolvedStaticRoute = await r;
+  const resolvedStaticRoute = await r
 
-  const routes: string[] = [];
+  const routes: string[] = []
 
   for (const route of resolvedStaticRoute) {
-    if (route.path) routes.push(route.path);
+    if (route.path) routes.push(route.path)
   }
 
-  return routes;
+  return routes
 }
 
 export async function setupRoutes() {
   // disable precaching in dev
-  if (!import.meta.env.PROD) return;
+  if (!import.meta.env.PROD) return
 
-  const baseUrl = import.meta.env.BASE_URL;
-  const useStaticRoutes = await resolveRoutePath(staticRoutes);
+  const baseUrl = import.meta.env.BASE_URL
+  const useStaticRoutes = await resolveRoutePath(staticRoutes)
 
-  const useDynamicRoutes = await resolveRoutePath(dynamicRoutes);
+  const useDynamicRoutes = await resolveRoutePath(dynamicRoutes)
 
   if (useStaticRoutes.length) {
     const staticRoutesRegexp = new RegExp(
-      `^${baseUrl}(${useStaticRoutes.join('|')})$`,
-    );
+      `^${baseUrl}(${useStaticRoutes.join("|")})$`,
+    )
     registerRoute(
       ({ request, sameOrigin, url }) =>
-        request.destination === 'document' &&
+        request.destination === "document" &&
         sameOrigin &&
         staticRoutesRegexp.test(url.pathname),
       new StaleWhileRevalidate({
-        cacheName: 'static-pages',
+        cacheName: "static-pages",
         matchOptions: {
           ignoreVary: true,
           ignoreSearch: true,
@@ -47,36 +47,36 @@ export async function setupRoutes() {
           }),
         ],
       }),
-      'GET',
-    );
+      "GET",
+    )
   }
   if (useDynamicRoutes.length) {
     const dynamicRoutesRegexp = new RegExp(
       `^${baseUrl}(${useDynamicRoutes
         .map((r) => {
-          const parts = r.split('/');
+          const parts = r.split("/")
           parts.forEach((part, i) => {
-            if (part.startsWith(':')) parts[i] = '([^/]+)';
-          });
-          return `(${parts.join('/')})`;
+            if (part.startsWith(":")) parts[i] = "([^/]+)"
+          })
+          return `(${parts.join("/")})`
         })
-        .join('|')})$`,
-    );
+        .join("|")})$`,
+    )
     registerRoute(
       ({ request, sameOrigin, url }) =>
-        request.destination === 'document' &&
+        request.destination === "document" &&
         sameOrigin &&
         dynamicRoutesRegexp.test(url.pathname),
       new NetworkOnly({
         plugins: [
           {
             handlerDidError: async ({ state, error }) => {
-              console.log(state, error);
-              return Response.redirect('/', 302);
+              console.log(state, error)
+              return Response.redirect("/", 302)
             },
           },
         ],
       }),
-    );
+    )
   }
 }
