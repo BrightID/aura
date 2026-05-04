@@ -1,73 +1,87 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   type AuraNodeBrightIdConnectionWithBackupData,
   type BrightIdBackup,
   type BrightIdBackupConnection,
   type BrightIdBackupWithAuraConnectionData,
-} from 'types';
-import { useCacheStore } from '@/store/cache.store';
-import { useProfileStore } from '@/store/profile.store';
-import { decryptUserData } from '@/utils/crypto';
-import { useMyEvaluations } from './useMyEvaluations';
+} from "types"
+import { useCacheStore } from "@/store/cache.store"
+import { useProfileStore } from "@/store/profile.store"
+import { decryptUserData } from "@/utils/crypto"
+import { useMyEvaluations } from "./useMyEvaluations"
 
 export function useBrightIdBackupConnectionResolver() {
-  const authData = useProfileStore((s) => s.authData);
-  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
-  const brightIdBackup = brightIdBackupEncrypted && authData?.password
-    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
-    : null;
+  const authData = useProfileStore((s) => s.authData)
+  const brightIdBackupEncrypted = useProfileStore(
+    (s) => s.brightIdBackupEncrypted,
+  )
+  const brightIdBackup =
+    brightIdBackupEncrypted && authData?.password
+      ? (decryptUserData(
+          brightIdBackupEncrypted,
+          authData.password,
+        ) as BrightIdBackup)
+      : null
 
   const backupConnectionKeys = useMemo(() => {
     return (
       brightIdBackup?.connections.reduce(
         (acc, conn) => {
-          acc[conn.id] = conn;
-          return acc;
+          acc[conn.id] = conn
+          return acc
         },
         {} as Record<string, BrightIdBackupConnection>,
       ) || {}
-    );
-  }, [brightIdBackup]);
+    )
+  }, [brightIdBackup])
 
   return {
     resolve: (key: string) => backupConnectionKeys[key],
-  };
+  }
 }
 
 export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBackupWithAuraConnectionData | null {
-  const authData = useProfileStore((s) => s.authData);
-  const authKey = useProfileStore((s) => s.authKey);
-  const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
-  const brightIdBackup = brightIdBackupEncrypted && authData?.password
-    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
-    : null;
-  const cachedBrightIdProfiles = useCacheStore((s) => s.fetchedSubjectsFromProfile);
-  const setBulkSubjectsCache = useCacheStore((s) => s.setBulkSubjectsCache);
-  const getBrightIdBackup = useProfileStore((s) => s.getBrightIdBackup);
-  const { myConnections } = useMyEvaluations();
+  const authData = useProfileStore((s) => s.authData)
+  const authKey = useProfileStore((s) => s.authKey)
+  const brightIdBackupEncrypted = useProfileStore(
+    (s) => s.brightIdBackupEncrypted,
+  )
+  const brightIdBackup =
+    brightIdBackupEncrypted && authData?.password
+      ? (decryptUserData(
+          brightIdBackupEncrypted,
+          authData.password,
+        ) as BrightIdBackup)
+      : null
+  const cachedBrightIdProfiles = useCacheStore(
+    (s) => s.fetchedSubjectsFromProfile,
+  )
+  const setBulkSubjectsCache = useCacheStore((s) => s.setBulkSubjectsCache)
+  const getBrightIdBackup = useProfileStore((s) => s.getBrightIdBackup)
+  const { myConnections } = useMyEvaluations()
 
-  const [loading, setLoading] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [hasFetched, setHasFetched] = useState(false)
 
   const backupConnectionKeys = useMemo(() => {
     return (
       brightIdBackup?.connections.reduce(
         (acc, conn) => {
-          acc[conn.id] = conn;
-          return acc;
+          acc[conn.id] = conn
+          return acc
         },
         {} as Record<string, any>,
       ) || {}
-    );
-  }, [brightIdBackup]);
+    )
+  }, [brightIdBackup])
 
   const refreshBrightIdBackup = useCallback(async () => {
-    if (!authKey) return;
+    if (!authKey) return
 
-    setLoading(true);
-    await getBrightIdBackup(authKey);
-    setLoading(false);
-  }, [authKey, getBrightIdBackup]);
+    setLoading(true)
+    await getBrightIdBackup(authKey)
+    setLoading(false)
+  }, [authKey, getBrightIdBackup])
 
   useEffect(() => {
     if (
@@ -76,30 +90,30 @@ export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBacku
       !myConnections?.length ||
       !cachedBrightIdProfiles
     )
-      return;
+      return
 
     const shouldFetch = myConnections.some(
       (conn) =>
         !cachedBrightIdProfiles[conn.id] &&
-        conn.level !== 'aura only' &&
+        conn.level !== "aura only" &&
         !backupConnectionKeys[conn.id],
-    );
+    )
 
-    if (!shouldFetch) return;
+    if (!shouldFetch) return
 
-    setHasFetched(true);
+    setHasFetched(true)
 
     refreshBrightIdBackup().then(() => {
       const connectionTimestamps = myConnections.reduce(
         (acc, conn) => {
-          acc[conn.id] = Date.now();
-          return acc;
+          acc[conn.id] = Date.now()
+          return acc
         },
         {} as Record<string, number>,
-      );
+      )
 
-      setBulkSubjectsCache(connectionTimestamps);
-    });
+      setBulkSubjectsCache(connectionTimestamps)
+    })
   }, [
     loading,
     hasFetched,
@@ -108,17 +122,17 @@ export default function useBrightIdBackupWithAuraConnectionData(): BrightIdBacku
     backupConnectionKeys,
     refreshBrightIdBackup,
     setBulkSubjectsCache,
-  ]);
+  ])
 
   return useMemo(() => {
-    if (!brightIdBackup || !myConnections) return null;
+    if (!brightIdBackup || !myConnections) return null
 
     const connections: AuraNodeBrightIdConnectionWithBackupData[] =
       myConnections.map((conn) => ({
         ...backupConnectionKeys[conn.id],
         ...conn,
-      }));
+      }))
 
-    return { ...brightIdBackup, connections };
-  }, [brightIdBackup, myConnections, backupConnectionKeys]);
+    return { ...brightIdBackup, connections }
+  }, [brightIdBackup, myConnections, backupConnectionKeys])
 }
