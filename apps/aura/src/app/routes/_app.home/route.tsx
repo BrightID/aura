@@ -8,8 +8,8 @@ import { LoadingList } from "@/components/Shared/EmptyAndLoadingStates/LoadingLi
 import InfiniteScrollLocal from "@/components/Shared/InfiniteScrollLocal"
 import LevelUp from "@/components/Shared/LevelUp"
 import { useSubjectsList } from "@/hooks/use-subjects-list"
-import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
-import { useSubjectInboundEvaluationsSetup } from "@/hooks/useSubjectInboundEvaluationsContext"
+import { useMyEvaluationData } from "@/hooks/useMyEvaluationData"
+import { useSubjectInboundEvaluations } from "@/hooks/useSubjectInboundEvaluations"
 import { useProfileStore } from "@/store/profile.store"
 import { useLevelupProgress } from "@/utils/score"
 import HomeHeader from "./components/header"
@@ -48,7 +48,7 @@ const Home = () => {
     setLoading(false)
   }, [authKey, getBrightIdBackup])
 
-  const { loading: loadingMyEvaluations } = useMyEvaluationsContext()
+  const { loading: loadingMyEvaluations } = useMyEvaluationData()
 
   const setTab = (tab: "evaluate" | "levelup") => {
     setSearchParams({ tab })
@@ -62,7 +62,7 @@ const Home = () => {
     if (!authData?.brightId) navigate("/")
   }, [authData, navigate])
 
-  useSubjectInboundEvaluationsSetup(authData?.brightId)
+  useSubjectInboundEvaluations({ subjectId: authData?.brightId })
 
   if (!authData?.brightId) {
     return <div>Not logged in</div>

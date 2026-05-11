@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js"
 
 @customElement("a-text")
 export class TextElement extends LitElement {
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   variant: "title" | "lead" | "body" | "small" | "muted" = "body"
 
   static styles = css`

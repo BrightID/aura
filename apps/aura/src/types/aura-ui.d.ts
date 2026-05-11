@@ -56,6 +56,7 @@ declare module "react" {
         variant?: ButtonVariant
         size?: ButtonSize
         color?: ButtonColors
+        type?: "button" | "submit" | "reset"
         disabled?: boolean
       }
 
@@ -96,7 +97,9 @@ declare module "react" {
       }
 
       // ── Separator ────────────────────────────────────────────────────────
-      "a-separator": CEProps<SeparatorElement>
+      "a-separator": CEProps<SeparatorElement> & {
+        orientation?: "horizontal" | "vertical"
+      }
 
       // ── Tabs ─────────────────────────────────────────────────────────────
       // Events: listen to 'change' (CustomEvent<{value:string}>) via ref

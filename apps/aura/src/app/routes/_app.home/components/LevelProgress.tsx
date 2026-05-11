@@ -3,7 +3,7 @@ import {
   getViewModeUpArrowIcon,
   PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING,
 } from '@/constants/index';
-import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
+import { useMyEvaluationData } from '@/hooks/useMyEvaluationData';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import useViewMode from 'hooks/useViewMode';
 import { FC, useMemo, useState } from 'react';
@@ -108,7 +108,7 @@ const LevelProgress: FC<{
     return { isPassed: true, reason: '' };
   }, [category, auraImpacts, auraLevel, auraScore]);
 
-  const { myRatings } = useMyEvaluationsContext();
+  const { myRatings } = useMyEvaluationData();
   const ratingsToBeDoneCount = useMemo(
     () =>
       myRatings

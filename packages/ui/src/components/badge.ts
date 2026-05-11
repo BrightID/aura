@@ -18,7 +18,7 @@ export class BadgeElement extends LitElement {
   @property({ type: Boolean, reflect: true })
   rounded = false
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   removable = false
 
   static styles: CSSResultGroup = css`

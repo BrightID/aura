@@ -35,8 +35,10 @@
     "paths": {
       "@/*": ["./src/*"],
       "@aura/query": ["../../packages/query/src/index.ts"],
-      "@aura/query/*": ["../../packages/query/src/*.ts"]
+      "@aura/query/*": ["../../packages/query/src/*.ts"],
+      "@aura/widgets": ["../../packages/widgets/src/index.ts"],
+      "@aura/widgets/*": ["../../packages/widgets/src/*.ts"]
     }
   },
-  "include": ["src", "vite-env.d.ts", "drizzle.config.ts"]
+  "include": ["src", "vite-env.d.ts", "drizzle.config.ts", "../../packages/widgets/src"]
 }

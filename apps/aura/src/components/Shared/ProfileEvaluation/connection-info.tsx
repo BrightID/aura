@@ -11,7 +11,7 @@ import {
   viewModeToViewAs,
 } from "@/constants"
 import { ratingToText } from "@/constants/chart"
-import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
+import { useMyEvaluationData } from "@/hooks/useMyEvaluationData"
 import { getAuraVerification } from "@/hooks/useParseBrightIdVerificationData"
 import { useSubjectName } from "@/hooks/useSubjectName"
 import { useImpactPercentage } from "@/hooks/useSubjectVerifications"
@@ -42,7 +42,7 @@ const ConnectionInfo = ({
     myRatingToSubject: rating,
     loading,
     myConnectionToSubject: inboundConnectionInfo,
-  } = useMyEvaluationsContext({
+  } = useMyEvaluationData({
     subjectId,
     evaluationCategory,
   })

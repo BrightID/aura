@@ -1,6 +1,6 @@
+import { useSubjectInboundEvaluations } from '@/hooks/useSubjectInboundEvaluations'
 import { useMemo, useState } from "react"
 import EvaluationsDetailsPerformance from "@/app/routes/_app.home/components/EvaluationsDetailsPerformance"
-import { useSubjectInboundEvaluationsContext } from "@/hooks/useSubjectInboundEvaluationsContext"
 import useViewMode from "@/hooks/useViewMode"
 import { useProfileStore } from "@/store/profile.store"
 import { PreferredView } from "@/types/dashboard"
@@ -15,7 +15,7 @@ export default function LevelUp({ subjectId }: { subjectId: string }) {
   const {
     itemsOriginal: evaluationsOriginal,
     loading: loadingInboundEvaluations,
-  } = useSubjectInboundEvaluationsContext({
+  } = useSubjectInboundEvaluations({
     subjectId,
     evaluationCategory: currentRoleEvaluatorEvaluationCategory,
   })

@@ -1,5 +1,5 @@
 import { RoleStatus } from '@/store/settings.store';
-import { useOutboundEvaluationsContext } from '@/hooks/useOutboundEvaluationsContext';
+import { useSubjectOutboundEvaluations } from '@/hooks/useOutboundEvaluationsContext';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import { useEffect, useMemo } from 'react';
 import { useProfileStore } from '@/store/profile.store';
@@ -115,12 +115,12 @@ export const HeaderPreferedView = {
 
     const subjectId = authData!.brightId;
 
-    const { itemsFiltered: trainerActivity } = useOutboundEvaluationsContext({
+    const { itemsFiltered: trainerActivity } = useSubjectOutboundEvaluations({
       subjectId,
       evaluationCategory: EvaluationCategory.TRAINER,
     });
 
-    const { itemsFiltered: managerActivity } = useOutboundEvaluationsContext({
+    const { itemsFiltered: managerActivity } = useSubjectOutboundEvaluations({
       subjectId,
       evaluationCategory: EvaluationCategory.MANAGER,
     });

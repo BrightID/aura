@@ -47,17 +47,22 @@ export class DialogElement extends LitElement {
 
   protected render() {
     return html`
-      <slot name="trigger" @click=${this.show}></slot>
+      <slot name="trigger" @click=${this._onTriggerClick}></slot>
 
       <div
         class="wrapper ${this.open || this._animatingOut ? "visible" : ""}"
         @click=${this._onBackdropClick}
       >
-        <div class="content">
+        <div class="content" role="dialog" aria-modal="true">
           <slot name="content"></slot>
         </div>
       </div>
     `
+  }
+
+  private _onTriggerClick(e: Event) {
+    e.stopPropagation()
+    this.show()
   }
 
   show() {
@@ -110,6 +115,7 @@ export class DialogElement extends LitElement {
   private _onKeyDown = (e: KeyboardEvent) => {
     if (this.open && e.key === "Escape") {
       e.preventDefault()
+      e.stopPropagation()
       this.hide()
     }
   }

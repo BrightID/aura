@@ -16,8 +16,8 @@ function Popover({ open, onOpenChange, children }: PopoverProps) {
     const handler = (e: Event) => {
       onOpenChange((e as CustomEvent<{ open: boolean }>).detail.open)
     }
-    el.addEventListener('open-changed', handler)
-    return () => el.removeEventListener('open-changed', handler)
+    el.addEventListener('open-change', handler)
+    return () => el.removeEventListener('open-change', handler)
   }, [onOpenChange])
 
   return (

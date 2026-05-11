@@ -4,11 +4,11 @@ import { AuraFilterId, useSubjectFilters } from "hooks/useFilters"
 import { AuraSortId, useSubjectSorts } from "hooks/useSorts"
 import { useMemo } from "react"
 import { type AuraNodeBrightIdConnectionWithBackupData } from "types"
-import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
+import { useMyEvaluationData } from "@/hooks/useMyEvaluationData"
 
 export function useSubjectsList() {
   const brightIdBackup = useBrightIdBackupWithUpdatedConnectionData()
-  const { loading, myRatings } = useMyEvaluationsContext()
+  const { loading, myRatings } = useMyEvaluationData()
 
   const filters = useSubjectFilters(
     useMemo(

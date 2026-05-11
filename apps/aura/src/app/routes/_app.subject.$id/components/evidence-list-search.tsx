@@ -1,7 +1,7 @@
+import { useSubjectInboundEvaluations } from '@/hooks/useSubjectInboundEvaluations'
 import { FiltersModal } from "components/evaluation/FiltersModal"
 import { SortsModal } from "components/evaluation/SortsModal"
 import Dropdown from "components/Shared/Dropdown"
-import { useSubjectInboundEvaluationsContext } from "@/hooks/useSubjectInboundEvaluationsContext"
 import { AuraFilterId } from "hooks/useFilters"
 import { AuraSortId } from "hooks/useSorts"
 import useViewMode from "hooks/useViewMode"
@@ -26,7 +26,7 @@ function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
     setSelectedSort,
     filters,
     sorts,
-  } = useSubjectInboundEvaluationsContext({ subjectId })
+  } = useSubjectInboundEvaluations({ subjectId })
 
   return (
     <div>
@@ -66,7 +66,7 @@ export const EvidenceListSearch = ({ subjectId }: { subjectId: string }) => {
     clearSortAndFilter,
     toggleFiltersById,
     setSelectedSort,
-  } = useSubjectInboundEvaluationsContext({
+  } = useSubjectInboundEvaluations({
     subjectId,
     evaluationCategory: currentEvaluationCategory,
   })

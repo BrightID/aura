@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { JSX, useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 
-interface InfiniteScrollLocalProps<T> extends React.HTMLProps<InfiniteScroll> {
+interface InfiniteScrollLocalProps<T> {
   items: T[] | null | undefined;
   renderItem: (item: T, index: number) => JSX.Element;
   pageSize?: number;
-
+  className?: string;
   getScrollParent?(): HTMLElement | null;
 }
 
@@ -15,52 +15,35 @@ const isTest = process.env.VITEST;
 export default function InfiniteScrollLocal<T>({
   items,
   renderItem,
-  pageSize,
+  pageSize = 10,
   ...props
 }: InfiniteScrollLocalProps<T>) {
   const [itemsLocal, setItemsLocal] = useState<T[]>([]);
   const itemsRef = useRef<typeof items>(null);
-  const isInitialLoadRef = useRef(true);
 
-  // Only reset itemsLocal when items reference changes
+  // When items reference changes, immediately populate first batch.
+  // Do NOT reset to [] — InfiniteScroll's initialLoad only fires once per mount,
+  // so resetting to [] leaves the list empty until user scrolls.
   useEffect(() => {
-    // Check if items has actually changed (not just a re-render)
     if (items !== itemsRef.current) {
       itemsRef.current = items;
-      setItemsLocal([]);
-      isInitialLoadRef.current = true;
+      setItemsLocal(items ? items.slice(0, pageSize) : []);
     }
-  }, [items]);
+  }, [items, pageSize]);
 
   const loadMore = useCallback(() => {
     if (!items) return;
-
-    // Prevent multiple loadMore calls during initial load
-    if (isInitialLoadRef.current) {
-      isInitialLoadRef.current = false;
-      // Load initial batch
-      setItemsLocal(items.slice(0, pageSize ?? 10));
-    } else {
-      // Load next batch
-      setItemsLocal((itemsLocalPrev) => {
-        // Avoid duplicate loads
-        if (itemsLocalPrev.length >= items.length) return itemsLocalPrev;
-
-        return [
-          ...itemsLocalPrev,
-          ...items.slice(
-            itemsLocalPrev.length,
-            itemsLocalPrev.length + (pageSize ?? 10),
-          ),
-        ];
-      });
-    }
+    setItemsLocal((prev) => {
+      if (prev.length >= items.length) return prev;
+      return [...prev, ...items.slice(prev.length, prev.length + pageSize)];
+    });
   }, [items, pageSize]);
 
   const hasMore = useMemo(
     () => !!items && items.length > itemsLocal.length,
     [items, itemsLocal.length],
   );
+
   if (isTest) {
     return (
       <>
@@ -79,13 +62,11 @@ export default function InfiniteScrollLocal<T>({
           pageStart={0}
           loadMore={loadMore}
           hasMore={hasMore}
-          initialLoad={isInitialLoadRef.current}
+          initialLoad={false}
           useWindow={false}
         >
           {itemsLocal.map((item, index) => (
-            <React.Fragment key={index}>
-              {renderItem(item, index)}
-            </React.Fragment>
+            <React.Fragment key={index}>{renderItem(item, index)}</React.Fragment>
           ))}
         </InfiniteScroll>
       )}

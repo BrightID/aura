@@ -1,6 +1,6 @@
+import { useSubjectInboundEvaluations } from '@/hooks/useSubjectInboundEvaluations'
 import EvaluateModalBody from "components/evaluation/EvaluateModalBody"
-import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
-import { useSubjectInboundEvaluationsContext } from "@/hooks/useSubjectInboundEvaluationsContext"
+import { useMyEvaluationData } from "@/hooks/useMyEvaluationData"
 import { useSubjectName } from "hooks/useSubjectName"
 import { useCallback, useEffect, useState } from "react"
 import { PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING } from "@/constants/index"
@@ -27,8 +27,8 @@ const EvaluationFlow = ({
   const name = useSubjectName(subjectId)
 
   const { refreshInboundRatings, myRatingObject } =
-    useSubjectInboundEvaluationsContext({ subjectId })
-  const { refreshOutboundRatings, myRatings } = useMyEvaluationsContext({
+    useSubjectInboundEvaluations({ subjectId })
+  const { refreshOutboundRatings, myRatings } = useMyEvaluationData({
     subjectId,
   })
 

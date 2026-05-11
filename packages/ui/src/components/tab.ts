@@ -7,7 +7,7 @@ import {
 
 @customElement("a-tabs")
 export class TabsElement extends LitElement {
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   value = ""
 
   @queryAssignedElements({ selector: "a-tab" })
@@ -121,6 +121,7 @@ export class TabsElement extends LitElement {
   }
 
   private onTabClick(e: Event) {
+    e.stopPropagation()
     const tab = (e.target as HTMLElement).closest("a-tab") as TabElement | null
     if (!tab) return
 

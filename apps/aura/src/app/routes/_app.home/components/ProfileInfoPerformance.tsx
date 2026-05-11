@@ -3,7 +3,7 @@ import {
   getViewModeUpArrowIcon,
   PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING,
 } from '@/constants/index';
-import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
+import { useMyEvaluationData } from '@/hooks/useMyEvaluationData';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import useViewMode from 'hooks/useViewMode';
 import { useMemo } from 'react';
@@ -29,7 +29,7 @@ const ProfileInfoPerformance = ({
     evaluationCategory: currentRoleEvaluatorEvaluationCategory,
   });
 
-  const { myRatings } = useMyEvaluationsContext();
+  const { myRatings } = useMyEvaluationData();
   const ratingsToBeDoneCount = useMemo(
     () =>
       myRatings

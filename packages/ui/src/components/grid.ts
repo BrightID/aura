@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 
 export interface GridItem {
   title?: string;
@@ -8,60 +8,30 @@ export interface GridItem {
   [key: string]: any;
 }
 
-/**
- * Responsive, customizable grid / cards component
- *
- * @slot - default slot = grid items (usually <div class="card">...</div>)
- * @slot header - optional header content above the grid
- * @slot empty - content shown when no items are present
- * @csspart grid - the grid container
- * @csspart item - each grid item wrapper (when using items array)
- */
 @customElement('a-grid')
 export class GridElement extends LitElement {
-
-  /**
-   * Number of columns on wide screens (≥1024px)
-   */
   @property({ type: Number, attribute: 'cols-lg', reflect: true })
   colsLg = 4;
 
-  /**
-   * Number of columns on medium screens (≥768px)
-   */
   @property({ type: Number, attribute: 'cols-md', reflect: true })
   colsMd = 3;
 
-  /**
-   * Number of columns on small screens (≥480px)
-   */
   @property({ type: Number, attribute: 'cols-sm', reflect: true })
   colsSm = 2;
 
-  /**
-   * Number of columns on very small screens
-   */
   @property({ type: Number, attribute: 'cols-xs', reflect: true })
   colsXs = 1;
 
-  /**
-   * Gap between grid items (can be overridden with --grid-gap)
-   */
   @property({ type: String, attribute: 'gap', reflect: true })
   gap = '1.25rem';
 
-  /**
-   * Optional: supply data array instead of slotted items
-   */
   @property({ attribute: false })
   items: GridItem[] = [];
 
-  /**
-   * Aspect ratio for auto-generated cards when using .items
-   * Examples: '1 / 1', '4 / 3', '16 / 9', '3 / 4'
-   */
   @property({ type: String, attribute: 'card-aspect' })
   cardAspect = '4 / 3';
+
+  @state() private _hasSlottedContent = false;
 
   static styles = css`
     :host {
@@ -88,14 +58,12 @@ export class GridElement extends LitElement {
       }
     }
 
-    /* When using slotted content */
     ::slotted(*) {
       display: contents;
     }
 
-    /* Default card styling (used when providing .items) */
     .card {
-      background: var(--card-bg, white);
+      background: var(--card-bg, var(--card));
       border-radius: var(--radius, 0.75rem);
       box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
       overflow: hidden;
@@ -111,7 +79,7 @@ export class GridElement extends LitElement {
 
     .card-image {
       aspect-ratio: var(--card-aspect, 4 / 3);
-      background: var(--muted, #e2e8f0);
+      background: var(--muted);
       position: relative;
       overflow: hidden;
     }
@@ -142,7 +110,7 @@ export class GridElement extends LitElement {
     }
 
     .card-subtitle {
-      color: var(--muted-foreground, #64748b);
+      color: var(--muted-foreground);
       font-size: 0.875rem;
       margin: 0;
     }
@@ -163,34 +131,38 @@ export class GridElement extends LitElement {
     if (changedProperties.has('cardAspect')) this.style.setProperty('--card-aspect', this.cardAspect);
   }
 
+  private _onDefaultSlotChange(e: Event) {
+    const slot = e.target as HTMLSlotElement;
+    this._hasSlottedContent = slot.assignedElements().length > 0;
+  }
+
   render() {
     const hasItems = this.items.length > 0;
-    const hasDefaultSlotContent = Array.from(this.children).some(
-      el => !el.hasAttribute('slot') || el.getAttribute('slot') === ''
-    );
+    const showEmpty = !hasItems && !this._hasSlottedContent;
 
     return html`
       <div class="header">
         <slot name="header"></slot>
       </div>
 
-      ${hasItems || hasDefaultSlotContent 
+      <!-- Always in DOM so slotchange fires even when grid is hidden -->
+      <div class="grid" part="grid" ?hidden=${showEmpty}>
+        ${hasItems
+          ? this.items.map(item => this._renderItem(item))
+          : html`<slot @slotchange=${this._onDefaultSlotChange}></slot>`}
+      </div>
+
+      ${showEmpty
         ? html`
-            <div class="grid" part="grid">
-              ${hasItems
-                ? this.items.map(item => this.renderItem(item))
-                : html`<slot></slot>`}
-            </div>
-          `
-        : html`
             <div class="empty-state" part="empty">
               <slot name="empty">No items to display</slot>
             </div>
-          `}
+          `
+        : ''}
     `;
   }
 
-  private renderItem(item: GridItem) {
+  private _renderItem(item: GridItem) {
     return html`
       <div class="card" part="item">
         ${item.image

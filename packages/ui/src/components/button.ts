@@ -21,6 +21,9 @@ export class ButtonElement extends LitElement {
   @property({ reflect: true })
   color: ButtonColors = "primary"
 
+  @property({ reflect: true })
+  type: "button" | "submit" | "reset" = "button"
+
   @property({ type: Boolean, reflect: true })
   disabled: boolean = false
 
@@ -205,7 +208,7 @@ export class ButtonElement extends LitElement {
 
   protected render() {
     return html`
-      <button .class=${this.class} ?disabled=${this.disabled} part="button">
+      <button type=${this.type} .class=${this.class} ?disabled=${this.disabled} part="button">
         <slot></slot>
       </button>
     `

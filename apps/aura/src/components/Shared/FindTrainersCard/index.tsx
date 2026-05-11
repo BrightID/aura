@@ -5,13 +5,10 @@ import {
   viewModeToEvaluatorViewMode,
   viewModeToViewAs,
 } from '../../../constants';
-import { useSubjectInboundEvaluationsContext } from '@/hooks/useSubjectInboundEvaluationsContext';
 import { getAuraVerification } from '../../../hooks/useParseBrightIdVerificationData';
 import { useSubjectConnectionInfoFromContext } from '../../../hooks/useSubjectEvaluation';
-import {
-  useInboundEvaluations,
-  useOutboundEvaluations,
-} from '../../../hooks/useSubjectEvaluations';
+import { useOutboundEvaluations } from '../../../hooks/useSubjectEvaluations';
+import { useSubjectInboundEvaluations } from '@/hooks/useSubjectInboundEvaluations';
 import { useSubjectName } from '../../../hooks/useSubjectName';
 import { useSubjectVerifications } from '../../../hooks/useSubjectVerifications';
 import { PreferredView } from '../../../types/dashboard';
@@ -60,7 +57,7 @@ const PotentialEvaluatorsListBrief = ({
   subjectId: string;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { itemsOriginal, loading } = useSubjectInboundEvaluationsContext({
+  const { itemsOriginal, loading } = useSubjectInboundEvaluations({
     subjectId,
   });
   const potentialEvaluators = useMemo(
@@ -153,7 +150,7 @@ const EvaluatorsCount = ({
   evaluatorViewMode: PreferredView;
   evaluatorSubjectId: string;
 }) => {
-  const { ratings } = useInboundEvaluations({
+  const { ratings } = useSubjectInboundEvaluations({
     subjectId: evaluatorSubjectId,
     evaluationCategory: viewModeToViewAs[evaluatorViewMode],
   });

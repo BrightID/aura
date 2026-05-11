@@ -1,10 +1,10 @@
+import { useSubjectInboundEvaluations } from '@/hooks/useSubjectInboundEvaluations'
 import { toast } from "@aura/ui"
 import ConfidenceDropdown from "components/Shared/Dropdown/ConfidenceDropdown"
 import { useEvaluateSubject } from "hooks/useEvaluateSubject"
 import { useSubjectName } from "hooks/useSubjectName"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { viewModeSubjectString } from "@/constants"
-import { useSubjectInboundEvaluationsContext } from "@/hooks/useSubjectInboundEvaluationsContext"
 import { useProfileStore } from "@/store/profile.store"
 import { EvaluationCategory, PreferredView } from "@/types/dashboard"
 import useViewMode from "../../hooks/useViewMode"
@@ -24,7 +24,7 @@ const EvaluateModalBody = ({
   const [isYes, setIsYes] = useState(true)
   const [confidence, setConfidence] = useState(1)
   const [onDelete, setOnDelete] = useState(false)
-  const { myRatingObject } = useSubjectInboundEvaluationsContext({
+  const { myRatingObject } = useSubjectInboundEvaluations({
     subjectId,
     evaluationCategory,
   })

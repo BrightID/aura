@@ -191,6 +191,7 @@ export class ScrollAreaElement extends LitElement {
   }
 
   private _onTrackPointerDown(axis: "y" | "x", e: PointerEvent) {
+    e.stopPropagation()
     // Only fire when clicking the track itself, not the thumb
     if ((e.target as HTMLElement).classList.contains("thumb")) return
     const vp = this._viewport

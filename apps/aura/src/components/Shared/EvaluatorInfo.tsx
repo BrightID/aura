@@ -1,6 +1,6 @@
 import BrightIdProfilePicture from '@/components/Shared/BrightIdProfilePicture';
 import { getConfidenceValueOfAuraRatingNumber } from '@/constants/index';
-import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
+import { useMyEvaluationData } from '@/hooks/useMyEvaluationData';
 import { useSubjectName } from 'hooks/useSubjectName';
 import { connectionLevelIcons } from '@/utils/connection';
 
@@ -10,7 +10,7 @@ export function EvaluatorInfo({ evaluatorId }: { evaluatorId: string }) {
     myRatingNumberToSubject: ratingNumber,
     loading,
     myConnectionToSubject: inboundConnectionInfo,
-  } = useMyEvaluationsContext({ subjectId: evaluatorId });
+  } = useMyEvaluationData({ subjectId: evaluatorId });
 
   return (
     <div className="card__top-row__left flex items-start gap-1">

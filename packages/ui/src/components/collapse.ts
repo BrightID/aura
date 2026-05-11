@@ -105,7 +105,8 @@ export class CollapseElement extends LitElement {
     this.style.setProperty("--collapse-content-height", `${this._contentHeight}px`)
   }
 
-  private _toggle() {
+  private _toggle(e: Event) {
+    e.stopPropagation()
     if (this.disabled) return
     this.open = !this.open
     this.dispatchEvent(

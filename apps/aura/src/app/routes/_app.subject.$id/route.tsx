@@ -9,15 +9,9 @@ import { LoadingList } from "components/Shared/EmptyAndLoadingStates/LoadingList
 import Modal from "components/Shared/Modal"
 import { ProfileInfo } from "components/Shared/ProfileInfo"
 import ProfileOverview from "components/Shared/ProfileOverview"
-import {
-  useSubjectInboundConnectionsContext,
-  useSubjectInboundConnectionsSetup,
-} from "@/hooks/useSubjectInboundConnectionsContext"
-import {
-  useSubjectInboundEvaluationsContext,
-  useSubjectInboundEvaluationsSetup,
-} from "@/hooks/useSubjectInboundEvaluationsContext"
-import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
+import { useSubjectInboundConnections } from "@/hooks/useSubjectInboundConnections"
+import { useSubjectInboundEvaluations } from "@/hooks/useSubjectInboundEvaluations"
+import { useSubjectOutboundEvaluations } from "@/hooks/useOutboundEvaluationsContext"
 import { useMyEvaluations } from "hooks/useMyEvaluations"
 import useViewMode from "hooks/useViewMode"
 import { ArrowDownLeft, ArrowDownRight, ArrowUpRight } from "lucide-react"
@@ -88,7 +82,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
     selectedFilterIds: inboundEvaluationsSelectedFilterId,
     clearSortAndFilter: clearInboundEvaluationsSortAndFilter,
     searchString: evaluationSearchString,
-  } = useSubjectInboundEvaluationsContext({
+  } = useSubjectInboundEvaluations({
     subjectId,
     evaluationCategory: currentEvaluationCategory,
   })
@@ -102,7 +96,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
     selectedSort,
     selectedFilters,
     searchString,
-  } = useSubjectInboundConnectionsContext({
+  } = useSubjectInboundConnections({
     subjectId,
     evaluationCategory: currentEvaluationCategory,
   })
@@ -113,7 +107,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
     selectedFilterIds: outboundEvaluationsSelectedFilterId,
     clearSortAndFilter: clearOutboundEvaluationsSortAndFilter,
     searchString: activitySearchString,
-  } = useOutboundEvaluationsContext({
+  } = useSubjectOutboundEvaluations({
     subjectId,
     evaluationCategory:
       selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS
@@ -465,8 +459,8 @@ const SubjectProfile = () => {
     [authData?.brightId, id],
   )
 
-  useSubjectInboundEvaluationsSetup(subjectId)
-  useSubjectInboundConnectionsSetup(subjectId)
+  useSubjectInboundEvaluations({ subjectId: subjectId })
+  useSubjectInboundConnections({ subjectId: subjectId })
 
   return !subjectId ? (
     <div>Unknown subject id</div>

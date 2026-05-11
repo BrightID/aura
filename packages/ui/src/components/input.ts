@@ -170,6 +170,7 @@ export class InputElement extends LitElement {
   }
 
   private onInputChange(e: Event) {
+    e.stopPropagation()
     const target = e.target as HTMLInputElement
     this.value = target.value
 

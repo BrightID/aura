@@ -1,7 +1,7 @@
 import { FiltersModal } from "components/evaluation/FiltersModal"
 import { SortsModal } from "components/evaluation/SortsModal"
 import Dropdown from "components/Shared/Dropdown"
-import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
+import { useSubjectOutboundEvaluations } from "@/hooks/useOutboundEvaluationsContext"
 import { AuraFilterId } from "hooks/useFilters"
 import { AuraSortId } from "hooks/useSorts"
 import useViewMode from "hooks/useViewMode"
@@ -27,7 +27,7 @@ function FilterAndSortModalBody({ subjectId }: { subjectId: string }) {
     setSelectedSort,
     filters,
     sorts,
-  } = useOutboundEvaluationsContext({ subjectId })
+  } = useSubjectOutboundEvaluations({ subjectId })
 
   return (
     <div className="w-full">
@@ -74,7 +74,7 @@ export const ActivityListSearch = ({
     clearSortAndFilter,
     toggleFiltersById,
     setSelectedSort,
-  } = useOutboundEvaluationsContext({
+  } = useSubjectOutboundEvaluations({
     subjectId,
     evaluationCategory:
       selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS

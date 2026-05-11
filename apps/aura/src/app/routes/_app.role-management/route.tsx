@@ -1,5 +1,5 @@
-import { useSubjectInboundConnectionsSetup } from '@/hooks/useSubjectInboundConnectionsContext';
-import { useSubjectInboundEvaluationsSetup } from '@/hooks/useSubjectInboundEvaluationsContext';
+import { useSubjectInboundConnections } from '@/hooks/useSubjectInboundConnections';
+import { useSubjectInboundEvaluations } from '@/hooks/useSubjectInboundEvaluations';
 import { useProfileStore } from '@/store/profile.store';
 import DefaultHeader from '@/components/Header/DefaultHeader';
 import { Link } from 'react-router';
@@ -11,8 +11,8 @@ export default function RoleManagement() {
   const authData = useProfileStore((s) => s.authData);
   const subjectId = authData!.brightId;
 
-  useSubjectInboundEvaluationsSetup(subjectId);
-  useSubjectInboundConnectionsSetup(subjectId);
+  useSubjectInboundEvaluations({ subjectId: subjectId });
+  useSubjectInboundConnections({ subjectId: subjectId });
 
   return (
     <>

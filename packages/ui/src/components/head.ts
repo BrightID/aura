@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js"
 
 @customElement("a-head")
 export class HeadingElement extends LitElement {
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   level: "1" | "2" | "3" | "4" | "5" | "6" = "2"
 
   static styles = css`

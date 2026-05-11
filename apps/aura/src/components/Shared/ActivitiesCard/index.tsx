@@ -1,4 +1,4 @@
-import { useOutboundEvaluationsContext } from '@/hooks/useOutboundEvaluationsContext';
+import { useSubjectOutboundEvaluations } from '@/hooks/useOutboundEvaluationsContext';
 import { useMemo } from 'react';
 
 import {
@@ -25,7 +25,7 @@ const ActivitiesCard = ({
   viewMode: PreferredView;
   onBarChartClick?: ActivityChartProps['onBarClick'];
 }) => {
-  const { ratings: outboundRatings, loading } = useOutboundEvaluationsContext({
+  const { ratings: outboundRatings, loading } = useSubjectOutboundEvaluations({
     subjectId,
     evaluationCategory: viewModeToViewAs[viewModeToSubjectViewMode[viewMode]],
   });

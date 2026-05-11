@@ -1,7 +1,7 @@
-import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
-import { useSubjectInboundConnectionsContext } from "@/hooks/useSubjectInboundConnectionsContext"
-import { useSubjectInboundEvaluationsContextSafe } from "@/hooks/useSubjectInboundEvaluationsContext"
-import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
+import { useMyEvaluationData } from "@/hooks/useMyEvaluationData"
+import { useSubjectInboundConnections } from "@/hooks/useSubjectInboundConnections"
+import { useSubjectInboundEvaluations } from "@/hooks/useSubjectInboundEvaluations"
+import { useSubjectOutboundEvaluations } from "@/hooks/useOutboundEvaluationsContext"
 import { AuraFilterId } from "hooks/useFilters"
 import { AuraSortId } from "hooks/useSorts"
 import { useSubjectName } from "hooks/useSubjectName"
@@ -49,21 +49,21 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
 
   const name = useSubjectName(subjectId)
   const inboundEvaluationsData =
-    useSubjectInboundEvaluationsContextSafe(subjectId)
+    useSubjectInboundEvaluations({ subjectId: subjectId })
   const { myConnectionToSubject, myRatingNumberToSubject, loading } =
-    useMyEvaluationsContext({
+    useMyEvaluationData({
       subjectId,
       evaluationCategory: currentEvaluationCategory,
     })
 
   const { toggleFiltersById, setSelectedSort } =
-    useSubjectInboundConnectionsContext({
+    useSubjectInboundConnections({
       subjectId,
       evaluationCategory: currentEvaluationCategory,
     })
 
   const { connections: outboundConnections, ratings: outboundRatings } =
-    useOutboundEvaluationsContext({ subjectId })
+    useSubjectOutboundEvaluations({ subjectId })
 
   const lastActivity = useMemo(() => {
     if (outboundConnections && outboundRatings !== null) {

@@ -1,5 +1,5 @@
-import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
-import { useInboundEvaluations } from "hooks/useSubjectEvaluations"
+import { useMyEvaluationData } from "@/hooks/useMyEvaluationData"
+import { useSubjectInboundEvaluations } from "@/hooks/useSubjectInboundEvaluations"
 import { useSubjectName } from "hooks/useSubjectName"
 import {
   useImpactPercentage,
@@ -25,7 +25,6 @@ import {
   getViewModeSubjectTextColorClass,
   viewAsToViewMode,
 } from "@/constants"
-import { useSubjectInboundEvaluationsSetup } from "@/hooks/useSubjectInboundEvaluationsContext"
 import { useProfileStore } from "@/store/profile.store"
 import { CredibilityDetailsProps } from "@/types"
 import { compactFormat } from "@/utils/number"
@@ -47,19 +46,18 @@ const CredibilityDetailsForRole = ({
   roleEvaluationCategory: EvaluationCategory
   onClose: () => void
 }) => {
-  useSubjectInboundEvaluationsSetup(subjectId)
+  const { ratings, inboundRatingsStatsString } = useSubjectInboundEvaluations({
+    subjectId,
+    evaluationCategory: roleEvaluationCategory,
+  })
   const authData = useProfileStore((s) => s.authData)
   const { auraLevel, auraScore, auraImpacts, refresh } =
     useSubjectVerifications(subjectId, roleEvaluationCategory)
   const [showEvaluationFlow, setShowEvaluationFlow] = useState(false)
-  const { ratings, inboundRatingsStatsString } = useInboundEvaluations({
-    subjectId,
-    evaluationCategory: roleEvaluationCategory,
-  })
   const impactPercentage = useImpactPercentage(auraImpacts, authData?.brightId)
 
   const { loading, myRatingToSubject, myConfidenceValueInThisSubjectRating } =
-    useMyEvaluationsContext({
+    useMyEvaluationData({
       subjectId,
       evaluationCategory: roleEvaluationCategory,
     })

@@ -3,13 +3,13 @@ import { customElement, property } from "lit/decorators.js"
 
 @customElement("a-flex")
 export class FlexElement extends LitElement {
-  @property()
+  @property({ reflect: true })
   direction: "col" | "row" = "row"
 
-  @property({ type: Number })
-  gap: number = 10
+  @property({ type: Number, reflect: true })
+  gap: number = 0
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   wrap: boolean = false
 
   @property({ reflect: true })
@@ -22,56 +22,46 @@ export class FlexElement extends LitElement {
     div {
       display: flex;
       flex-direction: row;
-    }
-
-    div[data-gap="1"] {
-      gap: var(--sm);
-    }
-
-    div[data-gap="4"] {
-      gap: var(--md);
+      flex-wrap: nowrap;
     }
 
     div[data-direction="col"] {
       flex-direction: column;
     }
 
-    div[data-justify="start"] {
-      justify-content: flex-start;
+    div[data-wrap="true"] {
+      flex-wrap: wrap;
     }
 
-    div[data-justify="end"] {
-      justify-content: flex-end;
-    }
+    div[data-gap="0"] { gap: 0; }
+    div[data-gap="1"] { gap: 0.25rem; }
+    div[data-gap="2"] { gap: 0.5rem; }
+    div[data-gap="3"] { gap: 0.75rem; }
+    div[data-gap="4"] { gap: 1rem; }
+    div[data-gap="5"] { gap: 1.25rem; }
+    div[data-gap="6"] { gap: 1.5rem; }
+    div[data-gap="7"] { gap: 1.75rem; }
+    div[data-gap="8"] { gap: 2rem; }
+    div[data-gap="10"] { gap: 2.5rem; }
+    div[data-gap="12"] { gap: 3rem; }
 
-    div[data-justify="between"] {
-      justify-content: space-between;
-    }
+    div[data-justify="start"] { justify-content: flex-start; }
+    div[data-justify="end"] { justify-content: flex-end; }
+    div[data-justify="between"] { justify-content: space-between; }
+    div[data-justify="center"] { justify-content: center; }
 
-    div[data-justify="center"] {
-      justify-content: center;
-    }
-
-    div[data-align="center"] {
-      align-items: center;
-    }
-
-    div[data-align="start"] {
-      align-items: start;
-    }
-
-    div[data-align="end"] {
-      align-items: end;
-    }
+    div[data-align="center"] { align-items: center; }
+    div[data-align="start"] { align-items: flex-start; }
+    div[data-align="end"] { align-items: flex-end; }
   `
 
   protected render() {
     return html`<div
-      data-direction="${this.direction}"
-      data-gap="${this.gap}"
+      data-direction=${this.direction}
+      data-gap=${this.gap}
       data-wrap=${this.wrap}
-      data-justify="${this.justify}"
-      data-align="${this.align}"
+      data-justify=${this.justify}
+      data-align=${this.align}
     >
       <slot></slot>
     </div>`

@@ -269,7 +269,7 @@ export class PopoverElement extends LitElement {
     if (changedProperties.has('open') && this._internalChange) {
       this._internalChange = false
       this.dispatchEvent(
-        new CustomEvent('open-changed', {
+        new CustomEvent('open-change', {
           detail: { open: this.open },
           bubbles: true,
           composed: true

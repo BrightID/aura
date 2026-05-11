@@ -4,29 +4,28 @@ import { useMemo } from 'react';
 import useViewMode from './useViewMode';
 import { type EvaluationCategory } from '../types/dashboard';
 
-export function useMyEvaluationsContext(props?: {
+export function useMyEvaluationData(props?: {
   subjectId?: string;
   evaluationCategory?: EvaluationCategory;
 }) {
   const context = useMyEvaluations();
   const { currentEvaluationCategory } = useViewMode();
+  const activeCategory = props?.evaluationCategory ?? currentEvaluationCategory;
 
-  const myRatings = useMemo(() => {
-    if (!context.myRatings) return null;
-    return context.myRatings.filter(
-      (r) => r.category === (props?.evaluationCategory ?? currentEvaluationCategory),
-    );
-  }, [context.myRatings, currentEvaluationCategory, props?.evaluationCategory]);
+  const myRatings = useMemo(
+    () => context.myRatings?.filter((r) => r.category === activeCategory) ?? null,
+    [context.myRatings, activeCategory],
+  );
 
-  const myRatingToSubject = useMemo(() => {
-    if (!props?.subjectId || !myRatings) return undefined;
-    return myRatings.find((r) => r.toBrightId === props.subjectId);
-  }, [myRatings, props?.subjectId]);
+  const myRatingToSubject = useMemo(
+    () => (props?.subjectId ? myRatings?.find((r) => r.toBrightId === props.subjectId) : undefined),
+    [myRatings, props?.subjectId],
+  );
 
-  const myConnectionToSubject = useMemo(() => {
-    if (!props?.subjectId || !context.myConnections) return undefined;
-    return context.myConnections.find((c) => c.id === props.subjectId);
-  }, [context.myConnections, props?.subjectId]);
+  const myConnectionToSubject = useMemo(
+    () => (props?.subjectId ? context.myConnections?.find((c) => c.id === props.subjectId) : undefined),
+    [context.myConnections, props?.subjectId],
+  );
 
   const myConfidenceValueInThisSubjectRating = useMemo(
     () => getConfidenceValueOfAuraRatingObject(myRatingToSubject),
@@ -38,10 +37,7 @@ export function useMyEvaluationsContext(props?: {
     [myRatingToSubject],
   );
 
-  const myActiveRatings = useMemo(
-    () => myRatings?.filter((r) => Number(r.rating)),
-    [myRatings],
-  );
+  const myActiveRatings = useMemo(() => myRatings?.filter((r) => Number(r.rating)), [myRatings]);
 
   const myLastRating = useMemo(
     () => (myActiveRatings ? myActiveRatings[myActiveRatings.length - 1] : undefined),

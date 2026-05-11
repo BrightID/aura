@@ -9,7 +9,7 @@ import { decryptUserData } from "@/utils/crypto"
 import useViewMode from "./useViewMode"
 import { type EvaluationCategory } from "../types/dashboard"
 
-export function useOutboundEvaluationsContext(props: {
+export function useSubjectOutboundEvaluations(props: {
   subjectId: string
   evaluationCategory?: EvaluationCategory
 }) {
@@ -95,6 +95,7 @@ export function useOutboundEvaluationsContext(props: {
   return { ...hookData, ...filterAndSortData, filters, sorts, ratings: filteredRatings, itemsFiltered, itemsOriginal }
 }
 
-export function useOutboundEvaluationsContextSafe(subjectId: string) {
+/** Lightweight variant — only raw ratings/connections, no filter/sort overhead. */
+export function useSubjectOutboundEvaluationsRaw(subjectId: string) {
   return useOutboundEvaluations({ subjectId: subjectId || undefined })
 }

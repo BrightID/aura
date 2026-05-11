@@ -1,5 +1,5 @@
 import { PLAYER_EVALUATION_MINIMUM_COUNT_BEFORE_TRAINING } from '@/constants/index';
-import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
+import { useMyEvaluationData } from '@/hooks/useMyEvaluationData';
 import { useSubjectVerifications } from 'hooks/useSubjectVerifications';
 import { useMemo } from 'react';
 import { useProfileStore } from '@/store/profile.store';
@@ -89,7 +89,7 @@ export const useLevelupProgress = ({
     subjectId,
     EvaluationCategory.TRAINER,
   );
-  const { myRatings } = useMyEvaluationsContext();
+  const { myRatings } = useMyEvaluationData();
 
   const ratingsToBeDoneCount = useMemo(
     () =>

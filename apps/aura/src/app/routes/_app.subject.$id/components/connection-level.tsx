@@ -1,4 +1,4 @@
-import { useMyEvaluationsContext } from "@/hooks/useMyEvaluationsContext"
+import { useMyEvaluationData } from "@/hooks/useMyEvaluationData"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { NodeApiContext } from "@/features/brightid/components/NodeApiGate"
 import { operation_states } from "@/features/brightid/utils/constants"
@@ -6,7 +6,7 @@ import { Operation, useOperationsStore } from "@/store/operations.store"
 import { useProfileStore } from "@/store/profile.store"
 
 export function ConnectionLevel({ subjectId }: { subjectId: string }) {
-  const { myConnectionToSubject: connection } = useMyEvaluationsContext({
+  const { myConnectionToSubject: connection } = useMyEvaluationData({
     subjectId,
   })
 

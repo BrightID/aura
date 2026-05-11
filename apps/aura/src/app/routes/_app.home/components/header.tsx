@@ -2,8 +2,8 @@ import { useEffect } from "react"
 import DefaultHeader from "@/components/Header/DefaultHeader"
 import Tooltip from "@/components/Shared/Tooltip"
 import { getViewModeBackgroundColorClass, preferredViewIcon } from "@/constants"
-import { useSubjectInboundEvaluationsSetup } from "@/hooks/useSubjectInboundEvaluationsContext"
-import { useOutboundEvaluationsContext } from "@/hooks/useOutboundEvaluationsContext"
+import { useSubjectOutboundEvaluations } from "@/hooks/useOutboundEvaluationsContext"
+import { useSubjectInboundEvaluations } from "@/hooks/useSubjectInboundEvaluations"
 import { useSubjectVerifications } from "@/hooks/useSubjectVerifications"
 import useViewMode from "@/hooks/useViewMode"
 import { useProfileStore } from "@/store/profile.store"
@@ -63,12 +63,12 @@ function HomeHeaderItems() {
 
   const subjectId = authData!.brightId
 
-  const { itemsFiltered: trainerActivity } = useOutboundEvaluationsContext({
+  const { itemsFiltered: trainerActivity } = useSubjectOutboundEvaluations({
     subjectId,
     evaluationCategory: EvaluationCategory.TRAINER,
   })
 
-  const { itemsFiltered: managerActivity } = useOutboundEvaluationsContext({
+  const { itemsFiltered: managerActivity } = useSubjectOutboundEvaluations({
     subjectId,
     evaluationCategory: EvaluationCategory.MANAGER,
   })
@@ -154,7 +154,7 @@ export const HeaderBody = () => {
   const authData = useProfileStore((s) => s.authData)
   const subjectId = authData?.brightId
 
-  useSubjectInboundEvaluationsSetup(subjectId)
+  useSubjectInboundEvaluations({ subjectId: subjectId })
 
   if (!subjectId) return null
 

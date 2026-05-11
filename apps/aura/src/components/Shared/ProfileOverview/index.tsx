@@ -1,4 +1,4 @@
-import { useSubjectInboundEvaluationsContext } from '@/hooks/useSubjectInboundEvaluationsContext';
+import { useSubjectInboundEvaluations } from '@/hooks/useSubjectInboundEvaluations'
 import {
   useSubjectVerifications,
   useTotalImpact,
@@ -56,7 +56,7 @@ const ProfileOverview = ({
     ratings: inboundRatings,
     inboundRatingsStatsString,
     connections: inboundConnections,
-  } = useSubjectInboundEvaluationsContext({
+  } = useSubjectInboundEvaluations({
     subjectId,
     evaluationCategory: viewModeToViewAs[viewMode],
   });

@@ -123,7 +123,7 @@ export const createRouter = (classThis: ReactiveControllerHost & HTMLElement) =>
     {
       path: '/embed/projects/:id',
       enter: async () => {
-        await import('@/components/verification/index')
+        await import('@aura/widgets/verification/index')
         return true
       },
       render: ({ id }) =>

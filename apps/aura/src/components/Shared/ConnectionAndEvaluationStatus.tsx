@@ -1,5 +1,5 @@
 import EvaluationThumb from 'components/Shared/EvaluationThumb';
-import { useMyEvaluationsContext } from '@/hooks/useMyEvaluationsContext';
+import { useMyEvaluationData } from '@/hooks/useMyEvaluationData';
 import { FC } from 'react';
 import { connectionLevelIcons } from '@/utils/connection';
 
@@ -23,7 +23,7 @@ export const ConnectionStatus: FC<SubjectIdProps> = ({ subjectId }) => {
   const {
     myRatingNumberToSubject: ratingNumber,
     myConnectionToSubject: inboundConnectionInfo,
-  } = useMyEvaluationsContext({ subjectId });
+  } = useMyEvaluationData({ subjectId });
 
   if (
     !inboundConnectionInfo ||
@@ -59,7 +59,7 @@ export const EvaluationStatus = ({ subjectId }: { subjectId: string }) => {
     myRatingToSubject: rating,
     myRatingNumberToSubject: ratingNumber,
     myConfidenceValueInThisSubjectRating: confidenceValue,
-  } = useMyEvaluationsContext({ subjectId });
+  } = useMyEvaluationData({ subjectId });
 
   return ratingNumber ? (
     <div
@@ -113,7 +113,7 @@ export const ConnectionAndEvaluationStatus = ({
     myRatingNumberToSubject: ratingNumber,
     myConnectionToSubject: inboundConnectionInfo,
     myConfidenceValueInThisSubjectRating: confidenceValue,
-  } = useMyEvaluationsContext({ subjectId });
+  } = useMyEvaluationData({ subjectId });
 
   const authData = useProfileStore((s) => s.authData);
 
