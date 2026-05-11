@@ -32,7 +32,7 @@ import { Fragment, useState } from "react"
 import { CheckIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { Link, useNavigate } from "react-router"
 import { useMutation } from "@tanstack/react-query"
-import { auth, db, fbDb, writeData } from "~/lib/firebase"
+import { auth, db } from "~/lib/firebase"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { addDoc, collection } from "firebase/firestore"
 

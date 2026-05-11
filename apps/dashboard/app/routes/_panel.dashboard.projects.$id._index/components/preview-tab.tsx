@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import type { VerificationLevel } from "~/components/core/verification/types";
-import { AuraVerificationFrame } from "~/components/core/verification/verification-frame";
+import { WidgetPreviewFrame } from "~/components/core/verification/WidgetPreviewFrame";
 import {
   DEFAULT_DEMO_CONFIG,
   DEMO_APP_PRESETS,
   DEMO_THEMES,
-  toUserStatus,
   type DemoConfig,
 } from "~/components/core/verification/demo-config";
+import type { VerificationLevel } from "~/components/core/verification/types";
 import type { Project } from "~/types/projects";
 
 export default function PreviewTab({ project }: { project: Project }) {
@@ -25,15 +24,8 @@ export default function PreviewTab({ project }: { project: Project }) {
     testMode: project.brightIdApp?.testing ?? true,
   });
 
-  const [verificationResult, setVerificationResult] = useState<{
-    userId: string;
-    level: VerificationLevel;
-  } | null>(null);
-
   const update = (patch: Partial<DemoConfig>) =>
     setConfig((prev) => ({ ...prev, ...patch }));
-
-  const userStatus = toUserStatus(config);
 
   return (
     <div className="mx-auto px-4 py-8">
@@ -252,88 +244,36 @@ export default function PreviewTab({ project }: { project: Project }) {
             </div>
           </div>
 
-          {/* Verification callback result */}
-          {verificationResult && (
-            <div className="p-4 rounded-xl bg-aura-success/10 border border-aura-success/20">
-              <div className="flex items-center gap-2 text-aura-success">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span className="font-medium">
-                  Verification Callback Received
-                </span>
-              </div>
-              <div className="mt-2 text-sm text-muted-foreground font-mono">
-                <p>userId: &quot;{verificationResult.userId}&quot;</p>
-                <p>level: {verificationResult.level}</p>
-              </div>
-            </div>
-          )}
-
           {/* Integration snippet */}
           <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-3">
             <h3 className="text-sm font-medium text-foreground">
               Integration Code
             </h3>
             <div className="p-3 rounded-lg bg-background/50 overflow-x-auto">
-              <pre className="text-xs text-muted-foreground font-mono whitespace-pre">
-                {/*<AuraVerificationFrame
-                  appName={config.appName}
-                  appDescription={config.appDescription}
-                  requiredLevel={config.requiredLevel}
-                  theme={config.theme}
-                ></AuraVerificationFrame>*/}
-                {`<AuraVerificationFrame
-  appName="${config.appName}"
-  appDescription="${config.appDescription}"
-  requiredLevel={${config.requiredLevel}}
+              <pre className="text-xs text-muted-foreground font-mono whitespace-pre">{`<app-verification-embed
+  project-id="${config.appName}"
   theme="${config.theme}"
-  onVerified={(userId, level) => {
-    // Handle verification
-  }}
-/>`}
-              </pre>
+></app-verification-embed>`}</pre>
             </div>
           </div>
         </div>
 
-        {/* Live frame preview */}
+        {/* Live widget preview */}
         <div className="lg:sticky lg:top-24">
           <div className="flex justify-center">
-            <AuraVerificationFrame
+            <WidgetPreviewFrame
               appName={config.appName}
               appDescription={config.appDescription}
               appLogo={config.appLogo}
               requiredLevel={config.requiredLevel}
               theme={config.theme}
               testMode={config.testMode}
-              externalUserStatus={userStatus}
-              onUserStatusChange={(status) =>
-                setConfig((prev) => ({
-                  ...prev,
-                  isConnected: status.isConnected,
-                  userId: status.userId ?? prev.userId,
-                  currentLevel: status.currentLevel,
-                  evaluationsReceived: status.evaluationsReceived,
-                  evaluationsNeeded: status.evaluationsNeeded,
-                  score: status.score,
-                  scoreNeeded: status.scoreNeeded,
-                }))
-              }
-              onVerified={(userId, level) =>
-                setVerificationResult({ userId, level })
-              }
-              onClose={() => setVerificationResult(null)}
+              isConnected={config.isConnected}
+              currentLevel={config.currentLevel as 0 | 1 | 2 | 3}
+              evaluationsReceived={config.evaluationsReceived}
+              evaluationsNeeded={config.evaluationsNeeded}
+              score={config.score}
+              scoreNeeded={config.scoreNeeded}
             />
           </div>
         </div>
