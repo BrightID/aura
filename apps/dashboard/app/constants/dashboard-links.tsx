@@ -14,6 +14,9 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconCreditCard,
+  IconBell,
+  IconUser,
 } from "@tabler/icons-react"
 
 export const dashboardLinks = {
@@ -24,9 +27,9 @@ export const dashboardLinks = {
       icon: IconDashboard,
     },
     {
-      title: "Pricing",
-      url: "/dashboard/pricing",
-      icon: IconListDetails,
+      title: "Projects",
+      url: "/dashboard/projects",
+      icon: IconFolder,
     },
     {
       title: "Analytics",
@@ -34,9 +37,26 @@ export const dashboardLinks = {
       icon: IconChartBar,
     },
     {
-      title: "Projects",
-      url: "/dashboard/projects",
-      icon: IconFolder,
+      title: "Pricing",
+      url: "/dashboard/pricing",
+      icon: IconListDetails,
+    },
+  ],
+  navAccount: [
+    {
+      title: "Account",
+      url: "/dashboard/account",
+      icon: IconUser,
+    },
+    {
+      title: "Billing",
+      url: "/dashboard/billing",
+      icon: IconCreditCard,
+    },
+    {
+      title: "Notifications",
+      url: "/dashboard/notifications",
+      icon: IconBell,
     },
   ],
   navClouds: [

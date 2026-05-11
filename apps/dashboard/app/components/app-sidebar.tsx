@@ -3,6 +3,7 @@ import * as React from "react"
 import { NavMain } from "~/components/nav-main"
 import { NavSecondary } from "~/components/nav-secondary"
 import { NavUser } from "~/components/nav-user"
+import { SidebarGroupLabel } from "~/components/ui/sidebar"
 import {
   Sidebar,
   SidebarContent,
@@ -39,6 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={dashboardLinks.navMain} />
+        <NavSecondary items={dashboardLinks.navAccount} />
         <NavSecondary items={dashboardLinks.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

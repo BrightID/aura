@@ -63,6 +63,20 @@ export const upgradeRequest = pgTable('upgrade_requests', {
   planId: integer().references(() => verificationPlansTable.id, { onDelete: 'cascade' })
 })
 
+export const paymentsTable = pgTable('payments', {
+  id: serial('id').primaryKey(),
+  orderId: varchar('order_id', { length: 100 }).notNull().unique(),
+  projectId: integer('project_id').notNull().references(() => projectsTable.id, { onDelete: 'cascade' }),
+  planId: integer('plan_id').notNull(),
+  userId: varchar('user_id', { length: 43 }).notNull(),
+  isYearly: boolean('is_yearly').default(false),
+  amount: integer('amount').notNull(),
+  nowpaymentsId: varchar('nowpayments_id', { length: 50 }),
+  status: varchar('status', { length: 30 }).default('pending'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
 export const verificationsTable = pgTable('verifications', {
   id: serial().primaryKey(),
   userId: varchar({ length: 43 }).notNull(),
