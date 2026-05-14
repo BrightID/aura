@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import OverviewSection from "./overview"
 import ProjectUsage from "./usage"
+import { UserRequiredLevelCard } from "./requirement-level"
 import ProjectBilling from "./billing"
 import { SettingsTab } from "./settings"
 import { BrightIdSettingsForm } from "./brightid-settings"
@@ -48,7 +49,10 @@ export function ProjectTabs({ project }: { project: Project }) {
         </div>
       </TabsContent>
       <TabsContent value="settings">
-        <SettingsTab project={project} />
+        <div className="space-y-6">
+          <UserRequiredLevelCard project={project} />
+          <SettingsTab project={project} />
+        </div>
       </TabsContent>
       <TabsContent value="brightid">
         <BrightIdSettingsForm initialData={project.brightIdApp as never} />
