@@ -1,4 +1,3 @@
-import googleIcon from '@/assets/icons/google.svg'
 import {
   askedEvaluationPlayers,
   foundAuraPlayersFromContact,
@@ -25,7 +24,7 @@ import type { Contact } from '@/utils/integrations/contacts'
 import { parseContactsFile } from '@/utils/integrations/contacts-file'
 import { getContactsList } from '@/utils/integrations/google'
 import './level-badge'
-import type { ContactsHashWorkerOutput } from '@/workers/contacts-hash.worker'
+import type { ContactsHashWorkerOutput } from '../workers/contacts-hash.worker'
 
 @customElement('verification-find-players')
 export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
@@ -716,7 +715,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
               ?disabled=${isImporting}
               @click=${() => this.#googleImport.mutate()}
             >
-              <img src=${googleIcon} alt="Google" />
+              <iconify-icon icon="simple-icons:google"></iconify-icon>
               Google Contacts
             </button>
             <button
@@ -1035,7 +1034,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
   }
 
   private async _processContacts(contacts: Contact[]) {
-    const worker = new Worker(new URL('../../workers/contacts-hash.worker.ts', import.meta.url), {
+    const worker = new Worker(new URL('../workers/contacts-hash.worker.ts', import.meta.url), {
       type: 'module'
     })
 

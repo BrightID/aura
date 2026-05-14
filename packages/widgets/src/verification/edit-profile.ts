@@ -1,20 +1,25 @@
-import { userFirstName, userGravatarEmail, userLastName, userProfilePicture } from '@/states/user'
-import { css, type CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { type CSSResultGroup, css, html, LitElement } from "lit"
+import { customElement, state } from "lit/decorators.js"
+import {
+  userFirstName,
+  userGravatarEmail,
+  userLastName,
+  userProfilePicture,
+} from "@/states/user"
 
 async function getGravatarHash(email: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase())
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer)
   return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
 }
 
-@customElement('verification-edit-profile')
+@customElement("verification-edit-profile")
 export class VerificationEditProfileElement extends LitElement {
-  @state() private _firstName = ''
-  @state() private _lastName = ''
-  @state() private _gravatarEmail = ''
+  @state() private _firstName = ""
+  @state() private _lastName = ""
+  @state() private _gravatarEmail = ""
   @state() private _saving = false
 
   static styles: CSSResultGroup = css`
@@ -142,7 +147,11 @@ export class VerificationEditProfileElement extends LitElement {
     return html`
       <div class="stack">
         <div class="page-header">
-          <button class="back-btn" aria-label="Go back" @click=${() => this._emit('back')}>
+          <button
+            class="back-btn"
+            aria-label="Go back"
+            @click=${() => this._emit("back")}
+          >
             <iconify-icon icon="lucide:chevron-left"></iconify-icon>
           </button>
           <h2 class="title">Edit Profile</h2>
@@ -150,8 +159,8 @@ export class VerificationEditProfileElement extends LitElement {
 
         <p class="purpose-note">
           <iconify-icon icon="lucide:info"></iconify-icon>
-          Your name and photo are embedded in the link you share with Aura players, making it easier
-          for them to identify and evaluate you.
+          Your name and photo are embedded in the link you share with Aura
+          players, making it easier for them to identify and evaluate you.
         </p>
 
         <div class="form-card">
@@ -196,12 +205,16 @@ export class VerificationEditProfileElement extends LitElement {
               variant="ghost"
               size="sm"
               ?disabled=${this._saving}
-              @click=${() => this._emit('back')}
+              @click=${() => this._emit("back")}
             >
               Cancel
             </a-button>
-            <a-button size="sm" ?disabled=${this._saving} @click=${() => this._save()}>
-              ${this._saving ? 'Saving…' : 'Save'}
+            <a-button
+              size="sm"
+              ?disabled=${this._saving}
+              @click=${() => this._save()}
+            >
+              ${this._saving ? "Saving…" : "Save"}
             </a-button>
           </div>
         </div>
@@ -222,16 +235,18 @@ export class VerificationEditProfileElement extends LitElement {
         const hash = await getGravatarHash(email)
         userProfilePicture.set(`https://gravatar.com/avatar/${hash}?s=80&d=mp`)
       } else if (!email) {
-        userProfilePicture.set('')
+        userProfilePicture.set("")
       }
 
-      this._emit('back')
+      this._emit("back")
     } finally {
       this._saving = false
     }
   }
 
   private _emit(event: string) {
-    this.dispatchEvent(new CustomEvent(event, { bubbles: true, composed: true }))
+    this.dispatchEvent(
+      new CustomEvent(event, { bubbles: true, composed: true }),
+    )
   }
 }
