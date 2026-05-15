@@ -5,36 +5,38 @@ import withCors from '../lib/cors.js'
 import { db } from '../lib/db.js'
 import { paymentsTable, projectsTable, verificationPlansTable } from '../lib/schema.js'
 
-const TERMINAL = new Set(['finished', 'failed', 'refunded', 'expired', 'partially_paid'])
+const TERMINAL = new Set(['completed', 'failed'])
 
-function verifySignature(payload: Record<string, unknown>, signature: string, secret: string): boolean {
-  const sorted = Object.keys(payload)
-    .sort()
-    .reduce<Record<string, unknown>>((acc, k) => { acc[k] = payload[k]; return acc }, {})
-  const hmac = createHmac('sha512', secret).update(JSON.stringify(sorted)).digest('hex')
-  return hmac === signature
+function verifySignature(rawBody: string, sigHeader: string, secret: string): boolean {
+  const parts = Object.fromEntries(sigHeader.split(',').map(p => p.split('=')))
+  const { t: timestamp, s: signature } = parts
+  if (!timestamp || !signature) return false
+  const expected = createHmac('sha256', secret).update(`${timestamp}.${rawBody}`).digest('hex')
+  return expected === signature
 }
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const secret = process.env.NOWPAYMENTS_IPN_SECRET
+  const secret = process.env.MOONPAY_WEBHOOK_SECRET
   if (!secret) return res.status(500).end()
 
-  const signature = req.headers['x-nowpayments-sig'] as string | undefined
-  if (!signature) return res.status(400).json({ error: 'Missing signature' })
+  const sigHeader = req.headers['moonpay-signature-v2'] as string | undefined
+  if (!sigHeader) return res.status(400).json({ error: 'Missing signature' })
 
-  const body = req.body as Record<string, unknown>
-  if (!verifySignature(body, signature, secret)) {
-    console.error('NOWPayments webhook: invalid signature')
+  const rawBody = JSON.stringify(req.body)
+  if (!verifySignature(rawBody, sigHeader, secret)) {
+    console.error('MoonPay webhook: invalid signature')
     return res.status(401).json({ error: 'Invalid signature' })
   }
 
-  const paymentStatus = body.payment_status as string
-  const orderId = body.order_id as string
-  if (!orderId) return res.status(400).json({ error: 'Missing order_id' })
+  const event = req.body as { type: string; data: { status: string; externalTransactionId: string } }
+  if (event.type !== 'transaction_updated') return res.json({ received: true })
 
-  // Acknowledge non-terminal statuses immediately
+  const paymentStatus = event.data.status
+  const orderId = event.data.externalTransactionId
+  if (!orderId) return res.status(400).json({ error: 'Missing externalTransactionId' })
+
   if (!TERMINAL.has(paymentStatus)) return res.json({ received: true })
 
   try {
@@ -50,14 +52,14 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       .where(eq(paymentsTable.orderId, orderId))
       .limit(1)
 
-    if (!payment || payment.status === 'finished') return res.json({ received: true })
+    if (!payment || payment.status === 'completed') return res.json({ received: true })
 
     await db
       .update(paymentsTable)
       .set({ status: paymentStatus, updatedAt: new Date() })
       .where(eq(paymentsTable.orderId, orderId))
 
-    if (paymentStatus === 'finished') {
+    if (paymentStatus === 'completed') {
       const [plan] = await db
         .select({ tokens: verificationPlansTable.tokens })
         .from(verificationPlansTable)

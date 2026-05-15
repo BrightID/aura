@@ -2,23 +2,50 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
-import { Check } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Check, CheckCircle, Loader2, XCircle } from "lucide-react"
 import { ParticlesBackground } from "@/components/particles-background"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { plans } from "~/constants/subscriptions"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getUserProjects } from "~/utils/apis"
 import { useParams } from "react-router"
-import { PaymentCheckout } from "~/components/payments/checkout"
+import { toast } from "sonner"
+import { getAuth } from "firebase/auth"
+import axios from "axios"
+import { API_BASE_URL } from "~/constants"
+
+type PaymentStatus = "pending" | "waitingPayment" | "waitingAuthorization" | "inProgress" | "completed" | "failed"
+
+interface ActiveWidget {
+  widgetUrl: string
+  orderId: string
+  planId: number
+  planName: string
+}
+
+async function getToken(): Promise<string> {
+  const token = await getAuth().currentUser?.getIdToken()
+  if (!token) throw new Error("Not authenticated")
+  return token
+}
 
 export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false)
-  const [checkoutPlan, setCheckoutPlan] = useState<(typeof plans)[0] | null>(null)
+  const [loadingPlanId, setLoadingPlanId] = useState<number | null>(null)
+  const [activeWidget, setActiveWidget] = useState<ActiveWidget | null>(null)
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const queryClient = useQueryClient()
   const params = useParams()
 
-  const { data: projects, refetch } = useQuery({
+  const { data: projects } = useQuery({
     queryFn: getUserProjects,
     queryKey: ["user-projects"],
   })
@@ -29,6 +56,47 @@ export default function PricingSection() {
   )
 
   const currentPlan = plans.find((item) => focusedProject?.selectedPlanId === item.id)
+
+  useEffect(() => {
+    if (!activeWidget || !paymentStatus) return
+    if (paymentStatus === "completed" || paymentStatus === "failed") return
+
+    if (pollRef.current) clearInterval(pollRef.current)
+
+    pollRef.current = setInterval(async () => {
+      try {
+        const t = await getToken()
+        const { data } = await axios.get<{ status: PaymentStatus }>(
+          `${API_BASE_URL}/api/payments/status/${activeWidget.orderId}`,
+          { headers: { Authorization: `Bearer ${t}` } }
+        )
+        setPaymentStatus(data.status)
+
+        if (data.status === "completed") {
+          clearInterval(pollRef.current!)
+          const t2 = await getToken()
+          const plan = plans.find((p) => p.id === activeWidget.planId)!
+          await axios.post(
+            `${API_BASE_URL}/api/projects/upgrade-project`,
+            { planId: activeWidget.planId, projectId: focusedProject!.id, orderId: activeWidget.orderId, isYearly },
+            { headers: { Authorization: `Bearer ${t2}` } }
+          )
+          queryClient.invalidateQueries({ queryKey: ["user-projects"] })
+          toast.success(`Subscribed to ${activeWidget.planName}!`)
+        } else if (data.status === "failed") {
+          clearInterval(pollRef.current!)
+        }
+      } catch { /* keep polling */ }
+    }, 5000)
+
+    return () => { if (pollRef.current) clearInterval(pollRef.current) }
+  }, [activeWidget, paymentStatus, focusedProject, isYearly, queryClient])
+
+  const handleClose = () => {
+    if (pollRef.current) clearInterval(pollRef.current)
+    setActiveWidget(null)
+    setPaymentStatus(null)
+  }
 
   return (
     <section className="w-full overflow-hidden py-3">
@@ -128,11 +196,27 @@ export default function PricingSection() {
                 </div>
 
                 <Button
-                  onClick={() => {
-                    if (isCurrent || isFree) return
-                    setCheckoutPlan(plan)
+                  onClick={async () => {
+                    if (isCurrent || isFree || !focusedProject) return
+                    setLoadingPlanId(plan.id)
+                    try {
+                      const token = await getToken()
+                      const successUrl = `${window.location.origin}/dashboard/projects/${focusedProject.id}/upgrade`
+                      const cancelUrl = window.location.href
+                      const { data } = await axios.post<{ orderId: string; widgetUrl: string }>(
+                        `${API_BASE_URL}/api/payments/create-invoice`,
+                        { projectId: focusedProject.id, planId: plan.id, amount: price, isYearly, successUrl, cancelUrl },
+                        { headers: { Authorization: `Bearer ${token}` } }
+                      )
+                      setActiveWidget({ widgetUrl: data.widgetUrl, orderId: data.orderId, planId: plan.id, planName: plan.name })
+                      setPaymentStatus("waitingPayment")
+                    } catch {
+                      toast.error("Failed to create invoice. Please try again.")
+                    } finally {
+                      setLoadingPlanId(null)
+                    }
                   }}
-                  disabled={isCurrent || isFree}
+                  disabled={isCurrent || isFree || loadingPlanId !== null}
                   className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
                     isCurrent
                       ? "bg-muted text-muted-foreground cursor-not-allowed"
@@ -142,7 +226,9 @@ export default function PricingSection() {
                   }`}
                   size="lg"
                 >
-                  {isCurrent ? "Current Plan" : isFree ? "Free" : plan.cta}
+                  {loadingPlanId === plan.id ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…</>
+                  ) : isCurrent ? "Current Plan" : isFree ? "Free" : plan.cta}
                 </Button>
 
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -170,19 +256,49 @@ export default function PricingSection() {
         </div>
       </div>
 
-      {checkoutPlan && focusedProject && (
-        <PaymentCheckout
-          open={!!checkoutPlan}
-          onOpenChange={(v) => { if (!v) setCheckoutPlan(null) }}
-          plan={checkoutPlan}
-          projectId={focusedProject.id}
-          isYearly={isYearly}
-          onSuccess={() => {
-            setCheckoutPlan(null)
-            queryClient.invalidateQueries({ queryKey: ["user-projects"] })
-          }}
-        />
-      )}
+      <Dialog open={!!activeWidget} onOpenChange={(v) => { if (!v) handleClose() }}>
+        <DialogContent className="max-w-2xl w-full p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-5 pb-3">
+            <DialogTitle>
+              {paymentStatus === "completed"
+                ? `Subscribed to ${activeWidget?.planName}!`
+                : paymentStatus === "failed"
+                  ? "Payment failed"
+                  : `Complete payment — ${activeWidget?.planName}`}
+            </DialogTitle>
+          </DialogHeader>
+
+          {paymentStatus === "completed" && (
+            <div className="flex flex-col items-center gap-4 py-10 px-6">
+              <CheckCircle className="h-12 w-12 text-green-500" />
+              <p className="text-muted-foreground text-sm text-center">
+                Your subscription is now active. You can close this window.
+              </p>
+              <Button onClick={handleClose}>Done</Button>
+            </div>
+          )}
+
+          {paymentStatus === "failed" && (
+            <div className="flex flex-col items-center gap-4 py-10 px-6">
+              <XCircle className="h-12 w-12 text-destructive" />
+              <p className="text-muted-foreground text-sm text-center">
+                Payment did not complete. Please try again.
+              </p>
+              <Button variant="secondary" onClick={handleClose}>Close</Button>
+            </div>
+          )}
+
+          {paymentStatus !== "completed" && paymentStatus !== "failed" && activeWidget && (
+            <iframe
+              src={activeWidget.widgetUrl}
+              className="w-full border-0"
+              style={{ height: 600 }}
+              allow="payment; camera"
+              title="MoonPay checkout"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

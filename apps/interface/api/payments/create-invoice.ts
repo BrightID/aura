@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
+import { createHmac } from 'crypto'
 import { eq } from 'drizzle-orm'
 import { getAuth } from 'firebase-admin/auth'
 import { z } from 'zod'
@@ -14,11 +15,11 @@ const schema = z.object({
   planId: z.number().int(),
   amount: z.number().positive(),
   isYearly: z.boolean().default(false),
-  successUrl: z.string().url(),
-  cancelUrl: z.string().url(),
+  successUrl: z.url(),
+  cancelUrl: z.url()
 })
 
-const NP_BASE = 'https://api.nowpayments.io/v1'
+const MOONPAY_WIDGET = 'https://buy.moonpay.com'
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -26,8 +27,10 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   const token = req.headers['authorization']?.split('Bearer ')[1]
   if (!token) return res.status(401).json({ error: 'Unauthorized' })
 
-  const apiKey = process.env.NOWPAYMENTS_API_KEY
-  if (!apiKey) return res.status(500).json({ error: 'Payment provider not configured' })
+  const publishableKey = process.env.MOONPAY_PUBLISHABLE_KEY
+  const secretKey = process.env.MOONPAY_SECRET_KEY
+  if (!publishableKey || !secretKey)
+    return res.status(500).json({ error: 'Payment provider not configured' })
 
   try {
     const { uid } = await getAuth().verifyIdToken(token)
@@ -43,28 +46,21 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(403).json({ error: 'Forbidden' })
 
     const orderId = `${projectId}-${planId}-${isYearly ? 'y' : 'm'}-${Date.now()}`
-    const webhookUrl = `${process.env.API_BASE_URL ?? ''}/api/payments/webhook`
 
-    const npRes = await fetch(`${NP_BASE}/invoice`, {
-      method: 'POST',
-      headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        price_amount: amount,
-        price_currency: 'usd',
-        order_id: orderId,
-        order_description: `${project[0].name} — ${isYearly ? 'yearly' : 'monthly'} plan #${planId}`,
-        success_url: `${successUrl}?order_id=${orderId}`,
-        cancel_url: cancelUrl,
-        ipn_callback_url: webhookUrl,
-      }),
+    const params = new URLSearchParams({
+      apiKey: publishableKey,
+      baseCurrencyAmount: String(amount),
+      baseCurrencyCode: 'usd',
+      externalTransactionId: orderId,
+      redirectURL: `${successUrl}?order_id=${orderId}`,
+      cancelURL: cancelUrl
     })
 
-    if (!npRes.ok) {
-      console.error('NOWPayments error:', await npRes.text())
-      return res.status(502).json({ error: 'Failed to create invoice' })
-    }
+    const queryString = `?${params.toString()}`
+    const signature = createHmac('sha256', secretKey).update(queryString).digest('base64')
+    params.append('signature', signature)
 
-    const invoice = await npRes.json() as { id: string; invoice_url: string }
+    const widgetUrl = `${MOONPAY_WIDGET}?${params.toString()}`
 
     await db.insert(paymentsTable).values({
       orderId,
@@ -73,11 +69,11 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       userId: uid,
       isYearly,
       amount,
-      nowpaymentsId: invoice.id,
-      status: 'pending',
+      nowpaymentsId: orderId,
+      status: 'pending'
     })
 
-    return res.json({ orderId, invoiceId: invoice.id, invoiceUrl: invoice.invoice_url })
+    return res.json({ orderId, widgetUrl })
   } catch (error) {
     if (error instanceof z.ZodError) return res.status(400).json(z.treeifyError(error))
     console.error(error)

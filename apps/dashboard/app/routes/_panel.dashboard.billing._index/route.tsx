@@ -42,12 +42,11 @@ import { plans } from "~/constants/subscriptions"
 
 type PaymentStatus =
   | "pending"
-  | "waiting"
-  | "confirming"
-  | "finished"
+  | "waitingPayment"
+  | "waitingAuthorization"
+  | "inProgress"
+  | "completed"
   | "failed"
-  | "expired"
-  | "partially_paid"
 
 interface Payment {
   id: number
@@ -86,7 +85,7 @@ function PlanIcon({ planId }: { planId: number | null }) {
 
 function StatusBadge({ status }: { status: PaymentStatus | null }) {
   switch (status) {
-    case "finished":
+    case "completed":
       return (
         <Badge className="bg-green-500/15 text-green-600 border-green-500/30 gap-1">
           <CheckCircle className="h-3 w-3" />
@@ -94,23 +93,16 @@ function StatusBadge({ status }: { status: PaymentStatus | null }) {
         </Badge>
       )
     case "pending":
-    case "waiting":
-    case "confirming":
+    case "waitingPayment":
+    case "waitingAuthorization":
+    case "inProgress":
       return (
         <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/30 gap-1">
           <Clock className="h-3 w-3" />
           Processing
         </Badge>
       )
-    case "partially_paid":
-      return (
-        <Badge className="bg-orange-500/15 text-orange-600 border-orange-500/30 gap-1">
-          <Clock className="h-3 w-3" />
-          Partial
-        </Badge>
-      )
     case "failed":
-    case "expired":
       return (
         <Badge className="bg-destructive/15 text-destructive border-destructive/30 gap-1">
           <XCircle className="h-3 w-3" />
