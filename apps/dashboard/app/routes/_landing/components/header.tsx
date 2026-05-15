@@ -117,10 +117,7 @@ export function Header() {
                 Documentation
               </Link>
             </Button>
-            <Button
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-              asChild
-            >
+            <Button asChild>
               <Link to="/login">Get Started</Link>
             </Button>
           </div>
@@ -158,7 +155,7 @@ export function Header() {
                   Documentation
                 </Link>
               </Button>
-              <Button className="bg-primary text-primary-foreground" asChild>
+              <Button asChild>
                 <Link to="https://aura.brightid.org" target="_blank">
                   Get Started
                 </Link>

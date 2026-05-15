@@ -89,16 +89,16 @@ const EvaluateModalBody = ({
         />
       </p>
 
-      <div className="mb-5 w-full rounded-lg bg-white p-1.5 dark:bg-button-primary">
-        <div className="relative flex h-9.5 w-full bg-white dark:bg-button-primary">
+      <div className="mb-5 w-full rounded-lg bg-card p-1.5">
+        <div className="relative flex h-9.5 w-full bg-card">
           <span
             className={`background absolute bottom-0 top-0 w-1/2 cursor-pointer rounded-md transition-all duration-300 ease-in-out ${
-              isYes ? "left-0 right-1/2 bg-pl3" : "left-1/2 right-0 bg-error"
+              isYes ? "left-0 right-1/2 bg-primary" : "left-1/2 right-0 bg-destructive"
             }`}
           ></span>
           <div
             className={`absolute left-0 top-1/2 w-1/2 -translate-y-1/2 cursor-pointer bg-transparent text-center text-lg font-bold transition-all duration-300 ease-in-out ${
-              isYes ? "text-white" : "text-black"
+              isYes ? "text-primary-foreground" : "text-foreground"
             }`}
             data-testid={`evaluate-positive`}
             onClick={() => setIsYes(true)}
@@ -119,7 +119,7 @@ const EvaluateModalBody = ({
           </div>
           <div
             className={`absolute right-0 top-1/2 w-1/2 -translate-y-1/2 cursor-pointer bg-transparent text-center text-lg font-bold transition-all duration-300 ease-in-out ${
-              isYes ? "text-black" : "text-white"
+              isYes ? "text-foreground" : "text-destructive-foreground"
             }`}
             data-testid={`evaluate-negative`}
             onClick={() => setIsYes(false)}
@@ -158,18 +158,18 @@ const EvaluateModalBody = ({
         {prevRating ? (
           <div className="flex gap-3">
             <button
-              className={`flex items-center justify-center transition-all ease-linear ${
+              className={`flex items-center justify-center rounded-2xl px-4 py-3.5 text-xl font-bold transition-all ease-linear ${
                 onDelete
-                  ? `btn btn--big btn--outlined-big`
-                  : `btn btn--big w-full`
-              } `}
+                  ? "flex-1 border-2 border-primary bg-transparent text-primary"
+                  : "w-full bg-primary text-primary-foreground"
+              }`}
               onClick={submit}
             >
               {loading ? "Sending Operation..." : "Update Evaluation"}
             </button>
             <button
               data-testid="remove-evaluation"
-              className={`btn btn--big flex gap-2.5 bg-delete transition-all ease-linear dark:bg-red-500 ${
+              className={`flex gap-2.5 rounded-2xl px-4 py-3.5 text-xl font-bold bg-destructive text-destructive-foreground transition-all ease-linear ${
                 onDelete ? "w-full items-center justify-center" : ""
               }`}
               onClick={() =>
@@ -191,7 +191,7 @@ const EvaluateModalBody = ({
         ) : (
           <button
             data-testid="submit-evaluation"
-            className="btn btn--big w-full disabled:opacity-60"
+            className="w-full rounded-2xl bg-primary px-4 py-3.5 text-xl font-bold text-primary-foreground transition-opacity disabled:opacity-60"
             onClick={submit}
             disabled={loading}
           >

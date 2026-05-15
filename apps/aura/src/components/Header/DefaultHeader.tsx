@@ -40,8 +40,9 @@ export default function DefaultHeader({
   breadcrumbs?: ReactNode
 } & PropsWithChildren) {
   const toggleSearchModal = useSettingsStore((s) => s.toggleSearchModal)
-  const alerts = useNotificationsStore((s) => s.alerts)
-  const notificationsCount = alerts.filter((item) => !item.viewed).length
+  const notificationsCount = useNotificationsStore(
+    (s) => s.alerts.filter((a) => !a.viewed).length,
+  )
 
   return (
     <div className="flex flex-col gap-2.5 px-1 pt-3 md:px-4 md:pt-9">

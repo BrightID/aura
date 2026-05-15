@@ -73,7 +73,7 @@ export function HeroSection() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <Button
             size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg group animate-pulse-glow"
+            className="px-8 py-6 text-lg group animate-pulse-glow"
             asChild
           >
             <Link to="/login" target="_blank">

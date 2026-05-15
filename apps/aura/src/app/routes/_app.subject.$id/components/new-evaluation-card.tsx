@@ -11,8 +11,6 @@ const NewEvaluationCard = ({
         <EvaluateButton
           setShowEvaluationFlow={setShowEvaluationFlow}
           subjectId={subjectId}
-          textColor=""
-          bgColor="btn"
           image="/assets/images/SubjectProfile/subject-evaluation-big.svg"
         />
       </div>
@@ -23,30 +21,23 @@ const NewEvaluationCard = ({
 export default NewEvaluationCard;
 
 const EvaluateButton = ({
-  bgColor,
-  textColor,
   image,
   subjectId,
   setShowEvaluationFlow,
 }: {
-  bgColor: string;
-  textColor: string;
   image: string;
   subjectId: string;
   setShowEvaluationFlow: (value: boolean) => void;
 }) => {
   return (
-    <>
-      <div
-        onClick={() => setShowEvaluationFlow(true)}
-        data-testid={`evaluate-not-evaluated-subject-${subjectId}`}
-        className={`flex gap-2.5 justify-center w-full items-center ${bgColor} cursor-pointer`}
-      >
-        <div>
-          <img src={image} alt="" />
-        </div>
-        <div className={`font-bold ${textColor}`}>Evaluate Now!</div>
-      </div>
-    </>
+    <button
+      type="button"
+      onClick={() => setShowEvaluationFlow(true)}
+      data-testid={`evaluate-not-evaluated-subject-${subjectId}`}
+      className="flex gap-2.5 justify-center w-full items-center bg-primary text-primary-foreground rounded-md px-4 py-3 font-bold cursor-pointer hover:bg-primary/90 transition-colors"
+    >
+      <img src={image} alt="" />
+      Evaluate Now!
+    </button>
   );
 };

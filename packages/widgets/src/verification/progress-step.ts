@@ -885,11 +885,11 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
         title: `Reach Level ${this.requiredLevel}`,
         desc:
           evaluationsReceived > 0
-            ? `You have ${evaluationsReceived} evaluation${evaluationsReceived > 1 ? 's' : ''}. Higher-ranked verifiers give bigger score boosts.`
-            : 'Higher-ranked verifiers give bigger score boosts.',
-        ctaLabel: 'View score',
-        ctaIcon: 'lucide:trending-up',
-        action: () => this._emit('show-score')
+            ? `You have ${evaluationsReceived} evaluation${evaluationsReceived > 1 ? 's' : ''}. Find more Aura players to get additional evaluations and boost your score.`
+            : 'Find more Aura players to get evaluations and boost your score.',
+        ctaLabel: 'Find more players',
+        ctaIcon: 'lucide:users',
+        action: () => this._emit('find-players')
       }
     ] as const
     const step = steps[idx]

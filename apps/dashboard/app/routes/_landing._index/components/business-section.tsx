@@ -88,7 +88,7 @@ export function BusinessSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 group"
+                className="group"
                 asChild
               >
                 <Link to="https://brightid.gitbook.io/aura" target="_blank">

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
+import { useShallow } from 'zustand/react/shallow';
 
 import {
   EvaluateSubmittedOperation,
-  selectEvaluateOperations,
+  Operation,
   useOperationsStore,
 } from '@/store/operations.store';
 import { operation_states } from '@/features/brightid/utils/constants';
@@ -97,9 +98,15 @@ function EvaluateOpNotification({
 }
 
 export default function EvaluationOpNotifications() {
-  // Subscribe to operations store to react to changes
-  useOperationsStore((s) => s);
-  const operations = selectEvaluateOperations();
+  const operations = useOperationsStore(
+    useShallow((s) =>
+      Object.values(s).filter(
+        (v): v is EvaluateSubmittedOperation =>
+          typeof v === 'object' && v !== null && 'hash' in v &&
+          (v as Operation).name === 'Evaluate',
+      ),
+    ),
+  );
 
   const prevOperationsRef = useRef<EvaluateSubmittedOperation[] | null>(null);
 

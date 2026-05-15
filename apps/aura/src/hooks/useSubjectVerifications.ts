@@ -83,9 +83,13 @@ export const useImpactEChartOption = (
   const authData = useProfileStore((s) => s.authData);
   const authKey = useProfileStore((s) => s.authKey);
   const brightIdBackupEncrypted = useProfileStore((s) => s.brightIdBackupEncrypted);
-  const brightIdBackup = brightIdBackupEncrypted && authData?.password
-    ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
-    : null;
+  const brightIdBackup = useMemo(
+    () =>
+      brightIdBackupEncrypted && authData?.password
+        ? (decryptUserData(brightIdBackupEncrypted, authData.password) as BrightIdBackup)
+        : null,
+    [brightIdBackupEncrypted, authData?.password],
+  );
 
   const auraTopImpacts = useMemo(
     () =>

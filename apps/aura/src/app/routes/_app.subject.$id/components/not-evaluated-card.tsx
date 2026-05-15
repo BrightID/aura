@@ -8,18 +8,19 @@ const NotEvaluatedCard = ({
   return (
     <>
       <div className="flex items-center gap-2.5 justify-between">
-        <div
+        <button
+          type="button"
           data-testid={`evaluate-not-evaluated-subject-${subjectId}`}
           onClick={() => setShowEvaluationFlow(true)}
-          className="flex-1 flex flex-row py-4 justify-center items-center bg-natural-black gap-2.5 rounded-lg cursor-pointer"
+          className="flex-1 flex flex-row py-4 justify-center items-center bg-primary text-primary-foreground gap-2.5 rounded-lg cursor-pointer font-bold hover:bg-primary/90 transition-colors"
         >
           <img
-            className=" w-auto -mr-1"
+            className="w-auto -mr-1"
             src="/assets/images/SubjectProfile/evaluate-now-black.svg"
             alt=""
           />
-          <p className="font-bold">Evaluate now!</p>
-        </div>
+          Evaluate now!
+        </button>
       </div>
     </>
   );

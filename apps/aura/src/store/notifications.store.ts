@@ -253,7 +253,7 @@ async function updateInboundData(brightId: string) {
   }
 
   useNotificationsStore.getState().updateInboundTrackedState(inbounds);
-  useNotificationsStore.getState().toggleOutboundFetchings(false);
+  useNotificationsStore.getState().toggleInboundFetchings(false);
 }
 
 async function updateOutboundData(brightId: string) {

@@ -54,16 +54,17 @@ const EvaluateOverlayCard = ({
             </div>
           </div>
         </div>
-        <div
+        <button
+          type="button"
           onClick={() => setShowEvaluationFlow(true)}
-          className="btn flex min-w-[90px] cursor-pointer flex-col items-center justify-center rounded-md py-2"
+          className="flex min-w-[90px] cursor-pointer flex-col items-center justify-center rounded-md py-2 bg-primary/10 text-primary hover:bg-primary/20 transition-colors font-medium"
         >
           <img
             src="/assets/images/SubjectProfile/subject-evaluation.svg"
             alt=""
           />
-          <p className="font-medium">Evaluate</p>
-        </div>
+          Evaluate
+        </button>
       </div>
     </div>
   );

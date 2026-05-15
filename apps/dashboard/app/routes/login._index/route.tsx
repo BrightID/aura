@@ -189,7 +189,7 @@ function LoginScreen() {
           <Button
             variant="outline"
             onClick={loginWithGoogle}
-            className="w-full glass-effect border-white/30 hover-lift ripple-effect text-card-foreground hover:bg-white/20 font-sans transition-all duration-300"
+            className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
           >
             <IconBrandGoogle className="size-5 mr-2" />
             Google
@@ -198,7 +198,7 @@ function LoginScreen() {
           <Button
             variant="outline"
             onClick={loginWithApple}
-            className="w-full glass-effect border-white/30 hover-lift ripple-effect text-card-foreground hover:bg-white/20 font-sans transition-all duration-300"
+            className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
           >
             <IconBrandApple className="size-5 mr-2" />
             Apple

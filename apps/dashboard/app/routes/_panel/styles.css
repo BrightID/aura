@@ -25,20 +25,21 @@
   --chart-5: oklch(0.55 0.22 25);
   --radius: 0.75rem;
 
-  --aura-success: oklch(0.72 0.18 150);
-  --aura-warning: oklch(0.78 0.16 80);
-  --aura-info: oklch(0.65 0.16 200);
-  --aura-level-1: oklch(0.65 0.12 90);
-  --aura-level-2: oklch(0.65 0.16 200);
-  --aura-level-3: oklch(0.72 0.18 150);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --aura-success: oklch(0.74 0.20 152);
+  --aura-warning: oklch(0.80 0.17 75);
+  --aura-info: oklch(0.68 0.18 220);
+  --aura-error: oklch(0.57 0.22 20);
+  --aura-level-1: oklch(0.68 0.14 90);
+  --aura-level-2: oklch(0.68 0.18 195);
+  --aura-level-3: oklch(0.74 0.20 152);
+  --sidebar: oklch(0.09 0.01 265);
+  --sidebar-foreground: oklch(0.94 0.005 265);
+  --sidebar-primary: oklch(0.74 0.20 152);
+  --sidebar-primary-foreground: oklch(0.10 0.01 265);
+  --sidebar-accent: oklch(0.18 0.015 265);
+  --sidebar-accent-foreground: oklch(0.88 0.005 265);
+  --sidebar-border: oklch(0.22 0.015 265);
+  --sidebar-ring: oklch(0.74 0.20 152);
 }
 
 .aura-theme-light {

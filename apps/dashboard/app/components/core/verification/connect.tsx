@@ -60,10 +60,10 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
           onClick={() => handleConnect("brightid")}
           disabled={isConnecting}
         >
-          <div className="w-9 h-9 rounded-lg bg-[#ed7a5c]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-orange/10 flex items-center justify-center flex-shrink-0">
             <svg
               viewBox="0 0 24 24"
-              className="w-5 h-5 text-[#ed7a5c]"
+              className="w-5 h-5 text-orange"
               fill="currentColor"
             >
               <circle cx="12" cy="12" r="10" />

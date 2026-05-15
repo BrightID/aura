@@ -109,10 +109,10 @@ const Home = () => {
                   }
                   className={"flex grow flex-col gap-3"}
                   items={filteredSubjects}
+                  getKey={(conn) => conn.id}
                   renderItem={(conn, index) => (
                     <SubjectCardMemo
                       verifications={conn.verifications}
-                      key={conn.id}
                       index={index}
                       subjectId={conn.id}
                     />

@@ -140,17 +140,17 @@ export class ButtonElement extends LitElement {
 
     :host([color="success"]) {
       --color: var(--aura-success);
-      --color-fg: white;
+      --color-fg: var(--primary-foreground);
     }
 
     :host([color="warning"]) {
       --color: var(--aura-warning);
-      --color-fg: white;
+      --color-fg: var(--primary-foreground);
     }
 
     :host([color="destructive"]) {
-      --color: oklch(0.65 0.25 25);
-      --color-fg: white;
+      --color: var(--destructive);
+      --color-fg: var(--destructive-foreground);
     }
 
     /* ==================== VARIANTS ==================== */

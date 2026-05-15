@@ -5,6 +5,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 interface InfiniteScrollLocalProps<T> {
   items: T[] | null | undefined;
   renderItem: (item: T, index: number) => JSX.Element;
+  getKey?: (item: T, index: number) => string | number;
   pageSize?: number;
   className?: string;
   getScrollParent?(): HTMLElement | null;
@@ -15,6 +16,7 @@ const isTest = process.env.VITEST;
 export default function InfiniteScrollLocal<T>({
   items,
   renderItem,
+  getKey,
   pageSize = 10,
   ...props
 }: InfiniteScrollLocalProps<T>) {
@@ -48,7 +50,9 @@ export default function InfiniteScrollLocal<T>({
     return (
       <>
         {items?.map((item, index) => (
-          <React.Fragment key={index}>{renderItem(item, index)}</React.Fragment>
+          <React.Fragment key={getKey ? getKey(item, index) : index}>
+            {renderItem(item, index)}
+          </React.Fragment>
         ))}
       </>
     );
@@ -66,7 +70,9 @@ export default function InfiniteScrollLocal<T>({
           useWindow={false}
         >
           {itemsLocal.map((item, index) => (
-            <React.Fragment key={index}>{renderItem(item, index)}</React.Fragment>
+            <React.Fragment key={getKey ? getKey(item, index) : index}>
+              {renderItem(item, index)}
+            </React.Fragment>
           ))}
         </InfiniteScroll>
       )}

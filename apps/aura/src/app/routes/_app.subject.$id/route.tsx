@@ -284,6 +284,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
             <InfiniteScrollLocal
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={evaluateds}
+              getKey={(evaluated) => evaluated.toSubjectId}
               renderItem={(evaluated) => {
                 return (
                   <ProfileEvaluation
@@ -304,7 +305,6 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
                               ],
                       })
                     }
-                    key={evaluated.toSubjectId}
                     fromSubjectId={subjectId}
                     toSubjectId={evaluated.toSubjectId}
                   />
@@ -331,6 +331,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
             <InfiniteScrollLocal
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={evaluateds}
+              getKey={(evaluated) => evaluated.toSubjectId}
               renderItem={(evaluated) => {
                 return (
                   <ProfileEvaluation
@@ -351,7 +352,6 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
                               ],
                       })
                     }
-                    key={evaluated.toSubjectId}
                     fromSubjectId={subjectId}
                     toSubjectId={evaluated.toSubjectId}
                   />
@@ -374,6 +374,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
             <InfiniteScrollLocal
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={evaluators}
+              getKey={(evaluator) => evaluator.fromSubjectId}
               renderItem={(evaluator) => {
                 return (
                   <ProfileEvaluation
@@ -386,7 +387,6 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
                           currentRoleEvaluatorEvaluationCategory,
                       })
                     }
-                    key={evaluator.fromSubjectId}
                     fromSubjectId={evaluator.fromSubjectId}
                     toSubjectId={subjectId}
                   />
@@ -409,6 +409,7 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
             <InfiniteScrollLocal
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={connectionsList}
+              getKey={(connection) => connection.fromSubjectId}
               renderItem={(connection) => {
                 return (
                   <ProfileEvaluation
@@ -420,7 +421,6 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
                         evaluationCategory: EvaluationCategory.SUBJECT,
                       })
                     }
-                    key={connection.fromSubjectId}
                     fromSubjectId={connection.fromSubjectId}
                     toSubjectId={subjectId}
                   />

@@ -176,9 +176,10 @@ const CredibilityDetailsForRole = ({
           <span>
             none.{" "}
             <button
+              type="button"
               disabled={subjectId === authData?.brightId}
               onClick={() => setShowEvaluationFlow(true)}
-              className="text-sm text-pastel-blue disabled:opacity-50"
+              className="text-sm text-accent hover:text-accent/80 transition-colors disabled:opacity-50"
             >
               Evaluate Now
             </button>
