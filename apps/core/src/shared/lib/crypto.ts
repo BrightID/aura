@@ -15,19 +15,31 @@ export function decryptData(data: string, password: string) {
   return CryptoJS.AES.decrypt(data, password).toString(CryptoJS.enc.Utf8);
 }
 
-export function decryptUserData(encryptedUserData: string, password: string): BrightIdBackup {
+export function decryptUserData(
+  encryptedUserData: string,
+  password: string,
+): BrightIdBackup {
   return JSON.parse(decryptData(encryptedUserData, password));
 }
 
 const URL_SAFE_MAP: Record<string, string> = { '/': '_', '+': '-', '=': '' };
-export const b64ToUrlSafeB64 = (s: string) => s.replace(/[/+=]/g, (c) => URL_SAFE_MAP[c]);
+export const b64ToUrlSafeB64 = (s: string) =>
+  s.replace(/[/+=]/g, (c) => URL_SAFE_MAP[c]);
 
 export const hash = (data: string) => {
   const b = CryptoJS.SHA256(data).toString(CryptoJS.enc.Base64);
   return b64ToUrlSafeB64(b);
 };
 
-export const randomWordArray = (size: number) => CryptoJS.lib.WordArray.random(size);
+export const randomWordArray = (size: number) =>
+  CryptoJS.lib.WordArray.random(size);
+
+/** Random url-safe base64 key of `bytes` length — used as the channel AES key. */
+export const urlSafeRandomKey = (bytes = 16): string =>
+  b64ToUrlSafeB64(wordArrayToB64(randomWordArray(bytes)));
+
+export const uInt8ArrayToB64 = (array: Uint8Array): string =>
+  fromByteArray(array);
 
 export const wordArrayToB64 = (wa: CryptoJS.lib.WordArray) =>
   CryptoJS.enc.Base64.stringify(wa);
