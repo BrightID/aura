@@ -6,6 +6,9 @@ export class TextElement extends LitElement {
   @property({ type: String, reflect: true })
   variant: "title" | "lead" | "body" | "small" | "muted" = "body"
 
+  @property({ type: String, reflect: true })
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
+
   static styles = css`
     :host {
       display: block;
@@ -39,6 +42,36 @@ export class TextElement extends LitElement {
       font-size: 0.875rem;
       line-height: 1.375rem;
       color: var(--muted-foreground);
+    }
+
+    :host([size="xs"]) {
+      font-size: 0.75rem;
+      line-height: 1rem;
+    }
+
+    :host([size="sm"]) {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    :host([size="md"]) {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+
+    :host([size="lg"]) {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+    }
+
+    :host([size="xl"]) {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
+
+    :host([size="2xl"]) {
+      font-size: 1.5rem;
+      line-height: 2rem;
     }
   `
 

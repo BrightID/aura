@@ -29,11 +29,24 @@ export class CardElement extends LitElement {
 
     /* Glass variant */
     :host([variant="glass"]) {
-      /* --card-bg: oklch(1 0 0 / 0.2); */
-      --card-border: var(--border);
-      backdrop-filter: blur(1px);
-      -webkit-backdrop-filter: blur(1px);
-      box-shadow: none;
+      --blur: 2px;
+      background: linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--card) 20%, transparent) 0%,
+        color-mix(in oklch, var(--card) 8%, transparent) 100%
+      );
+      border: none;
+      backdrop-filter: blur(var(--blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+      box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.04),
+        0 12px 40px oklch(0 0 0 / 0.12);
+    }
+
+    :host([variant="glass"]):hover {
+      box-shadow:
+        0 2px 4px oklch(0 0 0 / 0.06),
+        0 16px 50px oklch(0 0 0 / 0.18);
     }
   `
 

@@ -1,8 +1,6 @@
 import { Pencil } from "lucide-react"
 import { useMemo } from "react"
 import { Link } from "react-router"
-import { Verifications } from '@/types/aura'
-import { Button } from "@/components/ui/button"
 import {
   getBgClassNameOfAuraRatingObject,
   getTextClassNameOfAuraRatingObject,
@@ -17,6 +15,7 @@ import { useSubjectName } from "@/hooks/useSubjectName"
 import { useImpactPercentage } from "@/hooks/useSubjectVerifications"
 import useViewMode from "@/hooks/useViewMode"
 import { useProfileStore } from "@/store/profile.store"
+import { Verifications } from "@/types/aura"
 import { EvidenceViewMode } from "@/types/dashboard"
 import { connectionLevelIcons } from "@/utils/connection"
 import Tooltip from "../Tooltip"
@@ -100,7 +99,7 @@ const ConnectionInfo = ({
           to={`/subject/${subjectId}?viewas=${evaluationCategory}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <a-button variant={"outline"} size={"icon"}>
+          <a-button variant="secondary" size={"icon"}>
             <Pencil className="h-4 w-4 text-foreground" />
           </a-button>
         </Link>
@@ -126,7 +125,7 @@ const ConnectionInfo = ({
                       src={`/assets/images/Shared/${
                         connectionLevelIcons[inboundConnectionInfo.level]
                       }.svg`}
-                      className="h-[18px] w-[18px]"
+                      className="h-4.5 w-4.5"
                       alt=""
                     />
                   </Tooltip>

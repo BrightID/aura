@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { memo, useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import ZoomControls from './zoom-controls';
 import ChartArea from './chart-area';
 import SkeletonChart from './sekeleton-chart';
@@ -24,7 +24,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const EvaluationsChart = ({
+const EvaluationsChartImpl = ({
   evaluationCategory,
   loading: impactsLoading,
   impacts,
@@ -223,3 +223,6 @@ export const EvaluationsChart = ({
     </div>
   );
 };
+
+export const EvaluationsChart = memo(EvaluationsChartImpl);
+

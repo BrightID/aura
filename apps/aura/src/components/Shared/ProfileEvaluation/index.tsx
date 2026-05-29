@@ -1,5 +1,6 @@
 import { useSubjectEvaluationFromContext } from "hooks/useSubjectEvaluation"
 import useViewMode from "hooks/useViewMode"
+import { memo } from "react"
 import { EvidenceViewMode } from "types/dashboard"
 import {
   INBOUND_EVIDENCE_VIEW_MODES,
@@ -35,9 +36,9 @@ const ProfileEvaluation = ({
   })
 
   return (
-    <div
+    <a-card
       onClick={onClick}
-      className={`profile-evaluation-card card gap-0.5 cursor-pointer flex-row! border bg-card text-card-foreground pb-3 pl-2 pr-3.5 pt-[11px]`}
+      className={`flex flex-1 justify-center rounded-md px-4.5 py-4 gap-0.5 cursor-pointer pb-3 pl-2 pr-3.5 pt-2.75`}
     >
       {loading ? (
         "Loading..."
@@ -57,8 +58,8 @@ const ProfileEvaluation = ({
           toSubjectId={toSubjectId}
         />
       )}
-    </div>
+    </a-card>
   )
 }
 
-export default ProfileEvaluation
+export default memo(ProfileEvaluation)
