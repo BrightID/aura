@@ -4,12 +4,19 @@ import { createMutation, createQuery } from "@tanstack/solid-query"
 import QRCode from "qrcode"
 import { createEffect, createMemo, createSignal, onMount, Show } from "solid-js"
 import FadeIn from "@/components/motions/fade-in"
-import { generateB64Keypair, hash, urlSafeRandomKey } from "@/shared/lib/crypto"
+import { generateB64Keypair, hash, urlSafeRandomKey } from "@aura/domain/crypto"
+import {
+  createPasskeyIdentity,
+  getPasskeyIdentity,
+  hasPasskeyCredential,
+  type PasskeyIdentity,
+} from "@aura/domain/passkeys"
 import {
   buildRecoveryChannelQrUrl,
+  CHANNEL_POLL_INTERVAL,
   pollRecoveredUser,
   uploadRecoveryData,
-} from "@/shared/lib/recovery"
+} from "@aura/domain/recovery"
 import { AURA_NODE_URL, AURA_NODE_URL_PROXY } from "@/shared/lib/urls"
 import { authStore, setAuthStore, setKeypair } from "@/store/auth"
 import {
@@ -23,7 +30,6 @@ import {
 } from "@/store/recovery"
 
 const QR_SIZE = 270
-const POLL_INTERVAL = 3000
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -72,6 +78,7 @@ export default function LoginPage() {
       if (user?.id && user.password) {
         // recovered user → auth store is the source of truth
         setAuthStore("user", { brightId: user.id, password: user.password })
+        setAuthStore("authMethod", "brightid")
         setRecovered(true)
       }
       return user ?? null
@@ -80,9 +87,40 @@ export default function LoginPage() {
       recoveryStore.recoverStep === "INITIALIZED" &&
       !!recoveryStore.channel.url &&
       !recovered(),
-    refetchInterval: POLL_INTERVAL,
+    refetchInterval: CHANNEL_POLL_INTERVAL,
     retry: false,
   }))
+
+  // Passkey login: derive a deterministic Ed25519 identity from the passkey's
+  // PRF output — same passkey, same identity, no channel or backup involved.
+  function completePasskeyLogin(identity: PasskeyIdentity) {
+    setKeypair(identity.privateKey, identity.publicKey)
+    setAuthStore("user", { brightId: identity.id, password: "" })
+    setAuthStore("authMethod", "passkey")
+    // Drop the half-open recovery channel keyed to the previous keypair
+    resetRecovery()
+    const next = typeof params.next === "string" ? params.next : "/home"
+    navigate(next, { replace: true })
+  }
+
+  const passkeyError = (title: string) => (e: unknown) =>
+    toast.error(title, {
+      description: e instanceof Error ? e.message : String(e),
+    })
+
+  const passkeySignIn = createMutation(() => ({
+    mutationFn: getPasskeyIdentity,
+    onSuccess: completePasskeyLogin,
+    onError: passkeyError("Passkey sign-in failed"),
+  }))
+
+  const passkeyCreate = createMutation(() => ({
+    mutationFn: () => createPasskeyIdentity("Aura"),
+    onSuccess: completePasskeyLogin,
+    onError: passkeyError("Could not create a passkey"),
+  }))
+
+  const passkeyBusy = () => passkeySignIn.isPending || passkeyCreate.isPending
 
   const monthYear = new Date().toLocaleString("en-US", {
     month: "short",
@@ -122,7 +160,7 @@ export default function LoginPage() {
   createEffect(() => {
     if (!recovered()) return
     setImporting(true)
-    const next = typeof params.next === "string" ? params.next : "/"
+    const next = typeof params.next === "string" ? params.next : "/home"
     resetRecovery()
     navigate(next, { replace: true })
   })
@@ -206,7 +244,7 @@ export default function LoginPage() {
 
         <FadeIn delay={0.3}>
           <section class="actions mb-auto pb-16 text-center">
-            <span class="bg-gray00 flex w-full items-center justify-between gap-2 rounded-lg py-2 pl-3 pr-2.5">
+            <span class="bg-muted flex w-full items-center justify-between gap-2 rounded-lg py-2 pl-3 pr-2.5">
               <a
                 href={universalLink()}
                 target="_blank"
@@ -214,7 +252,7 @@ export default function LoginPage() {
                 data-testid={
                   universalLink() ? "import-universal-link" : undefined
                 }
-                class="line-clamp-1 text-ellipsis text-left font-medium text-white underline"
+                class="line-clamp-1 text-ellipsis text-left font-medium text-foreground underline"
               >
                 {universalLink()}
               </a>
@@ -222,17 +260,44 @@ export default function LoginPage() {
                 <a-icon name="copy" />
               </button>
             </span>
+
+            <div class="mt-8 flex items-center justify-center gap-2">
+              <hr class="h-px w-12" />
+              <a-text>Or</a-text>
+              <hr class="h-px w-12" />
+            </div>
+
+            <a-button
+              class="mt-6 w-full"
+              size="lg"
+              data-testid="passkey-sign-in"
+              onClick={() => !passkeyBusy() && passkeySignIn.mutate()}
+            >
+              {passkeySignIn.isPending
+                ? "Waiting for passkey..."
+                : "Sign in with passkey"}
+            </a-button>
+            <button
+              type="button"
+              data-testid="passkey-create"
+              class="text-muted-foreground mt-3 text-sm underline"
+              onClick={() => !passkeyBusy() && passkeyCreate.mutate()}
+            >
+              {hasPasskeyCredential()
+                ? "Create a new passkey identity"
+                : "New to Aura? Create a passkey"}
+            </button>
           </section>
         </FadeIn>
 
         <FadeIn delay={0.35}>
-          <footer class="text-gray90 flex justify-between text-sm">
+          <footer class="text-muted-foreground flex justify-between text-sm">
             <span class="flex gap-1">
               <a-text class="font-light">Version</a-text>
-              <a-text data-testid="app-version">2.1</a-text>
+              <a-text data-testid="app-version">{__APP_VERSION__}</a-text>
             </span>
             <span class="flex gap-1">
-              <a-text class="text-gray50">Powered by:</a-text>
+              <a-text class="text-muted-foreground/70">Powered by:</a-text>
               <a-text class="font-light">BrightID</a-text>
             </span>
           </footer>

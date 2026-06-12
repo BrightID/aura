@@ -2,8 +2,8 @@ import {
   downloadFromChannel,
   listChannel,
   uploadToChannel,
-} from "@/shared/lib/channel"
-import { b64ToUrlSafeB64, decryptData, hash } from "@/shared/lib/crypto"
+} from "./channel"
+import { b64ToUrlSafeB64, decryptData, hash } from "./crypto"
 
 export const RECOVERY_CHANNEL_TTL = 24 * 60 * 60 * 1000 // 1 day
 export const CHANNEL_POLL_INTERVAL = 3000

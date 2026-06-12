@@ -1,7 +1,20 @@
-import { IS_PRODUCTION } from './env';
+import { IS_PRODUCTION } from "./env";
+import {
+  AURA_NODE_PROXY_PATH,
+  AURA_TEST_NODE_PROXY_PATH,
+  DEFAULT_AURA_NODE_URL,
+  DEFAULT_AURA_TEST_NODE_URL,
+  RECOVERY_PROXY_PATH,
+} from "./url-defaults";
 
-export const AURA_NODE_URL_PROXY = `/auranode${IS_PRODUCTION ? '' : '-test'}`;
+const env = import.meta.env;
 
-export const AURA_NODE_URL = IS_PRODUCTION
-  ? 'https://aura-node.brightid.org'
-  : 'https://aura-test.brightid.org';
+export const AURA_NODE_URL_PROXY = IS_PRODUCTION
+  ? AURA_NODE_PROXY_PATH
+  : AURA_TEST_NODE_PROXY_PATH;
+
+export const AURA_NODE_URL: string = IS_PRODUCTION
+  ? (env.VITE_AURA_NODE_URL ?? DEFAULT_AURA_NODE_URL)
+  : (env.VITE_AURA_TEST_NODE_URL ?? DEFAULT_AURA_TEST_NODE_URL);
+
+export const RECOVERY_URL_PROXY = RECOVERY_PROXY_PATH;

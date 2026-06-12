@@ -5,7 +5,7 @@ import { focusedProject } from '@/lib/projects'
 import { projects } from '@/states/projects'
 import { userBrightId } from '@/states/user'
 import type { Project } from '@/types/projects'
-import { getProjects } from '@/utils/apis'
+import { getProjects, verifyProject, type VerificationSignature } from '@/utils/apis'
 import { EvaluationCategory } from '@/utils/aura'
 import { getLevelupProgress } from '@/utils/score'
 import { getSubjectVerifications } from '@/utils/subject'
@@ -51,6 +51,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   @state() private step: Step = 'connect'
   @state() private previousStep: Step = 'connect'
   @state() private isLoadingVerification = false
+  @state() private isGeneratingSignature = false
   @state() private verificationData: ProgressStepData | null = null
 
   static styles: CSSResultGroup = css`
@@ -208,11 +209,40 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     this._goToStep('connect')
   }
 
-  private _handleContinue() {
+  private async _handleContinue() {
+    const brightId = userBrightId.get()
+    const data = this.verificationData
+    let signature: VerificationSignature | undefined
+
+    // Only verified users reach the success step, so generate the signature
+    // from the API before handing control back to the embedding app.
+    if (brightId) {
+      this.isGeneratingSignature = true
+      try {
+        const result = await verifyProject(this.projectId, {
+          userId: brightId,
+          client: focusedProject.get()?.name ?? 'aura-get-verified',
+          auraScore: data?.auraScore,
+          auraLevel: data?.auraLevel
+        })
+        signature = result?.signature
+      } catch (err) {
+        console.error('Failed to generate verification signature', err)
+      } finally {
+        this.isGeneratingSignature = false
+      }
+    }
+
     window.parent.postMessage(
       JSON.stringify({
         type: 'verification-success',
-        app: 'aura-get-verified'
+        app: 'aura-get-verified',
+        data: {
+          brightId,
+          signature,
+          auraLevel: data?.auraLevel,
+          auraScore: data?.auraScore
+        }
       }),
       '*'
     )
@@ -273,6 +303,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
           <verification-success
             .appName=${appName}
             .level=${this.verificationData?.auraLevel ?? requiredLevel}
+            .loading=${this.isGeneratingSignature}
             @continue=${() => this._handleContinue()}
           ></verification-success>
         `

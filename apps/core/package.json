@@ -1,6 +1,6 @@
 {
   "name": "@aura/core",
-  "version": "0.0.1",
+  "version": "2.1.0",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -10,13 +10,16 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@aura/domain": "workspace:*",
     "@aura/ui": "workspace:*",
     "@solid-primitives/storage": "^4.3.4",
     "@solidjs/router": "^0.15.3",
+    "@tanstack/query-async-storage-persister": "^5.100.14",
     "@tanstack/solid-query": "^5.100.14",
-    "base64-js": "^1.5.1",
-    "crypto-js": "^4.2.0",
+    "@tanstack/solid-query-persist-client": "^5.100.14",
+    "bcryptjs": "^3.0.3",
     "libphonenumber-js": "^1.13.3",
+    "localforage": "^1.10.0",
     "qrcode": "^1.5.4",
     "solid-js": "^1.9.5",
     "solid-motionone": "^1.0.4",
@@ -24,7 +27,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
-    "@types/crypto-js": "^4.2.2",
+    "@types/bcryptjs": "^3.0.0",
     "@types/qrcode": "^1.5.6",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.2",

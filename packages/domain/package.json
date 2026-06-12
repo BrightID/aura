@@ -1,0 +1,29 @@
+{
+  "name": "@aura/domain",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Framework-agnostic Aura/BrightID domain logic: crypto, recovery channels, scoring, verifications and shared types",
+  "license": "MIT",
+  "files": ["dist", "src", "package.json"],
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "base64-js": "^1.5.1",
+    "crypto-js": "^4.2.0",
+    "fast-json-stable-stringify": "^2.1.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "typescript": "~5.9.3"
+  }
+}

@@ -57,11 +57,13 @@ declare module "solid-js" {
         color?: ButtonColors
         type?: "button" | "submit" | "reset"
         disabled?: boolean
+        selected?: boolean
       }
 
       // ── Card ─────────────────────────────────────────────────────────────
       "a-card": CEProps<CardElement> & {
         variant?: "default" | "glass"
+        interactive?: boolean
       }
 
       // ── Badge ────────────────────────────────────────────────────────────

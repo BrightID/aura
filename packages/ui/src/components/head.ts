@@ -7,12 +7,12 @@ export class HeadingElement extends LitElement {
   level: "1" | "2" | "3" | "4" | "5" | "6" = "2"
 
   static styles = css`
+    /* No default margins — pages lay headings out with flex/gap; opt into
+       spacing with utility classes instead of fighting baked-in margins. */
     :host {
       display: block;
       color: var(--foreground);
       font-weight: 600;
-      margin-top: 1.5em;
-      margin-bottom: 0.5em;
     }
 
     :host([level="1"]) {

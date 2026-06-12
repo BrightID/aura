@@ -1,4 +1,4 @@
-import { EvaluationCategory } from "@/types/evaluations"
+import { EvaluationCategory } from "./types/evaluations"
 
 export const subjectLevelPoints = [
   0, 1_000_000, 5_000_000, 10_000_000, 150_000_000,

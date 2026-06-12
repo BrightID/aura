@@ -2,7 +2,7 @@ import FadeIn from "@/components/motions/fade-in"
 import Scale from "@/components/motions/scale"
 import { A } from "@solidjs/router"
 
-const Spalsh = () => {
+const Splash = () => {
   return (
     <div class="flex flex-col h-[calc(100vh-80px)]">
       <section class="content pl-5 pr-12">
@@ -41,13 +41,13 @@ const Spalsh = () => {
         </Scale>
       </section>
       <FadeIn delay={0.3}>
-        <footer class="flex justify-between text-sm text-gray90">
+        <footer class="flex justify-between text-sm text-muted-foreground">
           <span class="flex gap-1">
             <a-text class="font-light">Version</a-text>
-            <a-text class="">2.1</a-text>
+            <a-text class="">{__APP_VERSION__}</a-text>
           </span>
           <span class="flex gap-1">
-            <a-text class="text-gray50">Powered by:</a-text>
+            <a-text class="text-muted-foreground/70">Powered by:</a-text>
             <a-text class="font-light">BrightID</a-text>
           </span>
         </footer>
@@ -56,4 +56,4 @@ const Spalsh = () => {
   )
 }
 
-export default Spalsh
+export default Splash
