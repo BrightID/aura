@@ -1,6 +1,7 @@
 import { fetchOperationState } from "@aura/domain/operations"
 import type { OperationState } from "@aura/domain/types/evaluations"
 import { toast } from "@aura/ui"
+import { useQueryClient } from "@tanstack/solid-query"
 import { createEffect, createMemo, onCleanup } from "solid-js"
 import { useBackup } from "@/hooks/use-backup"
 import { NODE_API_BASE } from "@/shared/lib/api"
@@ -30,6 +31,7 @@ const PENDING_STATES: ReadonlySet<OperationState> = new Set<OperationState>([
  */
 export default function OpNotifications() {
   const backup = useBackup()
+  const queryClient = useQueryClient()
 
   // Resolve a subject's display name from the backup, falling back to a short id.
   const subjectName = (id: string): string => {
@@ -65,6 +67,19 @@ export default function OpNotifications() {
       if (next === op.state) continue
 
       setOperationState(hash, next)
+
+      // The op only lands on the node's reads once it APPLIES — the
+      // submit-time invalidation in `createEvaluateMutation` refetched while
+      // the node still held the old data. Re-invalidate now so the fresh
+      // rating/impacts replace the optimistic overlay.
+      if (next === "APPLIED") {
+        queryClient.invalidateQueries({
+          queryKey: ["brightid-profile", op.evaluated],
+        })
+        queryClient.invalidateQueries({
+          queryKey: ["connections", "outbound", op.evaluator],
+        })
+      }
 
       if (notified.has(hash)) continue
       if (next === "APPLIED") {

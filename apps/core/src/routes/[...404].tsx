@@ -1,7 +1,6 @@
 import { A } from "@solidjs/router"
 import FadeIn from "@/components/motions/fade-in"
 
-// `[...404].tsx` => `*` catch-all.
 export default function NotFound() {
   return (
     <div class="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center gap-6 px-5 text-center">

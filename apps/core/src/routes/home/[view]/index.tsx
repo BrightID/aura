@@ -1,7 +1,9 @@
-import { createSignal, For, Show } from "solid-js"
+import { createSignal } from "solid-js"
 import EvaluateModal from "@/components/evaluation/evaluate-modal"
 import SubjectCard from "@/components/home/subject-card"
 import SubjectListControls from "@/components/home/subject-list-controls"
+import IncrementalList from "@/components/list/incremental-list"
+import ListState from "@/components/list/list-state"
 import { useSubjectsList } from "@/hooks/use-subjects-list"
 
 export default function HomeEvaluate() {
@@ -15,25 +17,17 @@ export default function HomeEvaluate() {
         controls={controls}
         count={subjects()?.length ?? 0}
       />
-      <Show
-        when={!loading()}
-        fallback={<div class="py-8 text-center text-muted-foreground">Loading…</div>}
+      <ListState
+        loading={loading()}
+        empty={(subjects()?.length ?? 0) === 0}
+        emptyText="No connections to evaluate yet."
       >
-        <Show
-          when={(subjects()?.length ?? 0) > 0}
-          fallback={
-            <div class="py-8 text-center text-muted-foreground">
-              No connections to evaluate yet.
-            </div>
-          }
-        >
-          <For each={subjects()}>
-            {(connection) => (
-              <SubjectCard connection={connection} onEvaluate={setEvaluating} />
-            )}
-          </For>
-        </Show>
-      </Show>
+        <IncrementalList items={subjects() ?? []} class="flex flex-col gap-3">
+          {(connection) => (
+            <SubjectCard connection={connection} onEvaluate={setEvaluating} />
+          )}
+        </IncrementalList>
+      </ListState>
 
       <EvaluateModal subjectId={evaluating} onClose={() => setEvaluating(null)} />
     </div>

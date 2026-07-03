@@ -49,9 +49,13 @@ export class TabsElement extends LitElement {
     }
   `
 
-  constructor() {
-    super()
-    this.addEventListener("slotchange", () => this._initialize())
+  // Re-measure the indicator whenever the tab strip changes size (responsive
+  // layouts, tabs appearing/disappearing change every sibling's width).
+  private _resizeObserver = new ResizeObserver(() => this._updateIndicator())
+
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    this._resizeObserver.disconnect()
   }
 
   private _initialize() {
@@ -64,6 +68,8 @@ export class TabsElement extends LitElement {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
+    const container = this.renderRoot.querySelector(".tab-list")
+    if (container) this._resizeObserver.observe(container)
     requestAnimationFrame(() => {
       if (!this.value && this.tabs.length > 0) {
         this.value = (this.tabs[0] as any).value || ""
@@ -92,14 +98,20 @@ export class TabsElement extends LitElement {
       return
     }
 
+    // Layout metrics, not getBoundingClientRect: rects are scaled while an
+    // ancestor animates with `transform: scale()` (e.g. a-dialog opening) and
+    // ResizeObserver never fires for transforms, so a scaled measurement
+    // would stick.
     const container = this.renderRoot.querySelector(".tab-list") as HTMLElement
-    const tabRect = activeTab.getBoundingClientRect()
-    const containerRect = container.getBoundingClientRect()
+    const styles = getComputedStyle(container)
+    const gap = parseFloat(styles.columnGap) || 0
+    let left = parseFloat(styles.paddingLeft) || 0
+    for (const tab of this.tabs) {
+      if (tab === activeTab) break
+      left += tab.offsetWidth + gap
+    }
 
-    const left = tabRect.left - containerRect.left + container.scrollLeft
-    const width = tabRect.width
-
-    indicator.style.width = `${width}px`
+    indicator.style.width = `${activeTab.offsetWidth}px`
     indicator.style.transform = `translateX(${left}px)`
   }
 
@@ -147,7 +159,9 @@ export class TabsElement extends LitElement {
     return html`
       <div class="tab-list" role="tablist">
         <div class="indicator"></div>
-        <slot @click=${this.onTabClick}></slot>
+        <!-- slotchange doesn't cross the shadow boundary, so listen on the
+             slot itself: tabs added/removed must re-measure the indicator. -->
+        <slot @click=${this.onTabClick} @slotchange=${this._initialize}></slot>
       </div>
 
       <div class="panels">

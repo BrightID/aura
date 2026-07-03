@@ -32,6 +32,9 @@ export interface InboundEvaluation {
   score: number | null
   /** This evaluation's share of the subject's total impact (percent). */
   impactPercent: number | null
+  /** The evaluator's own inbound impacts in the relevant role, for the mini
+   * chart — mirrors the old card's per-evaluator graph. */
+  impacts: AuraImpactRaw[] | null
 }
 
 /** Flatten one connection's evaluations (in a category) into rows. */
@@ -61,6 +64,7 @@ function toRows(
       level: standing?.level ?? null,
       score: standing?.score ?? null,
       impactPercent: impactShare(options.impacts, connection.id),
+      impacts: standing?.impacts ?? null,
     }))
 }
 

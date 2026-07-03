@@ -1,5 +1,7 @@
 import { useNavigate } from "@solidjs/router"
 import { createMemo, createSignal, For, Show } from "solid-js"
+import IncrementalList from "@/components/list/incremental-list"
+import ListState from "@/components/list/list-state"
 import { useNameResolver } from "@/hooks/use-backup"
 import { useRequireSession } from "@/hooks/use-require-session"
 import {
@@ -109,44 +111,38 @@ export default function NotificationsPage() {
         </For>
       </div>
 
-      <Show
-        when={alerts().length > 0}
-        fallback={
-          <div class="py-10 text-center text-muted-foreground">
-            Nothing here yet — new evaluations and level or score changes will
-            show up here.
-          </div>
-        }
+      <ListState
+        loading={false}
+        empty={alerts().length === 0}
+        emptyText="Nothing here yet — new evaluations and level or score changes will show up here."
       >
-        <div class="flex flex-col gap-3">
-          <For each={alerts()}>
-            {(alert) => (
-              <a-card
-                interactive
-                data-testid={`notification-${alert.id}`}
-                class="flex w-full items-center gap-3 p-4"
-                onClick={() => open(alert)}
-              >
-                <a-icon name={KIND_ICON[alert.kind]} />
-                <div class="flex flex-1 flex-col">
-                  <p
-                    class={`text-sm ${alert.viewed ? "text-muted-foreground" : "font-medium text-foreground"}`}
-                  >
-                    {title(alert)}
-                  </p>
-                  <p class="text-xs text-muted-foreground/70">
-                    <span class="capitalize">{alert.category}</span> ·{" "}
-                    {formatDuration(alert.timestamp)}
-                  </p>
-                </div>
-                <Show when={!alert.viewed}>
-                  <span class="bg-primary h-2.5 w-2.5 rounded-full" />
-                </Show>
-              </a-card>
-            )}
-          </For>
-        </div>
-      </Show>
+        <IncrementalList items={alerts()} class="flex flex-col gap-3">
+          {(alert) => (
+            <a-card
+              interactive
+              data-testid={`notification-${alert.id}`}
+              class="flex w-full items-center gap-3 p-4"
+              onClick={() => open(alert)}
+            >
+              <a-icon name={KIND_ICON[alert.kind]} />
+              <div class="flex flex-1 flex-col">
+                <p
+                  class={`text-sm ${alert.viewed ? "text-muted-foreground" : "font-medium text-foreground"}`}
+                >
+                  {title(alert)}
+                </p>
+                <p class="text-xs text-muted-foreground/70">
+                  <span class="capitalize">{alert.category}</span> ·{" "}
+                  {formatDuration(alert.timestamp)}
+                </p>
+              </div>
+              <Show when={!alert.viewed}>
+                <span class="bg-primary h-2.5 w-2.5 rounded-full" />
+              </Show>
+            </a-card>
+          )}
+        </IncrementalList>
+      </ListState>
     </div>
   )
 }

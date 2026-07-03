@@ -1,6 +1,7 @@
 import { createSignal, For, Show } from "solid-js"
 import { toast } from "@aura/ui"
 import type { DialogElement } from "@aura/ui"
+import ListState from "@/components/list/list-state"
 import { useRequireSession } from "@/hooks/use-require-session"
 import { createStoreContactMutation } from "@/queries/contacts"
 import {
@@ -55,13 +56,10 @@ export default function ContactInfoPage() {
       </a-text>
 
       <div class="flex flex-col gap-3">
-        <Show
-          when={contactsStore.stored.length > 0}
-          fallback={
-            <div class="py-6 text-center text-muted-foreground">
-              No contact info added yet.
-            </div>
-          }
+        <ListState
+          loading={false}
+          empty={contactsStore.stored.length === 0}
+          emptyText="No contact info added yet."
         >
           <For each={contactsStore.stored}>
             {(contact) => (
@@ -74,7 +72,7 @@ export default function ContactInfoPage() {
               </a-card>
             )}
           </For>
-        </Show>
+        </ListState>
       </div>
 
       <a-dialog ref={dialog}>

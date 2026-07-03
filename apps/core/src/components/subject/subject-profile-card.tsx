@@ -11,8 +11,10 @@ import { confidenceLabel } from "@aura/domain/labels"
 export default function SubjectProfileCard(props: {
   subjectId: () => string
   onEvaluate: () => void
+  /** Display name for ids the backup can't resolve (e.g. from `?name=`). */
+  fallbackName?: () => string | undefined
 }) {
-  const name = useSubjectName(props.subjectId)
+  const name = useSubjectName(props.subjectId, props.fallbackName)
   const vm = useViewMode()
   const v = useSubjectVerifications(props.subjectId, vm.currentEvaluationCategory)
   const my = useMyRating(props.subjectId, vm.currentEvaluationCategory)

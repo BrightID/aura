@@ -36,12 +36,33 @@ unread-badge bell in home header) · T4.2 `/dashboard` · T4.3 `/domain-overview
 (static stats, as planned).
 
 **Also done:** T2.5 evaluations chart — lightweight CSS-bars
-(`components/charts/evaluations-chart.tsx`, no chart lib; drag-zoom dropped),
-slotted into the subject Overview tab + credibility-details dialog, plus a
-mini impact strip on `subject-card`.
+(`components/charts/evaluations-chart.tsx`, no chart lib), slotted into the
+subject Overview tab + credibility-details dialog, plus a mini impact strip on
+`subject-card`. Old drag-zoom replaced by explicit window-based zoom/pan
+controls (`components/charts/zoom-controls.tsx`); strip no longer scrolls (bars
+flex to fit, capped max-width).
 
-**Remaining:** M5 shared building blocks (profile pictures, list
-states/infinite scroll, global search) — pull in on demand.
+**Also done:** T5.1 profile pictures (`components/home/avatar.tsx` — real
+backup photo with initials fallback + hover preview) · T5.2 list states +
+infinite scroll (`components/list/list-state.tsx` + `incremental-list.tsx`,
+IntersectionObserver-paced `<For>`; adopted in home evaluate list, subject
+evaluations/connections/activity tabs, notifications, contact-info).
+
+**Also done:** T5.3 global search (`components/search/global-search.tsx` —
+dialog with live connection results; row click → `/subject/:id`, Enter →
+`/home/player?search=`; home-list search now lives in the `?search=` URL param
+so deep links pre-filter) · persistent app header ported from the old
+`DefaultHeader` (`components/shared/app-header.tsx` in the root layout: home /
+search / bell / settings on all signed-in pages; home keeps its own header,
+now with search + settings too; bell extracted to
+`components/shared/notification-bell.tsx`) · subject page honors an injected
+`?name=` for ids the backup can't resolve.
+
+**Remaining (untracked follow-ups, all optional):** PWA service-worker
+update flow + push (settings version card is static) · i18n (old i18next —
+copy is English-only, likely fine to drop) · IndexedDB-blocked fallback screen
+· subject chart-view / connections help modals (only evidence-help ported) ·
+param-less `/subject` self-profile fallback · `?gravatar=` injected avatar.
 
 **Also done:** T2.6 credibility-details modal (collapsed to per-role stat rows,
 no chart/tabs).

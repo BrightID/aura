@@ -1,3 +1,4 @@
+import { useSearchParams } from "@solidjs/router"
 import { createMemo, createSignal } from "solid-js"
 import { useBackup } from "@/hooks/use-backup"
 import { useMyEvaluationData } from "@/hooks/use-my-evaluations"
@@ -30,9 +31,29 @@ const LEVELS: ConnectionLevel[] = [
  */
 export function useSubjectsList() {
   const backup = useBackup()
-  const { myRatings } = useMyEvaluationData(() => EvaluationCategory.SUBJECT)
+  const { myRatings, connections: nodeConnections } = useMyEvaluationData(
+    () => EvaluationCategory.SUBJECT,
+  )
 
-  const [search, setSearch] = createSignal("")
+  // Connections to evaluate come from the decrypted recovery backup when we
+  // have one. Passkey sessions have no backup (no password to decrypt with),
+  // so fall back to the node's own connection list — it carries id/level/
+  // timestamp; names just resolve to short ids without backup data.
+  const baseConnections = createMemo<BrightIdBackupConnection[] | null>(() => {
+    const fromBackup = backup.data?.connections
+    if (fromBackup?.length) return fromBackup
+    return nodeConnections() ?? null
+  })
+
+  // Search lives in `?search=` so global search / empty-state links can deep
+  // link into the filtered list (old `/home?search=` behavior).
+  const [params, setParams] = useSearchParams()
+  const search = createMemo(() =>
+    typeof params.search === "string" ? params.search : "",
+  )
+  const setSearch = (value: string) =>
+    setParams({ search: value || undefined }, { replace: true })
+
   const [sort, setSort] = createSignal<SubjectSort>("recency")
   const [levels, setLevels] = createSignal<ConnectionLevel[]>([])
   const [ratedState, setRatedState] = createSignal<SubjectRatedState>("all")
@@ -53,7 +74,7 @@ export function useSubjectsList() {
   }
 
   const subjects = createMemo<BrightIdBackupConnection[] | null>(() => {
-    const conns = backup.data?.connections
+    const conns = baseConnections()
     const ratings = myRatings()
     if (!conns || ratings === null) return null
 

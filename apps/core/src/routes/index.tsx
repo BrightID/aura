@@ -1,6 +1,6 @@
+import { A } from "@solidjs/router"
 import FadeIn from "@/components/motions/fade-in"
 import Scale from "@/components/motions/scale"
-import { A } from "@solidjs/router"
 
 const Splash = () => {
   return (

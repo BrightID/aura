@@ -1,4 +1,4 @@
-import { A, useNavigate } from "@solidjs/router"
+import { useNavigate } from "@solidjs/router"
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js"
 import type { DialogElement } from "@aura/ui"
 import EvaluationsChart from "@/components/charts/evaluations-chart"
@@ -173,15 +173,16 @@ export default function CredibilityDetails(props: {
             </a-tabs>
           </Show>
 
-          <A
-            href={`/subject/${id()}`}
+          {/* Navigate via goTo, which captures the id *before* onClose nulls
+              props.subjectId() — a reactive `/subject/${id()}` href would
+              otherwise collapse to `/subject/` on click and 404. */}
+          <a-button
             class="mt-2 w-full"
-            onClick={() => props.onClose()}
+            data-testid="credibility-view-profile"
+            onClick={() => goTo(id())}
           >
-            <a-button class="w-full" data-testid="credibility-view-profile">
-              View profile
-            </a-button>
-          </A>
+            View profile
+          </a-button>
         </div>
       </a-dialog>
 
