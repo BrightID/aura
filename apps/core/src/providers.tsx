@@ -5,6 +5,7 @@ import localforage from "localforage"
 import { createEffect, type ParentComponent } from "solid-js"
 import OpNotifications from "@/components/evaluation/op-notifications"
 import NotificationsChecker from "@/components/notifications/notifications-checker"
+import UpdatePrompt from "@/components/shared/update-prompt"
 import { preferencesStore } from "@/store/preferences"
 import { isNotFound } from "@aura/domain/http"
 
@@ -83,6 +84,7 @@ const Providers: ParentComponent = (props) => {
       onSuccess={() => queryClient.invalidateQueries()}
     >
       <a-toaster />
+      <UpdatePrompt />
       <OpNotifications />
       <NotificationsChecker />
       {props.children}

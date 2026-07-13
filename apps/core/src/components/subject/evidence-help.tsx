@@ -35,6 +35,15 @@ export default function EvidenceHelp() {
               credibility breakdown.
             </span>
           </a-text>
+          <a
+            href="https://brightid.gitbook.io/aura"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <a-button variant="glass" size="sm" class="w-full">
+              <a-icon name="external-link" /> Learn more
+            </a-button>
+          </a>
         </div>
       </a-dialog>
     </div>

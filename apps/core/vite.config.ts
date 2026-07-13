@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import solid from 'vite-plugin-solid';
 import { defineConfig, loadEnv } from 'vite';
 import pkg from './package.json';
+import { auraPWA } from './sw-plugin';
 import {
   AURA_NODE_PROXY_PATH,
   AURA_TEST_NODE_PROXY_PATH,
@@ -19,7 +20,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, __dirname, '');
 
   return {
-    plugins: [tailwindcss(), solid()],
+    plugins: [tailwindcss(), solid(), auraPWA(pkg.version)],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },

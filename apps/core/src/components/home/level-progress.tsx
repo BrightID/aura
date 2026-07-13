@@ -1,4 +1,5 @@
 import { createMemo, createSignal, Match, Show, Switch } from "solid-js"
+import Skeleton from "@/components/shared/skeleton"
 import RequirementsChecklist, {
   type LevelRequirement,
 } from "@/components/home/requirements-checklist"
@@ -159,7 +160,7 @@ export default function LevelProgress(props: { subjectId: string }) {
               }
             >
               <Match when={ratingsToBeDone() === undefined}>
-                <span class="font-medium">...</span>
+                <Skeleton class="h-4 w-48" />
               </Match>
               <Match when={(v.auraLevel() ?? 0) < 0}>
                 <span class="text-xl font-black">

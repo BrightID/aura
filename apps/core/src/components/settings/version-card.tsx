@@ -1,6 +1,10 @@
+import { Show } from "solid-js"
+import { needRefresh, updateApp } from "@/shared/lib/pwa"
+
 /**
- * App version. Simplified from the source — no PWA/service-worker update flow
- * yet (the old card checked `/versioning.txt` and prompted a SW update).
+ * App version card. When the service worker has a new build waiting (see
+ * `shared/lib/pwa.ts`), an Update button applies it — the old card's
+ * `/versioning.txt` check is replaced by the SW update signal.
  */
 export default function VersionCard() {
   return (
@@ -17,6 +21,11 @@ export default function VersionCard() {
           You are using version {__APP_VERSION__}
         </p>
       </div>
+      <Show when={needRefresh()}>
+        <a-button size="sm" data-testid="app-update" onClick={updateApp}>
+          Update
+        </a-button>
+      </Show>
     </a-card>
   )
 }

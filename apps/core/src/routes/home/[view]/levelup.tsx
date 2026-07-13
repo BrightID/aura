@@ -46,19 +46,23 @@ export default function HomeLevelUp() {
         <div class="mt-4 flex flex-col gap-4">
           <LevelProgress subjectId={id()} />
 
-          <div class="rounded-lg border border-border p-4">
+          <a-card variant="glass" class="block p-4">
             <div class="mb-3 text-lg font-bold text-foreground">Evaluations</div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-2">
               <StatRow title="Evaluations" value={String(evaluationsCount())} />
               <StatRow
                 title="Calculated Score"
                 value={v.auraScore() ? compactFormat(v.auraScore()!) : "-"}
-                details={`(+${compactFormat(totalPositive())} / -${compactFormat(
-                  totalNegative(),
-                )})`}
+                details={
+                  evaluationsCount() > 0
+                    ? `(+${compactFormat(totalPositive())} / -${compactFormat(
+                        totalNegative(),
+                      )})`
+                    : undefined
+                }
               />
             </div>
-          </div>
+          </a-card>
         </div>
       )}
     </Show>

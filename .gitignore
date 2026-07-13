@@ -108,3 +108,4 @@ apps/core-old/src/stores/recovery.ts
 apps/core-old/src/stores/settings.ts
 apps/core-old/src/stores/user.ts
 apps/core-old/src/styles/index.css
+.aider*

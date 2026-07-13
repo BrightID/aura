@@ -1,5 +1,6 @@
 import { useNavigate } from "@solidjs/router"
-import { createMemo, For, Show } from "solid-js"
+import { createMemo, Show } from "solid-js"
+import ImpactStrip from "@/components/charts/impact-strip"
 import Avatar from "@/components/home/avatar"
 import ProgressBar from "@/components/home/progress-bar"
 import LevelScore from "@/components/shared/level-score"
@@ -15,7 +16,7 @@ import type {
   ConnectionLevel,
 } from "@aura/domain/types/aura"
 
-/** Old app's connection-level palette — used as a status dot. */
+/** Old app's connection-level palette — colors the level chip's icon + text. */
 const LEVEL_COLORS: Record<ConnectionLevel, string> = {
   reported: "#FF4B31",
   suspicious: "#FF7831",
@@ -25,7 +26,15 @@ const LEVEL_COLORS: Record<ConnectionLevel, string> = {
   "aura only": "#FFE8D4",
 }
 
-const MAX_IMPACT_BARS = 8
+/** Lucide icon per connection level (old app showed a level icon in the chip). */
+const LEVEL_ICONS: Record<ConnectionLevel, string> = {
+  reported: "shield-alert",
+  suspicious: "shield-alert",
+  "just met": "user",
+  "already known": "user-check",
+  recovery: "shield-check",
+  "aura only": "sparkles",
+}
 
 /**
  * Subject row, ported from the old `SubjectCard`: avatar, name, level/score,
@@ -54,19 +63,6 @@ export default function SubjectCard(props: {
     impactShare(v.auraImpacts(), authStore.user?.brightId),
   )
 
-  /** Top evaluations by |impact|, normalized for the mini bar strip. */
-  const impactBars = createMemo(() => {
-    const impacts = (v.auraImpacts() ?? [])
-      .filter((i) => i.impact !== 0)
-      .sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact))
-      .slice(0, MAX_IMPACT_BARS)
-    const max = Math.max(...impacts.map((i) => Math.abs(i.impact)), 1)
-    return impacts.map((i) => ({
-      positive: i.impact > 0,
-      height: Math.max(15, Math.round((Math.abs(i.impact) / max) * 100)),
-    }))
-  })
-
   return (
     <a-card
       interactive
@@ -74,7 +70,7 @@ export default function SubjectCard(props: {
       class="flex w-full items-center justify-between gap-2 p-4"
       onClick={() => navigate(`/subject/${subjectId()}`)}
     >
-      <div class="flex min-w-0 flex-col gap-2">
+      <div class="flex min-w-0 flex-1 flex-col gap-2">
         <div class="flex items-start gap-3">
           <Avatar name={name()} subjectId={subjectId()} class="h-12 w-12" />
           <div class="flex min-w-0 flex-col gap-0.5">
@@ -94,12 +90,11 @@ export default function SubjectCard(props: {
         <div class="flex flex-wrap items-center gap-1.5">
           <span
             data-testid={`subject-${subjectId()}-connection-${props.connection.level}`}
-            class="bg-foreground/10 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground"
+            title={`You connected as "${props.connection.level}"`}
+            class="bg-foreground/10 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs"
+            style={{ color: LEVEL_COLORS[props.connection.level] }}
           >
-            <span
-              class="h-2 w-2 rounded-full"
-              style={{ "background-color": LEVEL_COLORS[props.connection.level] }}
-            />
+            <a-icon name={LEVEL_ICONS[props.connection.level]} />
             {toTitleCase(props.connection.level)}
           </span>
 
@@ -117,7 +112,7 @@ export default function SubjectCard(props: {
                 {(rating() > 0 ? "+" : "") + rating()}
                 <Show
                   when={!my.isPending()}
-                  fallback={<span class="animate-pulse">…</span>}
+                  fallback={<a-icon name="loader-circle" class="animate-spin" />}
                 >
                   {confidenceLabel(rating())}
                   <Show when={myImpactPercent() !== null}>
@@ -131,22 +126,12 @@ export default function SubjectCard(props: {
       </div>
 
       <div class="flex shrink-0 flex-col items-end gap-2">
-        <Show when={impactBars().length > 0}>
-          <div
-            data-testid={`subject-card-${subjectId()}-chart`}
-            title={`Top evaluations of ${name()}`}
-            class="flex h-12 items-end gap-0.5"
-          >
-            <For each={impactBars()}>
-              {(bar) => (
-                <span
-                  class={`w-1.5 rounded-sm ${bar.positive ? "bg-aura-success" : "bg-destructive"}`}
-                  style={{ height: `${bar.height}%` }}
-                />
-              )}
-            </For>
-          </div>
-        </Show>
+        <ImpactStrip
+          impacts={() => v.auraImpacts()}
+          class="h-12"
+          title={`Top evaluations of ${name()}`}
+          testid={`subject-card-${subjectId()}-chart`}
+        />
         <a-button
           size="sm"
           variant="glass"

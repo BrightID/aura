@@ -17,6 +17,8 @@ export default function Avatar(props: {
   noHover?: boolean
   class?: string
   style?: JSX.CSSProperties
+  /** Image URL used when the backup has no photo (e.g. a gravatar link). */
+  fallbackSrc?: string
 }) {
   const initial = () => (props.name?.trim()?.[0] ?? "?").toUpperCase()
 
@@ -35,7 +37,7 @@ export default function Avatar(props: {
   // Backup photos are data URIs; tolerate raw base64 just in case.
   const src = () => {
     const data = photo.data
-    if (!data) return undefined
+    if (!data) return props.fallbackSrc
     return data.startsWith("data:") ? data : `data:image/jpeg;base64,${data}`
   }
 

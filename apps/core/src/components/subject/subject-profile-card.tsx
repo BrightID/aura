@@ -13,6 +13,8 @@ export default function SubjectProfileCard(props: {
   onEvaluate: () => void
   /** Display name for ids the backup can't resolve (e.g. from `?name=`). */
   fallbackName?: () => string | undefined
+  /** Photo URL for ids the backup can't resolve (e.g. from `?gravatar=`). */
+  fallbackPhoto?: () => string | undefined
 }) {
   const name = useSubjectName(props.subjectId, props.fallbackName)
   const vm = useViewMode()
@@ -23,7 +25,12 @@ export default function SubjectProfileCard(props: {
     <a-card class="flex flex-col gap-3 p-4">
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <Avatar name={name()} subjectId={props.subjectId()} class="h-14 w-14" />
+          <Avatar
+            name={name()}
+            subjectId={props.subjectId()}
+            class="h-14 w-14"
+            fallbackSrc={props.fallbackPhoto?.()}
+          />
           <div class="flex flex-col gap-1">
             <p data-testid="subject-name" class="font-medium text-foreground">
               {name()}

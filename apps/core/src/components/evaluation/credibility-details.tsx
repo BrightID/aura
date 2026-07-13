@@ -10,6 +10,7 @@ import { useSubjectName } from "@/hooks/use-backup"
 import { useMyRating } from "@/hooks/use-my-evaluations"
 import { useSubjectInboundEvaluations } from "@/hooks/use-subject-inbound-evaluations"
 import { useSubjectVerifications } from "@/hooks/use-subject-verifications"
+import { roleColor, roleIcon } from "@/shared/lib/role-style"
 import { authStore } from "@/store/auth"
 import { categoryLabel, confidenceLabel } from "@aura/domain/labels"
 import { calculateUserScorePercentage, impactShare } from "@aura/domain/score"
@@ -85,6 +86,7 @@ function RoleStats(props: {
       <EvaluationsChart
         impacts={() => v.auraImpacts()}
         onBarClick={props.onNavigate}
+        loading={() => v.loading()}
       />
     </div>
   )
@@ -155,7 +157,13 @@ export default function CredibilityDetails(props: {
             <a-tabs>
               <For each={authorizedRoles()}>
                 {(category) => (
-                  <a-tab value={category}>{categoryLabel[category]}</a-tab>
+                  <a-tab value={category}>
+                    <a-icon
+                      name={roleIcon[category]}
+                      style={{ color: roleColor[category] }}
+                    />
+                    {categoryLabel[category]}
+                  </a-tab>
                 )}
               </For>
               <For each={authorizedRoles()}>

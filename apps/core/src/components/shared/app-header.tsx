@@ -23,14 +23,35 @@ export default function AppHeader() {
     )
   }
 
+  // Derive a page heading from the route so subpages regain the old header
+  // title (the old `DefaultHeader` always showed one).
+  const title = () => {
+    const path = location.pathname
+    if (path.startsWith("/subject")) return "Profile"
+    if (path.startsWith("/settings")) return "Settings"
+    if (path.startsWith("/notifications")) return "Notifications"
+    if (path.startsWith("/role-management")) return "Roles"
+    if (path.startsWith("/contact-info")) return "Contact info"
+    if (path.startsWith("/dashboard")) return "Dashboard"
+    if (path.startsWith("/domain-overview")) return "Domain"
+    return ""
+  }
+
   return (
     <Show when={!hidden() && authStore.user?.brightId}>
       <header class="flex items-center justify-between px-5 pt-6">
-        <A href="/home" data-testid="header-home">
-          <a-button size="icon-sm" variant="glass" aria-label="Home">
-            <a-icon name="house" />
-          </a-button>
-        </A>
+        <div class="flex items-center gap-2">
+          <A href="/home" data-testid="header-home">
+            <a-button size="icon-sm" variant="glass" aria-label="Home">
+              <a-icon name="house" />
+            </a-button>
+          </A>
+          <Show when={title()}>
+            <a-head class="text-lg" data-testid="header-title">
+              {title()}
+            </a-head>
+          </Show>
+        </div>
         <div class="flex items-center gap-2">
           <GlobalSearch />
           <NotificationBell />

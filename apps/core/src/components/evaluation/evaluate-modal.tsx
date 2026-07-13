@@ -101,8 +101,12 @@ export default function EvaluateModal(props: {
   const submit = async () => {
     const id = props.subjectId()
     if (!id || isPending()) return
+    const updating = existing.rating() !== undefined
     try {
       await submitEvaluation(id, isYes() ? confidence() : -confidence())
+      toast.success(updating ? "Evaluation updated" : "Evaluation submitted", {
+        description: name(),
+      })
       close()
     } catch (e) {
       fail(e)
@@ -116,6 +120,7 @@ export default function EvaluateModal(props: {
     if (!onDelete()) return setOnDelete(true)
     try {
       await submitEvaluation(id, 0)
+      toast.success("Evaluation removed", { description: name() })
       close()
     } catch (e) {
       fail(e)
@@ -138,7 +143,7 @@ export default function EvaluateModal(props: {
 
         <div class="flex gap-2">
           <a-button
-            class="flex-1"
+            class="flex-1 transition-all duration-200"
             data-testid="evaluate-positive"
             variant={isYes() ? "default" : "outline"}
             onClick={() => setIsYes(true)}
@@ -146,7 +151,7 @@ export default function EvaluateModal(props: {
             <a-icon name="thumbs-up" /> Yes
           </a-button>
           <a-button
-            class="flex-1"
+            class="flex-1 transition-all duration-200"
             data-testid="evaluate-negative"
             color="destructive"
             variant={isYes() ? "outline" : "default"}

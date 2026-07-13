@@ -5,7 +5,7 @@
  */
 type ColorMap = Record<string, string>
 
-const valueColorMap: ColorMap = {
+export const valueColorMap: ColorMap = {
   "-4": "#924848",
   "-3": "#DA6A6A",
   "-2": "#EE9D9D",
@@ -16,7 +16,7 @@ const valueColorMap: ColorMap = {
   "4": "#5B9969",
 }
 
-const userRatingColorMap: ColorMap = {
+export const userRatingColorMap: ColorMap = {
   "-4": "#D9C7F9",
   "-3": "#C2A8F3",
   "-2": "#AC89ED",
@@ -27,7 +27,7 @@ const userRatingColorMap: ColorMap = {
   "4": "#451F6D",
 }
 
-const subjectRatingColorMap: ColorMap = {
+export const subjectRatingColorMap: ColorMap = {
   "-4": "#FAD7A0",
   "-3": "#F8C471",
   "-2": "#F5B041",

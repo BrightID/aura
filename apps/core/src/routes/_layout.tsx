@@ -13,8 +13,10 @@ const Layout: ParentComponent = (props) => {
         <div class="absolute bottom-1/4 left-1/4 w-72 h-72 rounded-full opacity-10 dark:opacity-8 blur-3xl bg-primary" />
       </div>
 
-      <AppHeader />
-      {props.children}
+      <div class="relative mx-auto w-full max-w-2xl">
+        <AppHeader />
+        {props.children}
+      </div>
     </div>
   )
 }

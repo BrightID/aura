@@ -58,17 +58,37 @@ now with search + settings too; bell extracted to
 `components/shared/notification-bell.tsx`) · subject page honors an injected
 `?name=` for ids the backup can't resolve.
 
-**Remaining (untracked follow-ups, all optional):** PWA service-worker
-update flow + push (settings version card is static) · i18n (old i18next —
-copy is English-only, likely fine to drop) · IndexedDB-blocked fallback screen
-· subject chart-view / connections help modals (only evidence-help ported) ·
-param-less `/subject` self-profile fallback · `?gravatar=` injected avatar.
+**Also done (aider-assisted pass):** chart help dialog
+(`components/charts/chart-help.tsx` — palette strips per evaluator kind,
+slotted next to the impact chart caption) · param-less `/subject` →
+own-profile redirect (`routes/subject/index.tsx`) · IndexedDB-blocked
+fallback screen on the splash (`shared/lib/db-check.ts` + gate in
+`routes/index.tsx`) · `?gravatar=` injected avatar (Avatar `fallbackSrc`,
+threaded through `subject-profile-card`; direct gravatar image URL — the old
+gravatar-profile fetch was dropped). Old connections-help modal not ported:
+its content explains smart-sort tiers that core deliberately dropped.
+
+**Also done:** PWA — dependency-free (registry was unreachable, so no
+`vite-plugin-pwa`): `sw-plugin.ts` emits `manifest.webmanifest` + a `sw.js`
+that precaches the build (cache-first static, network-first navigation,
+SKIP_WAITING activation); `shared/lib/pwa.ts` registers it (prod only,
+hourly update poll) and exposes a `needRefresh` signal consumed by the
+update toast (`components/shared/update-prompt.tsx`, mounted in providers)
+and an Update button on the settings version card. Old push/periodic-sync
+notifications NOT ported.
+
+**Remaining (untracked follow-ups, all optional):** push notifications
+(old `prompt-sw.ts` periodicsync + Notification API) · i18n (old i18next —
+copy is English-only, likely fine to drop).
 
 **Also done:** T2.6 credibility-details modal (collapsed to per-role stat rows,
 no chart/tabs).
 
-**M2 leftover:** T2.5 evaluations chart (decision: lightweight bars vs lib —
-skipped for now). Next up: M3 notifications.
+**Status:** all milestones M0–M5 done (task-level notes above). Active work is
+polish/bugfixes on `aura/fix/rerender-issues`: chart zoom/pan + no-scroll bars,
+passkey node-connection fallback for the evaluate list, apply-time cache
+invalidation on settled ops, and the credibility "View profile" nav fix. Only
+the optional untracked follow-ups (PWA, i18n) remain.
 
 ---
 

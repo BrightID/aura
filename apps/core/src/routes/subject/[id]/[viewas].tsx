@@ -1,12 +1,14 @@
 import { A, useNavigate, useParams, useSearchParams } from "@solidjs/router"
 import { createEffect, createMemo, createSignal, For, Match, Show, Switch } from "solid-js"
 import EvaluationsChart from "@/components/charts/evaluations-chart"
+import ChartHelp from "@/components/charts/chart-help"
 import CredibilityDetails from "@/components/evaluation/credibility-details"
 import EvaluateModal from "@/components/evaluation/evaluate-modal"
 import EvaluationCard from "@/components/evaluation/evaluation-card"
 import ProfileNotFoundHint from "@/components/home/profile-not-found-hint"
 import IncrementalList from "@/components/list/incremental-list"
 import ListState from "@/components/list/list-state"
+import { roleColor, roleIcon } from "@/shared/lib/role-style"
 import ConnectionCard from "@/components/subject/connection-card"
 import EvidenceHelp from "@/components/subject/evidence-help"
 import SubjectProfileCard from "@/components/subject/subject-profile-card"
@@ -135,10 +137,13 @@ export default function SubjectPage() {
     <div class="flex flex-col gap-4 px-5 pt-6 pb-10">
       {/* ── Header: back link + view-as switcher (each role is a route) ── */}
       <div class="flex items-center justify-between gap-2">
-        <A href="/home" class="text-sm text-muted-foreground">
-          ← Back
+        <A
+          href="/home"
+          class="flex shrink-0 items-center gap-1 whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <a-icon name="arrow-left" /> Back
         </A>
-        <div class="flex gap-1.5">
+        <div class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
           <For each={authorizedViewAs()}>
             {(c) => (
               <a-button
@@ -146,6 +151,8 @@ export default function SubjectPage() {
                 data-testid={`subject-view-${categoryLabel[c]}`}
                 variant="glass"
                 selected={category() === c}
+                title={categoryLabel[c]}
+                aria-label={categoryLabel[c]}
                 onClick={() =>
                   navigate(
                     `/subject/${subjectId()}/${c}${
@@ -154,7 +161,9 @@ export default function SubjectPage() {
                   )
                 }
               >
-                {categoryLabel[c]}
+                <a-icon name={roleIcon[c]} style={{ color: roleColor[c] }} />
+                {/* Compact: only the active role keeps its label. */}
+                <Show when={category() === c}>{categoryLabel[c]}</Show>
               </a-button>
             )}
           </For>
@@ -166,6 +175,11 @@ export default function SubjectPage() {
         onEvaluate={() => setEvaluating(subjectId())}
         fallbackName={() =>
           typeof query.name === "string" ? query.name : undefined
+        }
+        fallbackPhoto={() =>
+          typeof query.gravatar === "string" && query.gravatar
+            ? `https://www.gravatar.com/avatar/${query.gravatar}?s=256&d=identicon`
+            : undefined
         }
       />
 
@@ -220,12 +234,16 @@ export default function SubjectPage() {
             </a-card>
 
             <a-card class="flex flex-col gap-2 p-4">
-              <p class="text-sm text-muted-foreground">
-                Evaluation impacts — tap a bar for details
-              </p>
+              <div class="flex items-center justify-between">
+                <p class="text-sm text-muted-foreground">
+                  Evaluation impacts — tap a bar for details
+                </p>
+                <ChartHelp />
+              </div>
               <EvaluationsChart
                 impacts={() => v.auraImpacts()}
                 onBarClick={setDetailsId}
+                loading={() => v.loading()}
               />
             </a-card>
 
