@@ -1,9 +1,32 @@
 @import "tailwindcss";
 
+/* Map Tailwind color utilities onto the tokens defined by <a-theme-provider>.
+   `inline` keeps the var() reference so it resolves via inheritance at use site. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-popover: var(--popover);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-ring: var(--ring);
+}
+
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  /* Base surface matches --background so the page reads dark before the
+     theme provider mounts (tokens live inside the web component). */
+  background: oklch(0.11 0.012 265);
+  color: oklch(0.96 0.005 265);
+  color-scheme: dark;
 }
 
 a {

@@ -1,6 +1,9 @@
+import { categoryLabel, confidenceLabel } from "@aura/domain/labels"
+import { calculateUserScorePercentage, impactShare } from "@aura/domain/score"
+import { EvaluationCategory } from "@aura/domain/types/evaluations"
+import type { DialogElement } from "@aura/ui"
 import { useNavigate } from "@solidjs/router"
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js"
-import type { DialogElement } from "@aura/ui"
 import EvaluationsChart from "@/components/charts/evaluations-chart"
 import EvaluateModal from "@/components/evaluation/evaluate-modal"
 import Avatar from "@/components/home/avatar"
@@ -12,9 +15,6 @@ import { useSubjectInboundEvaluations } from "@/hooks/use-subject-inbound-evalua
 import { useSubjectVerifications } from "@/hooks/use-subject-verifications"
 import { roleColor, roleIcon } from "@/shared/lib/role-style"
 import { authStore } from "@/store/auth"
-import { categoryLabel, confidenceLabel } from "@aura/domain/labels"
-import { calculateUserScorePercentage, impactShare } from "@aura/domain/score"
-import { EvaluationCategory } from "@aura/domain/types/evaluations"
 
 /** One role's stats panel: standing, your evaluation, impacts chart. */
 function RoleStats(props: {
@@ -92,12 +92,6 @@ function RoleStats(props: {
   )
 }
 
-/**
- * Credibility breakdown dialog for a subject (usually an evaluator tapped in
- * a list). Ported from the old `CredibilityDetailsModal`: one tab per role
- * the subject has unlocked (Subject always), each with standing, your
- * evaluation (editable inline) and the impacts chart.
- */
 export default function CredibilityDetails(props: {
   subjectId: () => string | null
   onClose: () => void
@@ -108,8 +102,6 @@ export default function CredibilityDetails(props: {
   const id = () => props.subjectId() ?? ""
   const name = useSubjectName(id)
 
-  // Role tabs are gated like the old modal: Subject always, others once the
-  // subject has a level in them. All four reads share one profile query.
   const roleChecks = Object.values(EvaluationCategory).map((category) => ({
     category,
     v: useSubjectVerifications(id, () => category),
@@ -123,29 +115,23 @@ export default function CredibilityDetails(props: {
       .map(({ category }) => category),
   )
 
-  // Inline evaluate (old modal's pencil / "Evaluate Now"): track which role
-  // is being evaluated; null keeps the nested dialog closed.
   const [evaluatingCategory, setEvaluatingCategory] =
     createSignal<EvaluationCategory | null>(null)
 
-  // Chart bar tap: close the dialog and jump to that evaluator (old behavior).
   const goTo = (subjectId: string) => {
-    props.onClose()
+    dialog?.hide()
     navigate(`/subject/${subjectId}`)
   }
-
   createEffect(() => {
     if (props.subjectId()) dialog?.show()
     else dialog?.hide()
   })
 
-  const onOpenChange = (e: CustomEvent<{ open: boolean }>) => {
-    if (!e.detail.open && props.subjectId()) props.onClose()
-  }
-
   return (
     <>
-      <a-dialog ref={dialog} on:open-change={onOpenChange}>
+      {/* State clears only after the leave animation completes, so the body
+          never re-renders to its empty state mid-exit. */}
+      <a-dialog ref={dialog} on:after-hide={() => props.onClose()}>
         <div slot="content" class="flex w-96 max-w-full flex-col gap-3">
           <div class="flex items-center gap-3">
             <Avatar name={name()} subjectId={id()} noHover class="h-10 w-10" />
@@ -180,10 +166,6 @@ export default function CredibilityDetails(props: {
               </For>
             </a-tabs>
           </Show>
-
-          {/* Navigate via goTo, which captures the id *before* onClose nulls
-              props.subjectId() — a reactive `/subject/${id()}` href would
-              otherwise collapse to `/subject/` on click and 404. */}
           <a-button
             class="mt-2 w-full"
             data-testid="credibility-view-profile"
@@ -194,8 +176,6 @@ export default function CredibilityDetails(props: {
         </div>
       </a-dialog>
 
-      {/* Sibling overlay — a-dialog only projects its named slots, and a
-          later fixed overlay stacks above the credibility dialog. */}
       <EvaluateModal
         subjectId={() => (evaluatingCategory() ? id() : null)}
         category={() => evaluatingCategory() ?? EvaluationCategory.SUBJECT}

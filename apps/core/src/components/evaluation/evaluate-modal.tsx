@@ -1,16 +1,16 @@
-import { createEffect, createSignal, For, Show } from "solid-js"
-import { toast } from "@aura/ui"
-import type { DialogElement } from "@aura/ui"
-import { useEvaluateSubject } from "@/hooks/use-evaluate-subject"
-import { useMyRating } from "@/hooks/use-my-evaluations"
-import { useSubjectName } from "@/hooks/use-backup"
-import { useViewMode } from "@/hooks/use-view-mode"
 import {
-  categoryLabel,
   CONFIDENCE_LABELS,
+  categoryLabel,
   confidenceLabel,
 } from "@aura/domain/labels"
 import { EvaluationCategory } from "@aura/domain/types/evaluations"
+import type { DialogElement } from "@aura/ui"
+import { toast } from "@aura/ui"
+import { createEffect, createSignal, For, Show } from "solid-js"
+import { useSubjectName } from "@/hooks/use-backup"
+import { useEvaluateSubject } from "@/hooks/use-evaluate-subject"
+import { useMyRating } from "@/hooks/use-my-evaluations"
+import { useViewMode } from "@/hooks/use-view-mode"
 
 const CONFIDENCE_VALUES = Object.keys(CONFIDENCE_LABELS).map(Number)
 
@@ -26,35 +26,35 @@ const QUESTIONS: Record<EvaluationCategory, string> = {
     "Does this Manager accurately and honestly evaluate Managers and Trainers in the BrightID domain?",
 }
 
-const EXPRESSIONS: Record<EvaluationCategory, { positive: string; negative: string }> = {
+const EXPRESSIONS: Record<
+  EvaluationCategory,
+  { positive: string; negative: string }
+> = {
   [EvaluationCategory.SUBJECT]: {
     positive: "… this account should be verified.",
     negative: "… this account should not be verified.",
   },
   [EvaluationCategory.PLAYER]: {
     positive: "… this Player accurately and honestly evaluates Subjects.",
-    negative: "… this Player does not accurately and honestly evaluate Subjects.",
+    negative:
+      "… this Player does not accurately and honestly evaluate Subjects.",
   },
   [EvaluationCategory.TRAINER]: {
     positive: "… this Trainer accurately and honestly evaluates Players.",
-    negative: "… this Trainer does not accurately and honestly evaluate Players.",
+    negative:
+      "… this Trainer does not accurately and honestly evaluate Players.",
   },
   [EvaluationCategory.MANAGER]: {
-    positive: "… this Manager accurately and honestly evaluates Managers and Trainers.",
-    negative: "… this Manager does not accurately and honestly evaluate Managers and Trainers.",
+    positive:
+      "… this Manager accurately and honestly evaluates Managers and Trainers.",
+    negative:
+      "… this Manager does not accurately and honestly evaluate Managers and Trainers.",
   },
 }
 
-/**
- * Controlled evaluation dialog, ported from the old `EvaluateModalBody`:
- * category question, Yes/No, confidence, the "what this means" expression
- * line, and — when an evaluation already exists — Update plus a two-step
- * Remove (confidence-0 operation, which the node treats as deletion).
- */
 export default function EvaluateModal(props: {
   subjectId: () => string | null
   onClose: () => void
-  /** Override the evaluation category (defaults to the current view's). */
   category?: () => EvaluationCategory
 }) {
   let dialog: DialogElement | undefined
@@ -84,11 +84,7 @@ export default function EvaluateModal(props: {
     }
   })
 
-  const close = () => props.onClose()
-
-  const onOpenChange = (e: CustomEvent<{ open: boolean }>) => {
-    if (!e.detail.open && props.subjectId()) close()
-  }
+  const close = () => dialog?.hide()
 
   const fail = (e: unknown) =>
     toast.error("Error", {
@@ -128,7 +124,7 @@ export default function EvaluateModal(props: {
   }
 
   return (
-    <a-dialog ref={dialog} on:open-change={onOpenChange}>
+    <a-dialog ref={dialog} on:after-hide={() => props.onClose()}>
       <div slot="content" class="flex w-80 max-w-full flex-col gap-5">
         <div class="flex flex-col gap-1">
           <a-text variant="muted">
