@@ -1,12 +1,13 @@
+import { QueryClient } from '@aura/query'
+import createClient from 'openapi-fetch'
 import { AURA_NODE_URL_PROXY } from '@/lib/constants/domains'
 import type { paths } from '@/lib/schema'
 import type { BrightID } from '@/types/brightid'
 import type { Project } from '@/types/projects'
-import { QueryClient } from '@aura/query'
-import createClient from 'openapi-fetch'
 
 export const clientAPI = createClient<paths>({
-  baseUrl: 'https://aura-get-verified.vercel.app/api'
+  // baseUrl: 'https://aura-get-verified.vercel.app/api'
+  baseUrl: 'http://localhost:3000/api'
 })
 
 const baseUrl = AURA_NODE_URL_PROXY
@@ -55,12 +56,20 @@ export interface VerifyProjectResult {
  */
 export const verifyProject = async (
   projectId: number,
-  payload: { userId: string; client: string; auraScore?: number; auraLevel?: number }
+  payload: {
+    userId: string
+    client: string
+    auraScore?: number
+    auraLevel?: number
+  }
 ) => {
-  const res = await clientAPI.POST('/projects/{id}/verify' as never, {
-    params: { path: { id: String(projectId) } },
-    body: payload
-  } as never)
+  const res = await clientAPI.POST(
+    '/projects/{id}/verify' as never,
+    {
+      params: { path: { id: String(projectId) } },
+      body: payload
+    } as never
+  )
 
   if ((res as { error?: unknown }).error) {
     throw new Error('Failed to generate verification signature')

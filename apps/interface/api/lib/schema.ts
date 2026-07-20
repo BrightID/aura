@@ -7,6 +7,7 @@ import {
   serial,
   text,
   timestamp,
+  uniqueIndex,
   varchar
 } from 'drizzle-orm/pg-core'
 
@@ -88,7 +89,9 @@ export const verificationsTable = pgTable('verifications', {
   auraScore: integer(),
   auraLevel: integer(),
   verifiedAt: timestamp().notNull().defaultNow()
-})
+}, (table) => [
+  uniqueIndex('verifications_user_project_uidx').on(table.userId, table.projectId)
+])
 
 export const brightIdAppsTable = pgTable('brightid_apps', {
   key: text('key').primaryKey(), // Unique key
