@@ -1,5 +1,6 @@
 "use client";
 
+import { AInput, ASelect, ASwitch } from "@aura/ui/react-wrappers";
 import type { ComponentDoc } from "../_registry";
 import type { PropState } from "./snippet";
 
@@ -26,47 +27,29 @@ export function Controls({ doc, state, onChange }: ControlsProps) {
 
           <span className="shrink-0">
             {p.type === "enum" && (
-              <select
+              <ASelect
+                style={{ width: "9rem", marginBottom: 0 }}
                 value={String(state[p.name] ?? "")}
-                onChange={(e) => onChange(p.name, e.target.value)}
-                className="min-w-[8rem] rounded-md border border-[color-mix(in_oklch,var(--border)_70%,transparent)] bg-[var(--input)] px-2.5 py-1.5 text-sm text-[var(--foreground)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-              >
-                {p.default === undefined && <option value="">— none —</option>}
-                {p.options?.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+                placeholder={p.default === undefined ? "— none —" : ""}
+                options={(p.options ?? []).map((opt) => ({ label: opt, value: opt }))}
+                onChange={(e: Event) => onChange(p.name, (e as CustomEvent<string>).detail)}
+              />
             )}
 
             {p.type === "boolean" && (
-              <button
-                type="button"
-                role="switch"
-                aria-checked={state[p.name] === true}
-                onClick={() => onChange(p.name, !(state[p.name] === true))}
-                className={`relative h-6 w-11 rounded-full border transition-colors ${
-                  state[p.name] === true
-                    ? "border-transparent bg-[var(--primary)]"
-                    : "border-[color-mix(in_oklch,var(--border)_70%,transparent)] bg-[var(--input)]"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                    state[p.name] === true ? "translate-x-[1.4rem]" : "translate-x-0.5"
-                  }`}
-                />
-              </button>
+              <ASwitch
+                checked={state[p.name] === true}
+                onChange={(e: Event) => onChange(p.name, (e as CustomEvent<boolean>).detail)}
+              />
             )}
 
             {(p.type === "string" || p.type === "number") && (
-              <input
+              <AInput
+                style={{ width: "10rem", marginBottom: 0 }}
                 type={p.type === "number" ? "number" : "text"}
                 value={String(state[p.name] ?? "")}
                 placeholder={String(p.default ?? "")}
-                onChange={(e) => onChange(p.name, e.target.value)}
-                className="w-40 rounded-md border border-[color-mix(in_oklch,var(--border)_70%,transparent)] bg-[var(--input)] px-2.5 py-1.5 text-sm text-[var(--foreground)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                onChange={(e: Event) => onChange(p.name, (e as CustomEvent<string>).detail)}
               />
             )}
           </span>

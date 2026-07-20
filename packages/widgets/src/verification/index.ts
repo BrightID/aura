@@ -57,14 +57,14 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
-      font-size: var(--verification-size, 1rem);
-      max-height: 550px;
-      overflow-y: auto;
-      overflow-x: hidden;
+      font-size: var(--verification-size, 0.875rem);
+      height: 100%;
+      overflow: hidden;
     }
 
     .frame {
       width: 100%;
+      height: 100%;
       border-radius: var(--radius, 0.75rem);
       overflow: hidden;
       border: 1px solid var(--border);
@@ -73,6 +73,10 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     }
 
     .content {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       padding: 1.25em;
     }
 
@@ -102,9 +106,6 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       }
     }
 
-    a-scroll-area {
-      padding-bottom: 1rem;
-    }
   `
 
   connectedCallback(): void {
@@ -136,7 +137,9 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     const scrollBar = this.scrollbar
     if (!scrollBar) return
 
-    scrollBar.style.height = `${this.height - 30}px`
+    // Fill the host (which itself fills its container) so the widget takes the
+    // full available height instead of a fixed pixel box.
+    scrollBar.style.height = '100%'
   }
 
   private _fetchProjects() {

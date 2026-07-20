@@ -45,6 +45,22 @@ function originOf(url: string): string {
   }
 }
 
+function CopyButton({ value }: { value: string }) {
+  const [done, setDone] = useState(false)
+  return (
+    <button
+      className={`copy${done ? ' done' : ''}`}
+      onClick={() => {
+        void navigator.clipboard?.writeText(value)
+        setDone(true)
+        window.setTimeout(() => setDone(false), 1200)
+      }}
+    >
+      {done ? '✓ Copied' : 'Copy'}
+    </button>
+  )
+}
+
 export function App() {
   const [baseUrl, setBaseUrl] = useState(DEFAULT_BASE_URL)
   const [projectId, setProjectId] = useState(DEFAULT_PROJECT_ID)
@@ -106,8 +122,12 @@ export function App() {
   return (
     <div className="page">
       <header className="header">
+        <div className="mark">🛡️</div>
         <div>
-          <h1>Aura Verification — Demo Integration</h1>
+          <h1>
+            Aura Verification
+            <span className="tag">Demo Integration</span>
+          </h1>
           <p className="sub">
             A third-party site embedding the Aura verification iframe. Complete the flow in the frame
             below; on success the embed posts the <code>brightId</code>, verification{' '}
@@ -118,7 +138,10 @@ export function App() {
 
       <div className="grid">
         <section className="panel">
-          <h2>Embed</h2>
+          <div className="panel-head">
+            <span className="dot live" />
+            <h2>Embed</h2>
+          </div>
 
           <div className="config">
             <label>
@@ -144,6 +167,7 @@ export function App() {
           </div>
 
           <p className="src">
+            <span className="method">GET</span>
             <code>{embedSrc}</code>
           </p>
 
@@ -160,40 +184,70 @@ export function App() {
         </section>
 
         <section className="panel">
-          <h2>Result</h2>
+          <div className="panel-head">
+            <span className={`dot${result ? ' live' : ''}`} />
+            <h2>Result</h2>
+          </div>
           {result ? (
             <div className="result">
               <div className="badge ok">✓ verification-success received</div>
               <dl>
-                <dt>BrightID</dt>
-                <dd className="mono">{result.brightId ?? '—'}</dd>
-                <dt>Aura level</dt>
-                <dd>{result.auraLevel ?? '—'}</dd>
-                <dt>Aura score</dt>
-                <dd>{result.auraScore ?? '—'}</dd>
-                <dt>Signature</dt>
-                <dd>
-                  {result.signature ? (
-                    <pre className="mono">{JSON.stringify(result.signature, null, 2)}</pre>
-                  ) : (
-                    <span className="muted">no signature (unverified / API failed)</span>
-                  )}
-                </dd>
+                <div className="row">
+                  <dt>BrightID</dt>
+                  <dd>
+                    <span className="val mono">{result.brightId ?? '—'}</span>
+                    {result.brightId && <CopyButton value={result.brightId} />}
+                  </dd>
+                </div>
+                <div className="row">
+                  <dt>Aura level</dt>
+                  <dd>{result.auraLevel ?? '—'}</dd>
+                </div>
+                <div className="row">
+                  <dt>Aura score</dt>
+                  <dd className="mono">{result.auraScore ?? '—'}</dd>
+                </div>
+                <div className="row">
+                  <dt>Signature</dt>
+                  <dd>
+                    {result.signature ? (
+                      <>
+                        <pre className="sig mono">{JSON.stringify(result.signature, null, 2)}</pre>
+                        <CopyButton value={JSON.stringify(result.signature)} />
+                      </>
+                    ) : (
+                      <span className="muted">no signature (unverified / API failed)</span>
+                    )}
+                  </dd>
+                </div>
               </dl>
             </div>
           ) : (
-            <p className="muted">Waiting for the user to finish verification…</p>
+            <div className="empty">
+              <span className="glyph">⏳</span>
+              <p>Waiting for the user to finish verification…</p>
+            </div>
           )}
 
-          <h3>Message log</h3>
+          <div className="log-head">
+            <h3>Message log</h3>
+            {log.length > 0 && <span className="count">{log.length}</span>}
+          </div>
           {log.length === 0 ? (
-            <p className="muted">No <code>aura-get-verified</code> messages yet.</p>
+            <div className="empty">
+              <span className="glyph">📡</span>
+              <p>No <code>aura-get-verified</code> messages yet.</p>
+            </div>
           ) : (
             <ul className="log">
               {log.map((entry, i) => (
                 <li key={i}>
                   <span className="ts">{entry.ts}</span>
-                  <span className="type">{entry.parsed?.type}</span>
+                  <span
+                    className={`type ${entry.parsed?.type === 'verification-success' ? 'success' : 'ready'}`}
+                  >
+                    {entry.parsed?.type}
+                  </span>
                   <span className="origin">{entry.origin}</span>
                 </li>
               ))}

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react"
 import { createWalletClient, http, type Address } from "viem"
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts"
 
+const INFURA_RPC_URL = import.meta.env["VITE_INFURA_RPC_URL"]
+
 interface Keys {
   privateKey: string
   publicKey: string
@@ -32,9 +34,7 @@ export const useGenerateKeys = (): {
         const privateKey = generatePrivateKey()
 
         const wallet = createWalletClient({
-          transport: http(
-            "https://mainnet.infura.io/v3/709c5809e1864f82ab6175f39d1aa0ba"
-          ),
+          transport: http(INFURA_RPC_URL),
           account: privateKeyToAccount(privateKey),
         })
 
@@ -59,9 +59,7 @@ export const useGenerateKeys = (): {
     }
 
     const wallet = createWalletClient({
-      transport: http(
-        "https://mainnet.infura.io/v3/709c5809e1864f82ab6175f39d1aa0ba"
-      ),
+      transport: http(INFURA_RPC_URL),
       account: privateKeyToAccount(keys.privateKey as Address),
     })
 

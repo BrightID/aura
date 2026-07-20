@@ -3,10 +3,16 @@ import { customElement, property, state } from "lit/decorators.js"
 
 @customElement("a-dialog")
 export class DialogElement extends LitElement {
-  @property({ type: Boolean }) open = false
+  @property({ type: Boolean }) declare open: boolean
 
-  @state() private _animatingOut = false
+  @state() private declare _animatingOut: boolean
   private _hideTimer?: ReturnType<typeof setTimeout>
+
+  constructor() {
+    super()
+    this.open = false
+    this._animatingOut = false
+  }
 
   static styles = css`
     :host {

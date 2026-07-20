@@ -195,6 +195,17 @@
             },
             {
               "kind": "field",
+              "name": "selected",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Toggle/pill state: a selected button renders filled in its palette color\nregardless of variant, so call sites don't juggle variant/color pairs.",
+              "default": "false",
+              "attribute": "selected",
+              "reflects": true
+            },
+            {
+              "kind": "field",
               "name": "class",
               "type": {
                 "text": "string | undefined"
@@ -242,6 +253,15 @@
               },
               "default": "false",
               "fieldName": "disabled"
+            },
+            {
+              "name": "selected",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Toggle/pill state: a selected button renders filled in its palette color\nregardless of variant, so call sites don't juggle variant/color pairs.",
+              "default": "false",
+              "fieldName": "selected"
             },
             {
               "name": "class",
@@ -293,8 +313,20 @@
               "type": {
                 "text": "\"default\" | \"glass\""
               },
-              "default": "\"default\"",
+              "description": "Glass is the design default; use `variant=\"default\"` for a solid card.",
+              "default": "\"glass\"",
               "attribute": "variant",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Clickable card: pointer cursor, hover lift, press feedback.",
+              "default": "false",
+              "attribute": "interactive",
               "reflects": true
             }
           ],
@@ -304,8 +336,18 @@
               "type": {
                 "text": "\"default\" | \"glass\""
               },
-              "default": "\"default\"",
+              "description": "Glass is the design default; use `variant=\"default\"` for a solid card.",
+              "default": "\"glass\"",
               "fieldName": "variant"
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Clickable card: pointer cursor, hover lift, press feedback.",
+              "default": "false",
+              "fieldName": "interactive"
             }
           ],
           "superclass": {
@@ -472,6 +514,228 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/color-picker.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ColorPickerElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"#000000\"",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "_h",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "_s",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "_v",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "_text",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_suppressSync",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "_syncFromValue",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_onSvPointerDown",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_updateSv",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "PointerEvent"
+                  }
+                },
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_onHuePointerDown",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_updateHue",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "PointerEvent"
+                  }
+                },
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_emit",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_onTextChange",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"#000000\"",
+              "fieldName": "value"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "fieldName": "label"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-color-picker",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ColorPickerElement",
+          "declaration": {
+            "name": "ColorPickerElement",
+            "module": "src/components/color-picker.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-color-picker",
+          "declaration": {
+            "name": "ColorPickerElement",
+            "module": "src/components/color-picker.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/container.ts",
       "declarations": [
         {
@@ -534,6 +798,14 @@
               "default": "false"
             },
             {
+              "kind": "field",
+              "name": "_hideTimer",
+              "type": {
+                "text": "ReturnType<typeof setTimeout> | undefined"
+              },
+              "privacy": "private"
+            },
+            {
               "kind": "method",
               "name": "_onTriggerClick",
               "privacy": "private",
@@ -576,6 +848,12 @@
           "events": [
             {
               "name": "open-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "after-hide",
               "type": {
                 "text": "CustomEvent"
               }
@@ -1354,6 +1632,14 @@
           "name": "*",
           "declaration": {
             "name": "*",
+            "module": "src/components/color-picker"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
             "module": "src/components/container"
           }
         },
@@ -1434,7 +1720,23 @@
           "name": "*",
           "declaration": {
             "name": "*",
+            "module": "src/components/select"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
             "module": "src/components/separator"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/switch"
           }
         },
         {
@@ -1931,7 +2233,7 @@
               "kind": "field",
               "name": "_thumbY",
               "type": {
-                "text": "object"
+                "text": "{ top: number; height: number }"
               },
               "privacy": "private",
               "default": "{ top: 2, height: 0 }"
@@ -1940,7 +2242,7 @@
               "kind": "field",
               "name": "_thumbX",
               "type": {
-                "text": "object"
+                "text": "{ left: number; width: number }"
               },
               "privacy": "private",
               "default": "{ left: 2, width: 0 }"
@@ -2133,6 +2435,169 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/select.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SelectElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"select\"",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "type": {
+                "text": "SelectOption[]"
+              },
+              "default": "[]",
+              "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "method",
+              "name": "_onChange",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "fieldName": "label"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"select\"",
+              "fieldName": "name"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "value"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "SelectOption[]"
+              },
+              "default": "[]",
+              "fieldName": "options"
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "placeholder"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-select",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SelectElement",
+          "declaration": {
+            "name": "SelectElement",
+            "module": "src/components/select.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-select",
+          "declaration": {
+            "name": "SelectElement",
+            "module": "src/components/select.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/separator.ts",
       "declarations": [
         {
@@ -2195,6 +2660,128 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/switch.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SwitchElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "checked",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"switch\"",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "_toggle",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "checked"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"switch\"",
+              "fieldName": "name"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-switch",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SwitchElement",
+          "declaration": {
+            "name": "SwitchElement",
+            "module": "src/components/switch.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-switch",
+          "declaration": {
+            "name": "SwitchElement",
+            "module": "src/components/switch.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/tab.ts",
       "declarations": [
         {
@@ -2219,6 +2806,12 @@
                 "text": "HTMLElement[]"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_resizeObserver",
+              "privacy": "private",
+              "default": "new ResizeObserver(() => this._updateIndicator())"
             },
             {
               "kind": "method",
@@ -2461,6 +3054,15 @@
               "default": "\"body\"",
               "attribute": "variant",
               "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\" | undefined"
+              },
+              "attribute": "size",
+              "reflects": true
             }
           ],
           "attributes": [
@@ -2471,6 +3073,13 @@
               },
               "default": "\"body\"",
               "fieldName": "variant"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\" | undefined"
+              },
+              "fieldName": "size"
             }
           ],
           "superclass": {

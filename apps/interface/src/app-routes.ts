@@ -127,7 +127,9 @@ export const createRouter = (classThis: ReactiveControllerHost & HTMLElement) =>
         return true
       },
       render: ({ id }) =>
-        html` <app-verification-embed .projectId=${Number(id)}></app-verification-embed>`
+        html`<div style="height:100dvh;overflow:hidden">
+          <app-verification-embed .projectId=${Number(id)}></app-verification-embed>
+        </div>`
     },
     {
       path: '*',

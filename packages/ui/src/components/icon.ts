@@ -34,12 +34,19 @@ export class IconElement extends LitElement {
     }
   `
 
-  @property({ reflect: true }) name?: string
-  @property() src?: string
-  @property() label = ""
+  @property({ reflect: true }) declare name?: string
+  @property() declare src?: string
+  @property() declare label: string
 
-  @property({ reflect: true }) library = "default"
-  @property({ reflect: true }) size: "sm" | "md" | "lg" | "" = ""
+  @property({ reflect: true }) declare library: string
+  @property({ reflect: true }) declare size: "sm" | "md" | "lg" | ""
+
+  constructor() {
+    super()
+    this.label = ""
+    this.library = "default"
+    this.size = ""
+  }
 
   private get effectiveSrc(): string | null {
     if (this.src) return this.src

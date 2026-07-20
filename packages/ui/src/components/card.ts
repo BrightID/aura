@@ -5,11 +5,17 @@ import { customElement, property } from "lit/decorators.js"
 export class CardElement extends LitElement {
   /** Glass is the design default; use `variant="default"` for a solid card. */
   @property({ reflect: true })
-  variant: "default" | "glass" = "glass"
+  declare variant: "default" | "glass"
 
   /** Clickable card: pointer cursor, hover lift, press feedback. */
   @property({ type: Boolean, reflect: true })
-  interactive: boolean = false
+  declare interactive: boolean
+
+  constructor() {
+    super()
+    this.variant = "glass"
+    this.interactive = false
+  }
 
   static styles: CSSResultGroup = css`
     :host {

@@ -3,11 +3,19 @@ import { customElement, property, state } from "lit/decorators.js"
 
 @customElement("a-collapse")
 export class CollapseElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) open = false
-  @property() label = ""
-  @property({ type: Boolean }) disabled = false
+  @property({ type: Boolean, reflect: true }) declare open: boolean
+  @property() declare label: string
+  @property({ type: Boolean }) declare disabled: boolean
 
-  @state() private _contentHeight = 0
+  @state() private declare _contentHeight: number
+
+  constructor() {
+    super()
+    this.open = false
+    this.label = ""
+    this.disabled = false
+    this._contentHeight = 0
+  }
 
   static styles = css`
     :host {

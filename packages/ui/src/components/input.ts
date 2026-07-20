@@ -4,18 +4,29 @@ import { live } from "lit/directives/live.js"
 
 @customElement("a-input")
 export class InputElement extends LitElement {
-  @property() type: "text" | "email" | "password" | "number" = "text"
-  @property() label?: string
-  @property() name: string = "input-text"
-  @property() placeholder = ""
+  @property() declare type: "text" | "email" | "password" | "number"
+  @property() declare label?: string
+  @property() declare name: string
+  @property() declare placeholder: string
 
-  @property({ reflect: true }) value = ""
-  @property({ type: Boolean }) disabled = false
+  @property({ reflect: true }) declare value: string
+  @property({ type: Boolean }) declare disabled: boolean
 
-  @state() private _hasPrefix = false
-  @state() private _hasSuffix = false
+  @state() private declare _hasPrefix: boolean
+  @state() private declare _hasSuffix: boolean
 
   private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`
+
+  constructor() {
+    super()
+    this.type = "text"
+    this.name = "input-text"
+    this.placeholder = ""
+    this.value = ""
+    this.disabled = false
+    this._hasPrefix = false
+    this._hasSuffix = false
+  }
 
   static styles: CSSResultGroup = css`
     :host {

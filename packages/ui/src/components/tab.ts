@@ -8,10 +8,15 @@ import {
 @customElement("a-tabs")
 export class TabsElement extends LitElement {
   @property({ type: String, reflect: true })
-  value = ""
+  declare value: string
 
   @queryAssignedElements({ selector: "a-tab" })
-  private tabs!: HTMLElement[]
+  private declare tabs: HTMLElement[]
+
+  constructor() {
+    super()
+    this.value = ""
+  }
 
   static styles = css`
     :host {
@@ -176,16 +181,23 @@ export class TabsElement extends LitElement {
 @customElement("a-tab")
 export class TabElement extends LitElement {
   @property({ type: String, reflect: true })
-  value = ""
+  declare value: string
 
   @property({ type: Boolean, reflect: true })
-  active = false
+  declare active: boolean
 
   @property({ type: Boolean, reflect: true })
-  disabled = false
+  declare disabled: boolean
 
   @property({})
-  class: string | undefined
+  declare class: string | undefined
+
+  constructor() {
+    super()
+    this.value = ""
+    this.active = false
+    this.disabled = false
+  }
 
   static styles = css`
     :host {
@@ -255,7 +267,12 @@ export class TabElement extends LitElement {
 @customElement("a-tab-panel")
 export class TabPanelElement extends LitElement {
   @property({ type: String, reflect: true })
-  value = ""
+  declare value: string
+
+  constructor() {
+    super()
+    this.value = ""
+  }
 
   static styles = css`
     :host {

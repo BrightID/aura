@@ -13,29 +13,39 @@ export type ButtonColors =
 @customElement("a-button")
 export class ButtonElement extends LitElement {
   @property({ reflect: true })
-  variant: ButtonVariant = "default"
+  declare variant: ButtonVariant
 
   @property({ reflect: true })
-  size: ButtonSize = "md"
+  declare size: ButtonSize
 
   @property({ reflect: true })
-  color: ButtonColors = "primary"
+  declare color: ButtonColors
 
   @property({ reflect: true })
-  type: "button" | "submit" | "reset" = "button"
+  declare type: "button" | "submit" | "reset"
 
   @property({ type: Boolean, reflect: true })
-  disabled: boolean = false
+  declare disabled: boolean
 
   /**
    * Toggle/pill state: a selected button renders filled in its palette color
    * regardless of variant, so call sites don't juggle variant/color pairs.
    */
   @property({ type: Boolean, reflect: true })
-  selected: boolean = false
+  declare selected: boolean
 
   @property({})
-  class: string | undefined
+  declare class: string | undefined
+
+  constructor() {
+    super()
+    this.variant = "default"
+    this.size = "md"
+    this.color = "primary"
+    this.type = "button"
+    this.disabled = false
+    this.selected = false
+  }
 
   static styles = css`
     :host {

@@ -4,19 +4,28 @@ import { customElement, property } from "lit/decorators.js"
 @customElement("a-flex")
 export class FlexElement extends LitElement {
   @property({ reflect: true })
-  direction: "col" | "row" = "row"
+  declare direction: "col" | "row"
 
   @property({ type: Number, reflect: true })
-  gap: number = 0
+  declare gap: number
 
   @property({ type: Boolean, reflect: true })
-  wrap: boolean = false
+  declare wrap: boolean
 
   @property({ reflect: true })
-  justify: "start" | "center" | "end" | "between" = "start"
+  declare justify: "start" | "center" | "end" | "between"
 
   @property({ reflect: true })
-  align: "start" | "end" | "center" = "start"
+  declare align: "start" | "end" | "center"
+
+  constructor() {
+    super()
+    this.direction = "row"
+    this.gap = 0
+    this.wrap = false
+    this.justify = "start"
+    this.align = "start"
+  }
 
   static styles?: CSSResultGroup = css`
     div {

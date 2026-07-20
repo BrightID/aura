@@ -4,10 +4,15 @@ import { customElement, property } from "lit/decorators.js"
 @customElement("a-text")
 export class TextElement extends LitElement {
   @property({ type: String, reflect: true })
-  variant: "title" | "lead" | "body" | "small" | "muted" = "body"
+  declare variant: "title" | "lead" | "body" | "small" | "muted"
 
   @property({ type: String, reflect: true })
-  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
+  declare size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
+
+  constructor() {
+    super()
+    this.variant = "body"
+  }
 
   static styles = css`
     :host {
