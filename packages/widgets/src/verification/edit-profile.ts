@@ -6,6 +6,7 @@ import {
   userLastName,
   userProfilePicture,
 } from "@/states/user"
+import { widgetBase } from './shared-styles'
 
 async function getGravatarHash(email: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase())
@@ -22,7 +23,7 @@ export class VerificationEditProfileElement extends LitElement {
   @state() private _gravatarEmail = ""
   @state() private _saving = false
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -134,7 +135,7 @@ export class VerificationEditProfileElement extends LitElement {
       border-top: 1px solid var(--border);
       margin-top: 0.375em;
     }
-  `
+  `]
 
   connectedCallback() {
     super.connectedCallback()

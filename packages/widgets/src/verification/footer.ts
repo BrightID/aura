@@ -1,9 +1,10 @@
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
+import { widgetBase } from './shared-styles'
 
 @customElement('verification-footer')
 export class VerificationFooterElement extends LitElement {
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       flex-shrink: 0;
@@ -36,7 +37,7 @@ export class VerificationFooterElement extends LitElement {
     a:hover {
       text-decoration: underline;
     }
-  `
+  `]
 
   protected render() {
     return html`

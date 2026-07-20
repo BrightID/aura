@@ -9,6 +9,7 @@ import { getProjects, verifyProject, type VerificationSignature } from '@/utils/
 import { EvaluationCategory } from '@/utils/aura'
 import { getLevelupProgress } from '@/utils/score'
 import { getSubjectVerifications } from '@/utils/subject'
+import { widgetBase } from './shared-styles'
 
 import './edit-profile'
 import './evaluations-step'
@@ -54,9 +55,15 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   @state() private isGeneratingSignature = false
   @state() private verificationData: ProgressStepData | null = null
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [
+    widgetBase,
+    css`
     :host {
       display: block;
+      /* Establish a size-query container so the whole widget can scale to
+         whatever box it is embedded in. All inner sizing is em-based, so
+         scaling this single root font-size fluidly resizes everything. */
+      container-type: inline-size;
       font-size: var(--verification-size, 0.875rem);
       height: 100%;
       overflow: hidden;
@@ -65,6 +72,9 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     .frame {
       width: 100%;
       height: 100%;
+      /* Fluid root size: tracks container width, clamped to a sane range.
+         An explicit --verification-size still wins when the host sets one. */
+      font-size: var(--verification-size, clamp(0.8125rem, 0.7rem + 1cqi, 1.0625rem));
       border-radius: var(--radius, 0.75rem);
       overflow: hidden;
       border: 1px solid var(--border);
@@ -76,8 +86,10 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       flex: 1 1 auto;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      padding: 1.25em;
+      /* "safe" keeps content reachable (aligned to start) when it is taller
+         than the frame, instead of overflowing past the top unscrollably. */
+      justify-content: safe center;
+      padding: clamp(1em, 4cqi, 1.5em);
     }
 
     .loading-state {
@@ -107,6 +119,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     }
 
   `
+  ]
 
   connectedCallback(): void {
     super.connectedCallback()
@@ -175,8 +188,6 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       const project = focusedProject.get()
       const requiredLevel = project?.requirementLevel ?? 1
       const auraLevel = this.verificationData.auraLevel ?? 0
-
-      console.log(auraLevel, requiredLevel)
 
       this._goToStep(auraLevel >= requiredLevel ? 'success' : 'progress')
     } catch (err) {

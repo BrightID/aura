@@ -1,5 +1,6 @@
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { widgetBase } from './shared-styles'
 
 const levelColors: Record<number, { bg: string; text: string; border: string }> = {
   0: { bg: 'var(--muted)', text: 'var(--muted-foreground)', border: 'var(--border)' },
@@ -22,7 +23,7 @@ export class VerificationLevelBadge extends LitElement {
   @property({ type: Number }) level = 0
   @property() size: 'xs' | 'sm' | 'md' | 'lg' = 'md'
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host { display: inline-flex; font-size: inherit; }
 
     .badge {
@@ -51,7 +52,7 @@ export class VerificationLevelBadge extends LitElement {
     .badge.xs .dot { width: 0.25em;  height: 0.25em; }
     .badge.sm .dot { width: 0.375em; height: 0.375em; }
     .badge.lg .dot { width: 0.625em; height: 0.625em; }
-  `
+  `]
 
   render() {
     const level = Math.max(0, Math.min(4, this.level))

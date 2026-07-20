@@ -34,6 +34,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     const [project] = await db
       .select({
+        id: projectsTable.id,
         remainingtokens: projectsTable.remainingtokens,
         creatorId: projectsTable.creatorId,
         brightIdAppId: projectsTable.brightIdAppId
@@ -87,66 +88,72 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(502).json({ error: 'Verification service error' })
     }
 
-    const verification = (await apiRes.json())[0] as
-      | {
-          verification: string
-          unique: boolean
-          appUserId: string
-          app: string
-          verificationHash: string
-          sig: {
-            r: string
-            s: string
-            v: number
-          }
-          publicKey: string
-        }
-      | undefined
+    const payload = await apiRes.json()
 
-    if (!verification?.unique) {
-      log('user not unique/verified')
-      return res.status(400).json({ error: 'User is not verified' })
-    }
+    return payload
 
-    try {
-      await db.transaction(async (tx) => {
-        await tx.insert(verificationsTable).values({
-          userId: body.userId,
-          projectId,
-          client: body.client,
-          auraScore: body.auraScore === undefined ? undefined : Math.round(body.auraScore),
-          auraLevel: body.auraLevel,
-          verifiedAt: now,
-          signature: JSON.stringify(verification.sig)
-        })
+    // log(payload)
 
-        await tx
-          .update(projectsTable)
-          .set({ remainingtokens: (project.remainingtokens ?? 0) - 1 })
-          .where(eq(projectsTable.id, projectId))
-      })
-    } catch (err) {
-      // 23505 = unique_violation: concurrent request already verified this user+project
-      if ((err as { code?: string })?.code === '23505') {
-        log('concurrent verify race, already inserted')
-        return res.status(200).json({ message: 'Already verified' })
-      }
-      throw err
-    }
+    // const verification = payload[0] as
+    //   | {
+    //       verification: string
+    //       unique: boolean
+    //       appUserId: string
+    //       app: string
+    //       verificationHash: string
+    //       sig: {
+    //         r: string
+    //         s: string
+    //         v: number
+    //       }
+    //       publicKey: string
+    //     }
+    //   | undefined
 
-    log('verification success')
-    return res.status(200).json({
-      message: 'verification success',
-      data: {
-        userId: body.userId,
-        projectId,
-        client: body.client,
-        signature: verification.sig,
-        auraScore: body.auraScore === undefined ? undefined : Math.round(body.auraScore),
-        auraLevel: body.auraLevel,
-        verifiedAt: now
-      }
-    })
+    // if (!verification?.unique) {
+    //   log('user not unique/verified')
+    //   return res.status(400).json({ error: 'User is not verified' })
+    // }
+
+    // try {
+    //   await db.transaction(async (tx) => {
+    //     await tx.insert(verificationsTable).values({
+    //       userId: body.userId,
+    //       projectId,
+    //       client: body.client,
+    //       auraScore: body.auraScore === undefined ? undefined : Math.round(body.auraScore),
+    //       auraLevel: body.auraLevel,
+    //       verifiedAt: now,
+    //       signature: JSON.stringify(verification.sig)
+    //     })
+
+    //     await tx
+    //       .update(projectsTable)
+    //       .set({ remainingtokens: (project.remainingtokens ?? 0) - 1 })
+    //       .where(eq(projectsTable.id, projectId))
+    //   })
+    // } catch (err) {
+    //   // 23505 = unique_violation: concurrent request already verified this user+project
+    //   if ((err as { code?: string })?.code === '23505') {
+    //     log('concurrent verify race, already inserted')
+    //     return res.status(200).json({ message: 'Already verified' })
+    //   }
+    //   throw err
+    // }
+
+    // log('verification success')
+    // return res.status(200).json({
+    //   message: 'verification success',
+    //   data: {
+    //     userId: body.userId,
+    //     projectId,
+    //     client: body.client,
+    //     signature: verification.sig,
+    //     auraScore: body.auraScore === undefined ? undefined : Math.round(body.auraScore),
+    //     auraLevel: body.auraLevel,
+    //     verifiedAt: now
+    //   }
+    // })
   } catch (error) {
     log('unhandled error', error)
     return res.status(500).json({ error: 'Internal server error' })

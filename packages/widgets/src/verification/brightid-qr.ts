@@ -23,6 +23,7 @@ import { customElement, state } from 'lit/decorators.js'
 import nacl from 'tweetnacl'
 import platform from 'platform'
 import QrCodeWithLogo from 'qrcode-with-logos'
+import { widgetBase } from './shared-styles'
 
 @customElement('verification-brightid-qr')
 export class VerificationBrightIDQrElement extends LitElement {
@@ -33,7 +34,7 @@ export class VerificationBrightIDQrElement extends LitElement {
 
   private _pollInterval: ReturnType<typeof setInterval> | null = null
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -230,7 +231,7 @@ export class VerificationBrightIDQrElement extends LitElement {
       font-size: 0.75em;
       color: var(--destructive);
     }
-  `
+  `]
 
   async connectedCallback() {
     super.connectedCallback()

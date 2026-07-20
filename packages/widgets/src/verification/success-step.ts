@@ -1,6 +1,7 @@
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import './level-badge'
+import { widgetBase } from './shared-styles'
 
 @customElement('verification-success')
 export class VerificationSuccessElement extends LitElement {
@@ -8,7 +9,7 @@ export class VerificationSuccessElement extends LitElement {
   @property({ type: Number }) level = 1
   @property({ type: Boolean }) loading = false
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -110,7 +111,7 @@ export class VerificationSuccessElement extends LitElement {
       font-size: 0.75em;
       color: var(--muted-foreground);
     }
-  `
+  `]
 
   protected render() {
     return html`

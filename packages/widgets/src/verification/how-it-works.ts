@@ -1,5 +1,6 @@
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
+import { widgetBase } from './shared-styles'
 
 const steps = [
   {
@@ -26,7 +27,7 @@ const steps = [
 
 @customElement('verification-how-it-works')
 export class VerificationHowItWorksElement extends LitElement {
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -154,7 +155,7 @@ export class VerificationHowItWorksElement extends LitElement {
       width: 3rem;
       height: 3rem;
     }
-  `
+  `]
 
   protected render() {
     return html`

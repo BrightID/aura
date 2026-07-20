@@ -3,6 +3,7 @@ import { type CSSResultGroup, css, html, LitElement, svg } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { askedEvaluationPlayers, foundAuraPlayersFromContact } from '@/lib/data/contacts'
 import type { AuraImpact } from '@/types/evaluation'
+import { widgetBase } from './shared-styles'
 
 const SLICE_COLORS = [
   '#6366f1',
@@ -57,7 +58,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
   @property({ type: Array }) impacts: AuraImpact[] = []
   @property({ type: Number }) totalScore = 0
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -203,7 +204,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
     .bi-amount.zero {
       color: var(--muted-foreground);
     }
-  `
+  `]
 
   protected render() {
     const contacts = foundAuraPlayersFromContact.get()

@@ -5,6 +5,7 @@ import { askedEvaluationPlayers } from '@/lib/data/contacts'
 import { userFirstName, userLastName, userProfilePicture } from '@/states/user'
 import type { AuraImpact } from '@/types/evaluation'
 import './level-badge'
+import { widgetBase } from './shared-styles'
 
 export interface ProgressStepData {
   brightId: string
@@ -35,7 +36,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
 
   @state() private _askedExpanded = false
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -640,7 +641,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     .asked-summary[aria-expanded='true'] .asked-chevron {
       transform: rotate(180deg);
     }
-  `
+  `]
 
   protected render() {
     if (!this.data) return html``

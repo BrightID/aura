@@ -11,6 +11,7 @@ import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import './brightid-qr'
 import './level-badge'
+import { widgetBase } from './shared-styles'
 
 type ConnectMethod = 'brightid' | 'passkey' | null
 type View = 'options' | 'brightid-qr' | 'passkey-choice'
@@ -33,7 +34,7 @@ export class VerificationConnectElement extends LitElement {
   @state() private view: View = 'options'
   @state() private error = ''
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -307,7 +308,7 @@ export class VerificationConnectElement extends LitElement {
       letter-spacing: 0.05em;
       margin: 0.25em 0 -0.25em;
     }
-  `
+  `]
 
   protected render() {
     if (this.view === 'brightid-qr') {

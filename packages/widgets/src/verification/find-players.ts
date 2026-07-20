@@ -25,6 +25,7 @@ import { parseContactsFile } from '@/utils/integrations/contacts-file'
 import { getContactsList } from '@/utils/integrations/google'
 import './level-badge'
 import type { ContactsHashWorkerOutput } from '../workers/contacts-hash.worker'
+import { widgetBase } from './shared-styles'
 
 @customElement('verification-find-players')
 export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
@@ -63,7 +64,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     }
   })
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -651,7 +652,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
       font-size: 0.72em;
       color: var(--muted-foreground);
     }
-  `
+  `]
 
   protected render() {
     const players = foundAuraPlayersFromContact.get()

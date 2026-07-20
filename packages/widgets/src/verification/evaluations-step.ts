@@ -3,6 +3,7 @@ import type { AuraImpact } from '@/types/evaluation'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { widgetBase } from './shared-styles'
 
 const CONFIDENCE_LABELS: Record<number, string> = {
   1: 'Low',
@@ -15,7 +16,7 @@ const CONFIDENCE_LABELS: Record<number, string> = {
 export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
   @property({ type: Array }) impacts: AuraImpact[] = []
 
-  static styles: CSSResultGroup = css`
+  static styles: CSSResultGroup = [widgetBase, css`
     :host {
       display: block;
       font-size: inherit;
@@ -221,7 +222,7 @@ export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
     }
     .pending-badge iconify-icon { width: 0.7em; height: 0.7em; }
     .impact.zero { color: var(--muted-foreground); }
-  `
+  `]
 
   protected render() {
     const contacts = foundAuraPlayersFromContact.get()
