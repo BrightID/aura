@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 /**
  * The message contract the Aura verification embed posts to `window.parent`.
@@ -14,8 +14,8 @@ interface VerificationSignature {
 }
 
 interface AuraMessage {
-  app: 'aura-get-verified'
-  type: 'app-ready' | 'verification-success'
+  app: "aura-get-verified"
+  type: "app-ready" | "verification-success"
   data?: {
     brightId?: string
     signature?: VerificationSignature
@@ -32,8 +32,10 @@ interface LogEntry {
 }
 
 const DEFAULT_BASE_URL =
-  (import.meta.env.VITE_AURA_EMBED_BASE_URL as string | undefined)?.replace(/\/$/, '') ??
-  'https://aura-get-verified.vercel.app'
+  (import.meta.env.VITE_AURA_EMBED_BASE_URL as string | undefined)?.replace(
+    /\/$/,
+    "",
+  ) ?? "https://aura-get-verified.vercel.app"
 
 const DEFAULT_PROJECT_ID = Number(import.meta.env.VITE_AURA_PROJECT_ID ?? 9)
 
@@ -41,7 +43,7 @@ function originOf(url: string): string {
   try {
     return new URL(url).origin
   } catch {
-    return ''
+    return ""
   }
 }
 
@@ -49,14 +51,14 @@ function CopyButton({ value }: { value: string }) {
   const [done, setDone] = useState(false)
   return (
     <button
-      className={`copy${done ? ' done' : ''}`}
+      className={`copy${done ? " done" : ""}`}
       onClick={() => {
         void navigator.clipboard?.writeText(value)
         setDone(true)
         window.setTimeout(() => setDone(false), 1200)
       }}
     >
-      {done ? '✓ Copied' : 'Copy'}
+      {done ? "✓ Copied" : "Copy"}
     </button>
   )
 }
@@ -64,16 +66,20 @@ function CopyButton({ value }: { value: string }) {
 export function App() {
   const [baseUrl, setBaseUrl] = useState(DEFAULT_BASE_URL)
   const [projectId, setProjectId] = useState(DEFAULT_PROJECT_ID)
-  const [committed, setCommitted] = useState({ baseUrl: DEFAULT_BASE_URL, projectId: DEFAULT_PROJECT_ID })
+  const [committed, setCommitted] = useState({
+    baseUrl: DEFAULT_BASE_URL,
+    projectId: DEFAULT_PROJECT_ID,
+  })
   const [iframeKey, setIframeKey] = useState(0)
 
-  const [result, setResult] = useState<AuraMessage['data'] | null>(null)
+  const [result, setResult] = useState<AuraMessage["data"] | null>(null)
   const [log, setLog] = useState<LogEntry[]>([])
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   const embedSrc = useMemo(
-    () => `${committed.baseUrl.replace(/\/$/, '')}/embed/projects/${committed.projectId}`,
-    [committed]
+    () =>
+      `${committed.baseUrl.replace(/\/$/, "")}/embed/projects/${committed.projectId}`,
+    [committed],
   )
   const expectedOrigin = useMemo(() => originOf(committed.baseUrl), [committed])
 
@@ -81,7 +87,7 @@ export function App() {
     (e: MessageEvent) => {
       // Only trust messages coming from the embed's own origin.
       if (expectedOrigin && e.origin !== expectedOrigin) return
-      if (typeof e.data !== 'string') return
+      if (typeof e.data !== "string") return
 
       let parsed: AuraMessage | undefined
       try {
@@ -89,28 +95,36 @@ export function App() {
       } catch {
         return
       }
-      if (parsed.app !== 'aura-get-verified') return
+      if (parsed.app !== "aura-get-verified") return
 
       setLog((prev) =>
-        [{ ts: new Date().toLocaleTimeString(), origin: e.origin, raw: e.data, parsed }, ...prev].slice(0, 50)
+        [
+          {
+            ts: new Date().toLocaleTimeString(),
+            origin: e.origin,
+            raw: e.data,
+            parsed,
+          },
+          ...prev,
+        ].slice(0, 50),
       )
 
-      if (parsed.type === 'verification-success') {
+      if (parsed.type === "verification-success") {
         setResult(parsed.data ?? null)
       }
     },
-    [expectedOrigin]
+    [expectedOrigin],
   )
 
   useEffect(() => {
-    window.addEventListener('message', onMessage)
-    return () => window.removeEventListener('message', onMessage)
+    window.addEventListener("message", onMessage)
+    return () => window.removeEventListener("message", onMessage)
   }, [onMessage])
 
   const applyConfig = () => {
     setResult(null)
     setLog([])
-    setCommitted({ baseUrl: baseUrl.trim().replace(/\/$/, ''), projectId })
+    setCommitted({ baseUrl: baseUrl.trim().replace(/\/$/, ""), projectId })
     setIframeKey((k) => k + 1)
   }
 
@@ -129,9 +143,10 @@ export function App() {
             <span className="tag">Demo Integration</span>
           </h1>
           <p className="sub">
-            A third-party site embedding the Aura verification iframe. Complete the flow in the frame
-            below; on success the embed posts the <code>brightId</code>, verification{' '}
-            <code>signature</code>, level and score back to this page.
+            A third-party site embedding the Aura verification iframe. Complete
+            the flow in the frame below; on success the embed posts the{" "}
+            <code>brightId</code>, verification <code>signature</code>, level
+            and score back to this page.
           </p>
         </div>
       </header>
@@ -185,7 +200,7 @@ export function App() {
 
         <section className="panel">
           <div className="panel-head">
-            <span className={`dot${result ? ' live' : ''}`} />
+            <span className={`dot${result ? " live" : ""}`} />
             <h2>Result</h2>
           </div>
           {result ? (
@@ -195,28 +210,32 @@ export function App() {
                 <div className="row">
                   <dt>BrightID</dt>
                   <dd>
-                    <span className="val mono">{result.brightId ?? '—'}</span>
+                    <span className="val mono">{result.brightId ?? "—"}</span>
                     {result.brightId && <CopyButton value={result.brightId} />}
                   </dd>
                 </div>
                 <div className="row">
                   <dt>Aura level</dt>
-                  <dd>{result.auraLevel ?? '—'}</dd>
+                  <dd>{result.auraLevel ?? "—"}</dd>
                 </div>
                 <div className="row">
                   <dt>Aura score</dt>
-                  <dd className="mono">{result.auraScore ?? '—'}</dd>
+                  <dd className="mono">{result.auraScore ?? "—"}</dd>
                 </div>
                 <div className="row">
                   <dt>Signature</dt>
                   <dd>
                     {result.signature ? (
                       <>
-                        <pre className="sig mono">{JSON.stringify(result.signature, null, 2)}</pre>
+                        <pre className="sig mono">
+                          {JSON.stringify(result.signature, null, 2)}
+                        </pre>
                         <CopyButton value={JSON.stringify(result.signature)} />
                       </>
                     ) : (
-                      <span className="muted">no signature (unverified / API failed)</span>
+                      <span className="muted">
+                        no signature (unverified / API failed)
+                      </span>
                     )}
                   </dd>
                 </div>
@@ -236,7 +255,9 @@ export function App() {
           {log.length === 0 ? (
             <div className="empty">
               <span className="glyph">📡</span>
-              <p>No <code>aura-get-verified</code> messages yet.</p>
+              <p>
+                No <code>aura-get-verified</code> messages yet.
+              </p>
             </div>
           ) : (
             <ul className="log">
@@ -244,7 +265,7 @@ export function App() {
                 <li key={i}>
                   <span className="ts">{entry.ts}</span>
                   <span
-                    className={`type ${entry.parsed?.type === 'verification-success' ? 'success' : 'ready'}`}
+                    className={`type ${entry.parsed?.type === "verification-success" ? "success" : "ready"}`}
                   >
                     {entry.parsed?.type}
                   </span>
