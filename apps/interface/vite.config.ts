@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { litHMRPlugin } from './vite-plugin-lit-hmr'
+
 const dirname =
   typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url))
 
@@ -17,6 +18,8 @@ export default defineConfig({
   },
   plugins: [tsconfigPaths(), litHMRPlugin()],
   server: {
+    host: true,
+    allowedHosts: ['localhost', '.localhost'],
     port: 3000,
     proxy: {
       '^/auranode(/.*)?$': {

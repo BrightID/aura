@@ -6,10 +6,7 @@ export class VerificationFooterElement extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      flex-shrink: 0;
       font-size: inherit;
       padding: 0.625em 1.25em;
       border-top: 1px solid var(--border);

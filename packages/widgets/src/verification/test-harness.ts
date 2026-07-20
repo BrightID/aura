@@ -240,6 +240,7 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
     }
     .preview-frame {
       max-width: 480px;
+      height: 600px;
     }
   `
 

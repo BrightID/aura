@@ -6,12 +6,12 @@ interface CodeProps {
 
 export function Code({ lang = "ts", filename, children }: CodeProps) {
   return (
-    <div className="my-5 overflow-hidden rounded-[10px] border border-black/[0.08] dark:border-white/[0.08]">
-      <div className="flex items-center justify-between border-b border-black/[0.08] bg-black/[0.04] px-4 py-2 font-[family-name:var(--font-geist-mono)] text-xs text-black/50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white/50">
+    <div className="my-5 overflow-hidden rounded-[10px] border border-border">
+      <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2 font-[family-name:var(--font-geist-mono)] text-xs text-muted-foreground">
         <span>{filename ?? lang}</span>
       </div>
-      <pre className="m-0 overflow-x-auto bg-black/[0.03] p-5 dark:bg-white/[0.03]">
-        <code className="font-[family-name:var(--font-geist-mono)] text-[0.825rem] leading-[1.65] [tab-size:2]">
+      <pre className="m-0 overflow-x-auto bg-[color-mix(in_oklch,var(--muted)_45%,transparent)] p-5">
+        <code className="font-[family-name:var(--font-geist-mono)] text-[0.825rem] leading-[1.65] text-foreground [tab-size:2]">
           {children.trim()}
         </code>
       </pre>
@@ -54,7 +54,7 @@ export function Table({ headers, rows }: TableProps) {
             {headers.map((h) => (
               <th
                 key={h}
-                className="whitespace-nowrap border-b border-black/[0.1] bg-black/[0.04] px-3.5 py-2 text-left text-[0.8rem] font-semibold uppercase tracking-[0.05em] text-black/60 dark:border-white/[0.1] dark:bg-white/[0.04] dark:text-white/60"
+                className="whitespace-nowrap border-b border-border bg-muted px-3.5 py-2 text-left text-[0.8rem] font-semibold uppercase tracking-[0.05em] text-muted-foreground"
               >
                 {h}
               </th>
@@ -67,7 +67,7 @@ export function Table({ headers, rows }: TableProps) {
               {row.map((cell, j) => (
                 <td
                   key={j}
-                  className="border-b border-black/[0.06] px-3.5 py-2 align-top text-black/75 first:[&>code]:font-[family-name:var(--font-geist-mono)] first:[&>code]:text-[0.8rem] first:[&>code]:text-foreground dark:border-white/[0.06] dark:text-white/75"
+                  className="border-b border-[color-mix(in_oklch,var(--border)_50%,transparent)] px-3.5 py-2 align-top text-muted-foreground first:[&>code]:font-[family-name:var(--font-geist-mono)] first:[&>code]:text-[0.8rem] first:[&>code]:text-foreground"
                 >
                   {cell}
                 </td>

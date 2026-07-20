@@ -6,6 +6,7 @@ import './level-badge'
 export class VerificationSuccessElement extends LitElement {
   @property() appName = ''
   @property({ type: Number }) level = 1
+  @property({ type: Boolean }) loading = false
 
   static styles: CSSResultGroup = css`
     :host {
@@ -131,8 +132,12 @@ export class VerificationSuccessElement extends LitElement {
           <verification-level-badge .level=${this.level} size="lg"></verification-level-badge>
         </div>
 
-        <a-button size="lg" @click=${() => this._emit('continue')}>
-          Continue to ${this.appName}
+        <a-button
+          size="lg"
+          ?disabled=${this.loading}
+          @click=${() => this._emit('continue')}
+        >
+          ${this.loading ? 'Generating signature…' : html`Continue to ${this.appName}`}
         </a-button>
 
         <p class="footnote">This verification can be used across multiple apps</p>

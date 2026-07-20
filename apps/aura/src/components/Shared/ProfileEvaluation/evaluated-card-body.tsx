@@ -10,7 +10,7 @@ import {
   viewModeToSubjectViewMode,
 } from '@/constants';
 import Tooltip from '../Tooltip';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useSubjectName } from '@/hooks/useSubjectName';
 import useViewMode from '@/hooks/useViewMode';
 import ConnectionInfo from './connection-info';
@@ -107,4 +107,4 @@ const EvaluatedCardBody = ({
   );
 };
 
-export default EvaluatedCardBody;
+export default memo(EvaluatedCardBody);

@@ -3,9 +3,16 @@ import { customElement, property, state } from "lit/decorators.js"
 
 @customElement("a-dialog")
 export class DialogElement extends LitElement {
-  @property({ type: Boolean }) open = false
+  @property({ type: Boolean }) declare open: boolean
 
-  @state() private _animatingOut = false
+  @state() private declare _animatingOut: boolean
+  private _hideTimer?: ReturnType<typeof setTimeout>
+
+  constructor() {
+    super()
+    this.open = false
+    this._animatingOut = false
+  }
 
   static styles = css`
     :host {
@@ -50,7 +57,7 @@ export class DialogElement extends LitElement {
       <slot name="trigger" @click=${this._onTriggerClick}></slot>
 
       <div
-        class="wrapper ${this.open || this._animatingOut ? "visible" : ""}"
+        class="wrapper ${this.open ? "visible" : ""}"
         @click=${this._onBackdropClick}
       >
         <div class="content" role="dialog" aria-modal="true">
@@ -67,6 +74,12 @@ export class DialogElement extends LitElement {
 
   show() {
     if (this.open && !this._animatingOut) return
+    // Reopening mid-leave: cancel the pending close so `after-hide` (and the
+    // consumer's state cleanup) never fires against a now-open dialog.
+    if (this._hideTimer) {
+      clearTimeout(this._hideTimer)
+      this._hideTimer = undefined
+    }
     this.open = true
     this._animatingOut = false
 
@@ -82,6 +95,10 @@ export class DialogElement extends LitElement {
   hide() {
     if (!this.open || this._animatingOut) return
     this._animatingOut = true
+    // Drop `.visible` now so the fade/scale-out transition actually plays over
+    // the next 220ms. Contents stay mounted (consumers keep their state until
+    // `after-hide`), so the exit animates the real content, not an empty shell.
+    this.open = false
 
     this.dispatchEvent(
       new CustomEvent("open-change", {
@@ -91,10 +108,15 @@ export class DialogElement extends LitElement {
       }),
     )
 
-    // Wait for exit animation before fully closing
-    setTimeout(() => {
-      this.open = false
+    // Fire once the exit transition has finished and the dialog is fully
+    // transparent — only then may consumers unmount / clear their contents.
+    this._hideTimer = setTimeout(() => {
       this._animatingOut = false
+      this._hideTimer = undefined
+
+      this.dispatchEvent(
+        new CustomEvent("after-hide", { bubbles: true, composed: true }),
+      )
     }, 220)
   }
 

@@ -15,9 +15,13 @@ import { useSubjectOutboundEvaluations } from "@/hooks/useOutboundEvaluationsCon
 import { useMyEvaluations } from "hooks/useMyEvaluations"
 import useViewMode from "hooks/useViewMode"
 import { ArrowDownLeft, ArrowDownRight, ArrowUpRight } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router"
-import { CredibilityDetailsProps } from "types"
+import {
+  AuraInboundConnectionAndRatingData,
+  AuraOutboundConnectionAndRatingData,
+  CredibilityDetailsProps,
+} from "types"
 import {
   EvaluationCategory,
   EvidenceViewMode,
@@ -45,6 +49,98 @@ const connectionLevelPriority: {
   suspicious: 5,
   reported: 6,
 }
+
+type OpenDetails = (props: CredibilityDetailsProps) => void
+
+const InboundEvaluatorRow = memo(function InboundEvaluatorRow({
+  evaluator,
+  subjectId,
+  evaluationCategory,
+  onOpenDetails,
+}: {
+  evaluator: AuraInboundConnectionAndRatingData
+  subjectId: string
+  evaluationCategory: EvaluationCategory
+  onOpenDetails: OpenDetails
+}) {
+  const handleClick = useCallback(
+    () =>
+      onOpenDetails({
+        subjectId: evaluator.fromSubjectId,
+        evaluationCategory,
+      }),
+    [onOpenDetails, evaluator.fromSubjectId, evaluationCategory],
+  )
+  return (
+    <ProfileEvaluation
+      connection={evaluator}
+      evidenceViewMode={EvidenceViewMode.INBOUND_EVALUATION}
+      onClick={handleClick}
+      fromSubjectId={evaluator.fromSubjectId}
+      toSubjectId={subjectId}
+    />
+  )
+})
+
+const InboundConnectionRow = memo(function InboundConnectionRow({
+  connection,
+  subjectId,
+  onOpenDetails,
+}: {
+  connection: AuraInboundConnectionAndRatingData
+  subjectId: string
+  onOpenDetails: OpenDetails
+}) {
+  const handleClick = useCallback(
+    () =>
+      onOpenDetails({
+        subjectId: connection.fromSubjectId,
+        evaluationCategory: EvaluationCategory.SUBJECT,
+      }),
+    [onOpenDetails, connection.fromSubjectId],
+  )
+  return (
+    <ProfileEvaluation
+      connection={connection.inboundConnection}
+      evidenceViewMode={EvidenceViewMode.INBOUND_CONNECTION}
+      onClick={handleClick}
+      fromSubjectId={connection.fromSubjectId}
+      toSubjectId={subjectId}
+    />
+  )
+})
+
+const OutboundEvaluatedRow = memo(function OutboundEvaluatedRow({
+  evaluated,
+  subjectId,
+  evidenceViewMode,
+  evaluationCategory,
+  onOpenDetails,
+}: {
+  evaluated: AuraOutboundConnectionAndRatingData
+  subjectId: string
+  evidenceViewMode: EvidenceViewMode
+  evaluationCategory: EvaluationCategory
+  onOpenDetails: OpenDetails
+}) {
+  const handleClick = useCallback(
+    () =>
+      onOpenDetails({
+        subjectId: evaluated.toSubjectId,
+        evaluationCategory,
+      }),
+    [onOpenDetails, evaluated.toSubjectId, evaluationCategory],
+  )
+  return (
+    <ProfileEvaluation
+      connection={evaluated as unknown as { verifications: Verifications }}
+      evidenceViewMode={evidenceViewMode}
+      onClick={handleClick}
+      fromSubjectId={subjectId}
+      toSubjectId={evaluated.toSubjectId}
+    />
+  )
+})
 
 export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
   const [selectedTab, setSelectedTab] = useState(ProfileTab.OVERVIEW)
@@ -285,31 +381,25 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={evaluateds}
               getKey={(evaluated) => evaluated.toSubjectId}
-              renderItem={(evaluated) => {
-                return (
-                  <ProfileEvaluation
-                    connection={evaluated as { verifications: Verifications }}
-                    evidenceViewMode={
-                      selectedTab === ProfileTab.ACTIVITY
-                        ? EvidenceViewMode.OUTBOUND_ACTIVITY
-                        : EvidenceViewMode.OUTBOUND_ACTIVITY_ON_MANAGERS
-                    }
-                    onClick={() =>
-                      setCredibilityDetailsProps({
-                        subjectId: evaluated.toSubjectId,
-                        evaluationCategory:
-                          selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS
-                            ? EvaluationCategory.MANAGER
-                            : viewModeToViewAs[
-                                viewModeToSubjectViewMode[currentViewMode]
-                              ],
-                      })
-                    }
-                    fromSubjectId={subjectId}
-                    toSubjectId={evaluated.toSubjectId}
-                  />
-                )
-              }}
+              renderItem={(evaluated) => (
+                <OutboundEvaluatedRow
+                  evaluated={evaluated}
+                  subjectId={subjectId}
+                  evidenceViewMode={
+                    selectedTab === ProfileTab.ACTIVITY
+                      ? EvidenceViewMode.OUTBOUND_ACTIVITY
+                      : EvidenceViewMode.OUTBOUND_ACTIVITY_ON_MANAGERS
+                  }
+                  evaluationCategory={
+                    selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS
+                      ? EvaluationCategory.MANAGER
+                      : viewModeToViewAs[
+                          viewModeToSubjectViewMode[currentViewMode]
+                        ]
+                  }
+                  onOpenDetails={setCredibilityDetailsProps}
+                />
+              )}
             />
           ) : (
             <EmptyActivitiesList
@@ -332,31 +422,25 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={evaluateds}
               getKey={(evaluated) => evaluated.toSubjectId}
-              renderItem={(evaluated) => {
-                return (
-                  <ProfileEvaluation
-                    connection={evaluated as { verifications: Verifications }}
-                    evidenceViewMode={
-                      selectedTab === ProfileTab.ACTIVITY
-                        ? EvidenceViewMode.OUTBOUND_ACTIVITY
-                        : EvidenceViewMode.OUTBOUND_ACTIVITY_ON_MANAGERS
-                    }
-                    onClick={() =>
-                      setCredibilityDetailsProps({
-                        subjectId: evaluated.toSubjectId,
-                        evaluationCategory:
-                          selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS
-                            ? EvaluationCategory.MANAGER
-                            : viewModeToViewAs[
-                                viewModeToSubjectViewMode[currentViewMode]
-                              ],
-                      })
-                    }
-                    fromSubjectId={subjectId}
-                    toSubjectId={evaluated.toSubjectId}
-                  />
-                )
-              }}
+              renderItem={(evaluated) => (
+                <OutboundEvaluatedRow
+                  evaluated={evaluated}
+                  subjectId={subjectId}
+                  evidenceViewMode={
+                    selectedTab === ProfileTab.ACTIVITY
+                      ? EvidenceViewMode.OUTBOUND_ACTIVITY
+                      : EvidenceViewMode.OUTBOUND_ACTIVITY_ON_MANAGERS
+                  }
+                  evaluationCategory={
+                    selectedTab === ProfileTab.ACTIVITY_ON_MANAGERS
+                      ? EvaluationCategory.MANAGER
+                      : viewModeToViewAs[
+                          viewModeToSubjectViewMode[currentViewMode]
+                        ]
+                  }
+                  onOpenDetails={setCredibilityDetailsProps}
+                />
+              )}
             />
           ) : (
             <EmptyActivitiesList
@@ -375,23 +459,14 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={evaluators}
               getKey={(evaluator) => evaluator.fromSubjectId}
-              renderItem={(evaluator) => {
-                return (
-                  <ProfileEvaluation
-                    connection={evaluator}
-                    evidenceViewMode={EvidenceViewMode.INBOUND_EVALUATION}
-                    onClick={() =>
-                      setCredibilityDetailsProps({
-                        subjectId: evaluator.fromSubjectId,
-                        evaluationCategory:
-                          currentRoleEvaluatorEvaluationCategory,
-                      })
-                    }
-                    fromSubjectId={evaluator.fromSubjectId}
-                    toSubjectId={subjectId}
-                  />
-                )
-              }}
+              renderItem={(evaluator) => (
+                <InboundEvaluatorRow
+                  evaluator={evaluator}
+                  subjectId={subjectId}
+                  evaluationCategory={currentRoleEvaluatorEvaluationCategory}
+                  onOpenDetails={setCredibilityDetailsProps}
+                />
+              )}
             />
           ) : (
             <EmptyEvaluationsList
@@ -410,22 +485,13 @@ export const SubjectProfileBody = ({ subjectId }: { subjectId: string }) => {
               className={"-mb-5 flex h-full w-full flex-col gap-2.5 pb-5"}
               items={connectionsList}
               getKey={(connection) => connection.fromSubjectId}
-              renderItem={(connection) => {
-                return (
-                  <ProfileEvaluation
-                    connection={connection.inboundConnection}
-                    evidenceViewMode={EvidenceViewMode.INBOUND_CONNECTION}
-                    onClick={() =>
-                      setCredibilityDetailsProps({
-                        subjectId: connection.fromSubjectId,
-                        evaluationCategory: EvaluationCategory.SUBJECT,
-                      })
-                    }
-                    fromSubjectId={connection.fromSubjectId}
-                    toSubjectId={subjectId}
-                  />
-                )
-              }}
+              renderItem={(connection) => (
+                <InboundConnectionRow
+                  connection={connection}
+                  subjectId={subjectId}
+                  onOpenDetails={setCredibilityDetailsProps}
+                />
+              )}
             />
           ) : (
             <EmptySubjectList

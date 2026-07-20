@@ -10,7 +10,7 @@ import {
 import { useSubjectName } from '@/hooks/useSubjectName';
 import useViewMode from '@/hooks/useViewMode';
 import { EvidenceViewMode, EvidenceType } from '@/types/dashboard';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import ConnectionInformation from './connection-information';
 import UserInformation from './user-information';
 import UserName from './user-name';
@@ -113,4 +113,4 @@ export const EvidenceUserProfile = ({ subjectId }: { subjectId: string }) => {
   );
 };
 
-export default ConnectedCardBody;
+export default memo(ConnectedCardBody);

@@ -4,12 +4,20 @@ import { classMap } from 'lit/directives/class-map.js'
 
 @customElement('a-popover')
 export class PopoverElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) open = false
-  @property({ reflect: true }) side: 'top' | 'right' | 'bottom' | 'left' = 'bottom'
-  @property({ reflect: true }) align: 'start' | 'center' | 'end' = 'center'
-  @property({ type: Number }) sideOffset = 4
+  @property({ type: Boolean, reflect: true }) declare open: boolean
+  @property({ reflect: true }) declare side: 'top' | 'right' | 'bottom' | 'left'
+  @property({ reflect: true }) declare align: 'start' | 'center' | 'end'
+  @property({ type: Number }) declare sideOffset: number
 
-  @queryAssignedElements({ slot: 'trigger' }) private triggerElements!: HTMLElement[]
+  @queryAssignedElements({ slot: 'trigger' }) private declare triggerElements: HTMLElement[]
+
+  constructor() {
+    super()
+    this.open = false
+    this.side = 'bottom'
+    this.align = 'center'
+    this.sideOffset = 4
+  }
 
   static styles: CSSResultGroup = css`
     :host {

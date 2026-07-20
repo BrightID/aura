@@ -32,3 +32,39 @@ export const getProjects = async () => {
 
   return (res.data! ?? []) as Project[]
 }
+
+export interface VerificationSignature {
+  r: string
+  s: string
+  v: number
+}
+
+export interface VerifyProjectResult {
+  userId: string
+  projectId: number
+  client: string
+  signature: VerificationSignature
+  auraScore?: number
+  auraLevel?: number
+  verifiedAt: string
+}
+
+/**
+ * Calls the interface app's verify endpoint to generate a verification
+ * signature for a verified user. Returns the signature payload on success.
+ */
+export const verifyProject = async (
+  projectId: number,
+  payload: { userId: string; client: string; auraScore?: number; auraLevel?: number }
+) => {
+  const res = await clientAPI.POST('/projects/{id}/verify' as never, {
+    params: { path: { id: String(projectId) } },
+    body: payload
+  } as never)
+
+  if ((res as { error?: unknown }).error) {
+    throw new Error('Failed to generate verification signature')
+  }
+
+  return (res as { data?: { data?: VerifyProjectResult } }).data?.data
+}

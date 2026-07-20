@@ -1,5 +1,6 @@
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
+import withCors from '../../lib/cors.js'
 import { db } from '../../lib/db.js'
 import { projectsTable, verificationsTable } from '../../lib/schema.js'
 
@@ -10,7 +11,7 @@ const verifySchema = z.object({
   userId: z.string()
 })
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+async function handler(req: Request, { params }: { params: { id: string } }) {
   try {
     const body = verifySchema.parse(await req.json())
     const projectId = Number(params.id)
@@ -104,3 +105,5 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     return Response.json({ error: 'Invalid request' }, { status: 400 })
   }
 }
+
+export default withCors(handler)

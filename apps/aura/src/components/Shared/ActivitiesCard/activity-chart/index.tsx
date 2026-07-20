@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { memo, useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import ZoomControls from './zoom-controls';
 import ChartArea from './chart-area';
 import SkeletonChart from './sekeleton-chart';
@@ -26,7 +26,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const ActivityChart = ({
+const ActivityChartImpl = ({
   evaluationCategory,
   ratings,
   subjectId,
@@ -233,3 +233,6 @@ export const ActivityChart = ({
     </div>
   );
 };
+
+export const ActivityChart = memo(ActivityChartImpl);
+

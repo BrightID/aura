@@ -55,6 +55,7 @@
     }
   },
   "dependencies": {
+    "@aura/domain": "workspace:*",
     "@lit-app/state": "^1.0.0",
     "@lit-labs/router": "^0.1.4",
     "@lit-labs/signals": "^0.1.2",
@@ -62,7 +63,6 @@
     "@zerodev/ecdsa-validator": "^5.4.9",
     "@zerodev/wagmi": "^4.6.7",
     "axios": "^1.13.5",
-    "base64-js": "^1.5.1",
     "lit": "^3.3.0",
     "tweetnacl": "^1.0.3",
     "viem": "^2.45.3",

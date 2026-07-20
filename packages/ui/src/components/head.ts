@@ -4,15 +4,20 @@ import { customElement, property } from "lit/decorators.js"
 @customElement("a-head")
 export class HeadingElement extends LitElement {
   @property({ type: String, reflect: true })
-  level: "1" | "2" | "3" | "4" | "5" | "6" = "2"
+  declare level: "1" | "2" | "3" | "4" | "5" | "6"
+
+  constructor() {
+    super()
+    this.level = "2"
+  }
 
   static styles = css`
+    /* No default margins — pages lay headings out with flex/gap; opt into
+       spacing with utility classes instead of fighting baked-in margins. */
     :host {
       display: block;
       color: var(--foreground);
       font-weight: 600;
-      margin-top: 1.5em;
-      margin-bottom: 0.5em;
     }
 
     :host([level="1"]) {

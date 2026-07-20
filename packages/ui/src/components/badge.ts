@@ -4,22 +4,30 @@ import { customElement, property } from "lit/decorators.js"
 @customElement("a-badge")
 export class BadgeElement extends LitElement {
   @property({ reflect: true })
-  variant:
+  declare variant:
     | "default"
     | "secondary"
     | "outline"
     | "destructive"
     | "accent"
-    | "glass" = "default"
+    | "glass"
 
   @property({ reflect: true })
-  size: "sm" | "md" | "lg" | "xs" = "md"
+  declare size: "sm" | "md" | "lg" | "xs"
 
   @property({ type: Boolean, reflect: true })
-  rounded = false
+  declare rounded: boolean
 
   @property({ type: Boolean, reflect: true })
-  removable = false
+  declare removable: boolean
+
+  constructor() {
+    super()
+    this.variant = "default"
+    this.size = "md"
+    this.rounded = false
+    this.removable = false
+  }
 
   static styles: CSSResultGroup = css`
     :host {

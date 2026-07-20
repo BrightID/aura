@@ -11,27 +11,39 @@ export interface GridItem {
 @customElement('a-grid')
 export class GridElement extends LitElement {
   @property({ type: Number, attribute: 'cols-lg', reflect: true })
-  colsLg = 4;
+  declare colsLg: number;
 
   @property({ type: Number, attribute: 'cols-md', reflect: true })
-  colsMd = 3;
+  declare colsMd: number;
 
   @property({ type: Number, attribute: 'cols-sm', reflect: true })
-  colsSm = 2;
+  declare colsSm: number;
 
   @property({ type: Number, attribute: 'cols-xs', reflect: true })
-  colsXs = 1;
+  declare colsXs: number;
 
   @property({ type: String, attribute: 'gap', reflect: true })
-  gap = '1.25rem';
+  declare gap: string;
 
   @property({ attribute: false })
-  items: GridItem[] = [];
+  declare items: GridItem[];
 
   @property({ type: String, attribute: 'card-aspect' })
-  cardAspect = '4 / 3';
+  declare cardAspect: string;
 
-  @state() private _hasSlottedContent = false;
+  @state() private declare _hasSlottedContent: boolean;
+
+  constructor() {
+    super();
+    this.colsLg = 4;
+    this.colsMd = 3;
+    this.colsSm = 2;
+    this.colsXs = 1;
+    this.gap = '1.25rem';
+    this.items = [];
+    this.cardAspect = '4 / 3';
+    this._hasSlottedContent = false;
+  }
 
   static styles = css`
     :host {

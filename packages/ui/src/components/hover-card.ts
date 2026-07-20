@@ -3,14 +3,21 @@ import { customElement, property, state } from "lit/decorators.js"
 
 @customElement("a-hover-card")
 export class HoverCardElement extends LitElement {
-  @property({ type: Number }) openDelay = 100 // ms
-  @property({ type: Number }) closeDelay = 200 // ms
-  @property({ reflect: true }) side: "top" | "bottom" | "left" | "right" =
-    "bottom"
+  @property({ type: Number }) declare openDelay: number // ms
+  @property({ type: Number }) declare closeDelay: number // ms
+  @property({ reflect: true }) declare side: "top" | "bottom" | "left" | "right"
 
-  @state() private _open = false
+  @state() private declare _open: boolean
   private _openTimer?: number
   private _closeTimer?: number
+
+  constructor() {
+    super()
+    this.openDelay = 100
+    this.closeDelay = 200
+    this.side = "bottom"
+    this._open = false
+  }
 
   static styles: CSSResultGroup = css`
     :host {

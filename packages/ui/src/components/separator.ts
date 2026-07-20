@@ -4,7 +4,12 @@ import { customElement, property } from "lit/decorators.js"
 @customElement("a-separator")
 export class SeparatorElement extends LitElement {
   @property({ reflect: true })
-  orientation: "horizontal" | "vertical" = "horizontal"
+  declare orientation: "horizontal" | "vertical"
+
+  constructor() {
+    super()
+    this.orientation = "horizontal"
+  }
 
   static styles = css`
     :host {

@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit"
 import { customElement, property } from "lit/decorators.js"
 
-export type ButtonVariant = "default" | "secondary" | "ghost" | "outline"
+export type ButtonVariant = "default" | "secondary" | "ghost" | "outline" | "glass"
 export type ButtonSize = "sm" | "md" | "lg" | "icon" | "icon-sm" | "icon-lg"
 export type ButtonColors =
   | "primary"
@@ -13,22 +13,39 @@ export type ButtonColors =
 @customElement("a-button")
 export class ButtonElement extends LitElement {
   @property({ reflect: true })
-  variant: ButtonVariant = "default"
+  declare variant: ButtonVariant
 
   @property({ reflect: true })
-  size: ButtonSize = "md"
+  declare size: ButtonSize
 
   @property({ reflect: true })
-  color: ButtonColors = "primary"
+  declare color: ButtonColors
 
   @property({ reflect: true })
-  type: "button" | "submit" | "reset" = "button"
+  declare type: "button" | "submit" | "reset"
 
   @property({ type: Boolean, reflect: true })
-  disabled: boolean = false
+  declare disabled: boolean
+
+  /**
+   * Toggle/pill state: a selected button renders filled in its palette color
+   * regardless of variant, so call sites don't juggle variant/color pairs.
+   */
+  @property({ type: Boolean, reflect: true })
+  declare selected: boolean
 
   @property({})
-  class: string | undefined
+  declare class: string | undefined
+
+  constructor() {
+    super()
+    this.variant = "default"
+    this.size = "md"
+    this.color = "primary"
+    this.type = "button"
+    this.disabled = false
+    this.selected = false
+  }
 
   static styles = css`
     :host {
@@ -199,11 +216,49 @@ export class ButtonElement extends LitElement {
       --bg: color-mix(in oklch, var(--color) 10%, transparent);
     }
 
-    /* Optional: stronger hover for outline */
-    /* :host([variant="outline"]) button:hover:not(:disabled) {
-      --bg: color-mix(in oklch, var(--color) 15%, transparent);
-      --border: oklch(from var(--color) calc(l - 0.05) c h);
-    } */
+    /* Glass — frosted translucent surface, mirrors a-card[variant="glass"] */
+    :host([variant="glass"]) button {
+      --bg: transparent;
+      /* blend toward the theme foreground so any palette stays readable */
+      --fg: color-mix(in oklch, var(--color) 45%, var(--foreground));
+      --border: color-mix(in oklch, var(--color) 20%, transparent);
+      background: linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--color) 18%, transparent) 0%,
+        color-mix(in oklch, var(--color) 8%, transparent) 100%
+      );
+      backdrop-filter: blur(6px) saturate(180%);
+      -webkit-backdrop-filter: blur(6px) saturate(180%);
+      box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.05),
+        0 8px 24px oklch(0 0 0 / 0.1);
+    }
+
+    :host([variant="glass"]) button:hover:not(:disabled) {
+      background: linear-gradient(
+        135deg,
+        color-mix(in oklch, var(--color) 28%, transparent) 0%,
+        color-mix(in oklch, var(--color) 14%, transparent) 100%
+      );
+      box-shadow:
+        0 2px 4px oklch(0 0 0 / 0.06),
+        0 12px 32px oklch(0 0 0 / 0.16);
+    }
+
+    /* Selected (toggle) — filled, wins over any variant. Uses the primary
+       palette so a neutral pill group lights up consistently when chosen. */
+    :host([selected]) button {
+      --bg: var(--primary);
+      --fg: var(--primary-foreground);
+      --border: transparent;
+      background: var(--primary);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    :host([selected]) button:hover:not(:disabled) {
+      background: oklch(from var(--primary) calc(l + 0.05) c h);
+    }
   `
 
   protected render() {

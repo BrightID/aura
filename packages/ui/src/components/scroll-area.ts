@@ -4,16 +4,26 @@ import { customElement, property, query, state } from "lit/decorators.js"
 @customElement("a-scroll-area")
 export class ScrollAreaElement extends LitElement {
   @property({ reflect: true })
-  orientation: "vertical" | "horizontal" | "both" = "vertical"
+  declare orientation: "vertical" | "horizontal" | "both"
 
-  @state() private _thumbY = { top: 2, height: 0 }
-  @state() private _thumbX = { left: 2, width: 0 }
-  @state() private _hasScrollY = false
-  @state() private _hasScrollX = false
-  @state() private _dragging: "y" | "x" | null = null
+  constructor() {
+    super()
+    this.orientation = "vertical"
+    this._thumbY = { top: 2, height: 0 }
+    this._thumbX = { left: 2, width: 0 }
+    this._hasScrollY = false
+    this._hasScrollX = false
+    this._dragging = null
+  }
 
-  @query(".viewport") private _viewport!: HTMLElement
-  @query(".content") private _content!: HTMLElement
+  @state() private declare _thumbY: { top: number; height: number }
+  @state() private declare _thumbX: { left: number; width: number }
+  @state() private declare _hasScrollY: boolean
+  @state() private declare _hasScrollX: boolean
+  @state() private declare _dragging: "y" | "x" | null
+
+  @query(".viewport") private declare _viewport: HTMLElement
+  @query(".content") private declare _content: HTMLElement
 
   private _ro!: ResizeObserver
   private _dragStart = 0
@@ -42,7 +52,9 @@ export class ScrollAreaElement extends LitElement {
 
     .content {
       min-width: 100%;
-      display: table;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ── Scrollbar track ── */
