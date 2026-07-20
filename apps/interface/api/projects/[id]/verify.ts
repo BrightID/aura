@@ -90,7 +90,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     const payload = await apiRes.json()
 
-    return payload
+    return res.json(payload)
 
     // log(payload)
 
