@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit"
+import { css, html, LitElement } from "lit"
 import { customElement } from "lit/decorators.js"
 import "./components/theme-provider"
 import "./composables/card-section"
@@ -6,6 +6,7 @@ import "./composables/dialog-section"
 import "./composables/grids-section"
 import "./composables/popovers-section"
 import "./composables/tabs-section"
+import "./composables/tooltips-section"
 import "./index"
 
 @customElement("my-element")
@@ -28,6 +29,7 @@ export class MyElement extends LitElement {
           <div>
             <grids-section></grids-section>
             <popovers-section></popovers-section>
+            <tooltips-section></tooltips-section>
           </div>
         </a-flex>
       </a-container>

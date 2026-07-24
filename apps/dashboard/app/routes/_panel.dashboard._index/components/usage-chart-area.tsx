@@ -1,26 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"
-import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/chart"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select"
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group"
 import { useIsMobile } from "~/hooks/use-mobile"
+import { useAuraEvent } from "~/lib/aura"
 import * as React from "react"
 
 const chartConfig = {
@@ -44,6 +30,10 @@ async function fetchUsage(projectId: string) {
 export function ProjectUsageChart({ projectId }: { projectId: string }) {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
+  const toggleRef = React.useRef<HTMLElement>(null)
+  const selectRef = React.useRef<HTMLElement>(null)
+  useAuraEvent<string>(toggleRef, "change", (v) => v && setTimeRange(v))
+  useAuraEvent<string>(selectRef, "change", setTimeRange)
 
   const { data: chartData = [] } = useQuery({
     queryKey: ["project-usage", projectId],
@@ -61,42 +51,49 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
   }, [isMobile])
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Project Verifications</CardTitle>
-        <CardDescription>
+    <a-card>
+      <div className="flex flex-col gap-1.5 p-6">
+        <a-head level="3" className="font-semibold">
+          Project Verifications
+        </a-head>
+        <p className="text-muted-foreground text-sm">
           Last{" "}
           {timeRange === "90d"
             ? "3 months"
             : timeRange === "30d"
               ? "30 days"
               : "7 days"}
-        </CardDescription>
+        </p>
         <div className="flex justify-end">
-          <ToggleGroup
+          <a-toggle-group
+            ref={toggleRef}
             type="single"
             value={timeRange}
-            onValueChange={setTimeRange}
             className="hidden @[767px]:flex"
-            variant={"outline"}
           >
-            <ToggleGroupItem value="90d">3 months</ToggleGroupItem>
-            <ToggleGroupItem value="30d">30 days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">7 days</ToggleGroupItem>
-          </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-40 @[767px]:hidden">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="90d">Last 3 months</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-            </SelectContent>
-          </Select>
+            <a-toggle variant="outline" value="90d">
+              3 months
+            </a-toggle>
+            <a-toggle variant="outline" value="30d">
+              30 days
+            </a-toggle>
+            <a-toggle variant="outline" value="7d">
+              7 days
+            </a-toggle>
+          </a-toggle-group>
+          <a-select
+            ref={selectRef}
+            value={timeRange}
+            className="w-40 @[767px]:hidden"
+            options={[
+              { value: "90d", label: "Last 3 months" },
+              { value: "30d", label: "Last 30 days" },
+              { value: "7d", label: "Last 7 days" },
+            ]}
+          />
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-6 pt-0">
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <AreaChart data={filteredData}>
             <defs>
@@ -132,7 +129,7 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
             />
           </AreaChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </a-card>
   )
 }

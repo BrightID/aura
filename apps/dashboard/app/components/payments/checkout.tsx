@@ -1,14 +1,6 @@
-import { useState, useEffect, useCallback } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { toast } from "sonner"
+import { useState, useEffect, useCallback, useRef } from "react"
+import { useAuraEvent } from "~/lib/aura"
+import { toast } from "@aura/ui"
 import { getAuth } from "firebase/auth"
 import axios from "axios"
 import { API_BASE_URL } from "~/constants"
@@ -67,6 +59,8 @@ export function PaymentCheckout({
 }: CheckoutProps) {
   const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice
   const [tab, setTab] = useState<"hosted" | "crypto">("hosted")
+  const dialogRef = useRef<HTMLElement>(null)
+  const tabsRef = useRef<HTMLElement>(null)
 
   const [invoiceLoading, setInvoiceLoading] = useState(false)
   const [widgetUrl, setWidgetUrl] = useState<string | null>(null)
@@ -86,6 +80,14 @@ export function PaymentCheckout({
     setStatus("idle")
     setPolling(false)
   }, [])
+
+  useAuraEvent<{ open: boolean }>(dialogRef, "open-change", (e) => {
+    if (!e.open) reset()
+    onOpenChange(e.open)
+  })
+  useAuraEvent<{ value: string }>(tabsRef, "change", (e) =>
+    setTab(e.value as "hosted" | "crypto"),
+  )
 
   useEffect(() => {
     if (!orderId || !polling) return
@@ -180,31 +182,22 @@ export function PaymentCheckout({
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) reset()
-        onOpenChange(v)
-      }}
-    >
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            Upgrade to {plan.name}
-          </DialogTitle>
-          <DialogDescription>
-            ${price}/{isYearly ? "year" : "month"} · {plan.tokens.toLocaleString()} verifications
-          </DialogDescription>
-        </DialogHeader>
+    <a-dialog open={open} ref={dialogRef}>
+      <div slot="content" className="sm:max-w-md">
+        <div className="flex flex-col gap-1.5">
+          <a-head level="3">Upgrade to {plan.name}</a-head>
+          <a-text variant="muted">
+            ${price}/{isYearly ? "year" : "month"} ·{" "}
+            {plan.tokens.toLocaleString()} verifications
+          </a-text>
+        </div>
 
-        {status !== "idle" && (
-          <StatusBanner status={status} />
-        )}
+        {status !== "idle" && <StatusBanner status={status} />}
 
         {status === "completed" && (
-          <Button className="w-full" onClick={() => onOpenChange(false)}>
+          <a-button className="w-full" onClick={() => onOpenChange(false)}>
             Done
-          </Button>
+          </a-button>
         )}
 
         {status === "failed" && (
@@ -212,24 +205,22 @@ export function PaymentCheckout({
             <p className="text-sm text-muted-foreground">
               Your payment did not complete. You can try again.
             </p>
-            <Button variant="secondary" className="w-full" onClick={reset}>
+            <a-button variant="secondary" className="w-full" onClick={reset}>
               Try again
-            </Button>
+            </a-button>
           </div>
         )}
 
         {status === "idle" && (
-          <Tabs value={tab} onValueChange={(v) => setTab(v as "hosted" | "crypto")}>
-            <TabsList className="w-full">
-              <TabsTrigger value="hosted" className="flex-1">Card / Any Crypto</TabsTrigger>
-              <TabsTrigger value="crypto" className="flex-1">Direct Crypto</TabsTrigger>
-            </TabsList>
+          <a-tabs value={tab} ref={tabsRef} className="w-full">
+            <a-tab value="hosted">Card / Any Crypto</a-tab>
+            <a-tab value="crypto">Direct Crypto</a-tab>
 
-            <TabsContent value="hosted" className="space-y-4 pt-2">
+            <a-tab-panel slot="panel" value="hosted" className="space-y-4 pt-2">
               <p className="text-sm text-muted-foreground">
                 Opens a secure MoonPay page. Accepts cards and 100+ cryptocurrencies.
               </p>
-              <Button
+              <a-button
                 className="w-full"
                 onClick={createInvoice}
                 disabled={invoiceLoading}
@@ -239,10 +230,10 @@ export function PaymentCheckout({
                 ) : (
                   <><ExternalLink className="mr-2 h-4 w-4" /> Pay ${price} →</>
                 )}
-              </Button>
-            </TabsContent>
+              </a-button>
+            </a-tab-panel>
 
-            <TabsContent value="crypto" className="space-y-4 pt-2">
+            <a-tab-panel slot="panel" value="crypto" className="space-y-4 pt-2">
               <p className="text-sm text-muted-foreground">
                 Opens a MoonPay page pre-selected to your chosen currency.
               </p>
@@ -261,7 +252,7 @@ export function PaymentCheckout({
                   </button>
                 ))}
               </div>
-              <Button
+              <a-button
                 className="w-full"
                 onClick={createCryptoPayment}
                 disabled={cryptoLoading}
@@ -271,9 +262,9 @@ export function PaymentCheckout({
                 ) : (
                   <><ExternalLink className="mr-2 h-4 w-4" /> Pay with {selectedCrypto.toUpperCase()} →</>
                 )}
-              </Button>
-            </TabsContent>
-          </Tabs>
+              </a-button>
+            </a-tab-panel>
+          </a-tabs>
         )}
 
         {!TERMINAL.has(status) && status !== "idle" && widgetUrl && (
@@ -281,18 +272,18 @@ export function PaymentCheckout({
             <p className="text-sm text-muted-foreground">
               Complete payment in the tab that opened. This dialog will update automatically.
             </p>
-            <Button
+            <a-button
               variant="outline"
               size="sm"
               className="w-full"
               onClick={() => window.open(widgetUrl, "_blank", "noopener,noreferrer")}
             >
               <ExternalLink className="mr-2 h-4 w-4" /> Reopen MoonPay
-            </Button>
+            </a-button>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </div>
+    </a-dialog>
   )
 }
 

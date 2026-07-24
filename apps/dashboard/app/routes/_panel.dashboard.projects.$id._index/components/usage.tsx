@@ -1,12 +1,3 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "~/components/ui/card"
-import { Progress } from "~/components/ui/progress"
-import { Separator } from "~/components/ui/separator"
 import { plans } from "~/constants/subscriptions"
 import type { Project } from "~/types/projects"
 
@@ -15,14 +6,16 @@ export default function ProjectUsage({ project }: { project: Project }) {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Token Usage</CardTitle>
-          <CardDescription>
+      <a-card>
+        <div className="flex flex-col gap-1.5 p-6">
+          <a-head level="3" className="text-lg font-semibold">
+            Token Usage
+          </a-head>
+          <p className="text-muted-foreground text-sm">
             Monitor your token consumption and remaining allocation
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+          </p>
+        </div>
+        <div className="space-y-6 p-6 pt-0">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
@@ -33,7 +26,7 @@ export default function ProjectUsage({ project }: { project: Project }) {
                 {sub.tokens.toLocaleString()}
               </span>
             </div>
-            <Progress
+            <a-progress
               value={Math.min(
                 (project.remainingtokens / sub.tokens) * 100,
                 100
@@ -42,7 +35,7 @@ export default function ProjectUsage({ project }: { project: Project }) {
             />
           </div>
 
-          <Separator />
+          <a-separator />
 
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center p-4 bg-muted/50 rounded-lg">
@@ -64,8 +57,8 @@ export default function ProjectUsage({ project }: { project: Project }) {
               <p className="text-sm text-muted-foreground mt-1">Available</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </a-card>
     </div>
   )
 }

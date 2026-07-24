@@ -9,13 +9,6 @@ import {
 } from "@tabler/icons-react"
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
-import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -48,36 +41,34 @@ export function NavDocuments({
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction
-                  showOnHover
-                  className="data-[state=open]:bg-accent rounded-sm"
-                >
-                  <IconDots />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-24 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
+            <a-dropdown-menu
+              side={isMobile ? "bottom" : "right"}
+              align={isMobile ? "end" : "start"}
+            >
+              <SidebarMenuAction
+                slot="trigger"
+                showOnHover
+                className="data-[state=open]:bg-accent rounded-sm"
               >
-                <DropdownMenuItem>
+                <IconDots />
+                <span className="sr-only">More</span>
+              </SidebarMenuAction>
+              <div slot="content" className="w-24 rounded-lg">
+                <a-dropdown-item>
                   <IconFolder />
                   <span>Open</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+                </a-dropdown-item>
+                <a-dropdown-item>
                   <IconShare3 />
                   <span>Share</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
+                </a-dropdown-item>
+                <a-dropdown-separator />
+                <a-dropdown-item variant="destructive">
                   <IconTrash />
                   <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </a-dropdown-item>
+              </div>
+            </a-dropdown-menu>
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>

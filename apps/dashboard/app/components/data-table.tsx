@@ -33,8 +33,6 @@ import {
   IconTrendingUp,
 } from "@tabler/icons-react"
 import {
-  ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -42,23 +40,23 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  Row,
-  SortingState,
   useReactTable,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type Row,
+  type SortingState,
+  type VisibilityState,
 } from "@tanstack/react-table"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { toast } from "sonner"
+import { toast } from "@aura/ui"
 import { z } from "zod"
 
 import { useIsMobile } from "~/hooks/use-mobile"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "~/components/ui/chart"
 import { Checkbox } from "~/components/ui/checkbox"
 import {
@@ -80,7 +78,6 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -88,7 +85,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { Separator } from "~/components/ui/separator"
 import {
   Table,
   TableBody,
@@ -121,7 +117,7 @@ function DragHandle({ id }: { id: number }) {
   })
 
   return (
-    <Button
+    <a-button
       {...attributes}
       {...listeners}
       variant="ghost"
@@ -130,7 +126,7 @@ function DragHandle({ id }: { id: number }) {
     >
       <IconGripVertical className="text-muted-foreground size-3" />
       <span className="sr-only">Drag to reorder</span>
-    </Button>
+    </a-button>
   )
 }
 
@@ -179,9 +175,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "Section Type",
     cell: ({ row }) => (
       <div className="w-32">
-        <Badge variant="outline" className="text-muted-foreground px-1.5">
+        <a-badge variant="outline" className="text-muted-foreground px-1.5">
           {row.original.type}
-        </Badge>
+        </a-badge>
       </div>
     ),
   },
@@ -189,14 +185,14 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <Badge variant="outline" className="text-muted-foreground px-1.5">
+      <a-badge variant="outline" className="text-muted-foreground px-1.5">
         {row.original.status === "Done" ? (
           <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
         ) : (
           <IconLoader />
         )}
         {row.original.status}
-      </Badge>
+      </a-badge>
     ),
   },
   {
@@ -213,9 +209,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           })
         }}
       >
-        <Label htmlFor={`${row.original.id}-target`} className="sr-only">
+        <a-label for={`${row.original.id}-target`} className="sr-only">
           Target
-        </Label>
+        </a-label>
         <Input
           className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
           defaultValue={row.original.target}
@@ -238,9 +234,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           })
         }}
       >
-        <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
+        <a-label for={`${row.original.id}-limit`} className="sr-only">
           Limit
-        </Label>
+        </a-label>
         <Input
           className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
           defaultValue={row.original.limit}
@@ -261,9 +257,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 
       return (
         <>
-          <Label htmlFor={`${row.original.id}-reviewer`} className="sr-only">
+          <a-label for={`${row.original.id}-reviewer`} className="sr-only">
             Reviewer
-          </Label>
+          </a-label>
           <Select>
             <SelectTrigger
               className="w-38 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate"
@@ -288,14 +284,14 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
+          <a-button
             variant="ghost"
             className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
             size="icon"
           >
             <IconDotsVertical />
             <span className="sr-only">Open menu</span>
-          </Button>
+          </a-button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
           <DropdownMenuItem>Edit</DropdownMenuItem>
@@ -405,9 +401,9 @@ export function DataTable({
       className="w-full flex-col justify-start gap-6"
     >
       <div className="flex items-center justify-between px-4 lg:px-6">
-        <Label htmlFor="view-selector" className="sr-only">
+        <a-label for="view-selector" className="sr-only">
           View
-        </Label>
+        </a-label>
         <Select defaultValue="outline">
           <SelectTrigger
             className="flex w-fit @4xl/main:hidden"
@@ -426,22 +422,22 @@ export function DataTable({
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="outline">Outline</TabsTrigger>
           <TabsTrigger value="past-performance">
-            Past Performance <Badge variant="secondary">3</Badge>
+            Past Performance <a-badge variant="secondary">3</a-badge>
           </TabsTrigger>
           <TabsTrigger value="key-personnel">
-            Key Personnel <Badge variant="secondary">2</Badge>
+            Key Personnel <a-badge variant="secondary">2</a-badge>
           </TabsTrigger>
           <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <a-button variant="outline" size="sm">
                 <IconLayoutColumns />
                 <span className="hidden lg:inline">Customize Columns</span>
                 <span className="lg:hidden">Columns</span>
                 <IconChevronDown />
-              </Button>
+              </a-button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               {table
@@ -467,10 +463,10 @@ export function DataTable({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm">
+          <a-button variant="outline" size="sm">
             <IconPlus />
             <span className="hidden lg:inline">Add Section</span>
-          </Button>
+          </a-button>
         </div>
       </div>
       <TabsContent
@@ -535,9 +531,9 @@ export function DataTable({
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
-              <Label htmlFor="rows-per-page" className="text-sm font-medium">
+              <a-label for="rows-per-page" className="text-sm font-medium">
                 Rows per page
-              </Label>
+              </a-label>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
                 onValueChange={(value) => {
@@ -563,7 +559,7 @@ export function DataTable({
               {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
-              <Button
+              <a-button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
                 onClick={() => table.setPageIndex(0)}
@@ -571,8 +567,8 @@ export function DataTable({
               >
                 <span className="sr-only">Go to first page</span>
                 <IconChevronsLeft />
-              </Button>
-              <Button
+              </a-button>
+              <a-button
                 variant="outline"
                 className="size-8"
                 size="icon"
@@ -581,8 +577,8 @@ export function DataTable({
               >
                 <span className="sr-only">Go to previous page</span>
                 <IconChevronLeft />
-              </Button>
-              <Button
+              </a-button>
+              <a-button
                 variant="outline"
                 className="size-8"
                 size="icon"
@@ -591,8 +587,8 @@ export function DataTable({
               >
                 <span className="sr-only">Go to next page</span>
                 <IconChevronRight />
-              </Button>
-              <Button
+              </a-button>
+              <a-button
                 variant="outline"
                 className="hidden size-8 lg:flex"
                 size="icon"
@@ -601,7 +597,7 @@ export function DataTable({
               >
                 <span className="sr-only">Go to last page</span>
                 <IconChevronsRight />
-              </Button>
+              </a-button>
             </div>
           </div>
         </div>
@@ -651,9 +647,9 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
-        <Button variant="link" className="text-foreground w-fit px-0 text-left">
+        <a-button variant="ghost" className="text-foreground w-fit px-0 text-left">
           {item.header}
-        </Button>
+        </a-button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="gap-1">
@@ -705,7 +701,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   />
                 </AreaChart>
               </ChartContainer>
-              <Separator />
+              <a-separator />
               <div className="grid gap-2">
                 <div className="flex gap-2 leading-none font-medium">
                   Trending up by 5.2% this month{" "}
@@ -717,17 +713,17 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   and should wrap around.
                 </div>
               </div>
-              <Separator />
+              <a-separator />
             </>
           )}
           <form className="flex flex-col gap-4">
             <div className="flex flex-col gap-3">
-              <Label htmlFor="header">Header</Label>
+              <a-label for="header">Header</a-label>
               <Input id="header" defaultValue={item.header} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="type">Type</Label>
+                <a-label for="type">Type</a-label>
                 <Select defaultValue={item.type}>
                   <SelectTrigger id="type" className="w-full">
                     <SelectValue placeholder="Select a type" />
@@ -753,7 +749,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 </Select>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="status">Status</Label>
+                <a-label for="status">Status</a-label>
                 <Select defaultValue={item.status}>
                   <SelectTrigger id="status" className="w-full">
                     <SelectValue placeholder="Select a status" />
@@ -768,16 +764,16 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="target">Target</Label>
+                <a-label for="target">Target</a-label>
                 <Input id="target" defaultValue={item.target} />
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="limit">Limit</Label>
+                <a-label for="limit">Limit</a-label>
                 <Input id="limit" defaultValue={item.limit} />
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="reviewer">Reviewer</Label>
+              <a-label for="reviewer">Reviewer</a-label>
               <Select defaultValue={item.reviewer}>
                 <SelectTrigger id="reviewer" className="w-full">
                   <SelectValue placeholder="Select a reviewer" />
@@ -794,9 +790,9 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
           </form>
         </div>
         <DrawerFooter>
-          <Button>Submit</Button>
+          <a-button>Submit</a-button>
           <DrawerClose asChild>
-            <Button variant="outline">Done</Button>
+            <a-button variant="outline">Done</a-button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

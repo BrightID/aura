@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { LevelBadge } from "./level-badge"
 import type { VerificationLevel } from "./types"
 
@@ -50,9 +49,9 @@ export function SuccessStep({ appName, level, onContinue }: SuccessStepProps) {
       </div>
 
       {/* Continue Button */}
-      <Button onClick={onContinue} className="w-full" size="lg">
+      <a-button onClick={onContinue} className="w-full" size="lg">
         Continue to {appName}
-      </Button>
+      </a-button>
 
       {/* Footer Note */}
       <p className="text-xs text-muted-foreground">

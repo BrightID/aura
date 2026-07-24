@@ -13,7 +13,7 @@ const updateSchema = z.object({
   id: z.number(),
   name: z.string().min(1).max(255).optional(),
   description: z.string().min(1).max(255).optional(),
-  requirementLevel: z.number().int().positive().optional().nullable(),
+  requirementLevel: z.number().int().min(0).max(4).optional().nullable(),
   image: z.url().optional().nullable(),
   landingMarkdown: z.string().optional().nullable(),
   logoUrl: z.url().optional().nullable(),

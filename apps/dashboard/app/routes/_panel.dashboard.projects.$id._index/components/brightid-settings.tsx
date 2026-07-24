@@ -1,35 +1,22 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { type ReactNode, useEffect } from "react"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Textarea } from "~/components/ui/textarea"
-import { Switch } from "~/components/ui/switch"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormDescription,
-  FormMessage,
-} from "~/components/ui/form"
 import { useMutation } from "@tanstack/react-query"
 import { useParams } from "react-router"
 import { getAuth } from "firebase/auth"
 import axios from "axios"
 import { API_BASE_URL } from "~/constants"
 import _ from "lodash"
-import { toast } from "sonner"
+import { toast } from "@aura/ui"
+import { cn } from "~/lib/utils"
+import {
+  AuraInput,
+  AuraSwitch,
+  AuraTextarea,
+} from "~/components/aura-form-controls"
 
 const formSchema = z.object({
   key: z.string().min(1, "Key is required"),
@@ -52,6 +39,83 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
+function FieldShell({
+  label,
+  description,
+  error,
+  children,
+  className,
+}: {
+  label: string
+  description?: ReactNode
+  error?: string
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={cn("grid gap-2", className)}>
+      <a-label>{label}</a-label>
+      {children}
+      {description && (
+        <p className="text-muted-foreground text-sm">{description}</p>
+      )}
+      {error && <p className="text-destructive text-sm">{error}</p>}
+    </div>
+  )
+}
+
+function SwitchField({
+  title,
+  description,
+  checked,
+  onCheckedChange,
+}: {
+  title: string
+  description: string
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div className="space-y-0.5">
+        <a-label>{title}</a-label>
+        <p className="text-muted-foreground text-sm">{description}</p>
+      </div>
+      <AuraSwitch checked={checked} onCheckedChange={onCheckedChange} />
+    </div>
+  )
+}
+
+function getError(errors: unknown, name: keyof FormValues) {
+  const fieldError = (
+    errors as Partial<Record<keyof FormValues, { message?: unknown }>>
+  )[name]
+  const message = fieldError?.message
+  return typeof message === "string" ? message : undefined
+}
+
+function SectionCard({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description?: string
+  children: ReactNode
+}) {
+  return (
+    <a-card variant="default">
+      <div className="flex flex-col gap-1.5">
+        <h3 className="font-semibold leading-none">{title}</h3>
+        {description && (
+          <p className="text-muted-foreground text-sm">{description}</p>
+        )}
+      </div>
+      <div className="mt-6 space-y-6">{children}</div>
+    </a-card>
+  )
+}
+
 export function BrightIdSettingsForm({
   initialData,
 }: {
@@ -61,22 +125,37 @@ export function BrightIdSettingsForm({
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: _.merge(initialData, {
-      sponsoring: true,
-      testing: false,
-      idsAsHex: false,
-      soulbound: false,
-      usingBlindSig: false,
-      nodeUrl: "https://node.brightid.org",
-      description: "",
-      context: "",
-      soulboundMessage: "",
-      links: "",
-      images: "",
-      callbackUrl: "",
-      verifications: "",
-    }),
+    defaultValues: _.merge(
+      {
+        sponsoring: true,
+        testing: false,
+        idsAsHex: false,
+        soulbound: false,
+        usingBlindSig: false,
+        nodeUrl: "https://node.brightid.org",
+        description: "",
+        context: "",
+        soulboundMessage: "",
+        links: "",
+        images: "",
+        callbackUrl: "",
+        verifications: "",
+      },
+      initialData,
+    ),
   })
+
+  const errors = form.formState.errors
+
+  // The verifications script can change from outside this form (e.g. selecting a
+  // requirement level on the General tab). react-hook-form freezes defaultValues
+  // at mount, so sync the field on refetch — unless the user is editing it.
+  const incomingVerifications = initialData?.verifications ?? ""
+  useEffect(() => {
+    if (!form.getFieldState("verifications").isDirty) {
+      form.setValue("verifications", incomingVerifications)
+    }
+  }, [incomingVerifications, form])
 
   const { isPending, mutate } = useMutation({
     mutationKey: ["update-project", params.id],
@@ -94,7 +173,7 @@ export function BrightIdSettingsForm({
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       )
     },
     onSuccess(data, variables, onMutateResult, context) {
@@ -111,291 +190,234 @@ export function BrightIdSettingsForm({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-            <CardDescription>
-              Core identifiers for your BrightID app
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="key"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Key *</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="my-unique-app" />
-                  </FormControl>
-                  <FormDescription>
-                    Unique identifier for the app (cannot be changed later)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name *</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="My Awesome App" />
-                  </FormControl>
-                  <FormDescription>
-                    Friendly name shown to BrightID users
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <SectionCard
+        title="Basic Information"
+        description="Core identifiers for your BrightID app"
+      >
+        <Controller
+          control={form.control}
+          name="key"
+          render={({ field }) => (
+            <FieldShell
+              label="Key *"
+              description="Unique identifier for the app (cannot be changed later)"
+              error={getError(errors, "key")}
+            >
+              <AuraInput
+                name={field.name}
+                value={field.value ?? ""}
+                placeholder="my-unique-app"
+                onBlur={field.onBlur}
+                onValueChange={field.onChange}
+              />
+            </FieldShell>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FieldShell
+              label="Name *"
+              description="Friendly name shown to BrightID users"
+              error={getError(errors, "name")}
+            >
+              <AuraInput
+                name={field.name}
+                value={field.value ?? ""}
+                placeholder="My Awesome App"
+                onBlur={field.onBlur}
+                onValueChange={field.onChange}
+              />
+            </FieldShell>
+          )}
+        />
+      </SectionCard>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>App Mode & Features</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="testing"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <FormLabel>Testing Mode</FormLabel>
-                    <FormDescription>
-                      Uses test network and doesn't affect mainnet scores
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+      <SectionCard title="App Mode & Features">
+        <Controller
+          control={form.control}
+          name="testing"
+          render={({ field }) => (
+            <SwitchField
+              title="Testing Mode"
+              description="Uses test network and doesn't affect mainnet scores"
+              checked={field.value}
+              onCheckedChange={field.onChange}
             />
-            <FormField
-              control={form.control}
-              name="idsAsHex"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <FormLabel>IDs as Hex</FormLabel>
-                    <FormDescription>
-                      User IDs formatted as Ethereum addresses (0x...)
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="idsAsHex"
+          render={({ field }) => (
+            <SwitchField
+              title="IDs as Hex"
+              description="User IDs formatted as Ethereum addresses (0x...)"
+              checked={field.value}
+              onCheckedChange={field.onChange}
             />
-          </CardContent>
-        </Card>
+          )}
+        />
+      </SectionCard>
 
-        {/* Verification Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Verification Method</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
+      <SectionCard title="Verification Method">
+        <Controller
+          control={form.control}
+          name="soulbound"
+          render={({ field }) => (
+            <SwitchField
+              title="Soulbound (v1.5)"
+              description="Uses context-bound signatures with Ethereum address"
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+        {form.watch("soulbound") && (
+          <>
+            <Controller
               control={form.control}
-              name="soulbound"
+              name="context"
               render={({ field }) => (
-                <FormItem className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <FormLabel>Soulbound (v1.5)</FormLabel>
-                    <FormDescription>
-                      Uses context-bound signatures with Ethereum address
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
+                <FieldShell
+                  label="Context *"
+                  description="Name of the context (e.g., your app name)"
+                  error={getError(errors, "context")}
+                >
+                  <AuraInput
+                    name={field.name}
+                    value={field.value ?? ""}
+                    placeholder="myapp"
+                    onBlur={field.onBlur}
+                    onValueChange={field.onChange}
+                  />
+                </FieldShell>
               )}
             />
-            {form.watch("soulbound") && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="context"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Context *</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="myapp" />
-                      </FormControl>
-                      <FormDescription>
-                        Name of the context (e.g., your app name)
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="soulboundMessage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Soulbound Message</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          value={field.value ?? ""}
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Message shown in wallet when user signs (optional)
-                      </FormDescription>
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
+            <Controller
+              control={form.control}
+              name="soulboundMessage"
+              render={({ field }) => (
+                <FieldShell
+                  label="Soulbound Message"
+                  description="Message shown in wallet when user signs (optional)"
+                >
+                  <AuraTextarea
+                    name={field.name}
+                    value={field.value ?? ""}
+                    rows={3}
+                    onBlur={field.onBlur}
+                    onValueChange={field.onChange}
+                  />
+                </FieldShell>
+              )}
+            />
+          </>
+        )}
 
-            <FormField
-              control={form.control}
-              name="usingBlindSig"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <FormLabel>Blind Signatures (v1.6)</FormLabel>
-                    <FormDescription>
-                      More private verification method
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+        <Controller
+          control={form.control}
+          name="usingBlindSig"
+          render={({ field }) => (
+            <SwitchField
+              title="Blind Signatures (v1.6)"
+              description="More private verification method"
+              checked={field.value}
+              onCheckedChange={field.onChange}
             />
-          </CardContent>
-        </Card>
+          )}
+        />
+      </SectionCard>
 
-        {/* Verifications & Node */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Verifications & Node</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="verifications"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Verifications Script</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      rows={8}
-                      className="font-mono text-sm"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Aura script defining which verifications are accepted (one
-                    per line allowed)
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="verificationExpirationLength"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Verification Expiration (ms)</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value as string}
-                      type="number"
-                      placeholder="2592000000 (30 days)"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    How long verifications remain valid (0 = never expire)
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="nodeUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Preferred Node URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder="https://node.brightid.org"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Custom BrightID/Aura node (optional)
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
+      <SectionCard title="Verifications & Node">
+        <Controller
+          control={form.control}
+          name="verifications"
+          render={({ field }) => (
+            <FieldShell
+              label="Verifications Script"
+              description="Aura script defining which verifications are accepted (one per line allowed)"
+            >
+              <AuraTextarea
+                name={field.name}
+                value={field.value ?? ""}
+                rows={8}
+                className="font-mono text-sm"
+                onBlur={field.onBlur}
+                onValueChange={field.onChange}
+              />
+            </FieldShell>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="verificationExpirationLength"
+          render={({ field }) => (
+            <FieldShell
+              label="Verification Expiration (ms)"
+              description="How long verifications remain valid (0 = never expire)"
+            >
+              <AuraInput
+                name={field.name}
+                value={field.value == null ? "" : String(field.value)}
+                type="number"
+                placeholder="2592000000 (30 days)"
+                onBlur={field.onBlur}
+                onValueChange={field.onChange}
+              />
+            </FieldShell>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="nodeUrl"
+          render={({ field }) => (
+            <FieldShell
+              label="Preferred Node URL"
+              description="Custom BrightID/Aura node (optional)"
+              error={getError(errors, "nodeUrl")}
+            >
+              <AuraInput
+                name={field.name}
+                value={field.value ?? ""}
+                placeholder="https://node.brightid.org"
+                onBlur={field.onBlur}
+                onValueChange={field.onChange}
+              />
+            </FieldShell>
+          )}
+        />
+      </SectionCard>
 
-        {/* Callback */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Callback</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormField
-              control={form.control}
-              name="callbackUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Callback URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder="https://myapp.com/api/brightid-callback"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Called when a user connects their BrightID
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
+      <SectionCard title="Callback">
+        <Controller
+          control={form.control}
+          name="callbackUrl"
+          render={({ field }) => (
+            <FieldShell
+              label="Callback URL"
+              description="Called when a user connects their BrightID"
+              error={getError(errors, "callbackUrl")}
+            >
+              <AuraInput
+                name={field.name}
+                value={field.value ?? ""}
+                placeholder="https://myapp.com/api/brightid-callback"
+                onBlur={field.onBlur}
+                onValueChange={field.onChange}
+              />
+            </FieldShell>
+          )}
+        />
+      </SectionCard>
 
-        <div className="flex justify-end">
-          <Button disabled={isPending} type="submit" size="lg">
-            Save BrightID Settings
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <div className="flex justify-end">
+        <a-button disabled={isPending} type="submit" size="lg">
+          Save BrightID Settings
+        </a-button>
+      </div>
+    </form>
   )
 }

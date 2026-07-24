@@ -72,8 +72,14 @@
   --background: oklch(0.13 0.01 260);
   --foreground: oklch(0.98 0 0);
 
-  --card: oklch(0.18 0.015 260);
+  --card: oklch(94.663% 0.08934 150.014 / 0.729);
   --card-foreground: oklch(0.98 0 0);
+
+  --tab-bg: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--card) 20%, transparent) 0%,
+    color-mix(in oklch, var(--card) 8%, transparent) 100%
+  );
 
   --card-bg: linear-gradient(
     135deg,

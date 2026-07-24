@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Slider } from "@/components/ui/slider";
+import { useRef, useState } from "react";
+import { useAuraEvent } from "~/lib/aura";
 import { WidgetPreviewFrame } from "~/components/core/verification/WidgetPreviewFrame";
 import {
   DEFAULT_DEMO_CONFIG,
@@ -26,6 +26,22 @@ export default function PreviewTab({ project }: { project: Project }) {
 
   const update = (patch: Partial<DemoConfig>) =>
     setConfig((prev) => ({ ...prev, ...patch }));
+
+  const requiredLevelRef = useRef<HTMLElement>(null);
+  const currentLevelRef = useRef<HTMLElement>(null);
+  const evaluationsRef = useRef<HTMLElement>(null);
+  const scoreRef = useRef<HTMLElement>(null);
+
+  useAuraEvent<number>(requiredLevelRef, "change", (v) =>
+    update({ requiredLevel: v as VerificationLevel })
+  );
+  useAuraEvent<number>(currentLevelRef, "change", (v) =>
+    update({ currentLevel: v as 0 | 1 | 2 | 3 })
+  );
+  useAuraEvent<number>(evaluationsRef, "change", (v) =>
+    update({ evaluationsReceived: v })
+  );
+  useAuraEvent<number>(scoreRef, "change", (v) => update({ score: v }));
 
   return (
     <div className="mx-auto px-4 py-8">
@@ -99,11 +115,9 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.requiredLevel}
                   </span>
                 </div>
-                <Slider
-                  value={[config.requiredLevel]}
-                  onValueChange={([v]) =>
-                    update({ requiredLevel: v as VerificationLevel })
-                  }
+                <a-slider
+                  ref={requiredLevelRef}
+                  value={config.requiredLevel}
                   min={1}
                   max={3}
                   step={1}
@@ -145,11 +159,9 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.currentLevel}
                   </span>
                 </div>
-                <Slider
-                  value={[config.currentLevel]}
-                  onValueChange={([v]) =>
-                    update({ currentLevel: v as 0 | 1 | 2 | 3 })
-                  }
+                <a-slider
+                  ref={currentLevelRef}
+                  value={config.currentLevel}
                   min={0}
                   max={3}
                   step={1}
@@ -172,9 +184,9 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.evaluationsReceived}/{config.evaluationsNeeded}
                   </span>
                 </div>
-                <Slider
-                  value={[config.evaluationsReceived]}
-                  onValueChange={([v]) => update({ evaluationsReceived: v })}
+                <a-slider
+                  ref={evaluationsRef}
+                  value={config.evaluationsReceived}
                   min={0}
                   max={10}
                   step={1}
@@ -191,9 +203,9 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.score}%
                   </span>
                 </div>
-                <Slider
-                  value={[config.score]}
-                  onValueChange={([v]) => update({ score: v })}
+                <a-slider
+                  ref={scoreRef}
+                  value={config.score}
                   min={0}
                   max={100}
                   step={5}

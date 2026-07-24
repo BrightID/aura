@@ -23,21 +23,10 @@ import {
   Shield,
   MessageSquare,
 } from "lucide-react"
-import { toast } from "sonner"
+import { toast } from "@aura/ui"
 
 import { auth, db } from "~/lib/firebase"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"
-import { Switch } from "~/components/ui/switch"
-import { Label } from "~/components/ui/label"
-import { Badge } from "~/components/ui/badge"
-import { Separator } from "~/components/ui/separator"
-import { Skeleton } from "~/components/ui/skeleton"
+import { useAuraEvent } from "~/lib/aura"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -174,12 +163,12 @@ const eventIconMap: Record<EventType, React.ReactNode> = {
 
 function SectionSkeleton() {
   return (
-    <Card>
-      <CardHeader>
-        <Skeleton className="h-5 w-40" />
-        <Skeleton className="h-4 w-64 mt-1" />
-      </CardHeader>
-      <CardContent>
+    <a-card>
+      <div className="flex flex-col gap-1.5 p-6">
+        <a-skeleton className="h-5 w-40" />
+        <a-skeleton className="h-4 w-64 mt-1" />
+      </div>
+      <div className="p-6 pt-0">
         <div className="divide-y">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
@@ -187,18 +176,18 @@ function SectionSkeleton() {
               className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
             >
               <div className="flex items-start gap-3">
-                <Skeleton className="size-4 mt-0.5 rounded-full" />
+                <a-skeleton className="size-4 mt-0.5 rounded-full" />
                 <div className="space-y-1.5">
-                  <Skeleton className="h-4 w-36" />
-                  <Skeleton className="h-3 w-52" />
+                  <a-skeleton className="h-4 w-36" />
+                  <a-skeleton className="h-3 w-52" />
                 </div>
               </div>
-              <Skeleton className="h-[1.15rem] w-8 rounded-full" />
+              <a-skeleton className="h-[1.15rem] w-8 rounded-full" />
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </a-card>
   )
 }
 
@@ -221,21 +210,23 @@ function ToggleRow({
   checked,
   onCheckedChange,
 }: ToggleRowProps) {
+  const switchRef = useRef<HTMLElement>(null)
+  useAuraEvent<boolean>(switchRef, "change", onCheckedChange)
   return (
     <div className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
       <div className="flex items-start gap-3">
         <span className="mt-0.5 shrink-0">{icon}</span>
         <div>
-          <Label
-            htmlFor={id}
+          <a-label
+            for={id}
             className="text-sm font-medium leading-none cursor-pointer"
           >
             {label}
-          </Label>
+          </a-label>
           <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         </div>
       </div>
-      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
+      <a-switch ref={switchRef} name={id} checked={checked} />
     </div>
   )
 }
@@ -379,17 +370,19 @@ export default function NotificationsPage() {
           </>
         ) : (
           <>
-            <Card>
-              <CardHeader>
+            <a-card>
+              <div className="flex flex-col gap-1.5 p-6">
                 <div className="flex items-center gap-2">
                   <Mail className="size-4" />
-                  <CardTitle>Email Notifications</CardTitle>
+                  <a-head level="3" className="font-semibold">
+                    Email Notifications
+                  </a-head>
                 </div>
-                <CardDescription>
+                <p className="text-muted-foreground text-sm">
                   Choose which events send you an email
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="p-6 pt-0">
                 <div className="divide-y">
                   {emailRows.map((row) => (
                     <ToggleRow
@@ -405,21 +398,23 @@ export default function NotificationsPage() {
                     />
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </a-card>
 
             {/* ── In-App Notifications ────────────────────────────────────── */}
-            <Card>
-              <CardHeader>
+            <a-card>
+              <div className="flex flex-col gap-1.5 p-6">
                 <div className="flex items-center gap-2">
                   <Bell className="size-4" />
-                  <CardTitle>In-App Notifications</CardTitle>
+                  <a-head level="3" className="font-semibold">
+                    In-App Notifications
+                  </a-head>
                 </div>
-                <CardDescription>
+                <p className="text-muted-foreground text-sm">
                   Manage alerts shown inside the dashboard
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </p>
+              </div>
+              <div className="p-6 pt-0">
                 <div className="divide-y">
                   {inAppRows.map((row) => (
                     <ToggleRow
@@ -435,28 +430,30 @@ export default function NotificationsPage() {
                     />
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </a-card>
           </>
         )}
 
         {/* ── Notification History ─────────────────────────────────────────── */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Notification History</CardTitle>
-            <CardDescription>
+        <a-card>
+          <div className="flex flex-col gap-1.5 p-6">
+            <a-head level="3" className="font-semibold">
+              Notification History
+            </a-head>
+            <p className="text-muted-foreground text-sm">
               Your 10 most recent in-app notifications
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div className="p-6 pt-0">
             {eventsLoading ? (
               <div className="space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <Skeleton className="size-4 rounded-full mt-0.5 shrink-0" />
+                    <a-skeleton className="size-4 rounded-full mt-0.5 shrink-0" />
                     <div className="space-y-1.5 flex-1">
-                      <Skeleton className="h-4 w-48" />
-                      <Skeleton className="h-3 w-24" />
+                      <a-skeleton className="h-4 w-48" />
+                      <a-skeleton className="h-3 w-24" />
                     </div>
                   </div>
                 ))}
@@ -482,12 +479,12 @@ export default function NotificationsPage() {
                           {event.title}
                         </span>
                         {!event.read && (
-                          <Badge
+                          <a-badge
                             variant="secondary"
                             className="text-[10px] h-4 px-1.5"
                           >
                             New
-                          </Badge>
+                          </a-badge>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
@@ -500,8 +497,8 @@ export default function NotificationsPage() {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </a-card>
       </div>
     </div>
   )

@@ -1,19 +1,14 @@
-import { createSignal, For, Show } from "solid-js"
-import { toast } from "@aura/ui"
 import type { DialogElement } from "@aura/ui"
+import { toast } from "@aura/ui"
+import { createSignal, For, Show } from "solid-js"
 import ListState from "@/components/list/list-state"
 import { useRequireSession } from "@/hooks/use-require-session"
 import { createStoreContactMutation } from "@/queries/contacts"
-import {
-  addContact,
-  contactsStore,
-  type ContactType,
-} from "@/store/contacts"
+import { addContact, type ContactType, contactsStore } from "@/store/contacts"
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 const isValidPhone = (phone: string) => /^\+?[1-9]\d{1,14}$/.test(phone)
 
-/** /contact-info — hashed contact registry so friends can find you. */
 export default function ContactInfoPage() {
   useRequireSession()
   let dialog: DialogElement | undefined
@@ -58,7 +53,7 @@ export default function ContactInfoPage() {
       <div class="flex flex-col gap-3">
         <ListState
           loading={false}
-          empty={contactsStore.stored.length === 0}
+          empty={contactsStore.stored?.length === 0}
           emptyText="No contact info added yet."
         >
           <For each={contactsStore.stored}>

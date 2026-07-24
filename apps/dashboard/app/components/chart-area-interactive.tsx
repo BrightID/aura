@@ -5,27 +5,12 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
 import { useIsMobile } from "~/hooks/use-mobile"
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"
-import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/chart"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select"
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group"
+import { useAuraEvent } from "~/lib/aura"
 
 export const description = "An interactive area chart"
 
@@ -140,6 +125,10 @@ const chartConfig = {
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
+  const toggleRef = React.useRef<HTMLElement>(null)
+  const selectRef = React.useRef<HTMLElement>(null)
+  useAuraEvent<string>(toggleRef, "change", (v) => setTimeRange(v))
+  useAuraEvent<string>(selectRef, "change", (v) => setTimeRange(v))
 
   React.useEffect(() => {
     if (isMobile) {
@@ -162,50 +151,41 @@ export function ChartAreaInteractive() {
   })
 
   return (
-    <Card className="@container/card">
-      <CardHeader>
-        <CardTitle>Projects Usages</CardTitle>
-        <CardDescription>
+    <a-card className="@container/card">
+      <div className="relative flex flex-col gap-1.5 p-6">
+        <a-head level="3">Projects Usages</a-head>
+        <a-text variant="muted">
           <span className="hidden @[540px]/card:block">
             Total for the last 3 months
           </span>
           <span className="@[540px]/card:hidden">Last 3 months</span>
-        </CardDescription>
-        <CardAction>
-          <ToggleGroup
+        </a-text>
+        <div className="absolute top-6 right-6">
+          <a-toggle-group
+            ref={toggleRef}
             type="single"
             value={timeRange}
-            onValueChange={setTimeRange}
-            variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
+            className="hidden @[767px]/card:flex"
           >
-            <ToggleGroupItem value="90d">Last 3 months</ToggleGroupItem>
-            <ToggleGroupItem value="30d">Last 30 days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
-          </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
-              size="sm"
-              aria-label="Select a value"
-            >
-              <SelectValue placeholder="Last 3 months" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
-              </SelectItem>
-              <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
-              </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+            <a-toggle value="90d">Last 3 months</a-toggle>
+            <a-toggle value="30d">Last 30 days</a-toggle>
+            <a-toggle value="7d">Last 7 days</a-toggle>
+          </a-toggle-group>
+          <a-select
+            ref={selectRef}
+            value={timeRange}
+            placeholder="Last 3 months"
+            aria-label="Select a value"
+            className="flex w-40 @[767px]/card:hidden"
+            options={[
+              { value: "90d", label: "Last 3 months" },
+              { value: "30d", label: "Last 30 days" },
+              { value: "7d", label: "Last 7 days" },
+            ]}
+          />
+        </div>
+      </div>
+      <div className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
@@ -282,7 +262,7 @@ export function ChartAreaInteractive() {
             />
           </AreaChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </a-card>
   )
 }

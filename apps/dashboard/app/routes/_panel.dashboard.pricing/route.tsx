@@ -1,14 +1,13 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
 import { Check } from "lucide-react"
 import { ParticlesBackground } from "@/components/particles-background"
-import { useState } from "react"
+import { useRef, useState } from "react"
+import { useAuraEvent } from "~/lib/aura"
 import { plans } from "~/constants/subscriptions"
 
 export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false)
+  const yearlyRef = useRef<HTMLElement>(null)
+  useAuraEvent<boolean>(yearlyRef, "change", setIsYearly)
 
   return (
     <section className="w-full overflow-hidden py-5">
@@ -30,18 +29,18 @@ export default function PricingSection() {
             >
               Monthly
             </span>
-            <Switch checked={isYearly} onCheckedChange={setIsYearly} />
+            <a-switch ref={yearlyRef} checked={isYearly} />
             <span
               className={`text-sm font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground"}`}
             >
               Yearly
             </span>
-            <Badge
+            <a-badge
               variant="secondary"
               className="bg-primary/10 text-primary text-xs"
             >
               Save 20%
-            </Badge>
+            </a-badge>
           </div>
         </div>
 
@@ -59,7 +58,7 @@ export default function PricingSection() {
                 : 0
 
             return (
-              <Card
+              <a-card
                 key={plan.name}
                 className={`group relative p-8 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
@@ -72,9 +71,9 @@ export default function PricingSection() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] animate-pulse">
+                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] animate-pulse">
                       Most Popular
-                    </Badge>
+                    </a-badge>
                   </div>
                 )}
 
@@ -134,7 +133,7 @@ export default function PricingSection() {
                   </ul>
                 </div>
 
-                <Button
+                <a-button
                   className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
                     plan.popular
                       ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]"
@@ -143,10 +142,10 @@ export default function PricingSection() {
                   size="lg"
                 >
                   {plan.cta}
-                </Button>
+                </a-button>
 
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              </Card>
+              </a-card>
             )
           })}
         </div>

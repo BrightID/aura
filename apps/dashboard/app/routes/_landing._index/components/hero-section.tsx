@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
 import { ArrowRight, Shield, Users, Zap } from "lucide-react"
 import { Link } from "react-router"
 
@@ -71,26 +70,24 @@ export function HeroSection() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Button
-            size="lg"
-            className="px-8 py-6 text-lg group animate-pulse-glow"
-            asChild
-          >
-            <Link to="/login" target="_blank">
+          <Link to="/login" target="_blank">
+            <a-button
+              size="lg"
+              className="px-8 py-6 text-lg group animate-pulse-glow"
+            >
               Get Started
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="px-8 py-6 text-lg border-border hover:bg-secondary bg-transparent"
-            asChild
-          >
-            <Link to="https://brightid.gitbook.io/aura" target="_blank">
+            </a-button>
+          </Link>
+          <Link to="https://brightid.gitbook.io/aura" target="_blank">
+            <a-button
+              size="lg"
+              variant="outline"
+              className="px-8 py-6 text-lg border-border hover:bg-secondary bg-transparent"
+            >
               Read the Docs
-            </Link>
-          </Button>
+            </a-button>
+          </Link>
         </div>
 
         {/* Stats */}

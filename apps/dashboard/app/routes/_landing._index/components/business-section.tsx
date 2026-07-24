@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   ArrowRight,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Link } from "react-router"
 
 const useCases = [
@@ -86,26 +85,21 @@ export function BusinessSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                className="group"
-                asChild
-              >
-                <Link to="https://brightid.gitbook.io/aura" target="_blank">
+              <Link to="https://brightid.gitbook.io/aura" target="_blank">
+                <a-button size="lg" className="group">
                   Integration Guide
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-border hover:bg-secondary bg-transparent"
-                asChild
-              >
-                <Link to="https://discord.gg/y24xeXq7mj" target="_blank">
+                </a-button>
+              </Link>
+              <Link to="https://discord.gg/y24xeXq7mj" target="_blank">
+                <a-button
+                  size="lg"
+                  variant="outline"
+                  className="border-border hover:bg-secondary bg-transparent"
+                >
                   Join Discord
-                </Link>
-              </Button>
+                </a-button>
+              </Link>
             </div>
           </div>
 

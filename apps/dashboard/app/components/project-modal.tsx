@@ -1,27 +1,12 @@
 import { useForm } from "react-hook-form"
+import { useRef } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore"
 import { db, auth } from "@/lib/firebase"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
+import { useAuraEvent } from "~/lib/aura"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import type { Project } from "./projects-table"
@@ -36,6 +21,7 @@ const schema = z.object({
 })
 
 type FormData = z.infer<typeof schema>
+type FormInput = z.input<typeof schema>
 
 export function ProjectModal({
   isOpen,
@@ -48,13 +34,12 @@ export function ProjectModal({
   project?: Project | null
 }) {
   const {
-    register,
     handleSubmit,
     formState: { errors },
     reset,
     setValue,
     watch,
-  } = useForm<FormData>({
+  } = useForm<FormInput, undefined, FormData>({
     resolver: zodResolver(schema),
     defaultValues: project
       ? {
@@ -77,6 +62,28 @@ export function ProjectModal({
 
   const deadline = watch("deadline")
   const queryClient = useQueryClient()
+
+  const dialogRef = useRef<HTMLElement>(null)
+  const nameRef = useRef<HTMLElement>(null)
+  const descRef = useRef<HTMLElement>(null)
+  const imageRef = useRef<HTMLElement>(null)
+  const levelRef = useRef<HTMLElement>(null)
+  const activeRef = useRef<HTMLElement>(null)
+
+  useAuraEvent<{ open: boolean }>(dialogRef, "open-change", (e) => {
+    if (!e.open) onClose()
+  })
+  useAuraEvent<string>(nameRef, "change", (v) =>
+    setValue("name", v, { shouldValidate: true }),
+  )
+  useAuraEvent<string>(descRef, "change", (v) => setValue("description", v))
+  useAuraEvent<string>(imageRef, "change", (v) =>
+    setValue("image", v, { shouldValidate: true }),
+  )
+  useAuraEvent<string>(levelRef, "change", (v) =>
+    setValue("requirementLevel", Number(v), { shouldValidate: true }),
+  )
+  useAuraEvent<boolean>(activeRef, "change", (v) => setValue("isActive", v))
 
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -105,32 +112,41 @@ export function ProjectModal({
   })
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{project ? "Edit Project" : "Add Project"}</DialogTitle>
-        </DialogHeader>
+    <a-dialog open={isOpen} ref={dialogRef}>
+      <div slot="content" className="max-w-lg">
+        <div className="flex flex-col gap-1.5">
+          <a-head level="3">{project ? "Edit Project" : "Add Project"}</a-head>
+        </div>
 
         <form onSubmit={handleSubmit((d) => mutation.mutate(d))}>
           <div className="grid gap-4 py-4">
             <div>
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" {...register("name")} />
+              <a-label for="name">Name</a-label>
+              <a-input
+                name="name"
+                ref={nameRef}
+                value={watch("name") ?? ""}
+              />
               {errors.name && (
                 <p className="text-red-500 text-sm">{errors.name.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea id="description" {...register("description")} />
+              <a-label for="description">Description</a-label>
+              <a-textarea
+                name="description"
+                ref={descRef}
+                value={watch("description") ?? ""}
+              />
             </div>
 
             <div>
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                {...register("image")}
+              <a-label for="image">Image URL</a-label>
+              <a-input
+                name="image"
+                ref={imageRef}
+                value={watch("image") ?? ""}
                 placeholder="https://example.com/image.jpg"
               />
               {errors.image && (
@@ -139,12 +155,12 @@ export function ProjectModal({
             </div>
 
             <div>
-              <Label htmlFor="requirementLevel">Requirement Level</Label>
-              <Input
-                id="requirementLevel"
+              <a-label for="requirementLevel">Requirement Level</a-label>
+              <a-input
+                name="requirementLevel"
                 type="number"
-                min="1"
-                {...register("requirementLevel")}
+                ref={levelRef}
+                value={String(watch("requirementLevel") ?? "")}
               />
               {errors.requirementLevel && (
                 <p className="text-red-500 text-sm">
@@ -154,25 +170,24 @@ export function ProjectModal({
             </div>
 
             <div>
-              <Label>Deadline</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {deadline ? format(deadline, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+              <a-label>Deadline</a-label>
+              <a-popover align="start">
+                <a-button
+                  slot="trigger"
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {deadline ? format(deadline, "PPP") : "Pick a date"}
+                </a-button>
+                <div slot="content" className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={deadline}
                     onSelect={(d) => d && setValue("deadline", d)}
                   />
-                </PopoverContent>
-              </Popover>
+                </div>
+              </a-popover>
               {errors.deadline && (
                 <p className="text-red-500 text-sm">
                   {errors.deadline.message}
@@ -181,25 +196,25 @@ export function ProjectModal({
             </div>
 
             <div className="flex items-center space-x-2">
-              <Label htmlFor="isActive">Active</Label>
-              <Switch
-                id="isActive"
+              <a-label for="isActive">Active</a-label>
+              <a-switch
+                name="isActive"
+                ref={activeRef}
                 checked={watch("isActive")}
-                onCheckedChange={(v) => setValue("isActive", v)}
               />
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" type="button" onClick={onClose}>
+          <div className="flex items-center justify-end gap-2">
+            <a-button variant="outline" type="button" onClick={onClose}>
               Cancel
-            </Button>
-            <Button type="submit" disabled={mutation.isPending}>
+            </a-button>
+            <a-button type="submit" disabled={mutation.isPending}>
               {mutation.isPending ? "Saving..." : "Save"}
-            </Button>
-          </DialogFooter>
+            </a-button>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </a-dialog>
   )
 }

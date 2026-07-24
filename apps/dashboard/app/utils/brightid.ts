@@ -37,7 +37,7 @@ export const brightIdSponsor = async (
   }
 
   const message = getMessage(op)
-  const arrayedMessage = Buffer.from(message)
+  const arrayedMessage = new TextEncoder().encode(message)
 
   const arrayedKey = B64.toByteArray(key)
 

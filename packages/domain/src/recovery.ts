@@ -1,8 +1,4 @@
-import {
-  downloadFromChannel,
-  listChannel,
-  uploadToChannel,
-} from "./channel"
+import { downloadFromChannel, listChannel, uploadToChannel } from "./channel"
 import { b64ToUrlSafeB64, decryptData, hash } from "./crypto"
 
 export const RECOVERY_CHANNEL_TTL = 24 * 60 * 60 * 1000 // 1 day
@@ -35,7 +31,6 @@ export function buildRecoveryChannelQrUrl({
   return url.href
 }
 
-/** Upload our recovery signing key to the freshly created channel. */
 export async function uploadRecoveryData({
   channelUrl,
   aesKey,
@@ -58,10 +53,6 @@ export async function uploadRecoveryData({
   })
 }
 
-/**
- * Poll the channel once: look for the encrypted user-info the scanner uploaded
- * and, if present, decrypt and return it. Returns null until the phone scans.
- */
 export async function pollRecoveredUser({
   channelUrl,
   channelId,

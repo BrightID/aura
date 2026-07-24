@@ -1,10 +1,11 @@
-import { LitElement, css, html } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import { type ToastData, type ToastVariant, subscribe, toast } from "./toast";
+import { css, html, LitElement } from "lit"
+import { customElement, state } from "lit/decorators.js"
+import { repeat } from "lit/directives/repeat.js"
+import { subscribe, type ToastData, type ToastVariant, toast } from "./toast"
 
 @customElement("a-toaster")
 export class ToasterElement extends LitElement {
-  @state() private toasts: ToastData[] = [];
+  @state() private toasts: ToastData[] = []
 
   static styles = css`
     :host {
@@ -60,7 +61,6 @@ export class ToasterElement extends LitElement {
       transition: all 0.25s cubic-bezier(0.4, 0, 1, 1);
     }
 
-    /* Stacking animation for multiple toasts */
     .toast:not(:last-child) {
       margin-bottom: -0.5rem;
     }
@@ -75,6 +75,7 @@ export class ToasterElement extends LitElement {
       flex-shrink: 0;
       width: 1.25rem;
       height: 1.25rem;
+      margin-top: 0.1rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -92,6 +93,7 @@ export class ToasterElement extends LitElement {
       font-size: 0.925rem;
       line-height: 1.4;
       color: var(--card-foreground);
+      overflow-wrap: anywhere;
     }
 
     .description {
@@ -99,12 +101,16 @@ export class ToasterElement extends LitElement {
       line-height: 1.4;
       margin-top: 0.25rem;
       color: var(--muted-foreground);
+      overflow-wrap: anywhere;
     }
 
-    /* Variant colors */
     .toast.success {
       border-color: color-mix(in oklch, var(--aura-success) 40%, transparent);
-      background: color-mix(in oklch, var(--card) 90%, var(--aura-success) 10%);
+      background: color-mix(
+        in oklch,
+        var(--toast) 90%,
+        var(--aura-success) 10%
+      );
     }
 
     .toast.success .icon {
@@ -113,7 +119,7 @@ export class ToasterElement extends LitElement {
 
     .toast.error {
       border-color: color-mix(in oklch, var(--destructive) 40%, transparent);
-      background: color-mix(in oklch, var(--card) 90%, var(--destructive) 10%);
+      background: color-mix(in oklch, var(--toast) 90%, var(--destructive) 10%);
     }
 
     .toast.error .icon {
@@ -122,7 +128,11 @@ export class ToasterElement extends LitElement {
 
     .toast.warning {
       border-color: color-mix(in oklch, var(--aura-warning) 40%, transparent);
-      background: color-mix(in oklch, var(--card) 90%, var(--aura-warning) 10%);
+      background: color-mix(
+        in oklch,
+        var(--toast) 90%,
+        var(--aura-warning) 10%
+      );
     }
 
     .toast.warning .icon {
@@ -131,7 +141,7 @@ export class ToasterElement extends LitElement {
 
     .toast.info {
       border-color: color-mix(in oklch, var(--aura-info) 40%, transparent);
-      background: color-mix(in oklch, var(--card) 90%, var(--aura-info) 10%);
+      background: color-mix(in oklch, var(--toast) 90%, var(--aura-info) 10%);
     }
 
     .toast.info .icon {
@@ -180,43 +190,45 @@ export class ToasterElement extends LitElement {
     .action-btn:hover {
       background: color-mix(in oklch, var(--card-foreground) 10%, transparent);
     }
-  `;
+  `
 
   connectedCallback() {
-    super.connectedCallback();
+    super.connectedCallback()
     this.removeOnUnmount = subscribe((ts) => {
-      this.toasts = ts;
-    });
+      this.toasts = ts
+    })
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeOnUnmount?.();
+    super.disconnectedCallback()
+    this.removeOnUnmount?.()
   }
 
-  private removeOnUnmount?: () => void;
+  private removeOnUnmount?: () => void
 
   private renderIcon(variant?: ToastVariant) {
     switch (variant) {
       case "success":
-        return "✓";
+        return "✓"
       case "error":
-        return "✕";
+        return "✕"
       case "warning":
-        return "⚠";
+        return "⚠"
       case "info":
-        return "ℹ";
+        return "ℹ"
       case "loading":
-        return null;
+        return null
       default:
-        return "→";
+        return "→"
     }
   }
 
   render() {
     return html`
       <div class="container">
-        ${this.toasts.map(
+        ${repeat(
+          this.toasts,
+          (t) => t.id,
           (t) => html`
             <div
               class="toast ${t.visible ? "visible" : "exit"} ${t.variant ||
@@ -243,8 +255,8 @@ export class ToasterElement extends LitElement {
                     ? html`<button
                         class="action-btn"
                         @click=${(e: Event) => {
-                          e.stopPropagation();
-                          t.action!.onClick();
+                          e.stopPropagation()
+                          t.action!.onClick()
                         }}
                       >
                         ${t.action.label}
@@ -256,41 +268,41 @@ export class ToasterElement extends LitElement {
           `,
         )}
       </div>
-    `;
+    `
   }
 
-  private swipeStartX = 0;
+  private swipeStartX = 0
   // private swipeStartY = 0;
-  private currentToastId: string | null = null;
+  private currentToastId: string | null = null
 
   private handleSwipeStart(e: PointerEvent, id: string) {
-    if (e.pointerType !== "mouse" && e.pointerType !== "touch") return;
-    this.currentToastId = id;
-    this.swipeStartX = e.clientX;
+    if (e.pointerType !== "mouse" && e.pointerType !== "touch") return
+    this.currentToastId = id
+    this.swipeStartX = e.clientX
     // this.swipeStartY = e.clientY;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
   }
 
   private handleSwipeMove(e: PointerEvent) {
-    if (!this.currentToastId) return;
-    const dx = e.clientX - this.swipeStartX;
+    if (!this.currentToastId) return
+    const dx = e.clientX - this.swipeStartX
     if (dx > 60) {
-      toast.dismiss(this.currentToastId);
-      this.resetSwipe();
+      toast.dismiss(this.currentToastId)
+      this.resetSwipe()
     }
   }
 
   private handleSwipeEnd(_e: PointerEvent, _id: string) {
-    this.resetSwipe();
+    this.resetSwipe()
   }
 
   private resetSwipe() {
-    this.currentToastId = null;
+    this.currentToastId = null
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-toaster": ToasterElement;
+    "a-toaster": ToasterElement
   }
 }

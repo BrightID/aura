@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { LevelBadge, LevelRequirement } from "./level-badge"
 import { ProgressIndicator } from "./progress-indicator"
 import type { VerificationLevel, UserVerificationStatus } from "./types"
@@ -99,7 +98,7 @@ export function ProgressStep({
 
             {/* Action buttons */}
             <div className="flex gap-2">
-              <Button
+              <a-button
                 onClick={onStartVerification}
                 className="flex-1"
                 size="sm"
@@ -118,8 +117,8 @@ export function ProgressStep({
                   />
                 </svg>
                 Get Verified
-              </Button>
-              <Button
+              </a-button>
+              <a-button
                 onClick={onFindPlayers}
                 variant="outline"
                 size="sm"
@@ -139,7 +138,7 @@ export function ProgressStep({
                   />
                 </svg>
                 Find Players
-              </Button>
+              </a-button>
             </div>
           </div>
 

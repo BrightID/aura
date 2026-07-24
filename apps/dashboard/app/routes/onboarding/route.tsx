@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, type UseFormReturn } from "react-hook-form"
 import * as z from "zod"
-import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldDescription,
@@ -11,23 +10,7 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { toast } from "sonner"
+import { toast } from "@aura/ui"
 import { Fragment, useState } from "react"
 import { CheckIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { Link, useNavigate } from "react-router"
@@ -35,6 +18,11 @@ import { useMutation } from "@tanstack/react-query"
 import { auth, db } from "~/lib/firebase"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { addDoc, collection } from "firebase/firestore"
+import {
+  AuraInput,
+  AuraSelect,
+  AuraTextarea,
+} from "~/components/aura-form-controls"
 
 const formSchema = z.object({
   fullName: z.string().optional().nullable(),
@@ -69,6 +57,43 @@ const STEPS = [
 ]
 
 type FormData = z.infer<typeof formSchema>
+
+const roleOptions = [
+  { value: "developer", label: "Developer" },
+  { value: "designer", label: "Designer" },
+  { value: "product-manager", label: "Product Manager" },
+  { value: "researcher", label: "Researcher" },
+  { value: "entrepreneur", label: "Entrepreneur" },
+  { value: "student", label: "Student" },
+  { value: "community-organizer", label: "Community Organizer" },
+  { value: "other", label: "Other" },
+]
+
+const discoveryOptions = [
+  { value: "social-media", label: "Social Media (Twitter, Reddit, etc.)" },
+  { value: "search-engine", label: "Search Engine" },
+  { value: "friend-colleague", label: "Friend or Colleague" },
+  { value: "conference-event", label: "Conference or Event" },
+  { value: "blog-article", label: "Blog or Article" },
+  { value: "github", label: "GitHub" },
+  { value: "podcast", label: "Podcast" },
+  { value: "other", label: "Other" },
+]
+
+const experienceOptions = [
+  { value: "beginner", label: "Beginner - New to the concept" },
+  { value: "intermediate", label: "Intermediate - Some knowledge" },
+  { value: "advanced", label: "Advanced - Experienced user" },
+  { value: "expert", label: "Expert - Building solutions" },
+]
+
+function setFieldValue(
+  form: UseFormReturn<FormData>,
+  name: keyof FormData,
+  value: string,
+) {
+  form.setValue(name, value, { shouldValidate: true, shouldDirty: true })
+}
 
 export default function OnboardingForm() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -132,12 +157,14 @@ export default function OnboardingForm() {
   }
 
   return (
-    <Card className="shadow-xl w-xl mx-auto">
-      <CardHeader>
-        <CardTitle>Onboarding Form</CardTitle>
-        <CardDescription>
+    <a-card className="shadow-xl w-xl mx-auto">
+      <div className="flex flex-col gap-1.5 p-6">
+        <a-head level="3" className="font-semibold">
+          Onboarding Form
+        </a-head>
+        <p className="text-muted-foreground text-sm">
           Help us understand your needs and provide you with the best experience
-        </CardDescription>
+        </p>
 
         <div className="flex items-center justify-between mt-6">
           {STEPS.map((step, index) => (
@@ -168,8 +195,8 @@ export default function OnboardingForm() {
             </Fragment>
           ))}
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-6 pt-0">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {currentStep === 1 && <FormStepOne form={form} />}
 
@@ -179,7 +206,7 @@ export default function OnboardingForm() {
 
           <div className="flex justify-between mt-6 gap-4">
             {currentStep > 1 ? (
-              <Button
+              <a-button
                 type="button"
                 variant="outline"
                 onClick={handlePrevious}
@@ -188,27 +215,27 @@ export default function OnboardingForm() {
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 Previous
-              </Button>
+              </a-button>
             ) : (
               <Link className="flex-1" to={"/dashboard"}>
-                <Button
+                <a-button
                   className="w-full bg-transparent"
                   variant="outline"
                   type="button"
                 >
                   <CheckIcon className="w-4 h-4 ml-2" />
                   Skip
-                </Button>
+                </a-button>
               </Link>
             )}
 
             {currentStep < STEPS.length ? (
-              <Button type="button" onClick={handleNext} className="flex-1">
+              <a-button type="button" onClick={handleNext} className="flex-1">
                 Next
                 <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
+              </a-button>
             ) : (
-              <Button
+              <a-button
                 disabled={isPending}
                 type="button"
                 onClick={handleNext}
@@ -216,12 +243,12 @@ export default function OnboardingForm() {
               >
                 Complete Onboarding
                 <CheckIcon className="w-4 h-4 ml-2" />
-              </Button>
+              </a-button>
             )}
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </a-card>
   )
 }
 
@@ -232,11 +259,12 @@ function FormStepOne({ form }: { form: UseFormReturn<FormData> }) {
       <FieldGroup>
         <Field data-invalid={!!form.formState.errors.fullName}>
           <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
-          <Input
-            id="fullName"
+          <AuraInput
+            name="fullName"
+            value={form.watch("fullName") ?? ""}
             placeholder="John Doe"
             aria-invalid={!!form.formState.errors.fullName}
-            {...form.register("fullName")}
+            onValueChange={(value) => setFieldValue(form, "fullName", value)}
           />
           <FieldError
             errors={
@@ -249,12 +277,13 @@ function FormStepOne({ form }: { form: UseFormReturn<FormData> }) {
 
         <Field data-invalid={!!form.formState.errors.email}>
           <FieldLabel htmlFor="email">Email Address</FieldLabel>
-          <Input
-            id="email"
+          <AuraInput
+            name="email"
             type="email"
+            value={form.watch("email") ?? ""}
             placeholder="john@example.com"
             aria-invalid={!!form.formState.errors.email}
-            {...form.register("email")}
+            onValueChange={(value) => setFieldValue(form, "email", value)}
           />
           <FieldError
             errors={
@@ -267,12 +296,12 @@ function FormStepOne({ form }: { form: UseFormReturn<FormData> }) {
 
         <Field data-invalid={!!form.formState.errors.domain}>
           <FieldLabel htmlFor="domain">Domain</FieldLabel>
-          <Input
-            id="domain"
-            type="url"
+          <AuraInput
+            name="domain"
+            value={form.watch("domain") ?? ""}
             placeholder="https://example.com"
             aria-invalid={!!form.formState.errors.domain}
-            {...form.register("domain")}
+            onValueChange={(value) => setFieldValue(form, "domain", value)}
           />
           <FieldDescription>
             Your website or project domain if you have one
@@ -297,29 +326,14 @@ function FormStepTwo({ form }: { form: UseFormReturn<FormData> }) {
       <FieldGroup>
         <Field data-invalid={!!form.formState.errors.role}>
           <FieldLabel htmlFor="role">What is your role?</FieldLabel>
-          <Select
-            onValueChange={(value) => form.setValue("role", value)}
-            defaultValue={form.watch("role")}
-          >
-            <SelectTrigger
-              id="role"
-              aria-invalid={!!form.formState.errors.role}
-            >
-              <SelectValue placeholder="Select your role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="developer">Developer</SelectItem>
-              <SelectItem value="designer">Designer</SelectItem>
-              <SelectItem value="product-manager">Product Manager</SelectItem>
-              <SelectItem value="researcher">Researcher</SelectItem>
-              <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
-              <SelectItem value="student">Student</SelectItem>
-              <SelectItem value="community-organizer">
-                Community Organizer
-              </SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
+          <AuraSelect
+            name="role"
+            value={form.watch("role") ?? ""}
+            placeholder="Select your role"
+            options={roleOptions}
+            aria-invalid={!!form.formState.errors.role}
+            onValueChange={(value) => setFieldValue(form, "role", value)}
+          />
           <FieldError
             errors={
               form.formState.errors.role
@@ -331,10 +345,13 @@ function FormStepTwo({ form }: { form: UseFormReturn<FormData> }) {
 
         <Field data-invalid={!!form.formState.errors.organization}>
           <FieldLabel htmlFor="organization">Organization</FieldLabel>
-          <Input
-            id="organization"
+          <AuraInput
+            name="organization"
+            value={form.watch("organization") ?? ""}
             placeholder="Your company or project name"
-            {...form.register("organization")}
+            onValueChange={(value) =>
+              setFieldValue(form, "organization", value)
+            }
           />
           <FieldDescription>
             If you're representing an organization or project
@@ -361,33 +378,16 @@ function FormStepThree({ form }: { form: UseFormReturn<FormData> }) {
           <FieldLabel htmlFor="howDidYouHear">
             How did you hear about BrightID?
           </FieldLabel>
-          <Select
-            onValueChange={(value) => form.setValue("howDidYouHear", value)}
-            defaultValue={form.watch("howDidYouHear")}
-          >
-            <SelectTrigger
-              id="howDidYouHear"
-              aria-invalid={!!form.formState.errors.howDidYouHear}
-            >
-              <SelectValue placeholder="Select an option" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="social-media">
-                Social Media (Twitter, Reddit, etc.)
-              </SelectItem>
-              <SelectItem value="search-engine">Search Engine</SelectItem>
-              <SelectItem value="friend-colleague">
-                Friend or Colleague
-              </SelectItem>
-              <SelectItem value="conference-event">
-                Conference or Event
-              </SelectItem>
-              <SelectItem value="blog-article">Blog or Article</SelectItem>
-              <SelectItem value="github">GitHub</SelectItem>
-              <SelectItem value="podcast">Podcast</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
+          <AuraSelect
+            name="howDidYouHear"
+            value={form.watch("howDidYouHear") ?? ""}
+            placeholder="Select an option"
+            options={discoveryOptions}
+            aria-invalid={!!form.formState.errors.howDidYouHear}
+            onValueChange={(value) =>
+              setFieldValue(form, "howDidYouHear", value)
+            }
+          />
           <FieldError
             errors={
               form.formState.errors.howDidYouHear
@@ -401,31 +401,14 @@ function FormStepThree({ form }: { form: UseFormReturn<FormData> }) {
           <FieldLabel htmlFor="experience">
             Experience with decentralized identity
           </FieldLabel>
-          <Select
-            onValueChange={(value) => form.setValue("experience", value)}
-            defaultValue={form.watch("experience")}
-          >
-            <SelectTrigger
-              id="experience"
-              aria-invalid={!!form.formState.errors.experience}
-            >
-              <SelectValue placeholder="Select your experience level" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="beginner">
-                Beginner - New to the concept
-              </SelectItem>
-              <SelectItem value="intermediate">
-                Intermediate - Some knowledge
-              </SelectItem>
-              <SelectItem value="advanced">
-                Advanced - Experienced user
-              </SelectItem>
-              <SelectItem value="expert">
-                Expert - Building solutions
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <AuraSelect
+            name="experience"
+            value={form.watch("experience") ?? ""}
+            placeholder="Select your experience level"
+            options={experienceOptions}
+            aria-invalid={!!form.formState.errors.experience}
+            onValueChange={(value) => setFieldValue(form, "experience", value)}
+          />
           <FieldError
             errors={
               form.formState.errors.experience
@@ -439,12 +422,14 @@ function FormStepThree({ form }: { form: UseFormReturn<FormData> }) {
           <FieldLabel htmlFor="useCase">
             What's your primary use case?
           </FieldLabel>
-          <Textarea
-            id="useCase"
+          <AuraTextarea
+            name="useCase"
+            value={form.watch("useCase") ?? ""}
             placeholder="Tell us about what you're planning to build or how you intend to use BrightID..."
             className="resize-none min-h-[120px]"
+            rows={5}
             aria-invalid={!!form.formState.errors.useCase}
-            {...form.register("useCase")}
+            onValueChange={(value) => setFieldValue(form, "useCase", value)}
           />
           <FieldDescription>
             Help us understand your goals and how we can support you

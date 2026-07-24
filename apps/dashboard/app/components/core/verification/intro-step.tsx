@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { LevelBadge } from "./level-badge"
 import { AuraLogo } from "./aura-logo"
 import type { VerificationLevel } from "./types"
@@ -100,9 +99,9 @@ export function IntroStep({
       </div>
 
       {/* CTA */}
-      <Button onClick={onContinue} className="w-full" size="lg">
+      <a-button onClick={onContinue} className="w-full" size="lg">
         Verify with Aura
-      </Button>
+      </a-button>
 
       {/* Trust Note */}
       <p className="text-xs text-center text-muted-foreground">

@@ -1,7 +1,6 @@
-import { EvaluationCategory } from "./types/evaluations"
 import { PreferredView } from "./types/dashboard"
+import { EvaluationCategory } from "./types/evaluations"
 
-/** The role we *evaluate* when in a given view. */
 export const viewModeToViewAs: Record<PreferredView, EvaluationCategory> = {
   [PreferredView.PLAYER]: EvaluationCategory.SUBJECT,
   [PreferredView.TRAINER]: EvaluationCategory.PLAYER,
@@ -9,7 +8,6 @@ export const viewModeToViewAs: Record<PreferredView, EvaluationCategory> = {
   [PreferredView.MANAGER_EVALUATING_MANAGER]: EvaluationCategory.MANAGER,
 }
 
-/** The view that evaluates the current view's role (one level up). */
 export const viewModeToEvaluatorViewMode: Record<PreferredView, PreferredView> =
   {
     [PreferredView.PLAYER]: PreferredView.TRAINER,
@@ -20,7 +18,6 @@ export const viewModeToEvaluatorViewMode: Record<PreferredView, PreferredView> =
       PreferredView.MANAGER_EVALUATING_MANAGER,
   }
 
-/** `?viewas=` query value → view. */
 export const viewAsToViewMode: Record<EvaluationCategory, PreferredView> = {
   [EvaluationCategory.SUBJECT]: PreferredView.PLAYER,
   [EvaluationCategory.PLAYER]: PreferredView.TRAINER,
@@ -35,7 +32,6 @@ export const viewModeToString: Record<PreferredView, string> = {
   [PreferredView.MANAGER_EVALUATING_MANAGER]: "Manager",
 }
 
-/** URL slug (`/home/:view`) ↔ view. Manager collapses to one slug. */
 export const viewSlugToViewMode: Record<string, PreferredView> = {
   player: PreferredView.PLAYER,
   trainer: PreferredView.TRAINER,

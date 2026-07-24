@@ -1770,6 +1770,14 @@
             "name": "*",
             "module": "src/components/toast"
           }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/tooltip"
+          }
         }
       ]
     },
@@ -3370,6 +3378,208 @@
           "declaration": {
             "name": "ToasterElement",
             "module": "src/components/toast/toaster.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/tooltip.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Positions/sizes the bubble via inline styles + fixed positioning (portaled to\ndocument.body) so it is never clipped or forced to expand an ancestor's\noverflow — a shadow-DOM-local popup would otherwise be cut off by any\nparent with `overflow: hidden` or cause the page to scroll horizontally.",
+          "name": "TooltipElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "content",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "content"
+            },
+            {
+              "kind": "field",
+              "name": "side",
+              "type": {
+                "text": "\"top\" | \"bottom\" | \"left\" | \"right\""
+              },
+              "default": "\"top\"",
+              "attribute": "side",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "sideOffset",
+              "type": {
+                "text": "number"
+              },
+              "default": "6",
+              "attribute": "sideOffset"
+            },
+            {
+              "kind": "field",
+              "name": "openDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "200",
+              "attribute": "openDelay"
+            },
+            {
+              "kind": "field",
+              "name": "closeDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "attribute": "closeDelay"
+            },
+            {
+              "kind": "field",
+              "name": "_open",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_openTimer",
+              "type": {
+                "text": "number | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_closeTimer",
+              "type": {
+                "text": "number | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_hideTimer",
+              "type": {
+                "text": "number | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_bubble",
+              "type": {
+                "text": "HTMLDivElement | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_handleEnter",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_handleLeave",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_show",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_hide",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_createBubble",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_destroyBubble",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_position",
+              "privacy": "private",
+              "description": "Computes fixed coordinates from the trigger's bounding rect, flips to\nthe opposite side when there isn't room, then clamps the result inside\nthe viewport so the bubble can never push the page into overflow."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "content",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "content"
+            },
+            {
+              "name": "side",
+              "type": {
+                "text": "\"top\" | \"bottom\" | \"left\" | \"right\""
+              },
+              "default": "\"top\"",
+              "fieldName": "side"
+            },
+            {
+              "name": "sideOffset",
+              "type": {
+                "text": "number"
+              },
+              "default": "6",
+              "fieldName": "sideOffset"
+            },
+            {
+              "name": "openDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "200",
+              "fieldName": "openDelay"
+            },
+            {
+              "name": "closeDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "fieldName": "closeDelay"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-tooltip",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TooltipElement",
+          "declaration": {
+            "name": "TooltipElement",
+            "module": "src/components/tooltip.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-tooltip",
+          "declaration": {
+            "name": "TooltipElement",
+            "module": "src/components/tooltip.ts"
           }
         }
       ]

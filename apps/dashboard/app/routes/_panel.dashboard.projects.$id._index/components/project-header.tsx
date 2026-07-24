@@ -6,8 +6,6 @@ import {
   AppWindowIcon,
 } from "lucide-react"
 import { useNavigate } from "react-router"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
 import type { Project } from "~/types/projects"
 
 export function ProjectHeader({ project }: { project: Project }) {
@@ -16,7 +14,7 @@ export function ProjectHeader({ project }: { project: Project }) {
   return (
     <header className="border-b bg-card">
       <div className="max-w-6xl mx-auto px-6 py-4">
-        <Button
+        <a-button
           variant="ghost"
           size="sm"
           className="mb-4 -ml-2"
@@ -24,7 +22,7 @@ export function ProjectHeader({ project }: { project: Project }) {
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Projects
-        </Button>
+        </a-button>
 
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
@@ -47,9 +45,9 @@ export function ProjectHeader({ project }: { project: Project }) {
                 <h1 className="text-2xl font-semibold tracking-tight">
                   {project.name}
                 </h1>
-                <Badge variant={project.isActive ? "default" : "secondary"}>
+                <a-badge variant={project.isActive ? "default" : "secondary"}>
                   {project.isActive ? "Active" : "Inactive"}
-                </Badge>
+                </a-badge>
               </div>
               <p className="text-muted-foreground mt-1">
                 {project.description || "No description"}
@@ -70,33 +68,29 @@ export function ProjectHeader({ project }: { project: Project }) {
 
           <div className="flex items-center gap-2">
             {project.websiteUrl && (
-              <Button variant="outline" asChild>
-                <a
-                  href={`https://aura-get-verified.vercel.app/projects/${project.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              <a
+                href={`https://aura-get-verified.vercel.app/projects/${project.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <a-button variant="outline">
                   <AppWindowIcon className="mr-2 h-4 w-4" />
                   Your page
-                </a>
-              </Button>
+                </a-button>
+              </a>
             )}
             {project.websiteUrl && (
-              <Button variant="outline" asChild>
-                <a
-                  href={project.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              <a href={project.websiteUrl} target="_blank" rel="noopener noreferrer">
+                <a-button variant="outline">
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Website
-                </a>
-              </Button>
+                </a-button>
+              </a>
             )}
-            <Button variant="outline">
+            <a-button variant="outline">
               <Settings className="mr-2 h-4 w-4" />
               Settings
-            </Button>
+            </a-button>
           </div>
         </div>
       </div>

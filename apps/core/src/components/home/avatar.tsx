@@ -1,12 +1,15 @@
 import { createMemo, type JSX, Show } from "solid-js"
+import makeBlockie from "ethereum-blockies-base64"
 import { createProfilePhotoQuery } from "@/queries/backup"
 import { authStore } from "@/store/auth"
 import { hash } from "@aura/domain/crypto"
 
 /**
  * Avatar with the real BrightID profile photo when available (decrypted from
- * the recovery backup — needs a password session, so passkey users get the
- * initials fallback). Pass `subjectId` to enable the photo and the hover
+ * the recovery backup — needs a password session). When there's no photo,
+ * falls back to a deterministic blockie identicon generated from the
+ * `subjectId` (BrightID); only falls back further to initials when no
+ * `subjectId` is given. Pass `subjectId` to enable the photo and the hover
  * preview: hovering shows the enlarged image, like the old
  * `BrightIdProfilePicture`.
  */
@@ -37,8 +40,11 @@ export default function Avatar(props: {
   // Backup photos are data URIs; tolerate raw base64 just in case.
   const src = () => {
     const data = photo.data
-    if (!data) return props.fallbackSrc
-    return data.startsWith("data:") ? data : `data:image/jpeg;base64,${data}`
+    if (data) return data.startsWith("data:") ? data : `data:image/jpeg;base64,${data}`
+    if (props.fallbackSrc) return props.fallbackSrc
+    // No real photo: use a deterministic blockie identicon from the BrightID.
+    if (props.subjectId) return makeBlockie(props.subjectId)
+    return undefined
   }
 
   const Circle = () => (

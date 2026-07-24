@@ -1,31 +1,28 @@
-import type { CacheEntry, QueryClientConfig, QueryStatus } from './types.js'
+import type { CacheEntry, QueryClientConfig, QueryStatus } from "./types.js"
 
 type Listener = () => void
 
 const DEFAULT_GC_TIME = 5 * 60 * 1000 // 5 min
 
-/** Stringifies a query key array into a stable cache key. */
 export function hashKey(key: unknown[]): string {
   return JSON.stringify(key, (_, v) =>
-    v !== null && typeof v === 'object' && !Array.isArray(v)
-      ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)))
+    v !== null && typeof v === "object" && !Array.isArray(v)
+      ? Object.fromEntries(
+          Object.entries(v).sort(([a], [b]) => a.localeCompare(b)),
+        )
       : v,
   )
 }
 
-/**
- * Central store for all query state and cache entries.
- * Create one per app (or use the module-level `defaultClient`).
- */
 export class QueryClient {
   private cache = new Map<string, CacheEntry>()
   private listeners = new Map<string, Set<Listener>>()
 
   constructor(private config: QueryClientConfig = {}) {}
 
-  // ─── Cache read / write ───────────────────────────────────────────────────
-
-  getEntry<TData, TError = Error>(key: string): CacheEntry<TData, TError> | undefined {
+  getEntry<TData, TError = Error>(
+    key: string,
+  ): CacheEntry<TData, TError> | undefined {
     return this.cache.get(key) as CacheEntry<TData, TError> | undefined
   }
 
@@ -37,8 +34,8 @@ export class QueryClient {
     const next: CacheEntry<TData, TError> = {
       data: undefined,
       error: null,
-      status: 'pending',
-      fetchStatus: 'idle',
+      status: "pending",
+      fetchStatus: "idle",
       updatedAt: 0,
       observers: 0,
       ...prev,
@@ -48,12 +45,9 @@ export class QueryClient {
     this.notify(key)
   }
 
-  // ─── Subscriptions ────────────────────────────────────────────────────────
-
   subscribe(key: string, listener: Listener): () => void {
     if (!this.listeners.has(key)) this.listeners.set(key, new Set())
     this.listeners.get(key)!.add(listener)
-    // Increment observer count and cancel any pending GC
     const entry = this.cache.get(key)
     if (entry) {
       clearTimeout(entry.gcTimer)
@@ -82,13 +76,6 @@ export class QueryClient {
     this.listeners.get(key)?.forEach((fn) => fn())
   }
 
-  // ─── Query invalidation ───────────────────────────────────────────────────
-
-  /**
-   * Mark matching cache entries as stale and notify subscribers so they
-   * refetch. Pass an array prefix — any cached key that starts with all
-   * elements of `keyPrefix` will be invalidated.
-   */
   invalidateQueries(keyPrefix: unknown[]): void {
     for (const [hashedKey, entry] of this.cache) {
       if (matchesPrefix(hashedKey, keyPrefix)) {
@@ -97,7 +84,6 @@ export class QueryClient {
     }
   }
 
-  /** Remove entries from the cache entirely. */
   removeQueries(keyPrefix: unknown[]): void {
     for (const key of this.cache.keys()) {
       if (matchesPrefix(key, keyPrefix)) {
@@ -107,14 +93,13 @@ export class QueryClient {
     }
   }
 
-  /** Manually seed data into the cache (e.g., from SSR or a list response). */
   setQueryData<TData>(queryKey: unknown[], data: TData): void {
     const key = hashKey(queryKey)
     this.setEntry<TData>(key, {
       data,
       error: null,
-      status: 'success' as QueryStatus,
-      fetchStatus: 'idle',
+      status: "success" as QueryStatus,
+      fetchStatus: "idle",
       updatedAt: Date.now(),
     })
   }
@@ -123,19 +108,22 @@ export class QueryClient {
     return this.getEntry<TData>(hashKey(queryKey))?.data
   }
 
-  /**
-   * Return cached data if it exists and is not stale; otherwise fetch,
-   * populate the cache, and return the result.
-   */
   async ensureQueryData<TData>({
     queryKey,
     queryFn,
   }: {
     queryKey: unknown[]
-    queryFn: (ctx: { queryKey: unknown[]; signal: AbortSignal }) => Promise<TData>
+    queryFn: (ctx: {
+      queryKey: unknown[]
+      signal: AbortSignal
+    }) => Promise<TData>
   }): Promise<TData> {
     const entry = this.getEntry<TData>(hashKey(queryKey))
-    if (entry?.status === 'success' && entry.updatedAt > 0 && entry.data !== undefined) {
+    if (
+      entry?.status === "success" &&
+      entry.updatedAt > 0 &&
+      entry.data !== undefined
+    ) {
       return entry.data
     }
     const controller = new AbortController()
@@ -143,8 +131,6 @@ export class QueryClient {
     this.setQueryData(queryKey, data)
     return data
   }
-
-  // ─── Config accessors ─────────────────────────────────────────────────────
 
   getDefaultStaleTime(): number {
     return this.config.defaultStaleTime ?? 0
@@ -156,8 +142,8 @@ export class QueryClient {
 
   getDefaultRetryDelay(): (attempt: number) => number {
     const d = this.config.defaultRetryDelay
-    if (typeof d === 'function') return d
-    if (typeof d === 'number') return () => d
+    if (typeof d === "function") return d
+    if (typeof d === "number") return () => d
     return (attempt) => Math.min(1000 * 2 ** attempt, 30_000)
   }
 
@@ -169,11 +155,12 @@ export class QueryClient {
 function matchesPrefix(hashedKey: string, prefix: unknown[]): boolean {
   try {
     const parsed: unknown[] = JSON.parse(hashedKey)
-    return prefix.every((p, i) => JSON.stringify(p) === JSON.stringify(parsed[i]))
+    return prefix.every(
+      (p, i) => JSON.stringify(p) === JSON.stringify(parsed[i]),
+    )
   } catch {
     return false
   }
 }
 
-/** Module-level default client — used when no client is passed to Query/Mutation. */
 export const defaultClient = new QueryClient()

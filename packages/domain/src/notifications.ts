@@ -2,7 +2,6 @@ import type { AuraNodeBrightIdConnection, Verifications } from "./types/aura"
 import { EvaluationCategory, EvaluationValue } from "./types/evaluations"
 import { getAuraVerification } from "./verifications"
 
-/** Thresholds from the old app's notifications store. */
 export const ALERT_THRESHOLDS = {
   LEVEL_CHANGE: 1,
   SCORE_CHANGE_PERCENT: 35,
@@ -19,9 +18,7 @@ export interface NotificationAlert {
   id: string
   kind: NotificationKind
   category: EvaluationCategory
-  /** Who the alert is about — links to their subject page. */
   about: string
-  /** Optional second party (e.g. the subject an evaluator rated). */
   to: string | null
   previous: number | null
   next: number | null
@@ -32,11 +29,9 @@ export interface NotificationAlert {
 export interface TrackedProfile {
   level: number | null
   score: number | null
-  /** evaluator → confidence; only tracked for outbound subjects. */
   evaluators?: Record<string, number>
 }
 
-/** Keyed by `${id}:${category}`. */
 export type TrackedProfiles = Record<string, TrackedProfile>
 
 export const trackedKey = (id: string, category: EvaluationCategory) =>
@@ -73,7 +68,12 @@ function levelScoreAlerts(
     Math.abs(prev.level - level) >= ALERT_THRESHOLDS.LEVEL_CHANGE
   ) {
     alerts.push({
-      id: alertId(level > prev.level ? "level-increase" : "level-decrease", id, category, now),
+      id: alertId(
+        level > prev.level ? "level-increase" : "level-decrease",
+        id,
+        category,
+        now,
+      ),
       kind: level > prev.level ? "level-increase" : "level-decrease",
       category,
       about: id,
@@ -93,7 +93,12 @@ function levelScoreAlerts(
       ALERT_THRESHOLDS.SCORE_CHANGE_PERCENT
   ) {
     alerts.push({
-      id: alertId(score > prev.score ? "score-increase" : "score-decrease", id, category, now),
+      id: alertId(
+        score > prev.score ? "score-increase" : "score-decrease",
+        id,
+        category,
+        now,
+      ),
       kind: score > prev.score ? "score-increase" : "score-decrease",
       category,
       about: id,
@@ -130,7 +135,15 @@ export function diffNotifications(params: {
   lastFetch: number | null
   now: number
 }): { alerts: NotificationAlert[]; tracked: TrackedProfiles } {
-  const { subjectId, verifications, inbound, outbound, prevTracked, lastFetch, now } = params
+  const {
+    subjectId,
+    verifications,
+    inbound,
+    outbound,
+    prevTracked,
+    lastFetch,
+    now,
+  } = params
 
   const seedOnly = lastFetch === null
   const tracked: TrackedProfiles = { ...prevTracked }
@@ -155,7 +168,6 @@ export function diffNotifications(params: {
     tracked[key] = { level: v?.level ?? null, score: v?.score ?? null }
   }
 
-  // ── New inbound evaluations of the user ──────────────────
   if (!seedOnly) {
     for (const connection of inbound) {
       for (const e of connection.auraEvaluations ?? []) {
@@ -207,9 +219,15 @@ export function diffNotifications(params: {
         // Other evaluators newly rating (or re-rating) this subject.
         for (const impact of v?.impacts ?? []) {
           if (impact.evaluator === subjectId) continue
-          if (prev.evaluators?.[impact.evaluator] === impact.confidence) continue
+          if (prev.evaluators?.[impact.evaluator] === impact.confidence)
+            continue
           alerts.push({
-            id: alertId("evaluation", impact.evaluator, category, impact.modified),
+            id: alertId(
+              "evaluation",
+              impact.evaluator,
+              category,
+              impact.modified,
+            ),
             kind: "evaluation",
             category,
             about: impact.evaluator,

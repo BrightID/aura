@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { LevelBadge } from "./level-badge"
 import type { AuraPlayer } from "./types"
 
@@ -230,7 +229,7 @@ export function FindPlayersStep({
       </div>
 
       {/* Scan QR Button */}
-      <Button variant="outline" className="w-full bg-transparent" size="sm">
+      <a-button variant="outline" className="w-full bg-transparent" size="sm">
         <svg
           className="w-4 h-4 mr-2"
           fill="none"
@@ -251,7 +250,7 @@ export function FindPlayersStep({
           />
         </svg>
         Scan QR Code
-      </Button>
+      </a-button>
     </div>
   )
 }

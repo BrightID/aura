@@ -1,30 +1,19 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Input } from "~/components/ui/input"
 import { loginWithApple, loginWithGoogle } from "~/lib/auth-actions"
 import { auth } from "~/lib/firebase"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useNavigate } from "react-router"
-import { useForm } from "react-hook-form"
+import { Controller, useForm, type Control } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod"
-import { Separator } from "~/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth"
-import { toast } from "sonner"
+import { toast } from "@aura/ui"
 import { IconBrandApple, IconBrandGoogle } from "@tabler/icons-react"
 import { useMutation } from "@tanstack/react-query"
+import { useAuraEvent } from "~/lib/aura"
 
 const formSchema = z.object({
   email: z.email(),
@@ -32,6 +21,47 @@ const formSchema = z.object({
 })
 
 type FormData = z.infer<typeof formSchema>
+
+/** Native `<a-input>` bound to a react-hook-form field via its `change` event. */
+function AuraTextInput({
+  control,
+  name,
+  ...props
+}: {
+  control: Control<FormData>
+  name: keyof FormData
+  id?: string
+  type?: "text" | "email" | "password" | "number"
+  placeholder?: string
+  className?: string
+}) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <BoundInput value={field.value ?? ""} onChange={field.onChange} {...props} />
+      )}
+    />
+  )
+}
+
+function BoundInput({
+  value,
+  onChange,
+  ...props
+}: {
+  value: string
+  onChange: (v: string) => void
+  id?: string
+  type?: "text" | "email" | "password" | "number"
+  placeholder?: string
+  className?: string
+}) {
+  const ref = useRef<HTMLElement>(null)
+  useAuraEvent<string>(ref, "change", onChange)
+  return <a-input ref={ref} value={value} {...props} />
+}
 
 function LoginScreen() {
   const [user] = useAuthState(auth)
@@ -66,36 +96,37 @@ function LoginScreen() {
   }
 
   return (
-    <Card className="max-w-md hover-lift shadow-2xl relative z-10 opacity-100 w-[126%] mx-[0] border-transparent">
-      <CardHeader className="text-center space-y-2">
-        <CardTitle className="text-3xl font-bold font-sans text-card-foreground">
+    <a-card className="max-w-md hover-lift shadow-2xl relative z-10 opacity-100 w-[126%] mx-[0] border-transparent">
+      <div className="text-center space-y-2 p-6">
+        <a-head
+          level="3"
+          className="text-3xl font-bold font-sans text-card-foreground"
+        >
           Welcome
-        </CardTitle>
-        <CardDescription className="text-card-foreground/70 font-sans">
+        </a-head>
+        <p className="text-card-foreground/70 font-sans">
           Sign in or create an account
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
 
-      <CardContent className="space-y-6">
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
+      <div className="space-y-6 p-6 pt-0">
+        <a-tabs value="login" className="w-full">
+          <a-tab value="login">Sign In</a-tab>
+          <a-tab value="signup">Sign Up</a-tab>
 
-          <TabsContent value="login" className="space-y-4">
+          <a-tab-panel slot="panel" value="login" className="space-y-4">
             <form
               onSubmit={loginForm.handleSubmit(onLogin)}
               className="space-y-4"
             >
               <div className="space-y-2">
-                <Label htmlFor="login-email">Email</Label>
-                <Input
-                  {...loginForm.register("email")}
+                <a-label for="login-email">Email</a-label>
+                <AuraTextInput
+                  control={loginForm.control}
+                  name="email"
                   id="login-email"
                   type="email"
                   placeholder="you@example.com"
-                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
                 />
                 {loginForm.formState.errors.email && (
                   <p className="text-red-500 text-xs">
@@ -105,13 +136,13 @@ function LoginScreen() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
-                <Input
-                  {...loginForm.register("password")}
+                <a-label for="login-password">Password</a-label>
+                <AuraTextInput
+                  control={loginForm.control}
+                  name="password"
                   id="login-password"
                   type="password"
                   placeholder="••••••••"
-                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
                 />
                 {loginForm.formState.errors.password && (
                   <p className="text-red-500 text-xs">
@@ -120,29 +151,29 @@ function LoginScreen() {
                 )}
               </div>
 
-              <Button
+              <a-button
                 disabled={isPending}
                 type="submit"
                 className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
               >
                 Sign In
-              </Button>
+              </a-button>
             </form>
-          </TabsContent>
+          </a-tab-panel>
 
-          <TabsContent value="signup" className="space-y-4">
+          <a-tab-panel slot="panel" value="signup" className="space-y-4">
             <form
               onSubmit={signupForm.handleSubmit(onSignup)}
               className="space-y-4"
             >
               <div className="space-y-2">
-                <Label htmlFor="signup-email">Email</Label>
-                <Input
-                  {...signupForm.register("email")}
+                <a-label for="signup-email">Email</a-label>
+                <AuraTextInput
+                  control={signupForm.control}
+                  name="email"
                   id="signup-email"
                   type="email"
                   placeholder="you@example.com"
-                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
                 />
                 {signupForm.formState.errors.email && (
                   <p className="text-red-500 text-xs">
@@ -152,13 +183,13 @@ function LoginScreen() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="signup-password">Password</Label>
-                <Input
-                  {...signupForm.register("password")}
+                <a-label for="signup-password">Password</a-label>
+                <AuraTextInput
+                  control={signupForm.control}
+                  name="password"
                   id="signup-password"
                   type="password"
                   placeholder="••••••••"
-                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
                 />
                 {signupForm.formState.errors.password && (
                   <p className="text-red-500 text-xs">
@@ -167,18 +198,18 @@ function LoginScreen() {
                 )}
               </div>
 
-              <Button
+              <a-button
                 disabled={isPending}
                 type="submit"
                 className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
               >
                 Sign Up
-              </Button>
+              </a-button>
             </form>
-          </TabsContent>
-        </Tabs>
+          </a-tab-panel>
+        </a-tabs>
 
-        <Separator />
+        <a-separator />
         <div className="relative flex justify-center text-xs uppercase">
           <span className="px-2 text-card-foreground/60 font-sans">
             Or continue with
@@ -186,26 +217,26 @@ function LoginScreen() {
         </div>
 
         <div className="space-y-3">
-          <Button
+          <a-button
             variant="outline"
             onClick={loginWithGoogle}
             className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
           >
             <IconBrandGoogle className="size-5 mr-2" />
             Google
-          </Button>
+          </a-button>
 
-          <Button
+          <a-button
             variant="outline"
             onClick={loginWithApple}
             className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
           >
             <IconBrandApple className="size-5 mr-2" />
             Apple
-          </Button>
+          </a-button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </a-card>
   )
 }
 

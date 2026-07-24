@@ -1,14 +1,6 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
 import { Switch } from "~/components/ui/switch"
@@ -82,12 +74,16 @@ export function SettingsTab({ project }: { project: Project }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>General Settings</CardTitle>
-            <CardDescription>Configure your project settings</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <a-card>
+          <div className="flex flex-col gap-1.5 p-6">
+            <a-head level="3" className="text-lg font-semibold">
+              General Settings
+            </a-head>
+            <p className="text-muted-foreground text-sm">
+              Configure your project settings
+            </p>
+          </div>
+          <div className="space-y-4 p-6 pt-0">
             <FormField
               control={form.control}
               name="name"
@@ -154,15 +150,19 @@ export function SettingsTab({ project }: { project: Project }) {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </a-card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Branding</CardTitle>
-            <CardDescription>Customize your project appearance</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        <a-card>
+          <div className="flex flex-col gap-1.5 p-6">
+            <a-head level="3" className="text-lg font-semibold">
+              Branding
+            </a-head>
+            <p className="text-muted-foreground text-sm">
+              Customize your project appearance
+            </p>
+          </div>
+          <div className="space-y-6 p-6 pt-0">
             <FormField
               control={form.control}
               name="logoUrl"
@@ -224,15 +224,19 @@ export function SettingsTab({ project }: { project: Project }) {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </a-card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Integration</CardTitle>
-            <CardDescription>BrightID integration settings</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <a-card>
+          <div className="flex flex-col gap-1.5 p-6">
+            <a-head level="3" className="text-lg font-semibold">
+              Integration
+            </a-head>
+            <p className="text-muted-foreground text-sm">
+              BrightID integration settings
+            </p>
+          </div>
+          <div className="p-6 pt-0">
             <FormField
               control={form.control}
               name="brightIdAppId"
@@ -242,22 +246,26 @@ export function SettingsTab({ project }: { project: Project }) {
                   <FormControl>
                     <div className="flex gap-2">
                       <Input readOnly {...field} className="font-mono" />
-                      <Button type="button" variant="outline" size="sm">
+                      <a-button type="button" variant="outline" size="sm">
                         Copy
-                      </Button>
+                      </a-button>
                     </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </a-card>
 
         <div className="flex justify-end">
-          <Button disabled={isPending} type="submit">
+          <a-button
+            disabled={isPending}
+            type="submit"
+            onClick={form.handleSubmit(onSubmit)}
+          >
             Save Changes
-          </Button>
+          </a-button>
         </div>
       </form>
     </Form>

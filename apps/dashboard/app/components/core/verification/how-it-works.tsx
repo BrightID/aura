@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { AuraLogo } from "./aura-logo"
 
 interface HowItWorksProps {
@@ -168,9 +167,9 @@ export function HowItWorks({ onBack }: HowItWorksProps) {
         </div>
       </div>
 
-      <Button onClick={onBack} className="w-full">
+      <a-button onClick={onBack} className="w-full">
         Got it
-      </Button>
+      </a-button>
     </div>
   )
 }

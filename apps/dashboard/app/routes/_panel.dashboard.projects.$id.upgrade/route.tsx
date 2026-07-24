@@ -1,13 +1,3 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { Check, CheckCircle, Loader2, XCircle } from "lucide-react"
 import { ParticlesBackground } from "@/components/particles-background"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -15,7 +5,8 @@ import { plans } from "~/constants/subscriptions"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getUserProjects } from "~/utils/apis"
 import { useParams } from "react-router"
-import { toast } from "sonner"
+import { toast } from "@aura/ui"
+import { useAuraEvent } from "~/lib/aura"
 import { getAuth } from "firebase/auth"
 import axios from "axios"
 import { API_BASE_URL } from "~/constants"
@@ -41,9 +32,16 @@ export default function PricingSection() {
   const [activeWidget, setActiveWidget] = useState<ActiveWidget | null>(null)
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const billingSwitchRef = useRef<HTMLElement>(null)
+  const dialogRef = useRef<HTMLElement>(null)
 
   const queryClient = useQueryClient()
   const params = useParams()
+
+  useAuraEvent<boolean>(billingSwitchRef, "change", setIsYearly)
+  useAuraEvent<{ open: boolean }>(dialogRef, "open-change", (e) => {
+    if (!e.open) handleClose()
+  })
 
   const { data: projects } = useQuery({
     queryFn: getUserProjects,
@@ -114,13 +112,13 @@ export default function PricingSection() {
             <span className={`text-sm font-medium transition-colors ${!isYearly ? "text-foreground" : "text-muted-foreground"}`}>
               Monthly
             </span>
-            <Switch checked={isYearly} onCheckedChange={setIsYearly} />
+            <a-switch ref={billingSwitchRef} checked={isYearly} />
             <span className={`text-sm font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground"}`}>
               Yearly
             </span>
-            <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+            <a-badge variant="secondary" className="bg-primary/10 text-primary text-xs">
               Save 20%
-            </Badge>
+            </a-badge>
           </div>
         </div>
 
@@ -136,7 +134,7 @@ export default function PricingSection() {
             const isFree = plan.monthlyPrice === 0
 
             return (
-              <Card
+              <a-card
                 key={plan.name}
                 className={`group relative p-4 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
@@ -147,9 +145,9 @@ export default function PricingSection() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] animate-pulse">
+                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] animate-pulse">
                       Most Popular
-                    </Badge>
+                    </a-badge>
                   </div>
                 )}
 
@@ -195,9 +193,9 @@ export default function PricingSection() {
                   </ul>
                 </div>
 
-                <Button
+                <a-button
                   onClick={async () => {
-                    if (isCurrent || isFree || !focusedProject) return
+                    if (isCurrent || plan.id == null || !focusedProject) return
                     setLoadingPlanId(plan.id)
                     try {
                       const token = await getToken()
@@ -229,10 +227,10 @@ export default function PricingSection() {
                   {loadingPlanId === plan.id ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…</>
                   ) : isCurrent ? "Current Plan" : isFree ? "Free" : plan.cta}
-                </Button>
+                </a-button>
 
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              </Card>
+              </a-card>
             )
           })}
         </div>
@@ -256,17 +254,17 @@ export default function PricingSection() {
         </div>
       </div>
 
-      <Dialog open={!!activeWidget} onOpenChange={(v) => { if (!v) handleClose() }}>
-        <DialogContent className="max-w-2xl w-full p-0 overflow-hidden">
-          <DialogHeader className="px-6 pt-5 pb-3">
-            <DialogTitle>
+      <a-dialog ref={dialogRef} open={!!activeWidget}>
+        <div slot="content" className="max-w-2xl w-full p-0 overflow-hidden">
+          <div className="px-6 pt-5 pb-3">
+            <a-head level="2" className="text-lg font-semibold">
               {paymentStatus === "completed"
                 ? `Subscribed to ${activeWidget?.planName}!`
                 : paymentStatus === "failed"
                   ? "Payment failed"
                   : `Complete payment — ${activeWidget?.planName}`}
-            </DialogTitle>
-          </DialogHeader>
+            </a-head>
+          </div>
 
           {paymentStatus === "completed" && (
             <div className="flex flex-col items-center gap-4 py-10 px-6">
@@ -274,7 +272,7 @@ export default function PricingSection() {
               <p className="text-muted-foreground text-sm text-center">
                 Your subscription is now active. You can close this window.
               </p>
-              <Button onClick={handleClose}>Done</Button>
+              <a-button onClick={handleClose}>Done</a-button>
             </div>
           )}
 
@@ -284,7 +282,7 @@ export default function PricingSection() {
               <p className="text-muted-foreground text-sm text-center">
                 Payment did not complete. Please try again.
               </p>
-              <Button variant="secondary" onClick={handleClose}>Close</Button>
+              <a-button variant="secondary" onClick={handleClose}>Close</a-button>
             </div>
           )}
 
@@ -297,8 +295,8 @@ export default function PricingSection() {
               title="MoonPay checkout"
             />
           )}
-        </DialogContent>
-      </Dialog>
+        </div>
+      </a-dialog>
     </section>
   )
 }

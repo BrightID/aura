@@ -1,19 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Search, Plus, LayoutGrid, List, SlidersHorizontal } from "lucide-react"
+import { Search, Plus, LayoutGrid, List } from "lucide-react"
 import { getUserProjects } from "~/utils/apis"
-import { Input } from "~/components/ui/input"
-import { Button } from "~/components/ui/button"
-import { Skeleton } from "~/components/ui/skeleton"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select"
+import { useAuraEvent } from "~/lib/aura"
 import { cn } from "~/lib/utils"
 import type { Project } from "~/components/projects-table"
 import { ProjectCard } from "./project-card"
@@ -25,6 +16,13 @@ export default function ProjectsList() {
     "all" | "active" | "inactive"
   >("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+
+  const searchRef = useRef<HTMLElement>(null)
+  const statusRef = useRef<HTMLElement>(null)
+  useAuraEvent<string>(searchRef, "change", setSearchQuery)
+  useAuraEvent<string>(statusRef, "change", (v) =>
+    setStatusFilter(v as "all" | "active" | "inactive"),
+  )
 
   const {
     data: projects,
@@ -56,58 +54,53 @@ export default function ProjectsList() {
               Manage and monitor your projects
             </p>
           </div>
-          <Button asChild>
-            <Link to="/dashboard/projects/new">
+          <Link to="/dashboard/projects/new">
+            <a-button>
               <Plus className="mr-2 h-4 w-4" />
               New Project
-            </Link>
-          </Button>
+            </a-button>
+          </Link>
         </div>
 
         {/* Filters */}
         <div className="flex items-center gap-4 px-6 pb-4">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
+            <Search className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <a-input
+              ref={searchRef}
               placeholder="Search projects..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
             />
           </div>
-          <Select
+          <a-select
+            ref={statusRef}
             value={statusFilter}
-            onValueChange={(value: "all" | "active" | "inactive") =>
-              setStatusFilter(value)
-            }
-          >
-            <SelectTrigger className="w-[140px]">
-              <SlidersHorizontal className="mr-2 h-4 w-4" />
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
+            placeholder="Status"
+            className="w-[140px]"
+            options={[
+              { value: "all", label: "All Status" },
+              { value: "active", label: "Active" },
+              { value: "inactive", label: "Inactive" },
+            ]}
+          />
           <div className="flex items-center border rounded-md">
-            <Button
+            <a-button
               variant={viewMode === "grid" ? "secondary" : "ghost"}
               size="icon"
               className="h-9 w-9 rounded-r-none"
               onClick={() => setViewMode("grid")}
             >
               <LayoutGrid className="h-4 w-4" />
-            </Button>
-            <Button
+            </a-button>
+            <a-button
               variant={viewMode === "list" ? "secondary" : "ghost"}
               size="icon"
               className="h-9 w-9 rounded-l-none"
               onClick={() => setViewMode("list")}
             >
               <List className="h-4 w-4" />
-            </Button>
+            </a-button>
           </div>
         </div>
       </header>
@@ -125,16 +118,16 @@ export default function ProjectsList() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-lg border bg-card p-4 space-y-3">
                 <div className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded-md" />
+                  <a-skeleton className="h-10 w-10 rounded-md" />
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-3 w-24" />
+                    <a-skeleton className="h-4 w-32" />
+                    <a-skeleton className="h-3 w-24" />
                   </div>
                 </div>
-                <Skeleton className="h-10 w-full" />
+                <a-skeleton className="h-10 w-full" />
                 <div className="flex gap-2">
-                  <Skeleton className="h-5 w-16" />
-                  <Skeleton className="h-5 w-20" />
+                  <a-skeleton className="h-5 w-16" />
+                  <a-skeleton className="h-5 w-20" />
                 </div>
               </div>
             ))}
@@ -160,10 +153,12 @@ export default function ProjectsList() {
                 : "Create your first project to get started"}
             </p>
             {!searchQuery && (
-              <Button className="mt-4">
-                <Plus className="mr-2 h-4 w-4" />
-                New Project
-              </Button>
+              <Link to="/dashboard/projects/new">
+                <a-button className="mt-4">
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Project
+                </a-button>
+              </Link>
             )}
           </div>
         ) : (

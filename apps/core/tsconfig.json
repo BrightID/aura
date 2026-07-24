@@ -15,7 +15,8 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@aura/ui/jsx/solid": ["../../packages/ui/src/jsx/solid.ts"]
     }
   },
   "include": ["src", "aura-ui.d.ts"]

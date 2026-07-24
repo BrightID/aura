@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useMemo } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { AnimatedBot } from "./bot-icon"
-import { Button } from "@/components/ui/button"
 import { Shield, Zap, Lock, GitBranch } from "lucide-react"
 
 interface Bot {
@@ -173,18 +172,18 @@ export function ScrollAnimation() {
             animate={showMessage ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            <Button size="lg" className="gap-2 text-lg px-8">
+            <a-button size="lg" className="gap-2 text-lg px-8">
               <Zap className="w-5 h-5" />
               Get Started
-            </Button>
-            <Button
+            </a-button>
+            <a-button
               size="lg"
               variant="outline"
               className="gap-2 text-lg px-8 bg-transparent"
             >
               <GitBranch className="w-5 h-5" />
               Learn More
-            </Button>
+            </a-button>
           </motion.div>
 
           <motion.div

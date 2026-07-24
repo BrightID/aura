@@ -1,6 +1,6 @@
 import { userLevelPoints } from "./levels"
-import type { EvaluationCategory } from "./types/evaluations"
 import type { AuraImpactRaw } from "./types/aura"
+import type { EvaluationCategory } from "./types/evaluations"
 
 export const calculateImpact = (score: number, rating: number) =>
   rating > 0 ? score * rating : rating * score * 4
@@ -28,7 +28,6 @@ export const progressSections = [
   0.00000875, 0.000125, 0.025, 0.075, 0.2, 0.375, 0.625, 1,
 ]
 
-/** 0–100 progress of a score across the non-linear level sections. */
 export const calculateUserScorePercentage = (
   _view: EvaluationCategory,
   score: number,
@@ -49,7 +48,6 @@ export const calculateUserScorePercentage = (
   )
 }
 
-/** Level index for a category given its impact ratings. */
 export const calculateSubjectScore = (
   category: EvaluationCategory,
   ratings: AuraImpactRaw[],
@@ -59,10 +57,6 @@ export const calculateSubjectScore = (
   return levels.findIndex((item) => item > score)
 }
 
-/**
- * One evaluator's share of a subject's total absolute impact, as a rounded
- * percentage — null when the evaluator has no impact or there is none at all.
- */
 export const impactShare = (
   impacts: AuraImpactRaw[] | null | undefined,
   evaluator: string | undefined,

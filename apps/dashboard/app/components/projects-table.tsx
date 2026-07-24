@@ -1,5 +1,4 @@
-import { useMemo, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useMemo, useRef, useState } from "react"
 import {
   Table,
   TableBody,
@@ -16,25 +15,26 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table"
-import { Input } from "@/components/ui/input"
+import { useAuraEvent } from "~/lib/aura"
 import { ArrowUpDown, Edit2, Eye, Plus } from "lucide-react"
 import { Link } from "react-router"
 import { useProjectStore } from "~/store/project-store"
 import { format } from "date-fns"
+export type { Project } from "~/types/projects"
 import type { Project } from "~/types/projects"
 
 const columns: ColumnDef<Project>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <Button
+      <a-button
         variant="ghost"
         size="sm"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Project
         <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      </a-button>
     ),
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
@@ -103,11 +103,11 @@ const columns: ColumnDef<Project>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <Button variant="ghost" size="icon" asChild>
-        <Link to={`/dashboard/projects/${row.original.id}`}>
+      <Link to={`/dashboard/projects/${row.original.id}`}>
+        <a-button variant="ghost" size="icon">
           <Eye className="h-4 w-4" />
-        </Link>
-      </Button>
+        </a-button>
+      </Link>
     ),
   },
 ]
@@ -115,6 +115,8 @@ const columns: ColumnDef<Project>[] = [
 export function ProjectsTable({ data }: { data: Project[] }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [filter, setFilter] = useState("")
+  const filterRef = useRef<HTMLElement>(null)
+  useAuraEvent<string>(filterRef, "change", setFilter)
   const { setSelectedProject } = useProjectStore()
 
   const filteredData = useMemo(
@@ -135,18 +137,18 @@ export function ProjectsTable({ data }: { data: Project[] }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <Input
+        <a-input
+          ref={filterRef}
           placeholder="Search projects..."
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
           className="max-w-xs"
         />
-        <Button asChild>
-          <Link to="/dashboard/projects/new">
+        <Link to="/dashboard/projects/new">
+          <a-button>
             <Plus className="mr-2 h-4 w-4" />
             New Project
-          </Link>
-        </Button>
+          </a-button>
+        </Link>
       </div>
 
       <div className="rounded-lg border bg-card">

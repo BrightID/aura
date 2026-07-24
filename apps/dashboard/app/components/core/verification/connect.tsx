@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { AuraLogo } from "./aura-logo"
 import type { UserVerificationStatus } from "./types"
 
@@ -54,7 +53,7 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
 
       {/* Connection Options */}
       <div className="space-y-2">
-        <Button
+        <a-button
           variant="outline"
           className="w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
           onClick={() => handleConnect("brightid")}
@@ -80,9 +79,9 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
           {isConnecting && connectMethod === "brightid" && (
             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           )}
-        </Button>
+        </a-button>
 
-        <Button
+        <a-button
           variant="outline"
           className="w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
           onClick={() => handleConnect("passkey")}
@@ -114,7 +113,7 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
           {isConnecting && connectMethod === "passkey" && (
             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           )}
-        </Button>
+        </a-button>
       </div>
 
       {/* Help Link */}

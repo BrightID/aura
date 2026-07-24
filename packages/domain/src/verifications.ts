@@ -1,12 +1,11 @@
-import type { EvaluationCategory } from "./types/evaluations"
 import type { Verifications } from "./types/aura"
+import type { EvaluationCategory } from "./types/evaluations"
 
 export const getUserHasRecovery = (verifications?: Verifications) =>
   verifications
     ? !!verifications.find((v) => v.name === "SocialRecoverySetup")
     : null
 
-/** The Aura → BrightID domain category entry for a given evaluation category. */
 export const getAuraVerification = (
   verifications: Verifications | undefined,
   category: EvaluationCategory,
@@ -18,7 +17,6 @@ export const getAuraVerification = (
     ?.categories.find((c) => c.name === category)
 }
 
-/** Extract level/score for a subject in a category from their verifications. */
 export function parseVerifications(
   verifications: Verifications | undefined,
   category: EvaluationCategory,

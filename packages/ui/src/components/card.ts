@@ -38,7 +38,6 @@ export class CardElement extends LitElement {
       --card-border: color-mix(in oklch, var(--border) 60%, transparent);
     }
 
-    /* Glass variant */
     :host([variant="glass"]) {
       --blur: 2px;
       background: linear-gradient(
@@ -78,8 +77,8 @@ export class CardElement extends LitElement {
     :host([interactive][variant="glass"]:hover) {
       background: linear-gradient(
         135deg,
-        color-mix(in oklch, var(--card) 30%, transparent) 0%,
-        color-mix(in oklch, var(--card) 14%, transparent) 100%
+        color-mix(in oklch, var(--card) 28%, transparent) 0%,
+        color-mix(in oklch, var(--card) 30%, transparent) 100%
       );
     }
 

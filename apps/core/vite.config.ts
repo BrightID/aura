@@ -1,9 +1,8 @@
-import { resolve } from 'node:path';
-import tailwindcss from '@tailwindcss/vite';
-import solid from 'vite-plugin-solid';
-import { defineConfig, loadEnv } from 'vite';
-import pkg from './package.json';
-import { auraPWA } from './sw-plugin';
+import { resolve } from "node:path"
+import tailwindcss from "@tailwindcss/vite"
+import { defineConfig, loadEnv } from "vite"
+import solid from "vite-plugin-solid"
+import pkg from "./package.json"
 import {
   AURA_NODE_PROXY_PATH,
   AURA_TEST_NODE_PROXY_PATH,
@@ -11,13 +10,14 @@ import {
   DEFAULT_AURA_TEST_NODE_URL,
   DEFAULT_RECOVERY_URL,
   RECOVERY_PROXY_PATH,
-} from './src/shared/lib/url-defaults';
+} from "./src/shared/lib/url-defaults"
+import { auraPWA } from "./sw-plugin"
 
 const stripPrefix = (prefix: string) => (path: string) =>
-  path.replace(new RegExp(`^${prefix}`), '');
+  path.replace(new RegExp(`^${prefix}`), "")
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, __dirname, '');
+  const env = loadEnv(mode, __dirname, "")
 
   return {
     plugins: [tailwindcss(), solid(), auraPWA(pkg.version)],
@@ -26,13 +26,12 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@': resolve(__dirname, './src'),
+        "@": resolve(__dirname, "./src"),
       },
     },
     server: {
-      // Proxy node + recovery calls to avoid CORS during dev. Targets are
-      // env-overridable; defaults live in src/shared/lib/url-defaults.ts.
-      // vercel.json mirrors these rewrites for production.
+      host: true,
+      allowedHosts: ["localhost", ".localhost"],
       proxy: {
         [AURA_TEST_NODE_PROXY_PATH]: {
           target: env.VITE_AURA_TEST_NODE_URL ?? DEFAULT_AURA_TEST_NODE_URL,
@@ -55,5 +54,5 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-  };
-});
+  }
+})

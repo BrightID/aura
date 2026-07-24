@@ -1,9 +1,3 @@
-import { toast } from "@aura/ui"
-import { useNavigate, useSearchParams } from "@solidjs/router"
-import { createMutation, createQuery } from "@tanstack/solid-query"
-import QRCode from "qrcode"
-import { createEffect, createMemo, createSignal, onMount, Show } from "solid-js"
-import FadeIn from "@/components/motions/fade-in"
 import { generateB64Keypair, hash, urlSafeRandomKey } from "@aura/domain/crypto"
 import {
   createPasskeyIdentity,
@@ -17,6 +11,12 @@ import {
   pollRecoveredUser,
   uploadRecoveryData,
 } from "@aura/domain/recovery"
+import { toast } from "@aura/ui"
+import { useNavigate, useSearchParams } from "@solidjs/router"
+import { createMutation, createQuery } from "@tanstack/solid-query"
+import QRCode from "qrcode"
+import { createEffect, createMemo, createSignal, onMount, Show } from "solid-js"
+import FadeIn from "@/components/motions/fade-in"
 import { AURA_NODE_URL, AURA_NODE_URL_PROXY } from "@/shared/lib/urls"
 import { authStore, setAuthStore, setKeypair } from "@/store/auth"
 import {

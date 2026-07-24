@@ -11,7 +11,7 @@ export class TabsElement extends LitElement {
   declare value: string
 
   @queryAssignedElements({ selector: "a-tab" })
-  private declare tabs: HTMLElement[]
+  declare private tabs: HTMLElement[]
 
   constructor() {
     super()
@@ -25,19 +25,19 @@ export class TabsElement extends LitElement {
     .tab-list {
       position: relative;
       display: flex;
-      /* gap: 0.25rem; */
       padding: 0.25rem;
       border-radius: var(--radius, 0.5rem);
-      background: color-mix(in oklch, var(--background, #fff) 75%, transparent);
+      background: var(--tab-bg);
       backdrop-filter: blur(12px);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
+
     .indicator {
       position: absolute;
-      top: 0.25rem; /* or inset-inline-start: 0; if you want logical props */
+      top: 0.25rem;
       bottom: 0.25rem;
       left: 0;
-      height: auto; /* let top/bottom control it */
+      height: auto;
       border-radius: calc(var(--radius, 0.5rem) - 0.125rem);
       background: var(--primary, #0066cc);
       transition:
@@ -45,7 +45,6 @@ export class TabsElement extends LitElement {
         width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 0;
       will-change: transform, width;
-      /* pointer-events: none; */ /* often useful */
     }
 
     ::slotted(a-tab) {

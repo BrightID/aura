@@ -131,19 +131,19 @@ export default function EvaluationsChart(props: {
     }
   }
 
-  // Hovered/focused bar → single floating tooltip (old recharts tooltip). We
-  // track the bar plus its horizontal center relative to the strip container.
-  let strip: HTMLDivElement | undefined
-  const [hovered, setHovered] = createSignal<{ bar: Bar; left: number } | null>(
-    null,
-  )
-  const showTip = (e: { currentTarget: HTMLElement }, bar: Bar) => {
-    if (!strip) return
-    const r = e.currentTarget.getBoundingClientRect()
-    const p = strip.getBoundingClientRect()
-    setHovered({ bar, left: r.left - p.left + r.width / 2 })
-  }
   const signed = (n: number) => (n > 0 ? `+${n}` : String(n))
+
+  // Old recharts tooltip parity: name, score, impact, confidence, age.
+  const tooltipText = (bar: Bar) =>
+    [
+      bar.name,
+      bar.score !== null ? `Score: ${compactFormat(bar.score)}` : null,
+      `Impact: ${signed(Number(bar.percent.toFixed(1)))}%`,
+      `Confidence: ${signed(bar.confidence)} (${confidenceLabel(bar.confidence)})`,
+      formatDuration(bar.modified),
+    ]
+      .filter((line) => line !== null)
+      .join("\n")
 
   return (
     <Show
@@ -191,106 +191,67 @@ export default function EvaluationsChart(props: {
           </Show>
 
           <div
-            ref={strip}
             data-testid="evaluations-chart"
             class="relative flex items-stretch gap-0.5"
           >
-            {/* Floating tooltip for the hovered/focused bar. */}
-            <Show when={hovered()}>
-              {(h) => (
-                <div
-                  data-testid="evaluations-chart-tooltip"
-                  class="pointer-events-none absolute bottom-full z-10 mb-1 w-max max-w-48 -translate-x-1/2 rounded-md border border-border bg-background/95 p-2 text-xs shadow-md backdrop-blur"
-                  style={{ left: `${h().left}px` }}
-                >
-                  <p class="truncate font-medium text-foreground">
-                    {h().bar.name}
-                  </p>
-                  <div class="mt-1 flex flex-col gap-0.5 text-muted-foreground">
-                    <Show when={h().bar.score !== null}>
-                      <span>
-                        Score:{" "}
-                        <span class="text-foreground">
-                          {compactFormat(h().bar.score ?? 0)}
-                        </span>
-                      </span>
-                    </Show>
-                    <span>
-                      Impact:{" "}
-                      <span class="text-foreground">
-                        {signed(Number(h().bar.percent.toFixed(1)))}%
-                      </span>
-                    </span>
-                    <span>
-                      Confidence:{" "}
-                      <span class="text-foreground">
-                        {signed(h().bar.confidence)} (
-                        {confidenceLabel(h().bar.confidence)})
-                      </span>
-                    </span>
-                    <span>{formatDuration(h().bar.modified)}</span>
-                  </div>
-                </div>
-              )}
-            </Show>
-
             <For each={bars()}>
               {(bar) => (
-                <button
-                  type="button"
-                  data-testid={`evaluations-chart-bar-${bar.id}`}
-                  title={`${bar.name}: ${signed(Number(bar.percent.toFixed(1)))}%`}
-                  onClick={() => props.onBarClick?.(bar.id)}
-                  onMouseEnter={(e) => showTip(e, bar)}
-                  onFocus={(e) => showTip(e, bar)}
-                  onMouseLeave={() => setHovered(null)}
-                  onBlur={() => setHovered(null)}
-                  class="flex min-w-0 flex-1 cursor-pointer flex-col items-center gap-1 opacity-90 transition-opacity hover:opacity-100"
+                <a-tooltip
+                  content={tooltipText(bar)}
+                  side="top"
+                  class="flex min-w-0 flex-1"
                 >
-                  <span class="flex h-36 w-full flex-col">
-                    {/* positive half */}
-                    <Show when={hasPositive()}>
-                      <span class="flex flex-1 items-end justify-center">
-                        <Show when={bar.percent > 0}>
-                          <span
-                            class="w-full max-w-5 rounded-t-sm"
-                            style={{
-                              height: `${heightOf(bar.percent)}%`,
-                              "background-color": bar.color,
-                            }}
-                          />
-                        </Show>
-                      </span>
+                  <button
+                    type="button"
+                    data-testid={`evaluations-chart-bar-${bar.id}`}
+                    onClick={() => props.onBarClick?.(bar.id)}
+                    class="flex min-w-0 flex-1 cursor-pointer flex-col items-center gap-1 opacity-90 transition-opacity hover:opacity-100"
+                  >
+                    <span class="flex h-36 w-full flex-col">
+                      {/* positive half */}
+                      <Show when={hasPositive()}>
+                        <span class="flex flex-1 items-end justify-center">
+                          <Show when={bar.percent > 0}>
+                            <span
+                              class="w-full max-w-5 rounded-t-sm"
+                              style={{
+                                height: `${heightOf(bar.percent)}%`,
+                                "background-color": bar.color,
+                              }}
+                            />
+                          </Show>
+                        </span>
+                      </Show>
+                      <span class="border-border block border-t" />
+                      {/* negative half */}
+                      <Show when={hasNegative()}>
+                        <span class="flex flex-1 items-start justify-center">
+                          <Show when={bar.percent < 0}>
+                            <span
+                              class="w-full max-w-5 rounded-b-sm"
+                              style={{
+                                height: `${heightOf(bar.percent)}%`,
+                                "background-color": bar.color,
+                              }}
+                            />
+                          </Show>
+                        </span>
+                      </Show>
+                    </span>
+                    <Show when={showAvatars()}>
+                      <Avatar
+                        name={bar.name}
+                        subjectId={bar.id}
+                        noHover
+                        class="text-[10px]"
+                        style={{
+                          width: `${avatarSize(bars().length)}px`,
+                          height: `${avatarSize(bars().length)}px`,
+                        }}
+                      />
                     </Show>
-                    <span class="border-border block border-t" />
-                    {/* negative half */}
-                    <Show when={hasNegative()}>
-                      <span class="flex flex-1 items-start justify-center">
-                        <Show when={bar.percent < 0}>
-                          <span
-                            class="w-full max-w-5 rounded-b-sm"
-                            style={{
-                              height: `${heightOf(bar.percent)}%`,
-                              "background-color": bar.color,
-                            }}
-                          />
-                        </Show>
-                      </span>
-                    </Show>
-                  </span>
-                  <Show when={showAvatars()}>
-                    <Avatar
-                      name={bar.name}
-                      subjectId={bar.id}
-                      noHover
-                      class="text-[10px]"
-                      style={{
-                        width: `${avatarSize(bars().length)}px`,
-                        height: `${avatarSize(bars().length)}px`,
-                      }}
-                    />
-                  </Show>
-                </button>
+                  </button>
+                </a-tooltip>
               )}
             </For>
           </div>

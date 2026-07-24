@@ -31,8 +31,8 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
     "outDir": "dist",
-    "baseUrl": "src",
     "paths": {
+      "*": ["./src/*"],
       "@aura/sdk/*": ["./src/*"]
     }
   },

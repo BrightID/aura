@@ -1,13 +1,13 @@
-export { QueryClient, defaultClient, hashKey } from './client.js'
-export { Query } from './query.js'
-export { Mutation } from './mutation.js'
+export { defaultClient, hashKey, QueryClient } from "./client.js"
+export type { MutationStatus } from "./mutation.js"
+export { Mutation } from "./mutation.js"
+export { Query } from "./query.js"
 export type {
-  QueryOptions,
-  MutationOptions,
-  QueryStatus,
-  FetchStatus,
-  QueryFunctionContext,
   CacheEntry,
+  FetchStatus,
+  MutationOptions,
   QueryClientConfig,
-} from './types.js'
-export type { MutationStatus } from './mutation.js'
+  QueryFunctionContext,
+  QueryOptions,
+  QueryStatus,
+} from "./types.js"

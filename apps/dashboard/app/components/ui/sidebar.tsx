@@ -7,17 +7,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "~/hooks/use-mobile"
 import { cn } from "~/lib/utils"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Separator } from "~/components/ui/separator"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "~/components/ui/sheet"
-import { Skeleton } from "~/components/ui/skeleton"
+import { useAuraEvent } from "~/lib/aura"
 import {
   Tooltip,
   TooltipContent,
@@ -165,6 +155,11 @@ function Sidebar({
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
+  const sheetRef = React.useRef<HTMLElement>(null)
+  useAuraEvent<{ open: boolean }>(sheetRef, "open-change", (d) =>
+    setOpenMobile(d.open)
+  )
+
   if (collapsible === "none") {
     return (
       <div
@@ -182,8 +177,9 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-        <SheetContent
+      <a-sheet ref={sheetRef} open={openMobile} side={side}>
+        <div
+          slot="content"
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
@@ -193,15 +189,14 @@ function Sidebar({
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
             } as React.CSSProperties
           }
-          side={side}
         >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-          </SheetHeader>
+          <div className="sr-only">
+            <h2>Sidebar</h2>
+            <p>Displays the mobile sidebar.</p>
+          </div>
           <div className="flex h-full w-full flex-col">{children}</div>
-        </SheetContent>
-      </Sheet>
+        </div>
+      </a-sheet>
     )
   }
 
@@ -257,11 +252,12 @@ function SidebarTrigger({
   className,
   onClick,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<"a-button">) {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Button
+    <a-button
+      {...props}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
@@ -271,11 +267,10 @@ function SidebarTrigger({
         onClick?.(event)
         toggleSidebar()
       }}
-      {...props}
     >
       <PanelLeftIcon />
       <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+    </a-button>
   )
 }
 
@@ -321,13 +316,13 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
 function SidebarInput({
   className,
   ...props
-}: React.ComponentProps<typeof Input>) {
+}: React.ComponentProps<"input">) {
   return (
-    <Input
+    <a-input
       data-slot="sidebar-input"
       data-sidebar="input"
       className={cn("bg-background h-8 w-full shadow-none", className)}
-      {...props}
+      {...(props as Record<string, unknown>)}
     />
   )
 }
@@ -357,9 +352,9 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
 function SidebarSeparator({
   className,
   ...props
-}: React.ComponentProps<typeof Separator>) {
+}: React.ComponentProps<"div">) {
   return (
-    <Separator
+    <a-separator
       data-slot="sidebar-separator"
       data-sidebar="separator"
       className={cn("bg-sidebar-border mx-2 w-auto", className)}
@@ -619,12 +614,12 @@ function SidebarMenuSkeleton({
       {...props}
     >
       {showIcon && (
-        <Skeleton
+        <a-skeleton
           className="size-4 rounded-md"
           data-sidebar="menu-skeleton-icon"
         />
       )}
-      <Skeleton
+      <a-skeleton
         className="h-4 max-w-(--skeleton-width) flex-1"
         data-sidebar="menu-skeleton-text"
         style={

@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { Link } from "react-router"
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover"
 import { ChevronDown, Shield, Users, LayoutDashboard } from "lucide-react"
 
 export function Header() {
@@ -56,14 +50,15 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium flex items-center gap-1">
-                  Use Aura
-                  <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-72 p-2 mt-2" align="center">
+            <a-popover align="center">
+              <button
+                slot="trigger"
+                className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium flex items-center gap-1"
+              >
+                Use Aura
+                <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+              </button>
+              <div slot="content" className="w-72 p-2">
                 <div className="grid gap-1">
                   <Link
                     to="https://aura-get-verified.vercel.app"
@@ -107,19 +102,17 @@ export function Header() {
                     </div>
                   </Link>
                 </div>
-              </PopoverContent>
-            </Popover>
+              </div>
+            </a-popover>
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
-            <Button variant="ghost" asChild>
-              <Link to="https://brightid.gitbook.io/aura" target="_blank">
-                Documentation
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link to="/login">Get Started</Link>
-            </Button>
+            <Link to="https://brightid.gitbook.io/aura" target="_blank">
+              <a-button variant="ghost">Documentation</a-button>
+            </Link>
+            <Link to="/login">
+              <a-button>Get Started</a-button>
+            </Link>
           </div>
 
           <button
@@ -150,16 +143,12 @@ export function Header() {
               </Link>
             ))}
             <div className="flex flex-col gap-2 pt-4 border-t border-border mt-2">
-              <Button variant="ghost" asChild>
-                <Link to="https://brightid.gitbook.io/aura" target="_blank">
-                  Documentation
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link to="https://aura.brightid.org" target="_blank">
-                  Get Started
-                </Link>
-              </Button>
+              <Link to="https://brightid.gitbook.io/aura" target="_blank">
+                <a-button variant="ghost">Documentation</a-button>
+              </Link>
+              <Link to="https://aura.brightid.org" target="_blank">
+                <a-button>Get Started</a-button>
+              </Link>
             </div>
           </nav>
         </div>

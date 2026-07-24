@@ -1,6 +1,5 @@
 import type { EvaluationCategory, EvaluationValue } from "./evaluations"
 
-/** BrightID verification / domain types (aura node `?withVerifications=true`). */
 export interface AuraImpactRaw {
   evaluator: string
   level?: number | null
@@ -68,7 +67,6 @@ export type AuraNodeConnectionsResponse = {
   }
 }
 
-/** A rating derived from a connection's aura evaluations (or a pending op). */
 export type AuraRating = {
   id?: number
   toBrightId: string
@@ -82,7 +80,6 @@ export type AuraRating = {
   verifications?: Verifications
 }
 
-/** Connections as stored in the (decrypted) BrightID backup. */
 export type BrightIdBackupConnection = BrightIdConnection &
   Partial<{
     name: string

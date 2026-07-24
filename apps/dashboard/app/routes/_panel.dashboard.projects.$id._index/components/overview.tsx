@@ -1,26 +1,14 @@
 import { format } from "date-fns"
 import { ImageIcon, Calendar, CreditCard, FileText, Hash } from "lucide-react"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from "~/components/ui/card"
-import { Separator } from "~/components/ui/separator"
 import type { Project } from "~/types/projects"
 
 export default function OverviewSection({ project }: { project: Project }) {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <a-card variant="default">
+          <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
+          <div className="mt-4">
             <div className="flex items-center gap-2">
               <div
                 className={`h-2 w-2 rounded-full ${project.isActive ? "bg-green-500" : "bg-muted-foreground"}`}
@@ -29,46 +17,42 @@ export default function OverviewSection({ project }: { project: Project }) {
                 {project.isActive ? "Active" : "Inactive"}
               </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </a-card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Remaining Tokens
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <a-card variant="default">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Remaining Tokens
+          </h3>
+          <div className="mt-4">
             <span className="text-2xl font-semibold">
               {project.remainingtokens.toLocaleString()}
             </span>
-          </CardContent>
-        </Card>
+          </div>
+        </a-card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Requirement Level
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <a-card variant="default">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Requirement Level
+          </h3>
+          <div className="mt-4">
             <span className="text-2xl font-semibold">
               {project.requirementLevel !== null
                 ? `Level ${project.requirementLevel}`
                 : "Not set"}
             </span>
-          </CardContent>
-        </Card>
+          </div>
+        </a-card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Project Details</CardTitle>
-          <CardDescription>
+      <a-card variant="default">
+        <div className="flex flex-col gap-1.5">
+          <h3 className="font-semibold leading-none">Project Details</h3>
+          <p className="text-sm text-muted-foreground">
             Basic information about your project
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </p>
+        </div>
+        <div className="mt-6 space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -122,7 +106,7 @@ export default function OverviewSection({ project }: { project: Project }) {
 
           {project.landingMarkdown && (
             <>
-              <Separator />
+              <a-separator />
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <FileText className="h-4 w-4" />
@@ -136,8 +120,8 @@ export default function OverviewSection({ project }: { project: Project }) {
               </div>
             </>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </a-card>
     </div>
   )
 }
