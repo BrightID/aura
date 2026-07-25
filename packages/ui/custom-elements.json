@@ -4,6 +4,311 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "src/components/alert-dialog.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AlertDialogElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "_animatingOut",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_hideTimer",
+              "type": {
+                "text": "ReturnType<typeof setTimeout> | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_onTriggerClick",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "show"
+            },
+            {
+              "kind": "method",
+              "name": "hide"
+            },
+            {
+              "kind": "field",
+              "name": "_onKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "open-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "after-hide",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "open"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-alert-dialog",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AlertDialogElement",
+          "declaration": {
+            "name": "AlertDialogElement",
+            "module": "src/components/alert-dialog.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-alert-dialog",
+          "declaration": {
+            "name": "AlertDialogElement",
+            "module": "src/components/alert-dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/alert.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AlertElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "\"default\" | \"destructive\""
+              },
+              "default": "\"default\"",
+              "attribute": "variant",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "_onIconSlotChange",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "type": {
+                "text": "\"default\" | \"destructive\""
+              },
+              "default": "\"default\"",
+              "fieldName": "variant"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-alert",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AlertElement",
+          "declaration": {
+            "name": "AlertElement",
+            "module": "src/components/alert.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-alert",
+          "declaration": {
+            "name": "AlertElement",
+            "module": "src/components/alert.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/avatar.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "AvatarElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "src",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "attribute": "src"
+            },
+            {
+              "kind": "field",
+              "name": "alt",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "alt"
+            },
+            {
+              "kind": "field",
+              "name": "fallback",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "fallback"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "AvatarSize"
+              },
+              "default": "\"md\"",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_errored",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "_onError",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "src",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "fieldName": "src"
+            },
+            {
+              "name": "alt",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "alt"
+            },
+            {
+              "name": "fallback",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "fallback"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "AvatarSize"
+              },
+              "default": "\"md\"",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-avatar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AvatarElement",
+          "declaration": {
+            "name": "AvatarElement",
+            "module": "src/components/avatar.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-avatar",
+          "declaration": {
+            "name": "AvatarElement",
+            "module": "src/components/avatar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/badge.ts",
       "declarations": [
         {
@@ -373,6 +678,128 @@
           "declaration": {
             "name": "CardElement",
             "module": "src/components/card.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/checkbox.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CheckboxElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "checked",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"checkbox\"",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "attribute": "value"
+            },
+            {
+              "kind": "method",
+              "name": "_toggle",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "checked"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"checkbox\"",
+              "fieldName": "name"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "undefined",
+              "fieldName": "value"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-checkbox",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CheckboxElement",
+          "declaration": {
+            "name": "CheckboxElement",
+            "module": "src/components/checkbox.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-checkbox",
+          "declaration": {
+            "name": "CheckboxElement",
+            "module": "src/components/checkbox.ts"
           }
         }
       ]
@@ -892,6 +1319,392 @@
           "declaration": {
             "name": "DialogElement",
             "module": "src/components/dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/dropdown-menu.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`a-dropdown-menu` — a click-triggered menu. Mirrors `a-popover`'s\ntrigger/content/positioning/open pattern. Slots: `trigger`, `content`.\nEmits `open-change` (CustomEvent<{open:boolean}>).\n\nContent is composed from `a-dropdown-item`, `a-dropdown-label` and\n`a-dropdown-separator`. Items dispatch a bubbling `select` event that the\nroot listens for to auto-close the menu.",
+          "name": "DropdownMenuElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "side",
+              "type": {
+                "text": "'top' | 'right' | 'bottom' | 'left'"
+              },
+              "default": "'bottom'",
+              "attribute": "side",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "type": {
+                "text": "'start' | 'center' | 'end'"
+              },
+              "default": "'start'",
+              "attribute": "align",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "sideOffset",
+              "type": {
+                "text": "number"
+              },
+              "default": "4",
+              "attribute": "sideOffset"
+            },
+            {
+              "kind": "field",
+              "name": "triggerElements",
+              "type": {
+                "text": "HTMLElement[]"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_instances",
+              "privacy": "private",
+              "static": true,
+              "default": "new Set<DropdownMenuElement>()"
+            },
+            {
+              "kind": "field",
+              "name": "_listenersAttached",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "static": true,
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_onDocClick",
+              "privacy": "private",
+              "static": true
+            },
+            {
+              "kind": "field",
+              "name": "_onDocKey",
+              "privacy": "private",
+              "static": true
+            },
+            {
+              "kind": "method",
+              "name": "_register",
+              "privacy": "private",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "p",
+                  "type": {
+                    "text": "DropdownMenuElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_unregister",
+              "privacy": "private",
+              "static": true,
+              "parameters": [
+                {
+                  "name": "p",
+                  "type": {
+                    "text": "DropdownMenuElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_internalChange",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "_setOpenInternal",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_handleTriggerClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_handleOutsideClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_handleKey",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_items",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "DropdownItemElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_moveFocus",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "dir",
+                  "type": {
+                    "text": "1 | -1"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_onItemSelect",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_attachTriggerListeners",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "open-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "open"
+            },
+            {
+              "name": "side",
+              "type": {
+                "text": "'top' | 'right' | 'bottom' | 'left'"
+              },
+              "default": "'bottom'",
+              "fieldName": "side"
+            },
+            {
+              "name": "align",
+              "type": {
+                "text": "'start' | 'center' | 'end'"
+              },
+              "default": "'start'",
+              "fieldName": "align"
+            },
+            {
+              "name": "sideOffset",
+              "type": {
+                "text": "number"
+              },
+              "default": "4",
+              "fieldName": "sideOffset"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-dropdown-menu",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "`a-dropdown-item` — a clickable menu row. Default slot = label,\n`slot=\"icon\"` = leading icon. Emits a bubbling+composed `select` event.",
+          "name": "DropdownItemElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "'default' | 'destructive'"
+              },
+              "default": "'default'",
+              "attribute": "variant",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_onClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_onKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "'default' | 'destructive'"
+              },
+              "default": "'default'",
+              "fieldName": "variant"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-dropdown-item",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "`a-dropdown-label` — a non-interactive heading row.",
+          "name": "DropdownLabelElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-dropdown-label",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "`a-dropdown-separator` — a thin divider between groups of items.",
+          "name": "DropdownSeparatorElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-dropdown-separator",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DropdownMenuElement",
+          "declaration": {
+            "name": "DropdownMenuElement",
+            "module": "src/components/dropdown-menu.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-dropdown-menu",
+          "declaration": {
+            "name": "DropdownMenuElement",
+            "module": "src/components/dropdown-menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DropdownItemElement",
+          "declaration": {
+            "name": "DropdownItemElement",
+            "module": "src/components/dropdown-menu.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-dropdown-item",
+          "declaration": {
+            "name": "DropdownItemElement",
+            "module": "src/components/dropdown-menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DropdownLabelElement",
+          "declaration": {
+            "name": "DropdownLabelElement",
+            "module": "src/components/dropdown-menu.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-dropdown-label",
+          "declaration": {
+            "name": "DropdownLabelElement",
+            "module": "src/components/dropdown-menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DropdownSeparatorElement",
+          "declaration": {
+            "name": "DropdownSeparatorElement",
+            "module": "src/components/dropdown-menu.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-dropdown-separator",
+          "declaration": {
+            "name": "DropdownSeparatorElement",
+            "module": "src/components/dropdown-menu.ts"
           }
         }
       ]
@@ -1600,6 +2413,30 @@
           "name": "*",
           "declaration": {
             "name": "*",
+            "module": "src/components/alert"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/alert-dialog"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/avatar"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
             "module": "src/components/badge"
           }
         },
@@ -1617,6 +2454,14 @@
           "declaration": {
             "name": "*",
             "module": "src/components/card"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/checkbox"
           }
         },
         {
@@ -1649,6 +2494,14 @@
           "declaration": {
             "name": "*",
             "module": "src/components/dialog"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/dropdown-menu"
           }
         },
         {
@@ -1704,7 +2557,31 @@
           "name": "*",
           "declaration": {
             "name": "*",
+            "module": "src/components/label"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
             "module": "src/components/popover"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/progress"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/radio-group"
           }
         },
         {
@@ -1736,6 +2613,30 @@
           "name": "*",
           "declaration": {
             "name": "*",
+            "module": "src/components/sheet"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/skeleton"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/slider"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
             "module": "src/components/switch"
           }
         },
@@ -1760,6 +2661,14 @@
           "name": "*",
           "declaration": {
             "name": "*",
+            "module": "src/components/textarea"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
             "module": "src/components/theme-provider"
           }
         },
@@ -1769,6 +2678,22 @@
           "declaration": {
             "name": "*",
             "module": "src/components/toast"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/toggle"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "module": "src/components/toggle-group"
           }
         },
         {
@@ -1995,6 +2920,60 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/label.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "LabelElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "for",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "for"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "for",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "for"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-label",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LabelElement",
+          "declaration": {
+            "name": "LabelElement",
+            "module": "src/components/label.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-label",
+          "declaration": {
+            "name": "LabelElement",
+            "module": "src/components/label.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/popover.ts",
       "declarations": [
         {
@@ -2214,6 +3193,287 @@
           "declaration": {
             "name": "PopoverElement",
             "module": "src/components/popover.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/progress.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ProgressElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_clamped",
+              "privacy": "private",
+              "readonly": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "fieldName": "value"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-progress",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ProgressElement",
+          "declaration": {
+            "name": "ProgressElement",
+            "module": "src/components/progress.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-progress",
+          "declaration": {
+            "name": "ProgressElement",
+            "module": "src/components/progress.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/radio-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "RadioGroupElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"radio-group\"",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_sync",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_radios",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "RadioElement[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_onRadioSelect",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "value"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"radio-group\"",
+              "fieldName": "name"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-radio-group",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "RadioElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "checked",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "groupDisabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Set by the parent group; disables the radio when the group is disabled.",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "_select",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "radio-select",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "value"
+            },
+            {
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "checked"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-radio",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RadioGroupElement",
+          "declaration": {
+            "name": "RadioGroupElement",
+            "module": "src/components/radio-group.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-radio-group",
+          "declaration": {
+            "name": "RadioGroupElement",
+            "module": "src/components/radio-group.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RadioElement",
+          "declaration": {
+            "name": "RadioElement",
+            "module": "src/components/radio-group.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-radio",
+          "declaration": {
+            "name": "RadioElement",
+            "module": "src/components/radio-group.ts"
           }
         }
       ]
@@ -2668,6 +3928,402 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/sheet.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SheetElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "side",
+              "type": {
+                "text": "SheetSide"
+              },
+              "default": "\"right\"",
+              "attribute": "side",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_animatingOut",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_hideTimer",
+              "type": {
+                "text": "ReturnType<typeof setTimeout> | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_onTriggerClick",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "show"
+            },
+            {
+              "kind": "method",
+              "name": "hide"
+            },
+            {
+              "kind": "method",
+              "name": "_onBackdropClick",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "MouseEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_onKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "open-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "after-hide",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "open"
+            },
+            {
+              "name": "side",
+              "type": {
+                "text": "SheetSide"
+              },
+              "default": "\"right\"",
+              "fieldName": "side"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-sheet",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SheetElement",
+          "declaration": {
+            "name": "SheetElement",
+            "module": "src/components/sheet.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-sheet",
+          "declaration": {
+            "name": "SheetElement",
+            "module": "src/components/sheet.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/skeleton.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SkeletonElement",
+          "members": [],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-skeleton",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SkeletonElement",
+          "declaration": {
+            "name": "SkeletonElement",
+            "module": "src/components/skeleton.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-skeleton",
+          "declaration": {
+            "name": "SkeletonElement",
+            "module": "src/components/skeleton.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/slider.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SliderElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "step",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "attribute": "step"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_track",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_dragging",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_percent",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "_clamp",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_setValue",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_valueFromClientX",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "clientX",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "_onPointerDown",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_onPointerMove",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_onPointerUp",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_onKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "fieldName": "value"
+            },
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "fieldName": "min"
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "fieldName": "max"
+            },
+            {
+              "name": "step",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "fieldName": "step"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-slider",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SliderElement",
+          "declaration": {
+            "name": "SliderElement",
+            "module": "src/components/slider.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-slider",
+          "declaration": {
+            "name": "SliderElement",
+            "module": "src/components/slider.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/switch.ts",
       "declarations": [
         {
@@ -3046,6 +4702,174 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/textarea.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TextareaElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"textarea\"",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "rows",
+              "type": {
+                "text": "number"
+              },
+              "default": "3",
+              "attribute": "rows"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "_textareaId",
+              "privacy": "private",
+              "readonly": true,
+              "default": "`a-textarea-${Math.random() .toString(36) .slice(2, 9)}`"
+            },
+            {
+              "kind": "method",
+              "name": "onInputChange",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "label"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"textarea\"",
+              "fieldName": "name"
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "placeholder"
+            },
+            {
+              "name": "rows",
+              "type": {
+                "text": "number"
+              },
+              "default": "3",
+              "fieldName": "rows"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "value"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-textarea",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TextareaElement",
+          "declaration": {
+            "name": "TextareaElement",
+            "module": "src/components/textarea.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-textarea",
+          "declaration": {
+            "name": "TextareaElement",
+            "module": "src/components/textarea.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/text.ts",
       "declarations": [
         {
@@ -3384,6 +5208,271 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/toggle-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ToggleGroupElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated in `multiple` mode; a single value in `single` mode.",
+              "default": "\"\"",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "ToggleGroupType"
+              },
+              "default": "\"single\"",
+              "attribute": "type",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_toggles",
+              "type": {
+                "text": "ToggleElement[]"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_selected",
+              "type": {
+                "text": "Set<string>"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "_sync",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_onClick",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Space-separated in `multiple` mode; a single value in `single` mode.",
+              "default": "\"\"",
+              "fieldName": "value"
+            },
+            {
+              "name": "type",
+              "type": {
+                "text": "ToggleGroupType"
+              },
+              "default": "\"single\"",
+              "fieldName": "type"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-toggle-group",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ToggleGroupElement",
+          "declaration": {
+            "name": "ToggleGroupElement",
+            "module": "src/components/toggle-group.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-toggle-group",
+          "declaration": {
+            "name": "ToggleGroupElement",
+            "module": "src/components/toggle-group.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/toggle.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ToggleElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "pressed",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "pressed",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "ToggleVariant"
+              },
+              "default": "\"default\"",
+              "attribute": "variant",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "ToggleSize"
+              },
+              "default": "\"md\"",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional identity used by `a-toggle-group` selection.",
+              "default": "undefined",
+              "attribute": "value"
+            },
+            {
+              "kind": "method",
+              "name": "_toggle",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "pressed",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "pressed"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "ToggleVariant"
+              },
+              "default": "\"default\"",
+              "fieldName": "variant"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "ToggleSize"
+              },
+              "default": "\"md\"",
+              "fieldName": "size"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional identity used by `a-toggle-group` selection.",
+              "default": "undefined",
+              "fieldName": "value"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "a-toggle",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ToggleElement",
+          "declaration": {
+            "name": "ToggleElement",
+            "module": "src/components/toggle.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "a-toggle",
+          "declaration": {
+            "name": "ToggleElement",
+            "module": "src/components/toggle.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/tooltip.ts",
       "declarations": [
         {
@@ -3496,6 +5585,11 @@
             {
               "kind": "method",
               "name": "_hide",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_playEnter",
               "privacy": "private"
             },
             {

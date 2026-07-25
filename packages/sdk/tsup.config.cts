@@ -1,7 +1,7 @@
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill"
-import { defineConfig } from "tsup"
+import type { Options } from "tsup"
 
-export default defineConfig({
+const config: Options = {
   entry: ["src/index.ts", "src/react.ts"],
   outDir: "build",
   format: ["cjs", "esm"],
@@ -11,4 +11,6 @@ export default defineConfig({
   minify: false,
   esbuildPlugins: [NodeModulesPolyfillPlugin({})],
   external: [],
-})
+}
+
+export default config
