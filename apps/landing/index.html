@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0c0a09" />
     <link rel="icon" href="/favicon.ico" />
-    <title>Aura — Decentralized Expert Evaluation Platform</title>
+    <title>Aura — Prove You're Human. Not Who You Are.</title>
     <meta
       name="description"
-      content="Aura is an open, decentralized network where experts verify claims and identities, producing digital attestations that bring trust back to the internet. Get verified, integrate the API, and explore the ecosystem."
+      content="Aura verifies real, unique humans through the people who already know them — no ID uploads, no biometric scans, no central database. Get verified once, use it anywhere."
     />
     <meta
       name="keywords"
-      content="Aura, decentralized identity, expert evaluation, sybil resistance, BrightID, proof of humanity, digital attestations"
+      content="Aura, BrightID, proof of humanity, decentralized identity, sybil resistance, digital attestations, verified human"
     />
+    <meta property="og:title" content="Aura — Prove You're Human. Not Who You Are." />
+    <meta
+      property="og:description"
+      content="Aura verifies real, unique humans through the people who already know them — no ID uploads, no biometric scans, no central database."
+    />
+    <meta property="og:type" content="website" />
   </head>
   <body class="antialiased min-h-screen bg-background text-foreground overflow-x-hidden">
     <header
@@ -29,9 +35,9 @@
 
           <nav class="hidden lg:flex items-center gap-8">
             <a
-              href="#ecosystem"
+              href="#why"
               class="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-              >Ecosystem</a
+              >Why Aura</a
             >
             <a
               href="#how-it-works"
@@ -39,9 +45,14 @@
               >How It Works</a
             >
             <a
-              href="#about"
+              href="#use-cases"
               class="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-              >Why Aura</a
+              >Use Cases</a
+            >
+            <a
+              href="#faq"
+              class="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+              >FAQ</a
             >
           </nav>
 
@@ -72,9 +83,9 @@
       >
         <nav class="flex flex-col px-4 py-4 gap-2">
           <a
-            href="#ecosystem"
+            href="#why"
             class="text-muted-foreground hover:text-foreground transition-colors py-2 text-sm font-medium"
-            >Ecosystem</a
+            >Why Aura</a
           >
           <a
             href="#how-it-works"
@@ -82,9 +93,14 @@
             >How It Works</a
           >
           <a
-            href="#about"
+            href="#use-cases"
             class="text-muted-foreground hover:text-foreground transition-colors py-2 text-sm font-medium"
-            >Why Aura</a
+            >Use Cases</a
+          >
+          <a
+            href="#faq"
+            class="text-muted-foreground hover:text-foreground transition-colors py-2 text-sm font-medium"
+            >FAQ</a
           >
           <div class="flex flex-col gap-2 pt-4 border-t border-border mt-2">
             <a href="/docs"><a-button variant="ghost" class="w-full">Docs</a-button></a>
@@ -122,28 +138,25 @@
             class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 border border-border mb-8 backdrop-blur-sm"
           >
             <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-            <span class="text-sm text-muted-foreground"
-              >Decentralized Expert Evaluation Network</span
-            >
+            <span class="text-sm text-muted-foreground">Open Protocol · Powered by BrightID</span>
           </div>
 
           <h1
             class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6"
           >
-            <span class="block">One Network.</span>
+            <span class="block">Prove you're human.</span>
             <span
               class="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange animate-gradient glow-text"
-              >Five Ways In.</span
+              >Not who you are.</span
             >
           </h1>
 
           <p
             class="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed"
           >
-            Aura is an open, decentralized platform where experts evaluate claims and
-            identities, producing digital attestations that bring trust back to online
-            activity. Whether you're here to get verified, integrate the API, or explore
-            the network — everything starts here.
+            Aura verifies real, unique people through the community that already knows
+            them — no ID uploads, no biometric scans, no central database to breach. Get
+            verified once, then carry that proof anywhere Aura is accepted.
           </p>
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -158,13 +171,13 @@
                 </span>
               </a-button>
             </a>
-            <a href="/docs">
+            <a href="#how-it-works">
               <a-button
                 size="lg"
                 variant="outline"
                 class="px-8 py-6 text-lg border-border hover:bg-secondary bg-transparent"
               >
-                Read the Docs
+                See How It Works
               </a-button>
             </a>
           </div>
@@ -174,31 +187,33 @@
               class="group p-6 rounded-2xl bg-card/50 border border-border backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:-translate-y-1"
             >
               <a-icon
-                name="shield"
+                name="shield-check"
                 class="text-3xl text-primary mb-3 mx-auto block w-fit group-hover:scale-110 transition-transform"
               ></a-icon>
-              <div class="text-sm text-muted-foreground mb-1">Privacy First</div>
-              <div class="text-lg font-semibold text-foreground">Zero Data Shared</div>
+              <div class="text-sm text-muted-foreground mb-1">No ID Required</div>
+              <div class="text-lg font-semibold text-foreground">
+                Verified by People, Not Paperwork
+              </div>
             </div>
             <div
               class="group p-6 rounded-2xl bg-card/50 border border-border backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:-translate-y-1"
             >
               <a-icon
-                name="users"
+                name="eye-off"
                 class="text-3xl text-primary mb-3 mx-auto block w-fit group-hover:scale-110 transition-transform"
               ></a-icon>
-              <div class="text-sm text-muted-foreground mb-1">Expert Network</div>
-              <div class="text-lg font-semibold text-foreground">Decentralized Trust</div>
+              <div class="text-sm text-muted-foreground mb-1">Privacy by Design</div>
+              <div class="text-lg font-semibold text-foreground">Nothing New Ever Shared</div>
             </div>
             <div
               class="group p-6 rounded-2xl bg-card/50 border border-border backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:-translate-y-1"
             >
               <a-icon
-                name="layout-grid"
+                name="network"
                 class="text-3xl text-primary mb-3 mx-auto block w-fit group-hover:scale-110 transition-transform"
               ></a-icon>
-              <div class="text-sm text-muted-foreground mb-1">One Ecosystem</div>
-              <div class="text-lg font-semibold text-foreground">Five Integrated Apps</div>
+              <div class="text-sm text-muted-foreground mb-1">One Proof</div>
+              <div class="text-lg font-semibold text-foreground">Works Across Every App</div>
             </div>
           </div>
         </div>
@@ -213,23 +228,21 @@
         </div>
       </section>
 
-      <!-- ============ ABOUT / SOLUTION ============ -->
-      <section id="about" class="reveal py-24 lg:py-32 relative overflow-hidden">
+      <!-- ============ WHY AURA ============ -->
+      <section id="why" class="reveal py-24 lg:py-32 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-16">
-            <span class="text-primary font-medium text-sm uppercase tracking-wider"
-              >Why Aura</span
-            >
+            <span class="text-primary font-medium text-sm uppercase tracking-wider">The Problem</span>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-6 text-balance">
-              Trust, Without a Middleman
+              Captchas and KYC Both Fail You
             </h2>
             <p class="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Captchas, KYC forms, and centralized moderation all fail the same way: they
-              frustrate real people while letting sophisticated abuse through. Aura
-              replaces them with a web of accountable experts and privacy-preserving
-              attestations.
+              Captchas frustrate real humans and still get solved by bots. KYC hands your ID
+              and biometrics to a company you'll never meet, just so it can decide if you're
+              "real." Neither one actually knows you. Aura replaces both with something that
+              does — the people already in your life.
             </p>
           </div>
 
@@ -248,7 +261,7 @@
                 >
                   <div class="text-center">
                     <a-icon name="sparkles" class="text-3xl text-primary-foreground mx-auto mb-2 block w-fit"></a-icon>
-                    <span class="text-primary-foreground font-bold text-lg">AURA</span>
+                    <span class="text-primary-foreground font-bold text-lg">YOU</span>
                   </div>
                 </div>
                 <div class="orbit-wrap absolute inset-0" style="animation: orbit-spin 24s linear infinite">
@@ -290,6 +303,10 @@
                   </div>
                 </div>
               </div>
+              <p class="text-center text-sm text-muted-foreground mt-8 max-w-xs mx-auto">
+                Your connections — friends, family, coworkers — already know you're real.
+                Aura just gives that knowledge a cryptographic voice.
+              </p>
             </div>
 
             <div class="space-y-6">
@@ -299,15 +316,16 @@
                 <div
                   class="p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform"
                 >
-                  <a-icon name="network" class="text-2xl"></a-icon>
+                  <a-icon name="users" class="text-2xl"></a-icon>
                 </div>
                 <div>
                   <h3 class="text-xl font-semibold text-foreground mb-2">
-                    Decentralized Verification
+                    Verified by People Who Know You
                   </h3>
                   <p class="text-muted-foreground leading-relaxed">
-                    No central authority. Experts closest to the source of truth make
-                    evaluations, creating a resilient web of trust.
+                    Aura turns the trust that already exists between you and your
+                    connections into a portable proof — no strangers, no back-office
+                    reviewers, no central authority deciding who counts as real.
                   </p>
                 </div>
               </div>
@@ -320,10 +338,11 @@
                   <a-icon name="lock" class="text-2xl"></a-icon>
                 </div>
                 <div>
-                  <h3 class="text-xl font-semibold text-foreground mb-2">Privacy by Design</h3>
+                  <h3 class="text-xl font-semibold text-foreground mb-2">Nothing New Is Shared</h3>
                   <p class="text-muted-foreground leading-relaxed">
-                    Nothing is shared with anyone who doesn't already know it.
-                    Verification happens through existing trust relationships.
+                    You never upload an ID or a selfie. Evaluators confirm only what they
+                    already know about you — Aura's privacy-preserving proofs keep that
+                    confirmation from leaking anything extra, even to Aura itself.
                   </p>
                 </div>
               </div>
@@ -337,11 +356,12 @@
                 </div>
                 <div>
                   <h3 class="text-xl font-semibold text-foreground mb-2">
-                    Digital Attestations
+                    One Attestation, Everywhere
                   </h3>
                   <p class="text-muted-foreground leading-relaxed">
-                    Evaluations produce portable, digital attestations that any product
-                    can rely on to bring authenticity to online activity.
+                    Get verified once and reuse the same proof to log in, claim a grant,
+                    vote, or pass any check that needs a real, unique human — no repeating
+                    the process for every app.
                   </p>
                 </div>
               </div>
@@ -350,169 +370,94 @@
         </div>
       </section>
 
-      <!-- ============ ECOSYSTEM (5 apps) ============ -->
-      <section id="ecosystem" class="reveal py-24 lg:py-32 relative overflow-hidden">
+      <!-- ============ COMPARISON ============ -->
+      <section id="compare" class="reveal py-24 lg:py-32 relative overflow-hidden bg-card/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-16">
             <span class="text-primary font-medium text-sm uppercase tracking-wider"
-              >The Ecosystem</span
+              >The Old Way vs. Aura</span
             >
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-6 text-balance">
-              Everywhere Aura Lives
+              Built to Replace Both
             </h2>
-            <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Five focused apps, one shared network. Pick where you want to go.
-            </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a
-              href="/interface"
-              class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2"
-            >
-              <div
-                class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-              >
-                <a-icon name="shield" class="text-2xl text-primary"></a-icon>
-              </div>
-              <h3 class="text-xl font-semibold text-foreground mb-2">Get Verified</h3>
-              <p class="text-muted-foreground leading-relaxed mb-4">
-                Prove you're a unique human without sharing personal data — the
-                verification flow every Aura-powered product relies on.
-              </p>
-              <span class="inline-flex items-center gap-2 text-sm font-medium text-primary">
-                Open app
-                <a-icon name="arrow-right" class="text-base transition-transform group-hover:translate-x-1"></a-icon>
-              </span>
-              <div class="mt-4 font-mono text-xs text-muted-foreground">/interface</div>
-            </a>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div class="p-8 rounded-2xl bg-card border border-border">
+              <a-icon name="fingerprint" class="text-2xl text-muted-foreground mb-4 block w-fit"></a-icon>
+              <h3 class="text-lg font-semibold text-foreground mb-4">Traditional KYC</h3>
+              <ul class="space-y-3">
+                <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                  <a-icon name="x" class="text-base text-destructive mt-0.5 shrink-0"></a-icon>
+                  Uploads your ID and biometrics to a company
+                </li>
+                <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                  <a-icon name="x" class="text-base text-destructive mt-0.5 shrink-0"></a-icon>
+                  One breach exposes everyone at once
+                </li>
+                <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                  <a-icon name="x" class="text-base text-destructive mt-0.5 shrink-0"></a-icon>
+                  Excludes anyone without formal documents
+                </li>
+              </ul>
+            </div>
 
-            <a
-              href="/core"
-              class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2"
-            >
-              <div
-                class="w-14 h-14 rounded-2xl bg-orange/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-              >
-                <a-icon name="users" class="text-2xl text-orange"></a-icon>
-              </div>
-              <h3 class="text-xl font-semibold text-foreground mb-2">Aura Core</h3>
-              <p class="text-muted-foreground leading-relaxed mb-4">
-                Evaluate subjects, review claims, and build the reputation score that
-                keeps the network honest.
-              </p>
-              <span class="inline-flex items-center gap-2 text-sm font-medium text-primary">
-                Open app
-                <a-icon name="arrow-right" class="text-base transition-transform group-hover:translate-x-1"></a-icon>
-              </span>
-              <div class="mt-4 font-mono text-xs text-muted-foreground">/core</div>
-            </a>
+            <div class="p-8 rounded-2xl bg-card border border-border">
+              <a-icon name="circle-alert" class="text-2xl text-muted-foreground mb-4 block w-fit"></a-icon>
+              <h3 class="text-lg font-semibold text-foreground mb-4">Captchas &amp; Bot Checks</h3>
+              <ul class="space-y-3">
+                <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                  <a-icon name="x" class="text-base text-destructive mt-0.5 shrink-0"></a-icon>
+                  Solved by bots, botched by humans
+                </li>
+                <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                  <a-icon name="x" class="text-base text-destructive mt-0.5 shrink-0"></a-icon>
+                  Blocks real people with accessibility needs
+                </li>
+                <li class="flex items-start gap-2 text-sm text-muted-foreground">
+                  <a-icon name="x" class="text-base text-destructive mt-0.5 shrink-0"></a-icon>
+                  Can't tell one person from ten accounts
+                </li>
+              </ul>
+            </div>
 
-            <a
-              href="/dashboard"
-              class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2"
-            >
-              <div
-                class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-              >
-                <a-icon name="layout-dashboard" class="text-2xl text-primary"></a-icon>
-              </div>
-              <h3 class="text-xl font-semibold text-foreground mb-2">Dashboard</h3>
-              <p class="text-muted-foreground leading-relaxed mb-4">
-                Manage projects, monitor analytics, and configure billing for teams
-                integrating Aura verification.
-              </p>
-              <span class="inline-flex items-center gap-2 text-sm font-medium text-primary">
-                Open app
-                <a-icon name="arrow-right" class="text-base transition-transform group-hover:translate-x-1"></a-icon>
-              </span>
-              <div class="mt-4 font-mono text-xs text-muted-foreground">/dashboard</div>
-            </a>
-
-            <a
-              href="/docs"
-              class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2"
-            >
-              <div
-                class="w-14 h-14 rounded-2xl bg-orange/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-              >
-                <a-icon name="book-open" class="text-2xl text-orange"></a-icon>
-              </div>
-              <h3 class="text-xl font-semibold text-foreground mb-2">Docs</h3>
-              <p class="text-muted-foreground leading-relaxed mb-4">
-                Integration guides, SDK references, and API docs to wire Aura
-                verification into your product.
-              </p>
-              <span class="inline-flex items-center gap-2 text-sm font-medium text-primary">
-                Open app
-                <a-icon name="arrow-right" class="text-base transition-transform group-hover:translate-x-1"></a-icon>
-              </span>
-              <div class="mt-4 font-mono text-xs text-muted-foreground">/docs</div>
-            </a>
-
-            <a
-              href="/demo"
-              class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2"
-            >
-              <div
-                class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
-              >
-                <a-icon name="sparkles" class="text-2xl text-primary"></a-icon>
-              </div>
-              <h3 class="text-xl font-semibold text-foreground mb-2">Demo Integration</h3>
-              <p class="text-muted-foreground leading-relaxed mb-4">
-                See the embeddable verification widget running live, embedded on a
-                sample site.
-              </p>
-              <span class="inline-flex items-center gap-2 text-sm font-medium text-primary">
-                Open app
-                <a-icon name="arrow-right" class="text-base transition-transform group-hover:translate-x-1"></a-icon>
-              </span>
-              <div class="mt-4 font-mono text-xs text-muted-foreground">/demo</div>
-            </a>
-
-            <div
-              class="p-8 rounded-2xl border border-dashed border-border flex flex-col justify-center items-start"
-            >
-              <a-badge variant="outline" class="mb-4">Open Source</a-badge>
-              <h3 class="text-xl font-semibold text-foreground mb-2">Build on Aura</h3>
-              <p class="text-muted-foreground leading-relaxed mb-4">
-                Explore the code, file issues, or join the community shaping the
-                network.
-              </p>
-              <a
-                href="https://github.com/Meta-Node/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-              >
-                View on GitHub
-                <a-icon name="arrow-right" class="text-base"></a-icon>
-              </a>
+            <div class="p-8 rounded-2xl bg-card border-2 border-primary relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
+              <a-icon name="shield-check" class="text-2xl text-primary mb-4 block w-fit relative z-10"></a-icon>
+              <h3 class="text-lg font-semibold text-foreground mb-4 relative z-10">Aura</h3>
+              <ul class="space-y-3 relative z-10">
+                <li class="flex items-start gap-2 text-sm text-foreground">
+                  <a-icon name="check" class="text-base text-primary mt-0.5 shrink-0"></a-icon>
+                  Verified by people who already know you
+                </li>
+                <li class="flex items-start gap-2 text-sm text-foreground">
+                  <a-icon name="check" class="text-base text-primary mt-0.5 shrink-0"></a-icon>
+                  No ID, no biometrics, no central database
+                </li>
+                <li class="flex items-start gap-2 text-sm text-foreground">
+                  <a-icon name="check" class="text-base text-primary mt-0.5 shrink-0"></a-icon>
+                  One private attestation, reusable everywhere
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ============ HOW IT WORKS ============ -->
-      <section
-        id="how-it-works"
-        class="reveal py-24 lg:py-32 relative overflow-hidden bg-card/30"
-      >
+      <section id="how-it-works" class="reveal py-24 lg:py-32 relative overflow-hidden">
         <div
           class="absolute inset-0 bg-[linear-gradient(rgba(74,222,128,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(74,222,128,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"
         ></div>
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-16">
-            <span class="text-primary font-medium text-sm uppercase tracking-wider"
-              >How It Works</span
-            >
+            <span class="text-primary font-medium text-sm uppercase tracking-wider">How It Works</span>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-6 text-balance">
-              From Verified Human to Shipped Product
+              From Stranger to Verified in Five Steps
             </h2>
             <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-              The five apps map to four steps of one flow.
+              No forms, no ID scans. Just people you know, confirming what they already know.
             </p>
           </div>
 
@@ -530,12 +475,13 @@
                     1
                   </div>
                   <div class="flex-1">
-                    <h3 class="text-lg font-semibold text-foreground">Verify</h3>
+                    <h3 class="text-lg font-semibold text-foreground">Get BrightID</h3>
                     <p class="text-sm text-muted-foreground mt-1">
-                      Prove your unique humanity once, in the Get Verified app.
+                      Download the free BrightID app — your identity anchor, independent
+                      of any single product.
                     </p>
                   </div>
-                  <a-icon name="shield" class="step-icon text-xl transition-colors text-primary"></a-icon>
+                  <a-icon name="smartphone" class="step-icon text-xl transition-colors text-primary"></a-icon>
                 </div>
               </button>
 
@@ -551,9 +497,10 @@
                     2
                   </div>
                   <div class="flex-1">
-                    <h3 class="text-lg font-semibold text-foreground">Evaluate</h3>
+                    <h3 class="text-lg font-semibold text-foreground">Make Real Connections</h3>
                     <p class="text-sm text-muted-foreground mt-1">
-                      Experts in Aura Core assess claims and build reputation.
+                      Connect with people who actually know you. A couple of trusted
+                      recovery connections go a long way.
                     </p>
                   </div>
                   <a-icon name="users" class="step-icon text-xl transition-colors text-muted-foreground"></a-icon>
@@ -572,13 +519,13 @@
                     3
                   </div>
                   <div class="flex-1">
-                    <h3 class="text-lg font-semibold text-foreground">Integrate</h3>
+                    <h3 class="text-lg font-semibold text-foreground">Link to Aura</h3>
                     <p class="text-sm text-muted-foreground mt-1">
-                      Teams wire verification into their product via the Dashboard and
-                      the API docs.
+                      Open Aura Verified and log in by scanning your BrightID QR code —
+                      no signup form, no password.
                     </p>
                   </div>
-                  <a-icon name="layout-dashboard" class="step-icon text-xl transition-colors text-muted-foreground"></a-icon>
+                  <a-icon name="qr-code" class="step-icon text-xl transition-colors text-muted-foreground"></a-icon>
                 </div>
               </button>
 
@@ -594,9 +541,32 @@
                     4
                   </div>
                   <div class="flex-1">
-                    <h3 class="text-lg font-semibold text-foreground">Ship</h3>
+                    <h3 class="text-lg font-semibold text-foreground">Get Evaluated</h3>
                     <p class="text-sm text-muted-foreground mt-1">
-                      Users get a seamless, bot-resistant flow — see it live in the Demo.
+                      People who already know you confirm you're a real, unique person.
+                      Nothing new about you is ever shared.
+                    </p>
+                  </div>
+                  <a-icon name="eye-off" class="step-icon text-xl transition-colors text-muted-foreground"></a-icon>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                data-step="4"
+                class="step-trigger w-full text-left p-6 rounded-2xl border transition-all duration-300 bg-card border-border hover:border-primary/50"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="step-number flex items-center justify-center w-12 h-12 rounded-full font-bold text-lg transition-colors bg-secondary text-foreground"
+                  >
+                    5
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-foreground">You're Verified</h3>
+                    <p class="text-sm text-muted-foreground mt-1">
+                      Your Aura attestation is ready — log in, claim a grant, vote, or
+                      pass any check that needs a real human.
                     </p>
                   </div>
                   <a-icon name="sparkles" class="step-icon text-xl transition-colors text-muted-foreground"></a-icon>
@@ -613,28 +583,212 @@
                     <div
                       class="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6"
                     >
-                      <a-icon id="step-detail-icon" name="shield" class="text-4xl text-primary"></a-icon>
+                      <a-icon id="step-detail-icon" name="smartphone" class="text-4xl text-primary"></a-icon>
                     </div>
                     <h3 id="step-detail-title" class="text-2xl font-bold text-foreground mb-4">
-                      Step 1: Verify
+                      Step 1: Get BrightID
                     </h3>
                     <p id="step-detail-body" class="text-muted-foreground leading-relaxed max-w-md">
-                      Download BrightID, connect with people you know, and get evaluated
-                      by Aura's network of experts. Your verification becomes a portable
-                      attestation used across the entire ecosystem.
+                      Download the free BrightID app — your identity anchor, independent
+                      of any single product. It's the only account you'll need across the
+                      entire Aura network.
                     </p>
                     <a
                       id="step-detail-link"
-                      href="/interface"
+                      href="https://brightid.gitbook.io/aura/getting-started/get-brightid"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline mt-6"
                     >
-                      <span id="step-detail-link-label">Try it in Get Verified</span>
+                      <span id="step-detail-link-label">Get BrightID</span>
                       <a-icon name="arrow-right" class="text-base"></a-icon>
                     </a>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ USE CASES ============ -->
+      <section id="use-cases" class="reveal py-24 lg:py-32 relative overflow-hidden bg-card/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <span class="text-primary font-medium text-sm uppercase tracking-wider">Use Cases</span>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-6 text-balance">
+              Where Your Verification Works
+            </h2>
+            <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+              One attestation, built to answer one question — "is this a real, unique
+              person?" — everywhere that question comes up.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2">
+              <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <a-icon name="key" class="text-2xl text-primary"></a-icon>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">Passwordless Login</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Sign in anywhere Aura is accepted with your BrightID — socially
+                recoverable, and effectively unphishable.
+              </p>
+            </div>
+
+            <div class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2">
+              <div class="w-14 h-14 rounded-2xl bg-orange/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <a-icon name="gift" class="text-2xl text-orange"></a-icon>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">Grants &amp; Airdrops</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Prove you're one real person, so rewards reach real communities instead
+                of sybil farms.
+              </p>
+            </div>
+
+            <div class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2">
+              <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <a-icon name="vote" class="text-2xl text-primary"></a-icon>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">Governance &amp; Voting</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                One person, one vote — even in fully decentralized communities with no
+                central ID checks.
+              </p>
+            </div>
+
+            <div class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2">
+              <div class="w-14 h-14 rounded-2xl bg-orange/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <a-icon name="blocks" class="text-2xl text-orange"></a-icon>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">Proof of Personhood for Apps</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Let any product confirm you're a unique human without ever seeing your
+                personal data.
+              </p>
+            </div>
+
+            <div class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2">
+              <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <a-icon name="award" class="text-2xl text-primary"></a-icon>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">Certifications &amp; Reputation</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Carry verified skills, roles, or community standing as portable,
+                reusable attestations.
+              </p>
+            </div>
+
+            <div class="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-500 hover:-translate-y-2">
+              <div class="w-14 h-14 rounded-2xl bg-orange/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <a-icon name="shield" class="text-2xl text-orange"></a-icon>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">Sybil-Resistant Communities</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Keep forums, DAOs, and marketplaces free of duplicate accounts and bots.
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-10 p-6 rounded-2xl border border-dashed border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <a-badge variant="outline">For Builders</a-badge>
+              <p class="text-sm text-muted-foreground">
+                Integrating Aura verification into your own product?
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <a href="/docs" class="text-sm font-medium text-primary hover:underline">Read the Docs</a>
+              <a href="/dashboard" class="text-sm font-medium text-primary hover:underline">Open the Dashboard</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FAQ ============ -->
+      <section id="faq" class="reveal py-24 lg:py-32 relative overflow-hidden">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <span class="text-primary font-medium text-sm uppercase tracking-wider">FAQ</span>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-6 text-balance">
+              Questions, Answered
+            </h2>
+          </div>
+
+          <div class="space-y-4">
+            <details class="group p-6 rounded-2xl bg-card border border-border" open>
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-foreground">
+                Do I need to share my ID or a selfie?
+                <a-icon name="chevron-down" class="text-xl text-muted-foreground shrink-0 transition-transform group-open:rotate-180"></a-icon>
+              </summary>
+              <p class="text-muted-foreground leading-relaxed mt-4">
+                No. Aura never asks for a government ID, a biometric scan, or any
+                document. Verification comes from people who already know you,
+                confirming what they already know.
+              </p>
+            </details>
+
+            <details class="group p-6 rounded-2xl bg-card border border-border">
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-foreground">
+                What is BrightID and why do I need it?
+                <a-icon name="chevron-down" class="text-xl text-muted-foreground shrink-0 transition-transform group-open:rotate-180"></a-icon>
+              </summary>
+              <p class="text-muted-foreground leading-relaxed mt-4">
+                BrightID is the free app that anchors your identity through your social
+                connections. It's the foundation Aura verification is built on — set it
+                up once, and use it everywhere Aura is accepted.
+              </p>
+            </details>
+
+            <details class="group p-6 rounded-2xl bg-card border border-border">
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-foreground">
+                What do my connections actually see or share about me?
+                <a-icon name="chevron-down" class="text-xl text-muted-foreground shrink-0 transition-transform group-open:rotate-180"></a-icon>
+              </summary>
+              <p class="text-muted-foreground leading-relaxed mt-4">
+                Nothing new. Evaluators only confirm things they already know — that
+                you're a real, unique person. Aura's privacy-preserving proofs keep that
+                confirmation from leaking any extra information, even to Aura itself.
+              </p>
+            </details>
+
+            <details class="group p-6 rounded-2xl bg-card border border-border">
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-foreground">
+                Can I use one Aura verification across multiple apps?
+                <a-icon name="chevron-down" class="text-xl text-muted-foreground shrink-0 transition-transform group-open:rotate-180"></a-icon>
+              </summary>
+              <p class="text-muted-foreground leading-relaxed mt-4">
+                Yes. Verification is a portable attestation — get verified once in Aura
+                Verified, then reuse the same proof anywhere that accepts Aura, from
+                logins to governance votes to grant programs.
+              </p>
+            </details>
+
+            <details class="group p-6 rounded-2xl bg-card border border-border">
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-foreground">
+                Is Aura only for crypto apps?
+                <a-icon name="chevron-down" class="text-xl text-muted-foreground shrink-0 transition-transform group-open:rotate-180"></a-icon>
+              </summary>
+              <p class="text-muted-foreground leading-relaxed mt-4">
+                No. Aura is domain-agnostic — it can verify uniqueness, certifications,
+                community membership, and more, making it just as useful for grant
+                programs and communities as it is for on-chain apps.
+              </p>
+            </details>
+
+            <details class="group p-6 rounded-2xl bg-card border border-border">
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-foreground">
+                Is Aura decentralized?
+                <a-icon name="chevron-down" class="text-xl text-muted-foreground shrink-0 transition-transform group-open:rotate-180"></a-icon>
+              </summary>
+              <p class="text-muted-foreground leading-relaxed mt-4">
+                Yes. Evaluation is performed by an open network of independent
+                participants, not a single company, so no one party controls who counts
+                as verified.
+              </p>
+            </details>
           </div>
         </div>
       </section>
@@ -662,12 +816,12 @@
           </div>
 
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 text-balance">
-            Ready to Plug Into Aura?
+            Ready to Get Verified?
           </h2>
 
           <p class="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-            Get verified as a unique human, integrate the API into your product, or
-            explore the live demo — the whole network is one click away.
+            No forms, no ID scans, no data broker in the middle — just the people who
+            already know you, vouching for you. It takes minutes to start.
           </p>
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -694,8 +848,14 @@
           </div>
 
           <p class="mt-8 text-sm text-muted-foreground">
-            Curious what it looks like embedded?
-            <a href="/demo" class="text-primary hover:underline">See the live demo</a>
+            New to Aura?
+            <a
+              href="https://brightid.gitbook.io/aura"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-primary hover:underline"
+              >Read the full guide</a
+            >
           </p>
         </div>
       </section>
@@ -710,12 +870,13 @@
               <span class="text-xl font-bold text-foreground">Aura</span>
             </a>
             <p class="text-sm text-muted-foreground leading-relaxed">
-              Decentralized expert evaluation platform. Powered by BrightID.
+              An open, decentralized protocol for proving you're a real, unique human
+              — without giving up your privacy. Part of the BrightID ecosystem.
             </p>
           </div>
 
           <div>
-            <h3 class="font-semibold text-foreground mb-4">Apps</h3>
+            <h3 class="font-semibold text-foreground mb-4">For Users</h3>
             <ul class="space-y-3">
               <li>
                 <a href="/interface" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -723,8 +884,29 @@
                 >
               </li>
               <li>
-                <a href="/core" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >Aura Core</a
+                <a href="#how-it-works" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >How It Works</a
+                >
+              </li>
+              <li>
+                <a href="#use-cases" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >Use Cases</a
+                >
+              </li>
+              <li>
+                <a href="#faq" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >FAQ</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-foreground mb-4">For Builders</h3>
+            <ul class="space-y-3">
+              <li>
+                <a href="/docs" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >Docs</a
                 >
               </li>
               <li>
@@ -733,8 +915,8 @@
                 >
               </li>
               <li>
-                <a href="/docs" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >Docs</a
+                <a href="/core" class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >Aura Core</a
                 >
               </li>
               <li>
@@ -746,24 +928,15 @@
           </div>
 
           <div>
-            <h3 class="font-semibold text-foreground mb-4">Resources</h3>
-            <ul class="space-y-3">
+            <h3 class="font-semibold text-foreground mb-4">Community</h3>
+            <ul class="space-y-3 mb-4">
               <li>
                 <a
-                  href="https://brightid.gitbook.io/aura/"
+                  href="https://brightid.gitbook.io/aura"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >Aura Documentation</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://github.com/Meta-Node/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >GitHub</a
                 >
               </li>
               <li>
@@ -774,10 +947,6 @@
                 >
               </li>
             </ul>
-          </div>
-
-          <div>
-            <h3 class="font-semibold text-foreground mb-4">Community</h3>
             <div class="flex items-center gap-4">
               <a
                 href="https://discord.gg/y24xeXq7mj"
@@ -807,7 +976,7 @@
           </p>
           <div class="flex items-center gap-6">
             <a
-              href="https://brightid.gitbook.io/aura/"
+              href="https://brightid.gitbook.io/aura"
               target="_blank"
               rel="noopener noreferrer"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"

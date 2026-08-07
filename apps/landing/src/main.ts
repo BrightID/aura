@@ -83,32 +83,39 @@ type Step = {
 
 const steps: Step[] = [
   {
-    icon: "shield",
-    title: "Step 1: Verify",
-    body: "Download BrightID, connect with people you know, and get evaluated by Aura's network of experts. Your verification becomes a portable attestation used across the entire ecosystem.",
-    href: "/interface",
-    linkLabel: "Try it in Get Verified",
+    icon: "smartphone",
+    title: "Step 1: Get BrightID",
+    body: "Download the free BrightID app — your identity anchor, independent of any single product. It's the only account you'll need across the entire Aura network.",
+    href: "https://brightid.gitbook.io/aura/getting-started/get-brightid",
+    linkLabel: "Get BrightID",
   },
   {
     icon: "users",
-    title: "Step 2: Evaluate",
-    body: "Aura Core is where experts assess subjects and claims. Every evaluation feeds a reputation score that keeps bad actors out and good actors accountable.",
-    href: "/core",
-    linkLabel: "Open Aura Core",
+    title: "Step 2: Make Real Connections",
+    body: "Connect with people who actually know you — in person or online. A couple of trusted recovery connections go a long way toward a strong Aura score.",
+    href: "https://brightid.gitbook.io/aura/getting-started/get-brightid",
+    linkLabel: "See the connection guide",
   },
   {
-    icon: "layout-dashboard",
-    title: "Step 3: Integrate",
-    body: "Teams building on Aura manage projects, keys, and billing from the Dashboard, and follow step-by-step guides in the Docs to wire verification into their product.",
-    href: "/dashboard",
-    linkLabel: "Open the Dashboard",
+    icon: "qr-code",
+    title: "Step 3: Link to Aura",
+    body: "Open Aura Verified and log in by scanning your BrightID QR code — no signup form, no password, no personal details to type in.",
+    href: "/interface",
+    linkLabel: "Open Aura Verified",
+  },
+  {
+    icon: "eye-off",
+    title: "Step 4: Get Evaluated",
+    body: "People who already know you confirm you're a real, unique person. Nothing new about you is ever shared — Aura's privacy-preserving proofs see to that.",
+    href: "https://brightid.gitbook.io/aura",
+    linkLabel: "How evaluation works",
   },
   {
     icon: "sparkles",
-    title: "Step 4: Ship",
-    body: "End users complete a seamless, bot-resistant flow with no puzzles and no data collection. See exactly how it feels with the embeddable widget demo.",
-    href: "/demo",
-    linkLabel: "See the live demo",
+    title: "Step 5: You're Verified",
+    body: "Your Aura attestation is ready to use — log in, claim a grant, vote, or pass any check that needs a real human, anywhere Aura is accepted.",
+    href: "/interface",
+    linkLabel: "Get Verified now",
   },
 ]
 
@@ -126,7 +133,12 @@ const setActiveStep = (index: number) => {
   detailIcon?.setAttribute("name", step.icon)
   if (detailTitle) detailTitle.textContent = step.title
   if (detailBody) detailBody.textContent = step.body
-  if (detailLink) detailLink.href = step.href
+  if (detailLink) {
+    detailLink.href = step.href
+    const isExternal = step.href.startsWith("http")
+    detailLink.target = isExternal ? "_blank" : ""
+    detailLink.rel = isExternal ? "noopener noreferrer" : ""
+  }
   if (detailLinkLabel) detailLinkLabel.textContent = step.linkLabel
 
   for (const trigger of stepTriggers) {
