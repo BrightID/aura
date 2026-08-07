@@ -1,0 +1,216 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: light;
+
+  --background: oklch(100% 0 0);
+  --foreground: oklch(15% 0.02 270);
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(15% 0.02 270);
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(15% 0.02 270);
+  --primary: oklch(72% 0.18 150);
+  --primary-foreground: oklch(98% 0 0);
+  --secondary: oklch(95% 0.02 270);
+  --secondary-foreground: oklch(30% 0.02 270);
+  --muted: oklch(95% 0.01 270);
+  --muted-foreground: oklch(45% 0.02 270);
+  --accent: oklch(92% 0.03 200);
+  --accent-foreground: oklch(20% 0.02 270);
+  --destructive: oklch(60% 0.23 25);
+  --destructive-foreground: oklch(98% 0 0);
+  --border: oklch(88% 0.02 270);
+  --input: oklch(88% 0.02 270);
+  --ring: oklch(72% 0.18 150);
+  --orange: oklch(70% 0.25 45);
+
+  --chart-1: oklch(72% 0.18 150);
+  --chart-2: oklch(70% 0.25 45);
+  --chart-3: oklch(65% 0.16 200);
+  --chart-4: oklch(68% 0.2 300);
+  --chart-5: oklch(75% 0.15 80);
+
+  --radius: 0.75rem;
+
+  --aura-success: oklch(72% 0.18 150);
+  --aura-warning: oklch(78% 0.16 80);
+  --aura-info: oklch(65% 0.16 200);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+
+    --background: oklch(13% 0.02 270);
+    --foreground: oklch(98% 0 0);
+    --card: oklch(17% 0.02 270);
+    --card-foreground: oklch(98% 0 0);
+    --popover: oklch(17% 0.02 270);
+    --popover-foreground: oklch(98% 0 0);
+    --primary: oklch(75% 0.18 160);
+    --primary-foreground: oklch(13% 0.02 270);
+    --secondary: oklch(22% 0.02 270);
+    --secondary-foreground: oklch(98% 0 0);
+    --muted: oklch(22% 0.02 270);
+    --muted-foreground: oklch(65% 0 0);
+    --accent: oklch(25% 0.03 200);
+    --accent-foreground: oklch(98% 0 0);
+    --destructive: oklch(57.7% 0.245 27.325);
+    --destructive-foreground: oklch(98% 0 0);
+    --border: oklch(28% 0.02 270);
+    --input: oklch(22% 0.02 270);
+    --ring: oklch(75% 0.18 160);
+  }
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(13% 0.02 270);
+  --foreground: oklch(98% 0 0);
+  --card: oklch(17% 0.02 270);
+  --card-foreground: oklch(98% 0 0);
+  --popover: oklch(17% 0.02 270);
+  --popover-foreground: oklch(98% 0 0);
+  --primary: oklch(75% 0.18 160);
+  --primary-foreground: oklch(13% 0.02 270);
+  --secondary: oklch(22% 0.02 270);
+  --secondary-foreground: oklch(98% 0 0);
+  --muted: oklch(22% 0.02 270);
+  --muted-foreground: oklch(65% 0 0);
+  --accent: oklch(25% 0.03 200);
+  --accent-foreground: oklch(98% 0 0);
+  --destructive: oklch(57.7% 0.245 27.325);
+  --destructive-foreground: oklch(98% 0 0);
+  --border: oklch(28% 0.02 270);
+  --input: oklch(22% 0.02 270);
+  --ring: oklch(75% 0.18 160);
+}
+
+@theme inline {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-orange: var(--orange);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px oklch(72% 0.18 150 / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px oklch(72% 0.18 150 / 0.6);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.glow-text {
+  text-shadow: 0 0 30px oklch(72% 0.18 150 / 0.5);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(2.5rem);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+button {
+  cursor: pointer;
+}

@@ -2,32 +2,32 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/brightid/:path*",
+      "source": "/core/brightid/:path*",
       "destination": "https://recovery.brightid.org/:path*"
     },
     {
-      "source": "/brightid/:path*/",
+      "source": "/core/brightid/:path*/",
       "destination": "https://recovery.brightid.org/:path*/"
     },
     {
-      "source": "/auranode/:path*",
+      "source": "/core/auranode/:path*",
       "destination": "https://aura-node.brightid.org/:path*"
     },
     {
-      "source": "/auranode/:path*/",
+      "source": "/core/auranode/:path*/",
       "destination": "https://aura-node.brightid.org/:path*/"
     },
     {
-      "source": "/auranode-test/:path*",
+      "source": "/core/auranode-test/:path*",
       "destination": "https://aura-test.brightid.org/:path*"
     },
     {
-      "source": "/auranode-test/:path*/",
+      "source": "/core/auranode-test/:path*/",
       "destination": "https://aura-test.brightid.org/:path*/"
     },
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/core/(.*)",
+      "destination": "/core/index.html"
     }
   ],
 

@@ -93,7 +93,7 @@ export class VerificationCard extends LitElement {
   render() {
     const isCompleted = this.stepsCompleted === this.totalSteps
     return html`
-      <a href="/projects/${this.projectId}" class="card-link">
+      <a href="/interface/projects/${this.projectId}" class="card-link">
         <a-card>
           <div class="card-header">
             <span class="card-title">${this.name}</span>

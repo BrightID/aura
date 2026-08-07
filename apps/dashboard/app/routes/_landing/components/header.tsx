@@ -61,7 +61,7 @@ export function Header() {
               <div slot="content" className="w-72 p-2">
                 <div className="grid gap-1">
                   <Link
-                    to="https://aura-get-verified.vercel.app"
+                    to="/interface"
                     target="_blank"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}

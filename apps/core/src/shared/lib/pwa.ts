@@ -29,7 +29,7 @@ export function initPwa() {
     window.location.reload()
   })
 
-  navigator.serviceWorker.register("/sw.js").then((reg) => {
+  navigator.serviceWorker.register("/core/sw.js", { scope: "/core/" }).then((reg) => {
     registration = reg
 
     // "installed" while a controller exists = an update is waiting

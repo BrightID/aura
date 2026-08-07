@@ -1,5 +1,5 @@
 import 'iconify-icon'
-import { currentPath, pushRouter } from '@/router'
+import { currentPath, pushRouter, toAppPath } from '@/router'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, html, LitElement } from 'lit'
 import { customElement } from 'lit/decorators.js'
@@ -148,7 +148,7 @@ export class AppFooter extends SignalWatcher(LitElement) {
         ${menuItems.map(
           (item) => html`
             <a
-              href="${item.href}"
+              href="${toAppPath(item.href)}"
               class="nav-item ${this.isActive(item.href) ? 'active' : ''}"
               aria-current="${this.isActive(item.href) ? 'page' : 'false'}"
               @click="${(e: Event) => this.navigate(e, item.href)}"

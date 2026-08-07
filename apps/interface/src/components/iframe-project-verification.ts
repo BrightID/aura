@@ -1,7 +1,7 @@
 import { html, LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 
-const productionAuraGetVerifiedURL = 'https://aura-get-verified.vercel.app'
+const productionAuraGetVerifiedURL = '/interface'
 
 @customElement('iframe-project-verification')
 export class IFramePorjectVerification extends LitElement {

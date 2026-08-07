@@ -35,7 +35,7 @@ const DEFAULT_BASE_URL =
   (import.meta.env.VITE_AURA_EMBED_BASE_URL as string | undefined)?.replace(
     /\/$/,
     "",
-  ) ?? "https://aura-get-verified.vercel.app"
+  ) ?? `${window.location.origin}/interface`
 
 const DEFAULT_PROJECT_ID = Number(import.meta.env.VITE_AURA_PROJECT_ID ?? 9)
 
@@ -164,7 +164,7 @@ export function App() {
               <input
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
-                placeholder="https://aura-get-verified.vercel.app"
+                placeholder="https://your-domain.example/interface"
               />
             </label>
             <label className="short">

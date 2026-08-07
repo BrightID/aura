@@ -5,27 +5,27 @@
   },
   "rewrites": [
     {
-      "source": "/brightid/:path*/",
+      "source": "/interface/brightid/:path*/",
       "destination": "https://recovery.brightid.org/:path*/"
     },
     {
-      "source": "/auranode/:path*",
+      "source": "/interface/auranode/:path*",
       "destination": "https://aura-node.brightid.org/:path*"
     },
     {
-      "source": "/auranode/:path*/",
+      "source": "/interface/auranode/:path*/",
       "destination": "https://aura-node.brightid.org/:path*/"
     },
     {
-      "source": "/auranode-test/:path*",
+      "source": "/interface/auranode-test/:path*",
       "destination": "https://aura-test.brightid.org/:path*"
     },
     {
-      "source": "/auranode-test/:path*/",
+      "source": "/interface/auranode-test/:path*/",
       "destination": "https://aura-test.brightid.org/:path*/"
     },
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/((?!api).*)", "destination": "/index.html" }
+    { "source": "/interface/api/(.*)", "destination": "/api/$1" },
+    { "source": "/interface/((?!api).*)", "destination": "/index.html" }
   ],
   "outputDirectory": "./dist"
 }
