@@ -27,11 +27,9 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/"
+      "destination": "/index.html"
     }
   ],
 
-  "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "./dist"
 }
