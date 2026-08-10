@@ -51,7 +51,7 @@ export class AuraAppElement extends LitElement {
     window.parent.postMessage(JSON.stringify({ type: 'app-ready', app: 'aura-get-verified' }), '*')
 
     window.addEventListener('message', (event) => {
-      if (!event.origin || event.origin !== 'https://aura-get-verified.vercel.app') return
+      if (!event.origin || event.origin !== window.location.origin) return
 
       try {
         const data = JSON.parse(event.data)

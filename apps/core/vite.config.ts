@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, __dirname, "")
 
   return {
+    base: "/core/",
     plugins: [tailwindcss(), solid(), auraPWA(pkg.version)],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),

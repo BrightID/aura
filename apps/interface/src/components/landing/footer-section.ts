@@ -61,7 +61,7 @@ export class FooterSectionElement extends LitElement {
 
         <span class="brand-name">BrightID</span>
       </div>
-      <a href="/privacy-policy" class="privacy">Privacy Policy</a>
+      <a href="/interface/privacy-policy" class="privacy">Privacy Policy</a>
     </div>`
   }
 }

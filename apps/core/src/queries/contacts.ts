@@ -6,7 +6,7 @@ import {
 } from "@/shared/lib/contacts"
 import { postJson } from "@/shared/lib/api"
 
-const GET_VERIFIED_API = "https://aura-get-verified.vercel.app"
+const GET_VERIFIED_API = "/interface"
 
 /**
  * Hash a contact (fixed salt, so the server can match it later) and register

@@ -3,12 +3,30 @@ import { signal } from '@lit-labs/signals'
 
 import 'urlpattern-polyfill'
 
+// The app is deployed in production under the `/interface` path prefix (see
+// vite.config.ts `base`). `@lit-labs/router` has no basename concept — it
+// matches full absolute pathnames — so every route in `app-routes.ts` is
+// registered with this prefix baked in. The rest of the app keeps reasoning
+// in app-relative paths ('/home', '/login', ...); `toAppPath`/`stripBase`
+// are the only two places that know about the prefix.
+const BASE_PATH = '/interface'
+
+export const toAppPath = (path: string) =>
+  path === '/' ? BASE_PATH : `${BASE_PATH}${path}`
+
+export const stripBase = (pathname: string) => {
+  if (pathname === BASE_PATH) return '/'
+  if (pathname.startsWith(`${BASE_PATH}/`)) return pathname.slice(BASE_PATH.length)
+  return pathname
+}
+
 export const router = signal(null as null | Router)
-export const currentPath = signal(window.location.pathname)
+export const currentPath = signal(stripBase(window.location.pathname))
 
 export const pushRouter = (path: string) => {
-  history.pushState('', '', path)
-  router.get()?.goto(path)
+  const fullPath = toAppPath(path)
+  history.pushState('', '', fullPath)
+  router.get()?.goto(fullPath)
   currentPath.set(path)
 }
 

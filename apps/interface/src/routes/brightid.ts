@@ -305,7 +305,7 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
 
   protected render() {
     return html`
-      <a class="back" href="/login">Back</a>
+      <a class="back" href="/interface/login">Back</a>
 
       <hero-section title="Login With BrightID"></hero-section>
 

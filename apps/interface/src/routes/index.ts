@@ -40,7 +40,10 @@ const generateUUID = () => {
 
 const appleSignInOptions = {
   clientID: 'org.brightid.get-verified',
-  redirectUri: 'https://aura-get-verified.vercel.app/sign-in-with-apple',
+  // NOTE: must match whatever redirect URI is registered for this app in
+  // the Apple Developer Console — update that registration once the new
+  // unified domain is live.
+  redirectUri: `${window.location.origin}/interface/sign-in-with-apple`,
   state: generateUUID(),
   responseMode: 'form_post',
   scope: 'name email'
@@ -891,7 +894,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
 
               <span class="brand-name">Bright ID</span>
             </div>
-            <a href="/privacy-policy" class="privacy">Privacy Policy</a>
+            <a href="/interface/privacy-policy" class="privacy">Privacy Policy</a>
           </div>
         </div>
       </div>

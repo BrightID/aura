@@ -6,6 +6,7 @@ import {
 } from '@/lib/data/contacts'
 import { userBrightId, userFirstName, userGravatarEmail, userLastName } from '@/states/user'
 import type { AuraImpact } from '@/types/evaluation'
+import { CORE_APP_URL } from './constants'
 
 async function getGravatarHash(email: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase())
@@ -938,7 +939,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
         ? '&name=' + encodeURIComponent(name)
         : '?name=' + encodeURIComponent(name)
     }
-    return `https://aura-dev.vercel.app/subject/${encodeURIComponent(brightId)}/` + queryParams
+    return `${CORE_APP_URL}/subject/${encodeURIComponent(brightId)}/` + queryParams
   }
 
   private _upsertAsked(player: { name: string; value: string; photo?: string }) {

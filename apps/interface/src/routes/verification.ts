@@ -290,7 +290,7 @@ export class VerificationPage extends SignalWatcher(LitElement) {
       <div class="auth-gate">
         <p>Connect your identity to check your verification status.</p>
         <div class="actions">
-          <a href="/login" class="back-btn">Sign In</a>
+          <a href="/interface/login" class="back-btn">Sign In</a>
         </div>
       </div>
     `
@@ -304,7 +304,7 @@ export class VerificationPage extends SignalWatcher(LitElement) {
           You have met all the requirements to access <strong>${project.name}</strong>.
         </p>
         <div class="actions">
-          <a href="/home" class="back-btn">Continue to App</a>
+          <a href="/interface/home" class="back-btn">Continue to App</a>
         </div>
       </div>
     `
@@ -334,7 +334,7 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
         <div class="actions">
           <a
-            href="/home"
+            href="/interface/home"
             class="back-btn secondary"
           >
             Back to Overview

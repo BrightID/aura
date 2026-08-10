@@ -69,7 +69,7 @@ export function ProjectHeader({ project }: { project: Project }) {
           <div className="flex items-center gap-2">
             {project.websiteUrl && (
               <a
-                href={`https://aura-get-verified.vercel.app/projects/${project.id}`}
+                href={`/interface/projects/${project.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

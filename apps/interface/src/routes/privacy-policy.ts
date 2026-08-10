@@ -68,7 +68,7 @@ export class PrivacyPolicyElement extends LitElement {
   protected render() {
     return html`
       <div class="container">
-        <a href="/">Back</a>
+        <a href="/interface">Back</a>
 
         <c-markdown markdown="${content}"></c-markdown>
       </div>

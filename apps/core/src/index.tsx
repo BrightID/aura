@@ -16,7 +16,7 @@ if (!root) {
 render(
   () => (
     <Providers>
-      <Router>{appRoutes}</Router>
+      <Router base="/core">{appRoutes}</Router>
     </Providers>
   ),
   root,

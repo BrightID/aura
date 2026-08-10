@@ -6,8 +6,7 @@ import type { BrightID } from '@/types/brightid'
 import type { Project } from '@/types/projects'
 
 export const clientAPI = createClient<paths>({
-  // baseUrl: 'https://aura-get-verified.vercel.app/api'
-  baseUrl: 'http://localhost:3000/api'
+  baseUrl: import.meta.env.PROD ? '/interface/api' : 'http://localhost:3000/api'
 })
 
 const baseUrl = AURA_NODE_URL_PROXY

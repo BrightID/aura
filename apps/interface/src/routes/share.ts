@@ -192,9 +192,7 @@ export class SharePage extends SignalWatcher(LitElement) {
         queryParams.length > 0 ? queryParams + '&name=' + encodeURIComponent(name) : '?name=' + name
     }
 
-    return (
-      `https://aura-dev.vercel.app/subject/${encodeURIComponent(userBrightId.get())}/` + queryParams
-    )
+    return `/core/subject/${encodeURIComponent(userBrightId.get())}/` + queryParams
   }
 
   private isEmailValid() {

@@ -3,6 +3,7 @@ import type { AuraImpact } from '@/types/evaluation'
 import { SignalWatcher } from '@lit-labs/signals'
 import { css, type CSSResultGroup, html, LitElement } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { CORE_APP_URL } from './constants'
 import { widgetBase } from './shared-styles'
 
 const CONFIDENCE_LABELS: Record<number, string> = {
@@ -288,7 +289,7 @@ export class VerificationEvaluationsElement extends SignalWatcher(LitElement) {
                                   : ''}
                                 <a
                                   class="profile-link"
-                                  href="https://aura-dev.vercel.app/subject/${encodeURIComponent(impact.evaluator)}/"
+                                  href="${CORE_APP_URL}/subject/${encodeURIComponent(impact.evaluator)}/"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >

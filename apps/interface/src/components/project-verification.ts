@@ -195,7 +195,7 @@ export class ProjectVerificationElement extends SignalWatcher(LitElement) {
   }
 
   protected onGoToApp() {
-    const auraTab = window.open('https://aura-get-verified.vercel.app')
+    const auraTab = window.open('/interface')
 
     auraTab?.addEventListener('message', this.onWindowMessage.bind(this, auraTab))
   }

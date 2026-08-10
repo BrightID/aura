@@ -77,7 +77,7 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
   protected render() {
     return html`
       <div class="container">
-        <a href="/">Back</a>
+        <a href="/interface">Back</a>
 
         <!--<a-dialog
           .open=${this.isModalOpen}
