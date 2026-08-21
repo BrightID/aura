@@ -2,12 +2,26 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "bun install",
   "buildCommand": "bun run build",
-  "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/dashboard/:path*", "destination": "https://REPLACE-WITH-DASHBOARD-DEPLOYMENT.vercel.app/dashboard/:path*" },
-    { "source": "/demo/:path*", "destination": "https://REPLACE-WITH-DEMO-DEPLOYMENT.vercel.app/demo/:path*" },
-    { "source": "/docs/:path*", "destination": "https://REPLACE-WITH-DOCS-DEPLOYMENT.vercel.app/docs/:path*" },
-    { "source": "/interface/:path*", "destination": "https://REPLACE-WITH-INTERFACE-DEPLOYMENT.vercel.app/interface/:path*" },
-    { "source": "/core/:path*", "destination": "https://REPLACE-WITH-CORE-DEPLOYMENT.vercel.app/core/:path*" }
+    {
+      "source": "/dashboard/:path*",
+      "destination": "https://aura-dashboard-rust.vercel.app/dashboard/:path*"
+    },
+    {
+      "source": "/demo/:path*",
+      "destination": "https://aura-demo.vercel.app/demo/:path*"
+    },
+    {
+      "source": "/docs/:path*",
+      "destination": "https://aura-docs.vercel.app/docs/:path*"
+    },
+    {
+      "source": "/interface/:path*",
+      "destination": "https://aura-get-verified.vercel.app/interface/:path*"
+    },
+    {
+      "source": "/core/:path*",
+      "destination": "https://aura-frontend-new.vercel.app/core/:path*"
+    }
   ]
 }

@@ -1,20 +1,14 @@
 {
-  "extends": "@aura/typescript-config/base.json",
+  "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
-    "allowJs": false,
-    "noEmit": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "useDefineForClassFields": false
-  },
-  "include": ["src", "vite.config.ts"]
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "bundler"
+  }
 }

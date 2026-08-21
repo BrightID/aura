@@ -290,7 +290,8 @@
   background-size: 100% 100%;
 }
 
-.reveal {
+/* Scroll reveal action */
+.reveal-hidden {
   opacity: 0;
   transform: translateY(2.5rem);
   transition:
@@ -298,7 +299,7 @@
     transform 0.7s ease;
 }
 
-.reveal.is-visible {
+.reveal-visible {
   opacity: 1;
   transform: translateY(0);
 }
