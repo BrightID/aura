@@ -22,6 +22,10 @@
     {
       "source": "/core/:path*",
       "destination": "https://aura-frontend-new.vercel.app/core/:path*"
+    },
+    {
+      "source": "/((?!assets/).*)",
+      "destination": "/index.html"
     }
   ]
 }

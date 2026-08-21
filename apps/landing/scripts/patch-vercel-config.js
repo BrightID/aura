@@ -3,8 +3,8 @@
 /**
  * Postbuild script: injects proxy rewrites into .vercel/output/config.json
  *
- * Vercel's Build Output API v3 ignores rewrites defined in vercel.json,
- * so we need to patch the generated config directly.
+ * Ensures proxy rewrites are matched before the SPA fallback.
+ * Cleans up any stale SvelteKit-specific routes.
  */
 
 import { readFileSync, writeFileSync } from "fs";
@@ -15,10 +15,21 @@ const configPath = resolve(
   "..",
   ".vercel",
   "output",
-  "config.json"
+  "config.json",
 );
 
 const config = JSON.parse(readFileSync(configPath, "utf-8"));
+
+// Remove stale SvelteKit-specific routes
+config.routes = config.routes.filter((route) => {
+  // Remove SvelteKit catch-all function routes
+  if (route.dest && route.dest.includes("/![-]/catchall")) return false;
+  // Remove __data.json routes
+  if (route.src && route.src.includes("__data.json")) return false;
+  // Remove _app/immutable cache routes
+  if (route.src && route.src.includes("_app/immutable")) return false;
+  return true;
+});
 
 const proxyRewrites = [
   {
@@ -45,7 +56,7 @@ const proxyRewrites = [
 
 // Insert proxy rewrites BEFORE the filesystem handler so they are matched first
 const filesystemIndex = config.routes.findIndex(
-  (r) => r.handle === "filesystem"
+  (r) => r.handle === "filesystem",
 );
 
 if (filesystemIndex !== -1) {
@@ -53,6 +64,15 @@ if (filesystemIndex !== -1) {
 } else {
   // Fallback: prepend to routes array
   config.routes.unshift(...proxyRewrites);
+}
+
+// Ensure there is a SPA fallback as the very last route
+const lastRoute = config.routes[config.routes.length - 1];
+if (!lastRoute || lastRoute.dest !== "/index.html") {
+  config.routes.push({
+    src: "/.*",
+    dest: "/index.html",
+  });
 }
 
 writeFileSync(configPath, JSON.stringify(config, null, "\t") + "\n");
