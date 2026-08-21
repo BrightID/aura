@@ -22,35 +22,32 @@ const config = JSON.parse(readFileSync(configPath, "utf-8"));
 
 // Remove stale SvelteKit-specific routes
 config.routes = config.routes.filter((route) => {
-  // Remove SvelteKit catch-all function routes
   if (route.dest && route.dest.includes("/![-]/catchall")) return false;
-  // Remove __data.json routes
   if (route.src && route.src.includes("__data.json")) return false;
-  // Remove _app/immutable cache routes
   if (route.src && route.src.includes("_app/immutable")) return false;
   return true;
 });
 
 const proxyRoutes = [
   {
-    src: "/dashboard/(.*)",
-    dest: "https://aura-dashboard-rust.vercel.app/dashboard/$1",
+    src: "/dashboard(/.*)?",
+    dest: "https://aura-dashboard-rust.vercel.app/dashboard$1",
   },
   {
-    src: "/interface/(.*)",
-    dest: "https://aura-get-verified.vercel.app/interface/$1",
+    src: "/interface(/.*)?",
+    dest: "https://aura-get-verified.vercel.app/interface$1",
   },
   {
-    src: "/core/(.*)",
-    dest: "https://aura-frontend-new.vercel.app/core/$1",
+    src: "/core(/.*)?",
+    dest: "https://aura-frontend-new.vercel.app/core$1",
   },
   {
-    src: "/demo/(.*)",
-    dest: "https://aura-demo.vercel.app/demo/$1",
+    src: "/demo(/.*)?",
+    dest: "https://aura-demo.vercel.app/demo$1",
   },
   {
-    src: "/docs/(.*)",
-    dest: "https://aura-docs.vercel.app/docs/$1",
+    src: "/docs(/.*)?",
+    dest: "https://aura-docs.vercel.app/docs$1",
   },
 ];
 
@@ -62,7 +59,6 @@ const filesystemIndex = config.routes.findIndex(
 if (filesystemIndex !== -1) {
   config.routes.splice(filesystemIndex, 0, ...proxyRoutes);
 } else {
-  // Fallback: prepend to routes array
   config.routes.unshift(...proxyRoutes);
 }
 

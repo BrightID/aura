@@ -4,24 +4,24 @@
   "buildCommand": "bun run build",
   "routes": [
     {
-      "src": "/dashboard/(.*)",
-      "destination": "https://aura-dashboard-rust.vercel.app/dashboard/$1"
+      "src": "/dashboard(/.*)?",
+      "destination": "https://aura-dashboard-rust.vercel.app/dashboard$1"
     },
     {
-      "src": "/demo/(.*)",
-      "destination": "https://aura-demo.vercel.app/demo/$1"
+      "src": "/demo(/.*)?",
+      "destination": "https://aura-demo.vercel.app/demo$1"
     },
     {
-      "src": "/docs/(.*)",
-      "destination": "https://aura-docs.vercel.app/docs/$1"
+      "src": "/docs(/.*)?",
+      "destination": "https://aura-docs.vercel.app/docs$1"
     },
     {
-      "src": "/interface/(.*)",
-      "destination": "https://aura-get-verified.vercel.app/interface/$1"
+      "src": "/interface(/.*)?",
+      "destination": "https://aura-get-verified.vercel.app/interface$1"
     },
     {
-      "src": "/core/(.*)",
-      "destination": "https://aura-frontend-new.vercel.app/core/$1"
+      "src": "/core(/.*)?",
+      "destination": "https://aura-frontend-new.vercel.app/core$1"
     },
     {
       "src": "/((?!assets/).*)",
