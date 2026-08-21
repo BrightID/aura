@@ -31,6 +31,16 @@ import {
 
 const QR_SIZE = 270
 
+const routerBase = import.meta.env.BASE_URL.replace(/\/$/, "")
+
+function toRouterPath(path: string) {
+  if (!path.startsWith("/")) return path
+  if (routerBase && (path === routerBase || path.startsWith(`${routerBase}/`))) {
+    return path.slice(routerBase.length) || "/"
+  }
+  return path
+}
+
 export default function LoginPage() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
@@ -100,7 +110,7 @@ export default function LoginPage() {
     // Drop the half-open recovery channel keyed to the previous keypair
     resetRecovery()
     const next = typeof params.next === "string" ? params.next : "/home"
-    navigate(next, { replace: true })
+    navigate(toRouterPath(next), { replace: true })
   }
 
   const passkeyError = (title: string) => (e: unknown) =>
@@ -162,7 +172,7 @@ export default function LoginPage() {
     setImporting(true)
     const next = typeof params.next === "string" ? params.next : "/home"
     resetRecovery()
-    navigate(next, { replace: true })
+    navigate(toRouterPath(next), { replace: true })
   })
 
   function copyLink() {

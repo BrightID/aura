@@ -56,19 +56,36 @@ const proxyRoutes = [
     dest: "https://aura-docs.vercel.app/docs$1",
   },
   {
-    src: "^/login(/.*)?$",
-    dest: "https://aura-dashboard-rust.vercel.app/login$1",
-  },
-  {
-    src: "^/onboarding(/.*)?$",
-    dest: "https://aura-dashboard-rust.vercel.app/onboarding$1",
+    src: "/assets/(.*)",
+    has: [
+      {
+        type: "header",
+        key: "Referer",
+        value: { re: "https://aura\\.brightid\\.org/core" },
+      },
+    ],
+    dest: "https://aura-frontend-new.vercel.app/assets/$1",
   },
   {
     src: "/assets/(.*)",
+    has: [
+      {
+        type: "header",
+        key: "Referer",
+        value: { re: "https://aura\\.brightid\\.org/dashboard" },
+      },
+    ],
     dest: "https://aura-dashboard-rust.vercel.app/assets/$1",
   },
   {
     src: "/images/(.*)",
+    has: [
+      {
+        type: "header",
+        key: "Referer",
+        value: { re: "https://aura\\.brightid\\.org/dashboard" },
+      },
+    ],
     dest: "https://aura-dashboard-rust.vercel.app/images/$1",
   },
 ];

@@ -13,10 +13,12 @@ if (!root) {
   throw new Error("Root element #root not found")
 }
 
+const routerBase = import.meta.env.BASE_URL.replace(/\/$/, "") || undefined
+
 render(
   () => (
     <Providers>
-      <Router base="/core">{appRoutes}</Router>
+      <Router base={routerBase}>{appRoutes}</Router>
     </Providers>
   ),
   root,

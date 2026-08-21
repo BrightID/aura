@@ -3,22 +3,14 @@
   "installCommand": "bun install",
   "buildCommand": "bun run build",
   "outputDirectory": "./build/client",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/dashboard/assets/(.*)",
-      "dest": "/dashboard/assets/$1"
+      "source": "/dashboard",
+      "destination": "/dashboard/index.html"
     },
     {
-      "src": "/dashboard/images/(.*)",
-      "dest": "/dashboard/images/$1"
-    },
-    {
-      "src": "/dashboard/favicon\\.ico",
-      "dest": "/dashboard/favicon.ico"
-    },
-    {
-      "src": "/dashboard(/.*)?",
-      "dest": "/dashboard/index.html"
+      "source": "/dashboard/:path*",
+      "destination": "/dashboard/index.html"
     }
   ]
 }
