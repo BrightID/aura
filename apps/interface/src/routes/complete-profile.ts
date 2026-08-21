@@ -341,7 +341,7 @@ export class CompleteProfile extends SignalWatcher(LitElement) {
   protected render() {
     return html`
       <div class="wrapper">
-        <img src="/favicon.png" class="logo" alt="Aura" />
+        <img src="${import.meta.env.BASE_URL}favicon.png" class="logo" alt="Aura" />
 
         <div class="container">
           <h1 class="title">Aura Verified</h1>

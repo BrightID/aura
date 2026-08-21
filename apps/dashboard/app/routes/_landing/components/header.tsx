@@ -35,7 +35,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex items-center justify-center">
-              <img src="/favicon.ico" width={30} height={30} alt="aura" />
+              <img src={`${import.meta.env.BASE_URL}favicon.ico`} width={30} height={30} alt="aura" />
             </div>
             <span className="text-xl font-bold text-foreground">Aura</span>
           </Link>

@@ -4,6 +4,13 @@
   "buildCommand": "bun run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/demo/(.*)", "destination": "/demo/index.html" }
+    {
+      "source": "/demo",
+      "destination": "/demo/index.html"
+    },
+    {
+      "source": "/demo/:path*",
+      "destination": "/demo/index.html"
+    }
   ]
 }

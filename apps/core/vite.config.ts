@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: "/core/",
+    build: {
+      // Nested so Vercel can serve /core/assets/* as real files instead of
+      // falling through the SPA rewrite to index.html (blank page).
+      outDir: "dist/core",
+    },
     plugins: [tailwindcss(), solid(), auraPWA(pkg.version)],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),

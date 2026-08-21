@@ -776,7 +776,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
 
     return html`
       <div class="wrapper">
-        <img src="/aura2.png" class="logo" alt="Aura" />
+        <img src="${import.meta.env.BASE_URL}aura2.png" class="logo" alt="Aura" />
 
         <div class="container">
           <h1 class="title">Aura Verified</h1>

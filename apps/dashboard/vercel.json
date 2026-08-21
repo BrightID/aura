@@ -4,6 +4,25 @@
   "buildCommand": "bun run build",
   "outputDirectory": "./build/client",
   "rewrites": [
-    { "source": "/dashboard/(.*)", "destination": "/dashboard/index.html" }
+    {
+      "source": "/dashboard/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/dashboard/images/:path*",
+      "destination": "/images/:path*"
+    },
+    {
+      "source": "/dashboard/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "/index.html"
+    }
   ]
 }

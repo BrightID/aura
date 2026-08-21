@@ -58,7 +58,7 @@ export class HeroSectionElement extends LitElement {
     }
   `
   protected render() {
-    return html` <img src="/aura2.png" class="logo" alt="Aura" />
+    return html` <img src="${import.meta.env.BASE_URL}aura2.png" class="logo" alt="Aura" />
 
       <div class="container">
         <h1 class="title">${this.title}</h1>

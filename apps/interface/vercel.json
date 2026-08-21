@@ -3,29 +3,31 @@
     "api/*.ts": { "maxDuration": 30 },
     "api/**/*.ts": { "maxDuration": 30 }
   },
+  "outputDirectory": "./dist",
   "rewrites": [
     {
-      "source": "/interface/brightid/:path*/",
-      "destination": "https://recovery.brightid.org/:path*/"
+      "source": "/interface/brightid/:path*",
+      "destination": "https://recovery.brightid.org/:path*"
     },
     {
       "source": "/interface/auranode/:path*",
       "destination": "https://aura-node.brightid.org/:path*"
     },
     {
-      "source": "/interface/auranode/:path*/",
-      "destination": "https://aura-node.brightid.org/:path*/"
-    },
-    {
       "source": "/interface/auranode-test/:path*",
       "destination": "https://aura-test.brightid.org/:path*"
     },
     {
-      "source": "/interface/auranode-test/:path*/",
-      "destination": "https://aura-test.brightid.org/:path*/"
+      "source": "/interface/api/:path*",
+      "destination": "/api/:path*"
     },
-    { "source": "/interface/api/(.*)", "destination": "/api/$1" },
-    { "source": "/interface/((?!api).*)", "destination": "/index.html" }
-  ],
-  "outputDirectory": "./dist"
+    {
+      "source": "/interface",
+      "destination": "/interface/index.html"
+    },
+    {
+      "source": "/interface/:path*",
+      "destination": "/interface/index.html"
+    }
+  ]
 }

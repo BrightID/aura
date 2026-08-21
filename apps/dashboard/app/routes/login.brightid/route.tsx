@@ -106,7 +106,7 @@ export default function LoginWithBrightId() {
               removeQrCodeBehindLogo={true}
               logoPadding={0}
               eyeRadius={6}
-              logoImage={"/images/login/brightid-qrcode-logo.svg"}
+              logoImage={`${import.meta.env.BASE_URL}images/login/brightid-qrcode-logo.svg`}
               logoWidth={qrCodeSize * 0.25}
               logoHeight={qrCodeSize * 0.25}
               id="qr-code"

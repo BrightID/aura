@@ -47,7 +47,7 @@ const Splash = () => {
         </section>
 
         <img
-          src="/global/logo.png"
+          src={`${import.meta.env.BASE_URL}global/logo.png`}
           class="mx-auto mt-20"
           width={150}
           height={150}

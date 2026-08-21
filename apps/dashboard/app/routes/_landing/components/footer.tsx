@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src="/favicon.ico" width={30} height={30} alt="aura" />
+              <img src={`${import.meta.env.BASE_URL}favicon.ico`} width={30} height={30} alt="aura" />
 
               <span className="text-xl font-bold text-foreground">Aura</span>
             </Link>

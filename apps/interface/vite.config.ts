@@ -11,7 +11,9 @@ export default defineConfig({
   root: '.',
   base: '/interface/',
   build: {
-    outDir: 'dist',
+    // Nested so Vercel can serve /interface/assets/* as real files instead of
+    // falling through the SPA rewrite to index.html (blank page).
+    outDir: 'dist/interface',
     target: 'es2022'
   },
   define: {
