@@ -65,7 +65,7 @@ export default function Header() {
                 Docs
               </a-button>
             </a>
-            <a href="/interface">
+            <a href="/interface/login">
               <a-button size="sm">Get Verified</a-button>
             </a>
           </div>
@@ -121,7 +121,7 @@ export default function Header() {
                     Docs
                   </a-button>
                 </a>
-                <a href="/interface" onClick={closeMobile}>
+                <a href="/interface/login" onClick={closeMobile}>
                   <a-button class="w-full">Get Verified</a-button>
                 </a>
               </div>

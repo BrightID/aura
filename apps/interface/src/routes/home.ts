@@ -61,7 +61,7 @@ export class HomeElement extends SignalWatcher(LitElement) {
     super()
 
     if (!userBrightId.get()) {
-      pushRouter('/')
+      pushRouter('/login')
     }
   }
 

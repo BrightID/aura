@@ -27,7 +27,7 @@ export default function CTA() {
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="/interface">
+          <a href="/interface/login">
             <a-button size="lg" class="group animate-pulse-glow">
               <span class="inline-flex items-center gap-2">
                 Get Verified Now

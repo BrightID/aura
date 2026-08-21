@@ -273,7 +273,7 @@ export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
                     `
                   )}
               </div>
-              <a target="_blank" class="highlight-text" href="/interface"
+              <a target="_blank" class="highlight-text" href="/interface/login"
                 >Get Verified Here</a
               >
             `}

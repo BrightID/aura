@@ -34,6 +34,11 @@ const proxyRoutes = [
     dest: "https://aura-dashboard-rust.vercel.app/dashboard$1",
   },
   {
+    src: "^/interface/?$",
+    status: 307,
+    headers: { Location: "/interface/login" },
+  },
+  {
     src: "/interface(/.*)?",
     dest: "https://aura-get-verified.vercel.app/interface$1",
   },

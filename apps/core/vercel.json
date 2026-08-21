@@ -3,26 +3,38 @@
   "installCommand": "bun install",
   "buildCommand": "bun run build",
   "outputDirectory": "dist",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/core/brightid/:path*",
-      "destination": "https://recovery.brightid.org/:path*"
+      "src": "/core/brightid/(.*)",
+      "dest": "https://recovery.brightid.org/$1"
     },
     {
-      "source": "/core/auranode/:path*",
-      "destination": "https://aura-node.brightid.org/:path*"
+      "src": "/core/auranode/(.*)",
+      "dest": "https://aura-node.brightid.org/$1"
     },
     {
-      "source": "/core/auranode-test/:path*",
-      "destination": "https://aura-test.brightid.org/:path*"
+      "src": "/core/auranode-test/(.*)",
+      "dest": "https://aura-test.brightid.org/$1"
     },
     {
-      "source": "/core",
-      "destination": "/core/index.html"
+      "src": "/core/assets/(.*)",
+      "dest": "/core/assets/$1"
     },
     {
-      "source": "/core/:path*",
-      "destination": "/core/index.html"
+      "src": "/core/global/(.*)",
+      "dest": "/core/global/$1"
+    },
+    {
+      "src": "/core/sw\\.js",
+      "dest": "/core/sw.js"
+    },
+    {
+      "src": "/core/manifest\\.webmanifest",
+      "dest": "/core/manifest.webmanifest"
+    },
+    {
+      "src": "/core(/.*)?",
+      "dest": "/core/index.html"
     }
   ]
 }

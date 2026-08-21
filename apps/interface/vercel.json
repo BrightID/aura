@@ -4,6 +4,18 @@
     "api/**/*.ts": { "maxDuration": 30 }
   },
   "outputDirectory": "./dist",
+  "redirects": [
+    {
+      "source": "/interface",
+      "destination": "/interface/login",
+      "permanent": false
+    },
+    {
+      "source": "/interface/",
+      "destination": "/interface/login",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/interface/brightid/:path*",

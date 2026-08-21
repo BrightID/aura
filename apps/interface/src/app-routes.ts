@@ -5,14 +5,6 @@ import { router } from './router'
 export const createRouter = (classThis: ReactiveControllerHost & HTMLElement) => {
   const routerValue = new Router(classThis, [
     {
-      path: '/interface',
-      enter: async () => {
-        await import('@/routes/index')
-        return true
-      },
-      render: () => html` <app-layout> <home-page></home-page></app-layout>`
-    },
-    {
       path: '/interface/login',
       enter: async () => {
         await import('@/routes/login')

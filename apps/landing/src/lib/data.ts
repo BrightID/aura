@@ -25,7 +25,7 @@ export const steps: Step[] = [
     icon: "qr-code",
     title: "Step 3: Link to Aura",
     body: "Open Aura Verified and log in by scanning your BrightID QR code — no signup form, no password, no personal details to type in.",
-    href: "/interface",
+    href: "/interface/login",
     linkLabel: "Open Aura Verified",
   },
   {
@@ -39,7 +39,7 @@ export const steps: Step[] = [
     icon: "sparkles",
     title: "Step 5: You're Verified",
     body: "Your Aura attestation is ready to use — log in, claim a grant, vote, or pass any check that needs a real human, anywhere Aura is accepted.",
-    href: "/interface",
+    href: "/interface/login",
     linkLabel: "Get Verified now",
   },
 ]

@@ -195,7 +195,7 @@ export class ProjectVerificationElement extends SignalWatcher(LitElement) {
   }
 
   protected onGoToApp() {
-    const auraTab = window.open('/interface')
+    const auraTab = window.open('/interface/login')
 
     auraTab?.addEventListener('message', this.onWindowMessage.bind(this, auraTab))
   }

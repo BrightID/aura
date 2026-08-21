@@ -60,9 +60,10 @@ export function Header() {
               </button>
               <div slot="content" className="w-72 p-2">
                 <div className="grid gap-1">
-                  <Link
-                    to="/interface"
+                  <a
+                    href="/interface/login"
                     target="_blank"
+                    rel="noreferrer"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -73,7 +74,7 @@ export function Header() {
                         Human uniqueness verification
                       </div>
                     </div>
-                  </Link>
+                  </a>
                   <Link
                     to="https://aura.brightid.org"
                     target="_blank"

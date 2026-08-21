@@ -23,7 +23,7 @@ export default function Footer() {
             <ul class="space-y-3">
               <li>
                 <a
-                  href="/interface"
+                  href="/interface/login"
                   class="text-sm text-muted-foreground hover:text-cyan-300 transition-colors"
                 >
                   Get Verified

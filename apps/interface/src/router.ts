@@ -12,16 +12,21 @@ import 'urlpattern-polyfill'
 const BASE_PATH = '/interface'
 
 export const toAppPath = (path: string) =>
-  path === '/' ? BASE_PATH : `${BASE_PATH}${path}`
+  path === '/' ? `${BASE_PATH}/login` : `${BASE_PATH}${path}`
 
 export const stripBase = (pathname: string) => {
-  if (pathname === BASE_PATH) return '/'
+  if (pathname === BASE_PATH || pathname === `${BASE_PATH}/`) return '/login'
   if (pathname.startsWith(`${BASE_PATH}/`)) return pathname.slice(BASE_PATH.length)
   return pathname
 }
 
 export const router = signal(null as null | Router)
-export const currentPath = signal(stripBase(window.location.pathname))
+
+const initialPath = stripBase(window.location.pathname)
+if (initialPath === '/login' && !window.location.pathname.startsWith(`${BASE_PATH}/login`)) {
+  history.replaceState('', '', toAppPath('/login'))
+}
+export const currentPath = signal(initialPath)
 
 export const pushRouter = (path: string) => {
   const fullPath = toAppPath(path)
