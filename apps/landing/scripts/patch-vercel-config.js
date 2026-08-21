@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Postbuild script: injects proxy rewrites into .vercel/output/config.json
+ * Postbuild script: injects proxy routes into .vercel/output/config.json
  *
- * Ensures proxy rewrites are matched before the SPA fallback.
+ * Ensures proxy routes are matched before the SPA fallback.
  * Cleans up any stale SvelteKit-specific routes.
  */
 
@@ -31,39 +31,39 @@ config.routes = config.routes.filter((route) => {
   return true;
 });
 
-const proxyRewrites = [
+const proxyRoutes = [
   {
-    src: "/dashboard/:path*",
-    dest: "https://aura-dashboard-rust.vercel.app/dashboard/:path*",
+    src: "/dashboard/(.*)",
+    dest: "https://aura-dashboard-rust.vercel.app/dashboard/$1",
   },
   {
-    src: "/interface/:path*",
-    dest: "https://aura-get-verified.vercel.app/interface/:path*",
+    src: "/interface/(.*)",
+    dest: "https://aura-get-verified.vercel.app/interface/$1",
   },
   {
-    src: "/core/:path*",
-    dest: "https://aura-frontend-new.vercel.app/core/:path*",
+    src: "/core/(.*)",
+    dest: "https://aura-frontend-new.vercel.app/core/$1",
   },
   {
-    src: "/demo/:path*",
-    dest: "https://aura-demo.vercel.app/demo/:path*",
+    src: "/demo/(.*)",
+    dest: "https://aura-demo.vercel.app/demo/$1",
   },
   {
-    src: "/docs/:path*",
-    dest: "https://aura-docs.vercel.app/docs/:path*",
+    src: "/docs/(.*)",
+    dest: "https://aura-docs.vercel.app/docs/$1",
   },
 ];
 
-// Insert proxy rewrites BEFORE the filesystem handler so they are matched first
+// Insert proxy routes BEFORE the filesystem handler so they are matched first
 const filesystemIndex = config.routes.findIndex(
   (r) => r.handle === "filesystem",
 );
 
 if (filesystemIndex !== -1) {
-  config.routes.splice(filesystemIndex, 0, ...proxyRewrites);
+  config.routes.splice(filesystemIndex, 0, ...proxyRoutes);
 } else {
   // Fallback: prepend to routes array
-  config.routes.unshift(...proxyRewrites);
+  config.routes.unshift(...proxyRoutes);
 }
 
 // Ensure there is a SPA fallback as the very last route
@@ -77,4 +77,4 @@ if (!lastRoute || lastRoute.dest !== "/index.html") {
 
 writeFileSync(configPath, JSON.stringify(config, null, "\t") + "\n");
 
-console.log("✅ Patched .vercel/output/config.json with proxy rewrites");
+console.log("✅ Patched .vercel/output/config.json with proxy routes");
