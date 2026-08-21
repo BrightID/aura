@@ -4,6 +4,7 @@ import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 
 export default defineConfig({
+  base: "/dashboard/",
   define: {
     APP_VERSION: JSON.stringify(process.env.npm_package_version),
   },
