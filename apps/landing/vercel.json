@@ -29,7 +29,23 @@
       "dest": "https://aura-frontend-new.vercel.app/core$1"
     },
     {
-      "src": "/((?!assets/).*)",
+      "src": "^/login(/.*)?$",
+      "dest": "https://aura-dashboard-rust.vercel.app/login$1"
+    },
+    {
+      "src": "^/onboarding(/.*)?$",
+      "dest": "https://aura-dashboard-rust.vercel.app/onboarding$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "https://aura-dashboard-rust.vercel.app/assets/$1"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "https://aura-dashboard-rust.vercel.app/images/$1"
+    },
+    {
+      "src": "/((?!l/).*)",
       "dest": "/index.html"
     }
   ]

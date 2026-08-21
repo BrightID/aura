@@ -5,6 +5,11 @@ import { defineConfig } from "vite"
 
 export default defineConfig({
   publicDir: "static",
+  // Keep hashed JS/CSS off /assets so that path can be proxied to the
+  // dashboard app (its current production build still loads /assets/*).
+  build: {
+    assetsDir: "l",
+  },
   plugins: [tailwindcss(), solid()],
   resolve: {
     alias: {

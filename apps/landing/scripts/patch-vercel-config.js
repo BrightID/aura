@@ -20,11 +20,12 @@ const configPath = resolve(
 
 const config = JSON.parse(readFileSync(configPath, "utf-8"));
 
-// Remove stale SvelteKit-specific routes
 config.routes = config.routes.filter((route) => {
   if (route.dest && route.dest.includes("/![-]/catchall")) return false;
   if (route.src && route.src.includes("__data.json")) return false;
   if (route.src && route.src.includes("_app/immutable")) return false;
+  if (route.handle === "filesystem") return false;
+  if (route.dest === "/index.html") return false;
   return true;
 });
 
@@ -54,27 +55,29 @@ const proxyRoutes = [
     src: "/docs(/.*)?",
     dest: "https://aura-docs.vercel.app/docs$1",
   },
+  {
+    src: "^/login(/.*)?$",
+    dest: "https://aura-dashboard-rust.vercel.app/login$1",
+  },
+  {
+    src: "^/onboarding(/.*)?$",
+    dest: "https://aura-dashboard-rust.vercel.app/onboarding$1",
+  },
+  {
+    src: "/assets/(.*)",
+    dest: "https://aura-dashboard-rust.vercel.app/assets/$1",
+  },
+  {
+    src: "/images/(.*)",
+    dest: "https://aura-dashboard-rust.vercel.app/images/$1",
+  },
 ];
 
-// Insert proxy routes BEFORE the filesystem handler so they are matched first
-const filesystemIndex = config.routes.findIndex(
-  (r) => r.handle === "filesystem",
-);
-
-if (filesystemIndex !== -1) {
-  config.routes.splice(filesystemIndex, 0, ...proxyRoutes);
-} else {
-  config.routes.unshift(...proxyRoutes);
-}
-
-// Ensure there is a SPA fallback as the very last route
-const lastRoute = config.routes[config.routes.length - 1];
-if (!lastRoute || lastRoute.dest !== "/index.html") {
-  config.routes.push({
-    src: "/.*",
-    dest: "/index.html",
-  });
-}
+config.routes.unshift(...proxyRoutes);
+config.routes.push({
+  src: "/((?!l/).*)",
+  dest: "/index.html",
+});
 
 writeFileSync(configPath, JSON.stringify(config, null, "\t") + "\n");
 
