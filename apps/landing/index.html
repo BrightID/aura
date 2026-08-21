@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0916" />
-    <link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,9 +26,9 @@
       content="Aura verifies real, unique humans through the people who already know them — no ID uploads, no biometric scans, no central database."
     />
     <meta property="og:type" content="website" />
-    %sveltekit.head%
   </head>
   <body class="antialiased min-h-screen bg-background text-foreground overflow-x-hidden">
-    <div style="display: contents">%sveltekit.body%</div>
+    <div id="root" style="display: contents"></div>
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

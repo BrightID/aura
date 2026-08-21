@@ -1,9 +1,16 @@
+import path from "path"
 import tailwindcss from "@tailwindcss/vite"
-import { sveltekit } from "@sveltejs/kit/vite"
+import solid from "vite-plugin-solid"
 import { defineConfig } from "vite"
 
 export default defineConfig({
-  plugins: [tailwindcss(), sveltekit()],
+  publicDir: "static",
+  plugins: [tailwindcss(), solid()],
+  resolve: {
+    alias: {
+      "$lib": path.resolve("src/lib"),
+    },
+  },
   server: {
     host: true,
     allowedHosts: ["localhost", ".localhost"],
