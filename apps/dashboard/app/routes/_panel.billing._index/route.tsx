@@ -168,7 +168,7 @@ function CurrentSubscriptionSection() {
             </div>
             {freeProjects.length > 0 && (
               <Button asChild size="sm" className="gap-2">
-                <Link to={`/dashboard/projects/${freeProjects[0].id}/upgrade`}>
+                <Link to={`/projects/${freeProjects[0].id}/upgrade`}>
                   <Zap className="h-3.5 w-3.5" />
                   Upgrade Now
                 </Link>
@@ -207,7 +207,7 @@ function CurrentSubscriptionSection() {
                 </div>
               </div>
               <Button asChild variant="ghost" size="sm" className="gap-1 shrink-0">
-                <Link to={`/dashboard/projects/${project.id}/upgrade`}>
+                <Link to={`/projects/${project.id}/upgrade`}>
                   Upgrade
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
@@ -236,7 +236,7 @@ function CurrentSubscriptionSection() {
               </div>
             </div>
             <Button asChild variant="outline" size="sm" className="gap-1 shrink-0">
-              <Link to={`/dashboard/projects/${project.id}/upgrade`}>
+              <Link to={`/projects/${project.id}/upgrade`}>
                 <Zap className="h-3.5 w-3.5" />
                 Upgrade
               </Link>
@@ -411,7 +411,7 @@ function UsageSummarySection() {
                     )}
                     {isFree && (
                       <Button asChild variant="ghost" size="sm" className="h-7 gap-1 text-xs">
-                        <Link to={`/dashboard/projects/${project.id}/upgrade`}>
+                        <Link to={`/projects/${project.id}/upgrade`}>
                           <Zap className="h-3 w-3" />
                           Upgrade
                         </Link>

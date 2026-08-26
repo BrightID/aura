@@ -40,6 +40,10 @@
     {
       "source": "/interface/:path*",
       "destination": "/interface/index.html"
+    },
+    {
+      "source": "/((?!interface(?:/|$)|api(?:/|$)).*)",
+      "destination": "https://aura.brightid.org/$1"
     }
   ]
 }

@@ -153,7 +153,7 @@ export default function OnboardingForm() {
     toast("Welcome aboard!", {
       description: "Your information has been submitted successfully.",
     })
-    navigate("/dashboard")
+    navigate("/")
   }
 
   return (
@@ -217,7 +217,7 @@ export default function OnboardingForm() {
                 Previous
               </a-button>
             ) : (
-              <Link className="flex-1" to={"/dashboard"}>
+              <Link className="flex-1" to="/">
                 <a-button
                   className="w-full bg-transparent"
                   variant="outline"

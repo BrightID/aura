@@ -23,6 +23,10 @@
     {
       "source": "/core/:path*",
       "destination": "/core/index.html"
+    },
+    {
+      "source": "/((?!core(?:/|$)).*)",
+      "destination": "https://aura.brightid.org/$1"
     }
   ]
 }

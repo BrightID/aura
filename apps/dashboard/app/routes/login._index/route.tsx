@@ -75,7 +75,7 @@ function LoginScreen() {
     mutationKey: ["login-with-password"],
   })
   useEffect(() => {
-    if (user) navigate("/dashboard")
+    if (user) navigate("/")
   }, [user, navigate])
 
   const onLogin = async (data: FormData) => {

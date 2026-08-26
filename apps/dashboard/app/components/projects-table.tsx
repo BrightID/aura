@@ -103,7 +103,7 @@ const columns: ColumnDef<Project>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <Link to={`/dashboard/projects/${row.original.id}`}>
+      <Link to={`/projects/${row.original.id}`}>
         <a-button variant="ghost" size="icon">
           <Eye className="h-4 w-4" />
         </a-button>
@@ -143,7 +143,7 @@ export function ProjectsTable({ data }: { data: Project[] }) {
           value={filter}
           className="max-w-xs"
         />
-        <Link to="/dashboard/projects/new">
+        <Link to="/projects/new">
           <a-button>
             <Plus className="mr-2 h-4 w-4" />
             New Project

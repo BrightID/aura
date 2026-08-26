@@ -72,19 +72,19 @@ export function NavUser({ user }: { user: User | null | undefined }) {
               </div>
             </a-dropdown-label>
             <a-dropdown-separator />
-            <Link to="/dashboard/account">
+            <Link to="/account">
               <a-dropdown-item>
                 <IconUserCircle />
                 Account
               </a-dropdown-item>
             </Link>
-            <Link to="/dashboard/billing">
+            <Link to="/billing">
               <a-dropdown-item>
                 <IconCreditCard />
                 Billing
               </a-dropdown-item>
             </Link>
-            <Link to="/dashboard/notifications">
+            <Link to="/notifications">
               <a-dropdown-item>
                 <IconNotification />
                 Notifications

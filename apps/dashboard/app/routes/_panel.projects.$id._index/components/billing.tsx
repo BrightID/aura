@@ -33,7 +33,7 @@ export default function ProjectBilling({ project }: { project: Project }) {
                 </p>
               </div>
             </div>
-            <Link to={`/dashboard/projects/${project.id}/upgrade`}>
+            <Link to={`/projects/${project.id}/upgrade`}>
               <a-button>Upgrade</a-button>
             </Link>
           </div>

@@ -11,6 +11,10 @@
     {
       "source": "/dashboard/:path*",
       "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/((?!dashboard(?:/|$)).*)",
+      "destination": "https://aura.brightid.org/$1"
     }
   ]
 }

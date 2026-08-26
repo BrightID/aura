@@ -13,7 +13,7 @@ interface ProjectCardProps {
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link
-      to={`/dashboard/projects/${project.id}`}
+      to={`/projects/${project.id}`}
       className={cn(
         "group relative cursor-pointer rounded-lg border bg-card p-4 transition-all hover:border-foreground/20 hover:shadow-md"
       )}

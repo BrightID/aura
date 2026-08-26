@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/((?!docs(?:/|$)).*)",
+      "destination": "https://aura.brightid.org/$1"
+    }
+  ]
+}

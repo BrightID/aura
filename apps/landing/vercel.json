@@ -4,15 +4,15 @@
   "buildCommand": "bun run build",
   "routes": [
     {
-      "src": "/dashboard(/.*)?",
+      "src": "^/dashboard(/.*)?$",
       "dest": "https://aura-dashboard-rust.vercel.app/dashboard$1"
     },
     {
-      "src": "/demo(/.*)?",
+      "src": "^/demo(/.*)?$",
       "dest": "https://aura-demo.vercel.app/demo$1"
     },
     {
-      "src": "/docs(/.*)?",
+      "src": "^/docs(/.*)?$",
       "dest": "https://aura-docs.vercel.app/docs$1"
     },
     {
@@ -21,48 +21,15 @@
       "headers": { "Location": "/interface/login" }
     },
     {
-      "src": "/interface(/.*)?",
+      "src": "^/interface(/.*)?$",
       "dest": "https://aura-get-verified.vercel.app/interface$1"
     },
     {
-      "src": "/core(/.*)?",
+      "src": "^/core(/.*)?$",
       "dest": "https://aura-frontend-new.vercel.app/core$1"
     },
     {
-      "src": "/assets/(.*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "Referer",
-          "value": { "re": "https://aura\\.brightid\\.org/core" }
-        }
-      ],
-      "dest": "https://aura-frontend-new.vercel.app/assets/$1"
-    },
-    {
-      "src": "/assets/(.*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "Referer",
-          "value": { "re": "https://aura\\.brightid\\.org/dashboard" }
-        }
-      ],
-      "dest": "https://aura-dashboard-rust.vercel.app/assets/$1"
-    },
-    {
-      "src": "/images/(.*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "Referer",
-          "value": { "re": "https://aura\\.brightid\\.org/dashboard" }
-        }
-      ],
-      "dest": "https://aura-dashboard-rust.vercel.app/images/$1"
-    },
-    {
-      "src": "/((?!l/).*)",
+      "src": "^/((?!l/).*)$",
       "dest": "/index.html"
     }
   ]

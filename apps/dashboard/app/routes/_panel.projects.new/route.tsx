@@ -58,7 +58,7 @@ export default function CreateProjectPage() {
       body: JSON.stringify(cleanedData),
     })
     res.ok
-      ? (toast.success("Project created"), navigate("/dashboard"))
+      ? (toast.success("Project created"), navigate("/"))
       : toast.error("Failed")
   }
 

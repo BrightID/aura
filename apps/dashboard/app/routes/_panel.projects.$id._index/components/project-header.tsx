@@ -18,7 +18,7 @@ export function ProjectHeader({ project }: { project: Project }) {
           variant="ghost"
           size="sm"
           className="mb-4 -ml-2"
-          onClick={() => navigate("/dashboard/projects")}
+          onClick={() => navigate("/projects")}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Projects

@@ -54,7 +54,7 @@ export default function ProjectsList() {
               Manage and monitor your projects
             </p>
           </div>
-          <Link to="/dashboard/projects/new">
+          <Link to="/projects/new">
             <a-button>
               <Plus className="mr-2 h-4 w-4" />
               New Project
@@ -153,7 +153,7 @@ export default function ProjectsList() {
                 : "Create your first project to get started"}
             </p>
             {!searchQuery && (
-              <Link to="/dashboard/projects/new">
+              <Link to="/projects/new">
                 <a-button className="mt-4">
                   <Plus className="mr-2 h-4 w-4" />
                   New Project

@@ -23,39 +23,39 @@ export const dashboardLinks = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: "/",
       icon: IconDashboard,
     },
     {
       title: "Projects",
-      url: "/dashboard/projects",
+      url: "/projects",
       icon: IconFolder,
     },
     {
       title: "Analytics",
-      url: "/dashboard/analytics",
+      url: "/analytics",
       icon: IconChartBar,
     },
     {
       title: "Pricing",
-      url: "/dashboard/pricing",
+      url: "/pricing",
       icon: IconListDetails,
     },
   ],
   navAccount: [
     {
       title: "Account",
-      url: "/dashboard/account",
+      url: "/account",
       icon: IconUser,
     },
     {
       title: "Billing",
-      url: "/dashboard/billing",
+      url: "/billing",
       icon: IconCreditCard,
     },
     {
       title: "Notifications",
-      url: "/dashboard/notifications",
+      url: "/notifications",
       icon: IconBell,
     },
   ],

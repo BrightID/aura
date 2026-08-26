@@ -11,6 +11,10 @@
     {
       "source": "/demo/:path*",
       "destination": "/demo/index.html"
+    },
+    {
+      "source": "/((?!demo(?:/|$)).*)",
+      "destination": "https://aura.brightid.org/$1"
     }
   ]
 }
