@@ -1,13 +1,6 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { App } from './App'
-import './styles.css'
+import { mount } from "./mount"
 
-const root = document.getElementById('root')
-if (!root) throw new Error('#root not found')
+const root = document.getElementById("root")
+if (!root) throw new Error("#root not found")
 
-createRoot(root).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-)
+mount(root)

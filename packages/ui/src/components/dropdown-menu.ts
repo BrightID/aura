@@ -234,8 +234,9 @@ export class DropdownMenuElement extends LitElement {
     if (items.length === 0) return
     const active = document.activeElement
     let idx = items.findIndex((el) => el === active)
+    if (idx < 0) idx = dir === 1 ? -1 : 0
     idx = (idx + dir + items.length) % items.length
-    items[idx].focus()
+    items[idx]?.focus()
   }
 
   private _onItemSelect = () => {

@@ -1,36 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "routes": [
-    {
-      "src": "^/dashboard(/.*)?$",
-      "dest": "https://aura-dashboard-rust.vercel.app/dashboard$1"
-    },
-    {
-      "src": "^/demo(/.*)?$",
-      "dest": "https://aura-demo.vercel.app/demo$1"
-    },
-    {
-      "src": "^/docs(/.*)?$",
-      "dest": "https://aura-docs.vercel.app/docs$1"
-    },
-    {
-      "src": "^/interface/?$",
-      "status": 307,
-      "headers": { "Location": "/interface/login" }
-    },
-    {
-      "src": "^/interface(/.*)?$",
-      "dest": "https://aura-get-verified.vercel.app/interface$1"
-    },
-    {
-      "src": "^/core(/.*)?$",
-      "dest": "https://aura-frontend-new.vercel.app/core$1"
-    },
-    {
-      "src": "^/((?!l/).*)$",
-      "dest": "/index.html"
-    }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

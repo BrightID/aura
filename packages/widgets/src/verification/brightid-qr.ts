@@ -1,5 +1,5 @@
 import brightIDIcon from '@/assets/icons/brightid.svg'
-import { AURA_NODE_URL, AURA_NODE_URL_PROXY } from '@/lib/constants/domains'
+import { AURA_NODE_URL } from '@/lib/constants/domains'
 import { IMPORT_PREFIX, RECOVERY_CHANNEL_TTL } from '@/lib/constants/time'
 import {
   aesKey,
@@ -284,8 +284,7 @@ export class VerificationBrightIDQrElement extends LitElement {
   }
 
   private _buildQRCode() {
-    const baseUrl = AURA_NODE_URL_PROXY
-    const channelUrl = `${location.origin}${baseUrl}/profile`
+    const channelUrl = `${AURA_NODE_URL}/profile`
 
     const browser = platform.name
     const os = platform.os?.family
@@ -294,11 +293,7 @@ export class VerificationBrightIDQrElement extends LitElement {
 
     const qrUrl = buildRecoveryChannelQrUrl({
       aesKey: aesKey.get(),
-      url: {
-        href: channelUrl.startsWith('/')
-          ? channelUrl.replace(AURA_NODE_URL_PROXY, AURA_NODE_URL)
-          : channelUrl
-      },
+      url: { href: channelUrl },
       t: urlTypesOfActions['superapp'],
       changePrimaryDevice: false,
       name: `Aura Verified ${deviceInfo}`

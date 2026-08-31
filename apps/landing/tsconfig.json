@@ -17,6 +17,7 @@
     "allowJs": true,
     "checkJs": false,
     "experimentalDecorators": true,
+    "types": ["vite/client"],
     "paths": {
       "$lib/*": ["./src/lib/*"]
     }

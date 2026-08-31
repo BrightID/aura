@@ -4,7 +4,7 @@ import { customElement, property } from 'lit/decorators.js'
 import platform from 'platform'
 import nacl from 'tweetnacl'
 
-import { AURA_NODE_URL, AURA_NODE_URL_PROXY } from '@/lib/constants/domains'
+import { AURA_NODE_URL } from '@/lib/constants/domains'
 import { IMPORT_PREFIX, RECOVERY_CHANNEL_TTL } from '@/lib/constants/time'
 import {
   aesKey,
@@ -212,8 +212,7 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
   }
 
   protected generateBrightIDQRCodeShare() {
-    const baseUrl = AURA_NODE_URL_PROXY
-    const url = new URL(`${location.origin + baseUrl}/profile`)
+    const url = new URL(`${AURA_NODE_URL}/profile`)
 
     if (aesKey.get()) {
       const channelUrl = url.href
@@ -229,11 +228,7 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
 
       const newQrUrl = buildRecoveryChannelQrUrl({
         aesKey: aesKey.get(),
-        url: channelUrl.startsWith('/')
-          ? {
-              href: channelUrl.replace(AURA_NODE_URL_PROXY, AURA_NODE_URL)
-            }
-          : { href: channelUrl },
+        url: { href: channelUrl },
         t: urlTypesOfActions['superapp'],
         changePrimaryDevice: false,
         name: `Aura Verified ${deviceInfo}`

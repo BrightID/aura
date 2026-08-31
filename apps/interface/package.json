@@ -22,7 +22,7 @@
   "scripts": {
     "drizzle": "drizzle-kit",
     "generate-types": "openapi-typescript ./api-docs.json -o ./src/lib/schema.d.ts",
-    "dev": "vite --port ${PORT:-5173}",
+    "dev": "vite --port 3000",
     "build": "vite build",
     "build:package": "bun clean && tsup",
     "clean": "rimraf build"

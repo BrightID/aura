@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port ${PORT:-5175}",
+    "dev": "vite --port 5175",
     "build": "rm -rf dist && tsc --noEmit && vite build",
     "preview": "vite preview",
     "check-types": "tsc --noEmit"

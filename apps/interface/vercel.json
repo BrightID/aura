@@ -2,48 +2,5 @@
   "functions": {
     "api/*.ts": { "maxDuration": 30 },
     "api/**/*.ts": { "maxDuration": 30 }
-  },
-  "outputDirectory": "./dist",
-  "redirects": [
-    {
-      "source": "/interface",
-      "destination": "/interface/login",
-      "permanent": false
-    },
-    {
-      "source": "/interface/",
-      "destination": "/interface/login",
-      "permanent": false
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/interface/brightid/:path*",
-      "destination": "https://recovery.brightid.org/:path*"
-    },
-    {
-      "source": "/interface/auranode/:path*",
-      "destination": "https://aura-node.brightid.org/:path*"
-    },
-    {
-      "source": "/interface/auranode-test/:path*",
-      "destination": "https://aura-test.brightid.org/:path*"
-    },
-    {
-      "source": "/interface/api/:path*",
-      "destination": "/api/:path*"
-    },
-    {
-      "source": "/interface",
-      "destination": "/interface/index.html"
-    },
-    {
-      "source": "/interface/:path*",
-      "destination": "/interface/index.html"
-    },
-    {
-      "source": "/((?!interface(?:/|$)|api(?:/|$)).*)",
-      "destination": "https://aura.brightid.org/$1"
-    }
-  ]
+  }
 }

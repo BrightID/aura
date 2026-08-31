@@ -1,49 +1,44 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import { litHMRPlugin } from './vite-plugin-lit-hmr'
+import { resolve } from "node:path"
+import { defineConfig } from "vite"
+import tsconfigPaths from "vite-tsconfig-paths"
+import { litHMRPlugin } from "./vite-plugin-lit-hmr"
+import { injectRemoteCss } from "../vite-inject-remote-css"
 
-const dirname =
-  typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url))
+const PORT = 3000
 
 export default defineConfig({
-  root: '.',
-  base: '/interface/',
+  root: ".",
+  base: "/interface/",
   build: {
-    // Nested so Vercel can serve /interface/assets/* as real files instead of
-    // falling through the SPA rewrite to index.html (blank page).
-    outDir: 'dist/interface',
-    target: 'es2022'
+    outDir: "dist",
+    target: "esnext",
+    rollupOptions: {
+      input: {
+        index: resolve(__dirname, "index.html"),
+        mount: resolve(__dirname, "src/mount.ts"),
+      },
+      preserveEntrySignatures: "exports-only",
+      output: {
+        entryFileNames: (chunk) =>
+          chunk.name === "mount" ? "remoteEntry.js" : "assets/[name]-[hash].js",
+      },
+    },
   },
   define: {
-    'process.env': {}
+    "process.env": {},
   },
-  plugins: [tsconfigPaths(), litHMRPlugin()],
+  plugins: [tsconfigPaths(), litHMRPlugin(), injectRemoteCss("/interface/")],
   server: {
     host: true,
-    allowedHosts: ['localhost', '.localhost'],
-    port: 3000,
-    proxy: {
-      '^/auranode(/.*)?$': {
-        target: 'https://aura-node.brightid.org',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/auranode/, ''),
-        secure: process.env.NODE_ENV?.toLowerCase() !== 'development'
-      },
-      '^/auranode-test(/.*)?$': {
-        target: 'https://aura-test.brightid.org',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/auranode-test/, ''),
-        // Fixed regex
-        secure: process.env.NODE_ENV?.toLowerCase() !== 'development'
-      },
-      '^/api(/.*)?$': {
-        target: 'https://aura-get-verified.vercel.app',
-        changeOrigin: true,
-        secure: process.env.NODE_ENV?.toLowerCase() !== 'development'
-      }
-    }
-  }
-  // assetsInclude: ['**/*.html']
+    allowedHosts: ["localhost", ".localhost"],
+    port: PORT,
+    origin: `http://localhost:${PORT}`,
+    cors: true,
+    // No external proxies: aura-node is CORS-open (direct browser calls) and
+    // the API under dev runs on the interface's own server at :3000.
+  },
+  preview: {
+    port: PORT,
+    cors: true,
+  },
 })

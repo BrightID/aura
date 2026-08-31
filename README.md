@@ -19,6 +19,10 @@ Aura is a decentralized platform where experts assess each other and evaluate su
 
 For detailed instructions, refer to the [Aura Documentation](https://brightid.gitbook.io/aura/).
 
+## Deploy
+
+Ship the monorepo as **one Vercel project** rooted at the repo (not `apps/landing`). The project Framework must be **Services** so the `services` block in `vercel.json` is applied (`web` + `docs` + `api` on one domain). Merge env vars from the old per-app projects onto this one. Apps are no longer deployed as separate Vercel projects.
+
 ## Contributing
 
 We welcome contributions from the community. To get involved:

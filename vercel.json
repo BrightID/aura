@@ -1,0 +1,50 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "apps/landing",
+      "framework": "vite",
+      "installCommand": "cd ../.. && bun install",
+      "buildCommand": "cd ../.. && bunx turbo run build --filter=@aura/landing",
+      "outputDirectory": "dist"
+    },
+    "docs": {
+      "root": "apps/docs",
+      "framework": "nextjs",
+      "installCommand": "cd ../.. && bun install",
+      "buildCommand": "bun run build"
+    },
+    "api": {
+      "root": "apps/interface",
+      "framework": null,
+      "installCommand": "cd ../.. && bun install",
+      "buildCommand": "echo 'Skipping frontend build — interface UI is a Module Federation remote'",
+      "outputDirectory": "static",
+      "functions": {
+        "api/*.ts": { "maxDuration": 30 },
+        "api/**/*.ts": { "maxDuration": 30 }
+      },
+      "rewrites": [
+        { "source": "/interface/api/:path(.*)?", "destination": "/api/:path" }
+      ]
+    }
+  },
+  "redirects": [
+    { "source": "/core", "destination": "/core/", "permanent": true },
+    { "source": "/dashboard", "destination": "/dashboard/", "permanent": true },
+    { "source": "/demo", "destination": "/demo/", "permanent": true },
+    { "source": "/interface", "destination": "/interface/login", "permanent": false },
+    { "source": "/interface/", "destination": "/interface/login", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/docs/(.*)", "destination": { "service": "docs" } },
+    { "source": "/docs", "destination": { "service": "docs" } },
+    { "source": "/interface/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    {
+      "source": "/core/brightid/(.*)",
+      "destination": "https://recovery.brightid.org/$1"
+    },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
+}

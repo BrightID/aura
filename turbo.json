@@ -7,6 +7,17 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "@aura/landing#build": {
+      "dependsOn": [
+        "^build",
+        "@aura/core#build",
+        "aura-dashboard#build",
+        "@aura/demo-integration#build",
+        "@aura/interface#build"
+      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },

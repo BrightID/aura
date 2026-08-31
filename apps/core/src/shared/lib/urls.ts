@@ -1,7 +1,5 @@
 import { IS_PRODUCTION } from "./env";
 import {
-  AURA_NODE_PROXY_PATH,
-  AURA_TEST_NODE_PROXY_PATH,
   DEFAULT_AURA_NODE_URL,
   DEFAULT_AURA_TEST_NODE_URL,
   RECOVERY_PROXY_PATH,
@@ -9,18 +7,15 @@ import {
 
 const env = import.meta.env;
 
-// The app is deployed in production under the `/core` path prefix (see
-// vite.config.ts `base`); these proxy paths are same-origin browser-facing
-// URLs, so they need the prefix too. In dev the app is served at `/`, so no
-// prefix is added there.
-const BASE_PATH = IS_PRODUCTION ? "/core" : "";
+// Vite `base` is `/core/` in both dev and prod (host origin or standalone).
+const BASE_PATH = env.BASE_URL.replace(/\/$/, "") || "/core";
 
-export const AURA_NODE_URL_PROXY = IS_PRODUCTION
-  ? `${BASE_PATH}${AURA_NODE_PROXY_PATH}`
-  : AURA_TEST_NODE_PROXY_PATH;
-
+// aura-node sends `Access-Control-Allow-Origin: *`, so the browser can call
+// it directly — no proxy needed. Override per-env via Vite env vars.
 export const AURA_NODE_URL: string = IS_PRODUCTION
   ? (env.VITE_AURA_NODE_URL ?? DEFAULT_AURA_NODE_URL)
   : (env.VITE_AURA_TEST_NODE_URL ?? DEFAULT_AURA_TEST_NODE_URL);
 
+// recovery.brightid.org does NOT send CORS headers, so it must be reached
+// same-origin through the single rewrite kept in vercel.json.
 export const RECOVERY_URL_PROXY = `${BASE_PATH}${RECOVERY_PROXY_PATH}`;

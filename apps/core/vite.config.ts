@@ -4,29 +4,23 @@ import { defineConfig, loadEnv } from "vite"
 import solid from "vite-plugin-solid"
 import pkg from "./package.json"
 import {
-  AURA_NODE_PROXY_PATH,
-  AURA_TEST_NODE_PROXY_PATH,
-  DEFAULT_AURA_NODE_URL,
-  DEFAULT_AURA_TEST_NODE_URL,
   DEFAULT_RECOVERY_URL,
   RECOVERY_PROXY_PATH,
 } from "./src/shared/lib/url-defaults"
 import { auraPWA } from "./sw-plugin"
+import { injectRemoteCss } from "../vite-inject-remote-css"
 
 const stripPrefix = (prefix: string) => (path: string) =>
   path.replace(new RegExp(`^${prefix}`), "")
+
+const PORT = 5173
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, __dirname, "")
 
   return {
     base: "/core/",
-    build: {
-      // Nested so Vercel can serve /core/assets/* as real files instead of
-      // falling through the SPA rewrite to index.html (blank page).
-      outDir: "dist/core",
-    },
-    plugins: [tailwindcss(), solid(), auraPWA(pkg.version)],
+    plugins: [tailwindcss(), solid(), auraPWA(pkg.version), injectRemoteCss("/core/")],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
@@ -35,23 +29,35 @@ export default defineConfig(({ mode }) => {
         "@": resolve(__dirname, "./src"),
       },
     },
+    build: {
+      target: "esnext",
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, "index.html"),
+          mount: resolve(__dirname, "src/mount.tsx"),
+        },
+        preserveEntrySignatures: "exports-only",
+        output: {
+          entryFileNames: (chunk) =>
+            chunk.name === "mount" ? "remoteEntry.js" : "assets/[name]-[hash].js",
+        },
+      },
+    },
     server: {
+      port: PORT,
+      origin: `http://localhost:${PORT}`,
+      cors: true,
       host: true,
       allowedHosts: ["localhost", ".localhost"],
       proxy: {
-        [AURA_TEST_NODE_PROXY_PATH]: {
-          target: env.VITE_AURA_TEST_NODE_URL ?? DEFAULT_AURA_TEST_NODE_URL,
+        // recovery.brightid.org sends no CORS headers → keep a same-origin
+        // proxy for dev. aura-node is CORS-open and is called directly.
+        [`/core${RECOVERY_PROXY_PATH}`]: {
+          target: env.VITE_RECOVERY_URL ?? DEFAULT_RECOVERY_URL,
           changeOrigin: true,
           secure: true,
-          rewrite: stripPrefix(AURA_TEST_NODE_PROXY_PATH),
+          rewrite: stripPrefix(`/core${RECOVERY_PROXY_PATH}`),
         },
-        [AURA_NODE_PROXY_PATH]: {
-          target: env.VITE_AURA_NODE_URL ?? DEFAULT_AURA_NODE_URL,
-          changeOrigin: true,
-          secure: true,
-          rewrite: stripPrefix(AURA_NODE_PROXY_PATH),
-        },
-        // BrightID recovery service — encrypted backup downloads
         [RECOVERY_PROXY_PATH]: {
           target: env.VITE_RECOVERY_URL ?? DEFAULT_RECOVERY_URL,
           changeOrigin: true,
@@ -59,6 +65,10 @@ export default defineConfig(({ mode }) => {
           rewrite: stripPrefix(RECOVERY_PROXY_PATH),
         },
       },
+    },
+    preview: {
+      port: PORT,
+      cors: true,
     },
   }
 })

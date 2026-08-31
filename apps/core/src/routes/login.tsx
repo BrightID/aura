@@ -17,7 +17,7 @@ import { createMutation, createQuery } from "@tanstack/solid-query"
 import QRCode from "qrcode"
 import { createEffect, createMemo, createSignal, onMount, Show } from "solid-js"
 import FadeIn from "@/components/motions/fade-in"
-import { AURA_NODE_URL, AURA_NODE_URL_PROXY } from "@/shared/lib/urls"
+import { AURA_NODE_URL } from "@/shared/lib/urls"
 import { authStore, setAuthStore, setKeypair } from "@/store/auth"
 import {
   initRecovery,
@@ -56,7 +56,7 @@ export default function LoginPage() {
 
   const createChannel = createMutation(() => ({
     mutationFn: async () => {
-      const href = `${AURA_NODE_URL_PROXY}/profile`
+      const href = `${AURA_NODE_URL}/profile`
       setRecoveryChannel(hash(recoveryStore.aesKey), href)
       await uploadRecoveryData({
         channelUrl: href,
@@ -139,12 +139,9 @@ export default function LoginPage() {
   const qrUrl = createMemo(() => {
     const { aesKey, channel } = recoveryStore
     if (!aesKey || !channel.url) return undefined
-    const href = channel.url.href.startsWith("/")
-      ? channel.url.href.replace(AURA_NODE_URL_PROXY, AURA_NODE_URL)
-      : channel.url.href
     return buildRecoveryChannelQrUrl({
       aesKey,
-      href,
+      href: channel.url.href,
       name: `Aura ${monthYear}`,
     })
   })

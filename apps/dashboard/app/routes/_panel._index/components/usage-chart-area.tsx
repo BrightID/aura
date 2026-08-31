@@ -7,6 +7,7 @@ import {
 } from "~/components/ui/chart"
 import { useIsMobile } from "~/hooks/use-mobile"
 import { useAuraEvent } from "~/lib/aura"
+import { API_BASE_URL } from "~/constants"
 import * as React from "react"
 
 const chartConfig = {
@@ -15,7 +16,7 @@ const chartConfig = {
 
 async function fetchUsage(projectId: string) {
   const res = await fetch(
-    `${import.meta.env["VITE_SOME_AURA_DASHBOARD_API_URL"]}/api/projects/${projectId}/usage`,
+    `${API_BASE_URL}/api/projects/${projectId}/usage`,
     {
       headers: {
         authorization: `Bearer ${await (await import("firebase/auth")).getAuth().currentUser?.getIdToken()}`,

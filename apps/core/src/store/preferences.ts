@@ -1,6 +1,6 @@
 import { makePersisted } from "@solid-primitives/storage"
 import { createStore } from "solid-js/store"
-import { AURA_NODE_URL_PROXY } from "@/shared/lib/urls"
+import { AURA_NODE_URL } from "@/shared/lib/urls"
 
 export type Theme = "dark" | "light"
 
@@ -14,8 +14,8 @@ export interface PreferencesState {
 }
 
 const DEFAULTS: PreferencesState = {
-  baseUrl: AURA_NODE_URL_PROXY,
-  nodeUrls: [AURA_NODE_URL_PROXY],
+  baseUrl: AURA_NODE_URL,
+  nodeUrls: [AURA_NODE_URL],
   isPrimaryDevice: true,
   lastSyncTime: 0,
   languageTag: null,

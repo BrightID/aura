@@ -1,20 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/demo",
-      "destination": "/demo/index.html"
-    },
-    {
-      "source": "/demo/:path*",
-      "destination": "/demo/index.html"
-    },
-    {
-      "source": "/((?!demo(?:/|$)).*)",
-      "destination": "https://aura.brightid.org/$1"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }

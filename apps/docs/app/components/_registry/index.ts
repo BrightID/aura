@@ -1,5 +1,3 @@
-import "@aura/ui"
-
 import { badge } from "./badge"
 import { button } from "./button"
 import { card } from "./card"

@@ -1,6 +1,6 @@
 import { QueryClient } from '@aura/query'
 import createClient from 'openapi-fetch'
-import { AURA_NODE_URL_PROXY } from '@/lib/constants/domains'
+import { AURA_NODE_URL } from '@/lib/constants/domains'
 import type { paths } from '@/lib/schema'
 import type { BrightID } from '@/types/brightid'
 import type { Project } from '@/types/projects'
@@ -9,14 +9,14 @@ export const clientAPI = createClient<paths>({
   baseUrl: import.meta.env.PROD ? '/interface/api' : 'http://localhost:3000/api'
 })
 
-const baseUrl = AURA_NODE_URL_PROXY
-
+// aura-node is CORS-open → call it directly.
 export const auraNodeAPI = createClient({
-  baseUrl: `${baseUrl}/profile`
+  baseUrl: `${AURA_NODE_URL}/profile`
 })
 
 export const auraGetVerifiedAPI = createClient({
-  baseUrl: import.meta.env.VITE_SOME_AURA_BACKEND_URL
+  baseUrl:
+    import.meta.env.VITE_SOME_AURA_BACKEND_URL ?? 'https://aura-get-verified.vercel.app'
 })
 
 export const queryClient = new QueryClient()

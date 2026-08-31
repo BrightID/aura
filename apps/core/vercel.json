@@ -1,32 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/core/brightid/:path*",
-      "destination": "https://recovery.brightid.org/:path*"
-    },
-    {
-      "source": "/core/auranode/:path*",
-      "destination": "https://aura-node.brightid.org/:path*"
-    },
-    {
-      "source": "/core/auranode-test/:path*",
-      "destination": "https://aura-test.brightid.org/:path*"
-    },
-    {
-      "source": "/core",
-      "destination": "/core/index.html"
-    },
-    {
-      "source": "/core/:path*",
-      "destination": "/core/index.html"
-    },
-    {
-      "source": "/((?!core(?:/|$)).*)",
-      "destination": "https://aura.brightid.org/$1"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }

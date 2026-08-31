@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port ${PORT:-5176}",
-    "build": "vite build",
+    "dev": "vite --port 5176",
+    "build": "vite build && bun scripts/copy-remotes.js",
     "preview": "vite preview",
     "check-types": "tsc --noEmit"
   },
