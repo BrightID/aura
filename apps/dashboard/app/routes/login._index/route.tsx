@@ -219,7 +219,9 @@ function LoginScreen() {
         <div className="space-y-3">
           <a-button
             variant="outline"
-            onClick={loginWithGoogle}
+            onClick={() =>
+              loginWithGoogle().catch((e) => toast((e as Error).message))
+            }
             className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
           >
             <IconBrandGoogle className="size-5 mr-2" />
@@ -228,7 +230,9 @@ function LoginScreen() {
 
           <a-button
             variant="outline"
-            onClick={loginWithApple}
+            onClick={() =>
+              loginWithApple().catch((e) => toast((e as Error).message))
+            }
             className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
           >
             <IconBrandApple className="size-5 mr-2" />
