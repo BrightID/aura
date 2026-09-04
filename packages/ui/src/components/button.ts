@@ -50,6 +50,8 @@ export class ButtonElement extends LitElement {
   static styles = css`
     :host {
       display: inline-flex;
+      border-radius: var(--radius);
+      vertical-align: middle;
     }
 
     button {

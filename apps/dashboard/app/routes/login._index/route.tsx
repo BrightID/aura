@@ -96,149 +96,136 @@ function LoginScreen() {
   }
 
   return (
-    <a-card className="max-w-md hover-lift shadow-2xl relative z-10 opacity-100 w-[126%] mx-[0] border-transparent">
-      <div className="text-center space-y-2 p-6">
-        <a-head
-          level="3"
-          className="text-3xl font-bold font-sans text-card-foreground"
-        >
+    <a-card variant="default" className="relative z-10 w-full max-w-[26rem] p-8 shadow-2xl">
+      <div className="space-y-1.5 pb-6 text-center">
+        <a-head level="3" className="text-3xl font-bold tracking-tight">
           Welcome
         </a-head>
-        <p className="text-card-foreground/70 font-sans">
+        <p className="text-sm text-muted-foreground">
           Sign in or create an account
         </p>
       </div>
 
-      <div className="space-y-6 p-6 pt-0">
-        <a-tabs value="login" className="w-full">
-          <a-tab value="login">Sign In</a-tab>
-          <a-tab value="signup">Sign Up</a-tab>
+      <a-tabs value="login" className="w-full">
+        <a-tab value="login">Sign In</a-tab>
+        <a-tab value="signup">Sign Up</a-tab>
 
-          <a-tab-panel slot="panel" value="login" className="space-y-4">
-            <form
-              onSubmit={loginForm.handleSubmit(onLogin)}
-              className="space-y-4"
-            >
-              <div className="space-y-2">
-                <a-label for="login-email">Email</a-label>
-                <AuraTextInput
-                  control={loginForm.control}
-                  name="email"
-                  id="login-email"
-                  type="email"
-                  placeholder="you@example.com"
-                />
-                {loginForm.formState.errors.email && (
-                  <p className="text-red-500 text-xs">
-                    {loginForm.formState.errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <a-label for="login-password">Password</a-label>
-                <AuraTextInput
-                  control={loginForm.control}
-                  name="password"
-                  id="login-password"
-                  type="password"
-                  placeholder="••••••••"
-                />
-                {loginForm.formState.errors.password && (
-                  <p className="text-red-500 text-xs">
-                    {loginForm.formState.errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <a-button
-                disabled={isPending}
-                type="submit"
-                className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
-              >
-                Sign In
-              </a-button>
-            </form>
-          </a-tab-panel>
-
-          <a-tab-panel slot="panel" value="signup" className="space-y-4">
-            <form
-              onSubmit={signupForm.handleSubmit(onSignup)}
-              className="space-y-4"
-            >
-              <div className="space-y-2">
-                <a-label for="signup-email">Email</a-label>
-                <AuraTextInput
-                  control={signupForm.control}
-                  name="email"
-                  id="signup-email"
-                  type="email"
-                  placeholder="you@example.com"
-                />
-                {signupForm.formState.errors.email && (
-                  <p className="text-red-500 text-xs">
-                    {signupForm.formState.errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <a-label for="signup-password">Password</a-label>
-                <AuraTextInput
-                  control={signupForm.control}
-                  name="password"
-                  id="signup-password"
-                  type="password"
-                  placeholder="••••••••"
-                />
-                {signupForm.formState.errors.password && (
-                  <p className="text-red-500 text-xs">
-                    {signupForm.formState.errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <a-button
-                disabled={isPending}
-                type="submit"
-                className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
-              >
-                Sign Up
-              </a-button>
-            </form>
-          </a-tab-panel>
-        </a-tabs>
-
-        <a-separator />
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="px-2 text-card-foreground/60 font-sans">
-            Or continue with
-          </span>
-        </div>
-
-        <div className="space-y-3">
-          <a-button
-            variant="outline"
-            onClick={() =>
-              loginWithGoogle().catch((e) => toast((e as Error).message))
-            }
-            className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
+        <a-tab-panel slot="panel" value="login">
+          <form
+            onSubmit={loginForm.handleSubmit(onLogin)}
+            className="space-y-4"
           >
-            <IconBrandGoogle className="size-5 mr-2" />
-            Google
-          </a-button>
+            <div className="space-y-1.5">
+              <a-label for="login-email">Email</a-label>
+              <AuraTextInput
+                control={loginForm.control}
+                name="email"
+                id="login-email"
+                type="email"
+                placeholder="you@example.com"
+              />
+              {loginForm.formState.errors.email && (
+                <p className="text-xs text-red-500">
+                  {loginForm.formState.errors.email.message}
+                </p>
+              )}
+            </div>
 
-          <a-button
-            variant="outline"
-            onClick={() =>
-              loginWithApple().catch((e) => toast((e as Error).message))
-            }
-            className="w-full glass-effect border-foreground/20 hover-lift ripple-effect text-card-foreground hover:bg-foreground/10 font-sans transition-all duration-300"
+            <div className="space-y-1.5">
+              <a-label for="login-password">Password</a-label>
+              <AuraTextInput
+                control={loginForm.control}
+                name="password"
+                id="login-password"
+                type="password"
+                placeholder="••••••••"
+              />
+              {loginForm.formState.errors.password && (
+                <p className="text-xs text-red-500">
+                  {loginForm.formState.errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <a-button disabled={isPending} type="submit" size="lg" className="w-full font-semibold">
+              Sign In
+            </a-button>
+          </form>
+        </a-tab-panel>
+
+        <a-tab-panel slot="panel" value="signup">
+          <form
+            onSubmit={signupForm.handleSubmit(onSignup)}
+            className="space-y-4"
           >
-            <IconBrandApple className="size-5 mr-2" />
-            Apple
-          </a-button>
-        </div>
+            <div className="space-y-1.5">
+              <a-label for="signup-email">Email</a-label>
+              <AuraTextInput
+                control={signupForm.control}
+                name="email"
+                id="signup-email"
+                type="email"
+                placeholder="you@example.com"
+              />
+              {signupForm.formState.errors.email && (
+                <p className="text-xs text-red-500">
+                  {signupForm.formState.errors.email.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <a-label for="signup-password">Password</a-label>
+              <AuraTextInput
+                control={signupForm.control}
+                name="password"
+                id="signup-password"
+                type="password"
+                placeholder="••••••••"
+              />
+              {signupForm.formState.errors.password && (
+                <p className="text-xs text-red-500">
+                  {signupForm.formState.errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <a-button disabled={isPending} type="submit" size="lg" className="w-full font-semibold">
+              Sign Up
+            </a-button>
+          </form>
+        </a-tab-panel>
+      </a-tabs>
+
+      <div className="relative my-6">
+        <div className="h-px w-full bg-border" />
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Or continue with
+        </span>
+      </div>
+
+      <div className="grid gap-2.5">
+        <a-button
+          variant="glass"
+          className="w-full"
+          onClick={() =>
+            loginWithGoogle().catch((e) => toast((e as Error).message))
+          }
+        >
+          <IconBrandGoogle className="mr-2 size-5" />
+          Google
+        </a-button>
+
+        <a-button
+          variant="glass"
+          className="w-full"
+          onClick={() =>
+            loginWithApple().catch((e) => toast((e as Error).message))
+          }
+        >
+          <IconBrandApple className="mr-2 size-5" />
+          Apple
+        </a-button>
       </div>
     </a-card>
   )

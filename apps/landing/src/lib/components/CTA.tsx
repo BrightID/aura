@@ -26,9 +26,9 @@ export default function CTA() {
           already know you, vouching for you. It takes minutes to start.
         </p>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="/interface/login">
-            <a-button size="lg" class="group animate-pulse-glow">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5">
+          <a href="/interface/login" class="inline-flex">
+            <a-button size="lg" class="group min-w-[13rem] shadow-[0_0_32px_oklch(80%_0.12_195_/_0.28)]">
               <span class="inline-flex items-center gap-2">
                 Get Verified Now
                 <a-icon
@@ -38,8 +38,8 @@ export default function CTA() {
               </span>
             </a-button>
           </a>
-          <a href="/docs">
-            <a-button variant="glass" size="lg">
+          <a href="/docs" class="inline-flex">
+            <a-button variant="glass" size="lg" class="min-w-[13rem]">
               Explore Documentation
             </a-button>
           </a>

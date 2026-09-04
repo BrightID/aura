@@ -1,10 +1,11 @@
-import { onMount } from "solid-js"
+import { onMount, Show } from "solid-js"
 import Header from "$lib/components/Header"
 import Footer from "$lib/components/Footer"
 import Home from "$lib/components/Home"
 import NotFound from "$lib/components/NotFound"
 import RemoteApp from "./RemoteApp"
 import { remotes } from "./remotes"
+import { path } from "./router"
 
 function Landing(props: { path: string }) {
   onMount(async () => {
@@ -30,14 +31,14 @@ function Landing(props: { path: string }) {
 }
 
 export default function App() {
-  const path = window.location.pathname.replace(/\/+$/, "") || "/"
-  const remote = remotes.find(
-    (entry) => path === entry.prefix || path.startsWith(`${entry.prefix}/`),
+  const remote = () =>
+    remotes.find(
+      (entry) => path() === entry.prefix || path().startsWith(`${entry.prefix}/`),
+    )
+
+  return (
+    <Show when={remote()} keyed fallback={<Landing path={path()} />}>
+      {(entry) => <RemoteApp load={entry.load} />}
+    </Show>
   )
-
-  if (remote) {
-    return <RemoteApp load={remote.load} />
-  }
-
-  return <Landing path={path} />
 }

@@ -25,11 +25,16 @@ export class TabsElement extends LitElement {
     .tab-list {
       position: relative;
       display: flex;
+      align-items: stretch;
       padding: 0.25rem;
       border-radius: var(--radius, 0.5rem);
-      background: var(--tab-bg);
+      background: var(--tab-bg, var(--muted, #1e1e2a));
       backdrop-filter: blur(12px);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    slot {
+      display: contents;
     }
 
     .indicator {
@@ -50,6 +55,8 @@ export class TabsElement extends LitElement {
     ::slotted(a-tab) {
       position: relative;
       z-index: 1;
+      flex: 1 1 0;
+      min-width: 0;
     }
   `
 
@@ -201,8 +208,9 @@ export class TabElement extends LitElement {
   static styles = css`
     :host {
       display: block;
-      flex: 1 1 auto;
-      width: 100%;
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
     }
     button {
       min-height: 2rem;

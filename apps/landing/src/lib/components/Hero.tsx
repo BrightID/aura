@@ -34,17 +34,17 @@ export default function Hero() {
           verified once, then carry that proof anywhere Aura is accepted.
         </p>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
-          <a href="/interface/login">
-            <a-button size="lg" class="group animate-pulse-glow">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-20">
+          <a href="/interface/login" class="inline-flex">
+            <a-button size="lg" class="group min-w-[13rem] shadow-[0_0_32px_oklch(80%_0.12_195_/_0.28)]">
               <span class="inline-flex items-center gap-2">
                 Get Verified
                 <a-icon name="arrow-right" class="text-lg transition-transform group-hover:translate-x-1" />
               </span>
             </a-button>
           </a>
-          <a href="#how-it-works">
-            <a-button variant="glass" size="lg">
+          <a href="#how-it-works" class="inline-flex">
+            <a-button variant="glass" size="lg" class="min-w-[13rem]">
               <span class="inline-flex items-center gap-2">
                 <a-icon name="sparkles" class="text-lg text-cyan-300" />
                 See How It Works
