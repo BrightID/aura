@@ -47,11 +47,6 @@ export default function HomeViewLayout(props: ParentProps) {
       <div class="px-5 pt-6 pb-10">
         <HomeHeader />
         <ProfileHeaderCard subjectId={subjectId()!} />
-        <Show when={profileMissing()}>
-          <div class="mt-4">
-            <ProfileNotFoundHint subjectId={subjectId()!} self />
-          </div>
-        </Show>
         <div class="my-5" />
         <ProfileInfoPerformance subjectId={subjectId()!} />
 
@@ -78,6 +73,11 @@ export default function HomeViewLayout(props: ParentProps) {
         </nav>
 
         <div class="mt-4">{props.children}</div>
+        <Show when={profileMissing()}>
+          <div class="mt-4">
+            <ProfileNotFoundHint subjectId={subjectId()!} self />
+          </div>
+        </Show>
       </div>
     </Show>
   );
