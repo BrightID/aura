@@ -1,136 +1,136 @@
-import { toast } from "@aura/ui"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
-import { getAuth } from "firebase/auth"
-import { Check, Shield } from "lucide-react"
-import { useRef, useState } from "react"
-import { API_BASE_URL } from "~/constants"
-import { useAuraEvent } from "~/lib/aura"
-import { cn } from "~/lib/utils"
-import type { Project } from "~/types/projects"
-import { formatScore } from "~/utils/numbers"
+import { toast } from '@aura/ui';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { getAuth } from 'firebase/auth';
+import { Check, Shield } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { API_BASE_URL } from '~/constants';
+import { useAuraEvent } from '~/lib/aura';
+import { cn } from '~/lib/utils';
+import type { Project } from '~/types/projects';
+import { formatScore } from '~/utils/numbers';
 
 export const LEVEL_SCRIPTS: Record<number, string> = {
-  0: "", // no gating: any / unverified user passes
-  1: "Aura.subject.level >= 1",
-  2: "Aura.subject.level >= 2",
-  3: "Aura.subject.level >= 3",
-  4: "Aura.subject.level >= 4",
-}
+  0: '', // no gating: any / unverified user passes
+  1: 'Aura.subject.level >= 1',
+  2: 'Aura.subject.level >= 2',
+  3: 'Aura.subject.level >= 3',
+  4: 'Aura.subject.level >= 4',
+};
 
 const levelPalette: Record<
   number,
   {
-    selected: string
-    current: string
-    text: string
-    dot: string
-    badge: string
-    radio: string
+    selected: string;
+    current: string;
+    text: string;
+    dot: string;
+    badge: string;
+    radio: string;
   }
 > = {
   0: {
-    selected: "border-zinc-400 bg-zinc-500/10",
-    current: "border-zinc-400/60 bg-zinc-500/5",
-    text: "text-zinc-400",
-    dot: "bg-zinc-400",
-    badge: "bg-zinc-500/15 text-zinc-400",
-    radio: "border-zinc-400 text-zinc-400",
+    selected: 'border-zinc-400 bg-zinc-500/10',
+    current: 'border-zinc-400/60 bg-zinc-500/5',
+    text: 'text-zinc-400',
+    dot: 'bg-zinc-400',
+    badge: 'bg-zinc-500/15 text-zinc-400',
+    radio: 'border-zinc-400 text-zinc-400',
   },
   1: {
-    selected: "border-amber-500 bg-amber-500/10",
-    current: "border-amber-500/60 bg-amber-500/5",
-    text: "text-amber-500",
-    dot: "bg-amber-500",
-    badge: "bg-amber-500/15 text-amber-600",
-    radio: "border-amber-500 text-amber-500",
+    selected: 'border-amber-500 bg-amber-500/10',
+    current: 'border-amber-500/60 bg-amber-500/5',
+    text: 'text-amber-500',
+    dot: 'bg-amber-500',
+    badge: 'bg-amber-500/15 text-amber-600',
+    radio: 'border-amber-500 text-amber-500',
   },
   2: {
-    selected: "border-sky-500 bg-sky-500/10",
-    current: "border-sky-500/60 bg-sky-500/5",
-    text: "text-sky-500",
-    dot: "bg-sky-500",
-    badge: "bg-sky-500/15 text-sky-600",
-    radio: "border-sky-500 text-sky-500",
+    selected: 'border-sky-500 bg-sky-500/10',
+    current: 'border-sky-500/60 bg-sky-500/5',
+    text: 'text-sky-500',
+    dot: 'bg-sky-500',
+    badge: 'bg-sky-500/15 text-sky-600',
+    radio: 'border-sky-500 text-sky-500',
   },
   3: {
-    selected: "border-emerald-500 bg-emerald-500/10",
-    current: "border-emerald-500/60 bg-emerald-500/5",
-    text: "text-emerald-500",
-    dot: "bg-emerald-500",
-    badge: "bg-emerald-500/15 text-emerald-600",
-    radio: "border-emerald-500 text-emerald-500",
+    selected: 'border-emerald-500 bg-emerald-500/10',
+    current: 'border-emerald-500/60 bg-emerald-500/5',
+    text: 'text-emerald-500',
+    dot: 'bg-emerald-500',
+    badge: 'bg-emerald-500/15 text-emerald-600',
+    radio: 'border-emerald-500 text-emerald-500',
   },
   4: {
-    selected: "border-violet-500 bg-violet-500/10",
-    current: "border-violet-500/60 bg-violet-500/5",
-    text: "text-violet-500",
-    dot: "bg-violet-500",
-    badge: "bg-violet-500/15 text-violet-600",
-    radio: "border-violet-500 text-violet-500",
+    selected: 'border-violet-500 bg-violet-500/10',
+    current: 'border-violet-500/60 bg-violet-500/5',
+    text: 'text-violet-500',
+    dot: 'bg-violet-500',
+    badge: 'bg-violet-500/15 text-violet-600',
+    radio: 'border-violet-500 text-violet-500',
   },
-}
+};
 
 const levelRequirements: Record<number, string> = {
-  0: "No minimum evaluation requirements",
-  1: "1 low+ confidence eval from 1 level 1+ evaluator",
-  2: "1 medium+ confidence eval from 1 level 1+ evaluator",
-  3: "1 high+ confidence eval from 1 level 2+ evaluator OR 2 medium confidence evals from 2 level 2+ evaluators",
-  4: "1 high+ confidence eval from 1 level 3+ evaluator OR 2 medium confidence evals from 2 level 3+ evaluators",
-}
+  0: 'No minimum evaluation requirements',
+  1: '1 low+ confidence eval from 1 level 1+ evaluator',
+  2: '1 medium+ confidence eval from 1 level 1+ evaluator',
+  3: '1 high+ confidence eval from 1 level 2+ evaluator OR 2 medium confidence evals from 2 level 2+ evaluators',
+  4: '1 high+ confidence eval from 1 level 3+ evaluator OR 2 medium confidence evals from 2 level 3+ evaluators',
+};
 
-const levelPoints = [0, 1_000_000, 5_000_000, 10_000_000, 150_000_000]
+const levelPoints = [0, 1_000_000, 5_000_000, 10_000_000, 150_000_000];
 
 export function UserRequiredLevelCard({ project }: { project: Project }) {
   const [selectedLevel, setSelectedLevel] = useState<string>(
-    project.requirementLevel?.toString() ?? "",
-  )
+    project.requirementLevel?.toString() ?? '',
+  );
 
-  const radioGroupRef = useRef<HTMLElement>(null)
-  useAuraEvent<string>(radioGroupRef, "change", setSelectedLevel)
+  const radioGroupRef = useRef<HTMLElement>(null);
+  useAuraEvent<string>(radioGroupRef, 'change', setSelectedLevel);
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const { isPending, mutate } = useMutation({
-    mutationKey: ["update-project", project.id],
+    mutationKey: ['update-project', project.id],
     mutationFn: async (level: number) => {
-      const token = await getAuth().currentUser?.getIdToken()
-      const headers = { Authorization: `Bearer ${token}` }
+      const token = await getAuth().currentUser?.getIdToken();
+      const headers = { Authorization: `Bearer ${token}` };
 
       await axios.post(
         `${API_BASE_URL}/api/projects/update-project`,
         { ...project, requirementLevel: level },
         { headers },
-      )
+      );
 
       const { data } = await axios.post(
         `${API_BASE_URL}/api/projects/update-project-verifications`,
         { projectId: Number(project.id), verifications: LEVEL_SCRIPTS[level] },
         { headers },
-      )
+      );
 
-      return data as { updated: boolean; reason?: string }
+      return data as { updated: boolean; reason?: string };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["user-projects"] })
+      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
       if (data?.updated) {
-        toast.success("Requirement level and verifications script updated")
+        toast.success('Requirement level and verifications script updated');
       } else {
-        toast.success("Requirement level updated")
+        toast.success('Requirement level updated');
         toast.warning(
-          "No BrightID app is linked to this project yet — configure one in the Verification tab to sync the script.",
-        )
+          'No BrightID app is linked to this project yet — configure one in the Verification tab to sync the script.',
+        );
       }
     },
     onError: (error: Error) => {
-      toast.error(error.message)
+      toast.error(error.message);
     },
-  })
+  });
 
   const handleSave = () => {
-    if (selectedLevel === "") return
-    mutate(Number(selectedLevel))
-  }
+    if (selectedLevel === '') return;
+    mutate(Number(selectedLevel));
+  };
 
   return (
     <a-card className="overflow-hidden">
@@ -155,7 +155,7 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
               selectedLevel === project.requirementLevel?.toString()
             }
           >
-            {isPending ? "Saving..." : "Save"}
+            {isPending ? 'Saving...' : 'Save'}
           </a-button>
         </div>
       </div>
@@ -167,37 +167,37 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
           className="space-y-3"
         >
           {[4, 3, 2, 1, 0].map((level) => {
-            const isSelected = selectedLevel === level.toString()
-            const isCurrent = project.requirementLevel === level
-            const palette = levelPalette[level]
+            const isSelected = selectedLevel === level.toString();
+            const isCurrent = project.requirementLevel === level;
+            const palette = levelPalette[level];
 
             return (
               <label
                 key={level}
                 className={cn(
-                  "flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-all",
+                  'flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-all',
                   isSelected
-                    ? cn(palette.selected, "shadow-sm")
+                    ? cn(palette.selected, 'shadow-sm')
                     : isCurrent
                       ? palette.current
-                      : "border-border bg-muted/30 hover:bg-muted/60",
+                      : 'border-border bg-muted/30 hover:bg-muted/60',
                 )}
               >
                 <div className="flex items-center gap-4">
                   <a-radio
                     value={level.toString()}
-                    className={isSelected ? palette.radio : ""}
+                    className={isSelected ? palette.radio : ''}
                   />
                   <div className="select-none space-y-1">
                     <p
                       className={cn(
-                        "font-semibold text-lg flex items-center gap-2",
+                        'font-semibold text-lg flex items-center gap-2',
                         isSelected && palette.text,
                       )}
                     >
                       <span
                         className={cn(
-                          "inline-block w-2 h-2 rounded-full",
+                          'inline-block w-2 h-2 rounded-full',
                           palette.dot,
                         )}
                       />
@@ -216,14 +216,14 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
                     </a-badge>
                   )}
                   {isSelected && !isCurrent && (
-                    <Check className={cn("w-5 h-5", palette.text)} />
+                    <Check className={cn('w-5 h-5', palette.text)} />
                   )}
                 </div>
               </label>
-            )
+            );
           })}
         </a-radio-group>
       </div>
     </a-card>
-  )
+  );
 }

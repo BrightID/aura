@@ -1,5 +1,5 @@
-import { A } from "@solidjs/router"
-import FadeIn from "@/components/motions/fade-in"
+import { A } from '@solidjs/router';
+import FadeIn from '@/components/motions/fade-in';
 
 export default function NotFound() {
   return (
@@ -18,5 +18,5 @@ export default function NotFound() {
         </A>
       </FadeIn>
     </div>
-  )
+  );
 }

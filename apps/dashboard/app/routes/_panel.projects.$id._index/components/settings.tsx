@@ -1,9 +1,9 @@
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Input } from "~/components/ui/input"
-import { Textarea } from "~/components/ui/textarea"
-import { Switch } from "~/components/ui/switch"
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Input } from '~/components/ui/input';
+import { Textarea } from '~/components/ui/textarea';
+import { Switch } from '~/components/ui/switch';
 import {
   Form,
   FormControl,
@@ -11,45 +11,45 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/form"
-import { ImageIcon, Upload } from "lucide-react"
-import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
-import { API_BASE_URL } from "~/constants"
-import _ from "lodash"
-import { getAuth } from "firebase/auth"
-import type { Project } from "~/types/projects"
+} from '~/components/ui/form';
+import { ImageIcon } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { API_BASE_URL } from '~/constants';
+import _ from 'lodash';
+import { getAuth } from 'firebase/auth';
+import type { Project } from '~/types/projects';
 
 const formSchema = z.object({
-  name: z.string().min(1, "Project name is required"),
+  name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
-  websiteUrl: z.string().url().optional().or(z.literal("")),
+  websiteUrl: z.string().url().optional().or(z.literal('')),
   isActive: z.boolean(),
   logoUrl: z.string().optional(),
   image: z.string().optional(),
-  brightIdAppId: z.string().min(1, "BrightID App ID is required"),
-})
+  brightIdAppId: z.string().min(1, 'BrightID App ID is required'),
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 export function SettingsTab({ project }: { project: Project }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: project.name ?? "",
-      description: project.description ?? "",
-      websiteUrl: project.websiteUrl ?? "",
+      name: project.name ?? '',
+      description: project.description ?? '',
+      websiteUrl: project.websiteUrl ?? '',
       isActive: project.isActive ?? true,
-      logoUrl: project.logoUrl ?? "",
-      image: project.image ?? "",
-      brightIdAppId: project.brightIdAppId ?? "",
+      logoUrl: project.logoUrl ?? '',
+      image: project.image ?? '',
+      brightIdAppId: project.brightIdAppId ?? '',
     },
-  })
+  });
 
   const { isPending, mutate } = useMutation({
-    mutationKey: ["update-project", project.id],
+    mutationKey: ['update-project', project.id],
     mutationFn: async (data: FormValues) => {
-      const token = await getAuth().currentUser?.getIdToken()
+      const token = await getAuth().currentUser?.getIdToken();
 
       return axios.post(
         `${API_BASE_URL}/api/projects/update-project`,
@@ -57,19 +57,19 @@ export function SettingsTab({ project }: { project: Project }) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        }
-      )
+        },
+      );
     },
     onSuccess(data, variables, onMutateResult, context) {
-      context.client.invalidateQueries({ queryKey: ["user-projects"] })
+      context.client.invalidateQueries({ queryKey: ['user-projects'] });
     },
-  })
+  });
 
   const onSubmit = (data: FormValues) => {
-    mutate(data)
-  }
+    mutate(data);
+  };
 
   return (
     <Form {...form}>
@@ -105,7 +105,7 @@ export function SettingsTab({ project }: { project: Project }) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} value={field.value ?? ""} />
+                    <Textarea {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,7 +121,7 @@ export function SettingsTab({ project }: { project: Project }) {
                   <FormControl>
                     <Input
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value ?? ''}
                       placeholder="https://..."
                     />
                   </FormControl>
@@ -138,7 +138,7 @@ export function SettingsTab({ project }: { project: Project }) {
                   <div>
                     <FormLabel>Project Status</FormLabel>
                     <p className="text-sm text-muted-foreground">
-                      {field.value ? "Active" : "Inactive"}
+                      {field.value ? 'Active' : 'Inactive'}
                     </p>
                   </div>
                   <FormControl>
@@ -185,7 +185,7 @@ export function SettingsTab({ project }: { project: Project }) {
                       <Input
                         {...field}
                         placeholder="https://example.com/logo.png"
-                        value={field.value ?? ""}
+                        value={field.value ?? ''}
                       />
                     </div>
                   </FormControl>
@@ -216,7 +216,7 @@ export function SettingsTab({ project }: { project: Project }) {
                       <Input
                         {...field}
                         placeholder="https://example.com/image.jpg"
-                        value={field.value ?? ""}
+                        value={field.value ?? ''}
                       />
                     </div>
                   </FormControl>
@@ -269,5 +269,5 @@ export function SettingsTab({ project }: { project: Project }) {
         </div>
       </form>
     </Form>
-  )
+  );
 }

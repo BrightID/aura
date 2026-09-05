@@ -1,19 +1,19 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-checkbox")
+@customElement('a-checkbox')
 export class CheckboxElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) declare checked: boolean
-  @property({ type: Boolean, reflect: true }) declare disabled: boolean
-  @property() declare name: string
-  @property() declare value?: string
+  @property({ type: Boolean, reflect: true }) declare checked: boolean;
+  @property({ type: Boolean, reflect: true }) declare disabled: boolean;
+  @property() declare name: string;
+  @property() declare value?: string;
 
   constructor() {
-    super()
-    this.checked = false
-    this.disabled = false
-    this.name = "checkbox"
-    this.value = undefined
+    super();
+    this.checked = false;
+    this.disabled = false;
+    this.name = 'checkbox';
+    this.value = undefined;
   }
 
   static styles: CSSResultGroup = css`
@@ -40,7 +40,7 @@ export class CheckboxElement extends LitElement {
         border-color 0.15s ease;
     }
 
-    button[aria-checked="true"] {
+    button[aria-checked='true'] {
       background: var(--primary);
       border-color: var(--primary);
     }
@@ -66,10 +66,10 @@ export class CheckboxElement extends LitElement {
       transition: opacity 0.12s ease;
     }
 
-    button[aria-checked="true"] svg {
+    button[aria-checked='true'] svg {
       opacity: 1;
     }
-  `
+  `;
 
   render() {
     return html`
@@ -85,25 +85,25 @@ export class CheckboxElement extends LitElement {
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </button>
-    `
+    `;
   }
 
   private _toggle() {
-    if (this.disabled) return
-    this.checked = !this.checked
+    if (this.disabled) return;
+    this.checked = !this.checked;
 
     this.dispatchEvent(
-      new CustomEvent("change", {
+      new CustomEvent('change', {
         detail: this.checked,
         bubbles: false,
         composed: false,
       }),
-    )
+    );
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-checkbox": CheckboxElement
+    'a-checkbox': CheckboxElement;
   }
 }

@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query"
-import { getAuth } from "firebase/auth"
-import { format } from "date-fns"
-import { Link } from "react-router"
+import { useQuery } from '@tanstack/react-query';
+import { getAuth } from 'firebase/auth';
+import { format } from 'date-fns';
+import { Link } from 'react-router';
 import {
   BarChart3,
   CheckCircle,
@@ -11,20 +11,19 @@ import {
   XCircle,
   ArrowRight,
   Zap,
-  Crown,
   Sparkles,
-} from "lucide-react"
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -32,87 +31,85 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table';
 
-import { API_BASE_URL } from "~/constants"
-import { getUserProjects } from "~/utils/apis"
-import { plans } from "~/constants/subscriptions"
+import { API_BASE_URL } from '~/constants';
+import { getUserProjects } from '~/utils/apis';
+import { plans } from '~/constants/subscriptions';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type PaymentStatus =
-  | "pending"
-  | "waitingPayment"
-  | "waitingAuthorization"
-  | "inProgress"
-  | "completed"
-  | "failed"
+  | 'pending'
+  | 'waitingPayment'
+  | 'waitingAuthorization'
+  | 'inProgress'
+  | 'completed'
+  | 'failed';
 
 interface Payment {
-  id: number
-  orderId: string
-  projectId: number
-  projectName: string | null
-  planId: number
-  isYearly: boolean | null
-  amount: number
-  status: PaymentStatus | null
-  createdAt: string | null
-  updatedAt: string | null
+  id: number;
+  orderId: string;
+  projectId: number;
+  projectName: string | null;
+  planId: number;
+  isYearly: boolean | null;
+  amount: number;
+  status: PaymentStatus | null;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 async function fetchPaymentHistory(): Promise<Payment[]> {
-  const token = await getAuth().currentUser?.getIdToken()
+  const token = await getAuth().currentUser?.getIdToken();
   const res = await fetch(`${API_BASE_URL}/api/payments/history`, {
     headers: { authorization: `Bearer ${token}` },
-  })
-  if (!res.ok) throw new Error("Failed to fetch payment history")
-  const json = await res.json()
-  return json.payments as Payment[]
+  });
+  if (!res.ok) throw new Error('Failed to fetch payment history');
+  const json = await res.json();
+  return json.payments as Payment[];
 }
 
 function getPlanById(id: number | null) {
-  return plans.find((p) => p.id === id) ?? plans[0]
+  return plans.find((p) => p.id === id) ?? plans[0];
 }
 
 function PlanIcon({ planId }: { planId: number | null }) {
-  const plan = getPlanById(planId)
-  const Icon = plan.icon
-  return <Icon className="h-4 w-4" />
+  const plan = getPlanById(planId);
+  const Icon = plan.icon;
+  return <Icon className="h-4 w-4" />;
 }
 
 function StatusBadge({ status }: { status: PaymentStatus | null }) {
   switch (status) {
-    case "completed":
+    case 'completed':
       return (
         <Badge className="bg-green-500/15 text-green-600 border-green-500/30 gap-1">
           <CheckCircle className="h-3 w-3" />
           Paid
         </Badge>
-      )
-    case "pending":
-    case "waitingPayment":
-    case "waitingAuthorization":
-    case "inProgress":
+      );
+    case 'pending':
+    case 'waitingPayment':
+    case 'waitingAuthorization':
+    case 'inProgress':
       return (
         <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/30 gap-1">
           <Clock className="h-3 w-3" />
           Processing
         </Badge>
-      )
-    case "failed":
+      );
+    case 'failed':
       return (
         <Badge className="bg-destructive/15 text-destructive border-destructive/30 gap-1">
           <XCircle className="h-3 w-3" />
           Failed
         </Badge>
-      )
+      );
     default:
-      return (
-        <Badge variant="secondary">{status ?? "Unknown"}</Badge>
-      )
+      return <Badge variant="secondary">{status ?? 'Unknown'}</Badge>;
   }
 }
 
@@ -120,9 +117,9 @@ function StatusBadge({ status }: { status: PaymentStatus | null }) {
 
 function CurrentSubscriptionSection() {
   const { data: projects, isLoading } = useQuery({
-    queryKey: ["user-projects"],
+    queryKey: ['user-projects'],
     queryFn: getUserProjects,
-  })
+  });
 
   if (isLoading) {
     return (
@@ -132,7 +129,9 @@ function CurrentSubscriptionSection() {
             <CreditCard className="h-5 w-5 text-muted-foreground" />
             <CardTitle>Current Subscriptions</CardTitle>
           </div>
-          <CardDescription>Your active plans across all projects</CardDescription>
+          <CardDescription>
+            Your active plans across all projects
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {[1, 2].map((i) => (
@@ -140,12 +139,12 @@ function CurrentSubscriptionSection() {
           ))}
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const projectList = projects ?? []
-  const paidProjects = projectList.filter((p) => p.selectedPlanId != null)
-  const freeProjects = projectList.filter((p) => p.selectedPlanId == null)
+  const projectList = projects ?? [];
+  const paidProjects = projectList.filter((p) => p.selectedPlanId != null);
+  const freeProjects = projectList.filter((p) => p.selectedPlanId == null);
 
   return (
     <Card>
@@ -178,11 +177,11 @@ function CurrentSubscriptionSection() {
         )}
 
         {paidProjects.map((project) => {
-          const plan = getPlanById(project.selectedPlanId ?? null)
-          const Icon = plan.icon
+          const plan = getPlanById(project.selectedPlanId ?? null);
+          const Icon = plan.icon;
           const deadline = project.deadline
-            ? format(new Date(project.deadline), "MMM d, yyyy")
-            : "—"
+            ? format(new Date(project.deadline), 'MMM d, yyyy')
+            : '—';
 
           return (
             <div
@@ -196,24 +195,32 @@ function CurrentSubscriptionSection() {
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-sm">{project.name}</p>
-                    <Badge variant="secondary" className="text-xs">{plan.name}</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {plan.name}
+                    </Badge>
                     <Badge className="text-xs bg-green-500/15 text-green-600 border-green-500/30">
                       Active
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {plan.tokens.toLocaleString()} tokens/month · Renews {deadline}
+                    {plan.tokens.toLocaleString()} tokens/month · Renews{' '}
+                    {deadline}
                   </p>
                 </div>
               </div>
-              <Button asChild variant="ghost" size="sm" className="gap-1 shrink-0">
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="gap-1 shrink-0"
+              >
                 <Link to={`/projects/${project.id}/upgrade`}>
                   Upgrade
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </Button>
             </div>
-          )
+          );
         })}
 
         {freeProjects.map((project) => (
@@ -228,14 +235,21 @@ function CurrentSubscriptionSection() {
               <div>
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-sm">{project.name}</p>
-                  <Badge variant="outline" className="text-xs">Free</Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Free
+                  </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {plans[0].tokens.toLocaleString()} tokens/month · No renewal
                 </p>
               </div>
             </div>
-            <Button asChild variant="outline" size="sm" className="gap-1 shrink-0">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-1 shrink-0"
+            >
               <Link to={`/projects/${project.id}/upgrade`}>
                 <Zap className="h-3.5 w-3.5" />
                 Upgrade
@@ -245,16 +259,20 @@ function CurrentSubscriptionSection() {
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // ─── Section B — Payment History ──────────────────────────────────────────────
 
 function PaymentHistorySection() {
-  const { data: payments, isLoading, isError } = useQuery({
-    queryKey: ["payment-history"],
+  const {
+    data: payments,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['payment-history'],
     queryFn: fetchPaymentHistory,
-  })
+  });
 
   return (
     <Card>
@@ -288,12 +306,24 @@ function PaymentHistorySection() {
               {isLoading &&
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-28" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-12" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-5 w-20 rounded-full" />
+                    </TableCell>
                   </TableRow>
                 ))}
 
@@ -302,8 +332,12 @@ function PaymentHistorySection() {
                   <TableCell colSpan={6} className="h-32 text-center">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Receipt className="h-8 w-8" />
-                      <p className="text-sm font-medium">No payment history yet</p>
-                      <p className="text-xs">Your transactions will appear here once you upgrade.</p>
+                      <p className="text-sm font-medium">
+                        No payment history yet
+                      </p>
+                      <p className="text-xs">
+                        Your transactions will appear here once you upgrade.
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -311,13 +345,13 @@ function PaymentHistorySection() {
 
               {!isLoading &&
                 payments?.map((payment) => {
-                  const plan = getPlanById(payment.planId)
+                  const plan = getPlanById(payment.planId);
                   return (
                     <TableRow key={payment.id}>
                       <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                         {payment.createdAt
-                          ? format(new Date(payment.createdAt), "MMM d, yyyy")
-                          : "—"}
+                          ? format(new Date(payment.createdAt), 'MMM d, yyyy')
+                          : '—'}
                       </TableCell>
                       <TableCell className="text-sm font-medium">
                         {payment.projectName ?? `Project #${payment.projectId}`}
@@ -329,7 +363,7 @@ function PaymentHistorySection() {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {payment.isYearly ? "Yearly" : "Monthly"}
+                        {payment.isYearly ? 'Yearly' : 'Monthly'}
                       </TableCell>
                       <TableCell className="text-sm font-medium">
                         ${payment.amount}
@@ -338,23 +372,23 @@ function PaymentHistorySection() {
                         <StatusBadge status={payment.status as PaymentStatus} />
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
             </TableBody>
           </Table>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // ─── Section C — Usage Summary ────────────────────────────────────────────────
 
 function UsageSummarySection() {
   const { data: projects, isLoading } = useQuery({
-    queryKey: ["user-projects"],
+    queryKey: ['user-projects'],
     queryFn: getUserProjects,
-  })
+  });
 
   return (
     <Card>
@@ -363,7 +397,9 @@ function UsageSummarySection() {
           <BarChart3 className="h-5 w-5 text-muted-foreground" />
           <CardTitle>Usage Summary</CardTitle>
         </div>
-        <CardDescription>Token consumption across your projects</CardDescription>
+        <CardDescription>
+          Token consumption across your projects
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {isLoading &&
@@ -379,16 +415,17 @@ function UsageSummarySection() {
 
         {!isLoading &&
           (projects ?? []).map((project) => {
-            const plan = getPlanById(project.selectedPlanId ?? null)
-            const Icon = plan.icon
-            const totalTokens = plan.tokens
-            const remaining = project.remainingtokens ?? 0
-            const used = Math.max(0, totalTokens - remaining)
-            const usedPct = totalTokens > 0 ? Math.min(100, (used / totalTokens) * 100) : 0
-            const isFree = project.selectedPlanId == null
+            const plan = getPlanById(project.selectedPlanId ?? null);
+            const Icon = plan.icon;
+            const totalTokens = plan.tokens;
+            const remaining = project.remainingtokens ?? 0;
+            const used = Math.max(0, totalTokens - remaining);
+            const usedPct =
+              totalTokens > 0 ? Math.min(100, (used / totalTokens) * 100) : 0;
+            const isFree = project.selectedPlanId == null;
             const deadline = project.deadline
-              ? format(new Date(project.deadline), "MMM d, yyyy")
-              : null
+              ? format(new Date(project.deadline), 'MMM d, yyyy')
+              : null;
 
             return (
               <div
@@ -399,7 +436,10 @@ function UsageSummarySection() {
                   <div className="flex items-center gap-2">
                     <Icon className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">{project.name}</span>
-                    <Badge variant={isFree ? "outline" : "secondary"} className="text-xs">
+                    <Badge
+                      variant={isFree ? 'outline' : 'secondary'}
+                      className="text-xs"
+                    >
                       {plan.name}
                     </Badge>
                   </div>
@@ -410,7 +450,12 @@ function UsageSummarySection() {
                       </span>
                     )}
                     {isFree && (
-                      <Button asChild variant="ghost" size="sm" className="h-7 gap-1 text-xs">
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 gap-1 text-xs"
+                      >
                         <Link to={`/projects/${project.id}/upgrade`}>
                           <Zap className="h-3 w-3" />
                           Upgrade
@@ -423,7 +468,10 @@ function UsageSummarySection() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>{used.toLocaleString()} used</span>
-                    <span>{remaining.toLocaleString()} remaining / {totalTokens.toLocaleString()} total</span>
+                    <span>
+                      {remaining.toLocaleString()} remaining /{' '}
+                      {totalTokens.toLocaleString()} total
+                    </span>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                     <div
@@ -433,11 +481,11 @@ function UsageSummarySection() {
                   </div>
                 </div>
               </div>
-            )
+            );
           })}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -456,5 +504,5 @@ export default function BillingPage() {
       <PaymentHistorySection />
       <UsageSummarySection />
     </div>
-  )
+  );
 }

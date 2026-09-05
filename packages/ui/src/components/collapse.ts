@@ -1,20 +1,20 @@
-import { LitElement, css, html } from "lit"
-import { customElement, property, state } from "lit/decorators.js"
+import { LitElement, css, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
-@customElement("a-collapse")
+@customElement('a-collapse')
 export class CollapseElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) declare open: boolean
-  @property() declare label: string
-  @property({ type: Boolean }) declare disabled: boolean
+  @property({ type: Boolean, reflect: true }) declare open: boolean;
+  @property() declare label: string;
+  @property({ type: Boolean }) declare disabled: boolean;
 
-  @state() private declare _contentHeight: number
+  @state() declare private _contentHeight: number;
 
   constructor() {
-    super()
-    this.open = false
-    this.label = ""
-    this.disabled = false
-    this._contentHeight = 0
+    super();
+    this.open = false;
+    this.label = '';
+    this.disabled = false;
+    this._contentHeight = 0;
   }
 
   static styles = css`
@@ -86,44 +86,51 @@ export class CollapseElement extends LitElement {
     .inner {
       padding: 0 1.25rem 1.25rem;
     }
-  `
+  `;
 
-  private _resizeObserver: ResizeObserver | null = null
+  private _resizeObserver: ResizeObserver | null = null;
 
   connectedCallback() {
-    super.connectedCallback()
-    this._resizeObserver = new ResizeObserver(() => this._measureContent())
+    super.connectedCallback();
+    this._resizeObserver = new ResizeObserver(() => this._measureContent());
   }
 
   disconnectedCallback() {
-    this._resizeObserver?.disconnect()
-    super.disconnectedCallback()
+    this._resizeObserver?.disconnect();
+    super.disconnectedCallback();
   }
 
   protected firstUpdated() {
-    const inner = this.shadowRoot?.querySelector(".inner") as HTMLElement | null
-    if (inner) this._resizeObserver?.observe(inner)
-    this._measureContent()
+    const inner = this.shadowRoot?.querySelector(
+      '.inner',
+    ) as HTMLElement | null;
+    if (inner) this._resizeObserver?.observe(inner);
+    this._measureContent();
   }
 
   private _measureContent() {
-    const inner = this.shadowRoot?.querySelector(".inner") as HTMLElement | null
-    if (!inner) return
-    this._contentHeight = inner.scrollHeight
-    this.style.setProperty("--collapse-content-height", `${this._contentHeight}px`)
+    const inner = this.shadowRoot?.querySelector(
+      '.inner',
+    ) as HTMLElement | null;
+    if (!inner) return;
+    this._contentHeight = inner.scrollHeight;
+    this.style.setProperty(
+      '--collapse-content-height',
+      `${this._contentHeight}px`,
+    );
   }
 
   private _toggle(e: Event) {
-    e.stopPropagation()
-    if (this.disabled) return
-    this.open = !this.open
+    e.stopPropagation();
+    if (this.disabled) return;
+    this.open = !this.open;
     this.dispatchEvent(
-      new CustomEvent("open-change", {
+      new CustomEvent('open-change', {
         bubbles: true,
         composed: true,
         detail: { open: this.open },
       }),
-    )
+    );
   }
 
   protected render() {
@@ -157,12 +164,12 @@ export class CollapseElement extends LitElement {
           <slot></slot>
         </div>
       </div>
-    `
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-collapse": CollapseElement
+    'a-collapse': CollapseElement;
   }
 }

@@ -1,4 +1,4 @@
-import { scrollReveal } from "$lib/scroll-reveal"
+import { scrollReveal } from '$lib/scroll-reveal';
 
 export default function CTA() {
   return (
@@ -22,13 +22,16 @@ export default function CTA() {
         </h2>
 
         <p class="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-          No forms, no ID scans, no data broker in the middle — just the people who
-          already know you, vouching for you. It takes minutes to start.
+          No forms, no ID scans, no data broker in the middle — just the people
+          who already know you, vouching for you. It takes minutes to start.
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5">
           <a href="/interface/login" class="inline-flex">
-            <a-button size="lg" class="group min-w-[13rem] shadow-[0_0_32px_oklch(80%_0.12_195_/_0.28)]">
+            <a-button
+              size="lg"
+              class="group min-w-[13rem] shadow-[0_0_32px_oklch(80%_0.12_195_/_0.28)]"
+            >
               <span class="inline-flex items-center gap-2">
                 Get Verified Now
                 <a-icon
@@ -46,7 +49,7 @@ export default function CTA() {
         </div>
 
         <p class="mt-8 text-sm text-muted-foreground">
-          New to Aura?{" "}
+          New to Aura?{' '}
           <a
             href="https://brightid.gitbook.io/aura"
             target="_blank"
@@ -58,5 +61,5 @@ export default function CTA() {
         </p>
       </div>
     </section>
-  )
+  );
 }

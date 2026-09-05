@@ -1,50 +1,55 @@
-import { css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-export type ButtonVariant = "default" | "secondary" | "ghost" | "outline" | "glass"
-export type ButtonSize = "sm" | "md" | "lg" | "icon" | "icon-sm" | "icon-lg"
+export type ButtonVariant =
+  | 'default'
+  | 'secondary'
+  | 'ghost'
+  | 'outline'
+  | 'glass';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon' | 'icon-sm' | 'icon-lg';
 export type ButtonColors =
-  | "primary"
-  | "secondary"
-  | "success"
-  | "warning"
-  | "destructive"
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'destructive';
 
-@customElement("a-button")
+@customElement('a-button')
 export class ButtonElement extends LitElement {
   @property({ reflect: true })
-  declare variant: ButtonVariant
+  declare variant: ButtonVariant;
 
   @property({ reflect: true })
-  declare size: ButtonSize
+  declare size: ButtonSize;
 
   @property({ reflect: true })
-  declare color: ButtonColors
+  declare color: ButtonColors;
 
   @property({ reflect: true })
-  declare type: "button" | "submit" | "reset"
+  declare type: 'button' | 'submit' | 'reset';
 
   @property({ type: Boolean, reflect: true })
-  declare disabled: boolean
+  declare disabled: boolean;
 
   /**
    * Toggle/pill state: a selected button renders filled in its palette color
    * regardless of variant, so call sites don't juggle variant/color pairs.
    */
   @property({ type: Boolean, reflect: true })
-  declare selected: boolean
+  declare selected: boolean;
 
   @property({})
-  declare class: string | undefined
+  declare class: string | undefined;
 
   constructor() {
-    super()
-    this.variant = "default"
-    this.size = "md"
-    this.color = "primary"
-    this.type = "button"
-    this.disabled = false
-    this.selected = false
+    super();
+    this.variant = 'default';
+    this.size = 'md';
+    this.color = 'primary';
+    this.type = 'button';
+    this.disabled = false;
+    this.selected = false;
   }
 
   static styles = css`
@@ -96,78 +101,78 @@ export class ButtonElement extends LitElement {
     }
 
     /* ==================== SIZES ==================== */
-    :host([size="sm"]) button {
+    :host([size='sm']) button {
       height: 2rem;
       padding: 0 0.75rem;
       font-size: 0.8125rem;
     }
 
-    :host([size="md"]) button {
+    :host([size='md']) button {
       height: 2.5rem;
       padding: 0 1rem;
       font-size: 0.875rem;
     }
 
-    :host([size="lg"]) button {
+    :host([size='lg']) button {
       height: 3rem;
       padding: 0 1.5rem;
       font-size: 1rem;
     }
 
-    :host([size="icon-sm"]) button {
+    :host([size='icon-sm']) button {
       width: 2rem;
       height: 2rem;
       padding: 0;
     }
-    :host([size="icon-sm"]) {
+    :host([size='icon-sm']) {
       --icon-size: 1rem;
       --icon-gap: 0;
     }
 
     /* icon: 2.5rem square (matches md height) */
-    :host([size="icon"]) button {
+    :host([size='icon']) button {
       /* width: 2.5rem;
       height: 2.5rem; */
       padding: 0.5rem;
     }
-    :host([size="icon"]) {
+    :host([size='icon']) {
       --icon-size: 1.125rem;
       --icon-gap: 0;
     }
 
     /* icon-lg: 3rem square (matches lg height) */
-    :host([size="icon-lg"]) button {
+    :host([size='icon-lg']) button {
       width: 3rem;
       height: 3rem;
       padding: 0;
     }
-    :host([size="icon-lg"]) {
+    :host([size='icon-lg']) {
       --icon-size: 1.25rem;
       --icon-gap: 0;
     }
 
     /* ==================== COLOR PALETTE ==================== */
-    :host([color="primary"]) {
+    :host([color='primary']) {
       --color: var(--primary);
       --color-fg: var(--primary-foreground);
     }
 
-    :host([color="secondary"]) {
+    :host([color='secondary']) {
       --color: var(--secondary);
       --color-fg: var(--secondary-foreground);
     }
 
-    :host([color="success"]) {
+    :host([color='success']) {
       --color: var(--aura-success);
       --color-fg: var(--primary-foreground);
     }
 
-    :host([color="warning"]) {
+    :host([color='warning']) {
       --color: var(--aura-warning);
       --color-fg: var(--primary-foreground);
     }
 
-    :host([color="destructive"]) {
+    :host([color='destructive']) {
       --color: var(--destructive);
       --color-fg: var(--destructive-foreground);
     }
@@ -175,51 +180,51 @@ export class ButtonElement extends LitElement {
     /* ==================== VARIANTS ==================== */
 
     /* Default (filled) */
-    :host([variant="default"]) button {
+    :host([variant='default']) button {
       --bg: var(--color);
       --fg: var(--color-fg);
       --border: transparent;
     }
 
-    :host([variant="default"]) button:hover:not(:disabled) {
+    :host([variant='default']) button:hover:not(:disabled) {
       --bg: oklch(from var(--color) calc(l + 0.05) c h);
     }
 
     /* Secondary */
-    :host([variant="secondary"]) button {
+    :host([variant='secondary']) button {
       --bg: color-mix(in oklch, var(--color) 15%, transparent);
       --fg: var(--color);
       --border: transparent;
     }
 
-    :host([variant="secondary"]) button:hover:not(:disabled) {
+    :host([variant='secondary']) button:hover:not(:disabled) {
       --bg: color-mix(in oklch, var(--color) 25%, transparent);
     }
 
     /* Ghost */
-    :host([variant="ghost"]) button {
+    :host([variant='ghost']) button {
       --bg: transparent;
       --fg: var(--color);
       --border: transparent;
     }
 
-    :host([variant="ghost"]) button:hover:not(:disabled) {
+    :host([variant='ghost']) button:hover:not(:disabled) {
       --bg: color-mix(in oklch, var(--color) 20%, transparent);
     }
 
     /* NEW: Outline variant */
-    :host([variant="outline"]) button {
+    :host([variant='outline']) button {
       --bg: transparent;
       --fg: var(--color);
       --border: var(--color);
     }
 
-    :host([variant="outline"]) button:hover:not(:disabled) {
+    :host([variant='outline']) button:hover:not(:disabled) {
       --bg: color-mix(in oklch, var(--color) 10%, transparent);
     }
 
     /* Glass — frosted translucent surface, mirrors a-card[variant="glass"] */
-    :host([variant="glass"]) button {
+    :host([variant='glass']) button {
       --bg: transparent;
       /* blend toward the theme foreground so any palette stays readable */
       --fg: color-mix(in oklch, var(--color) 45%, var(--foreground));
@@ -236,7 +241,7 @@ export class ButtonElement extends LitElement {
         0 8px 24px oklch(0 0 0 / 0.1);
     }
 
-    :host([variant="glass"]) button:hover:not(:disabled) {
+    :host([variant='glass']) button:hover:not(:disabled) {
       background: linear-gradient(
         135deg,
         color-mix(in oklch, var(--color) 28%, transparent) 0%,
@@ -261,19 +266,24 @@ export class ButtonElement extends LitElement {
     :host([selected]) button:hover:not(:disabled) {
       background: oklch(from var(--primary) calc(l + 0.05) c h);
     }
-  `
+  `;
 
   protected render() {
     return html`
-      <button type=${this.type} .class=${this.class} ?disabled=${this.disabled} part="button">
+      <button
+        type=${this.type}
+        .class=${this.class}
+        ?disabled=${this.disabled}
+        part="button"
+      >
         <slot></slot>
       </button>
-    `
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-button": ButtonElement
+    'a-button': ButtonElement;
   }
 }

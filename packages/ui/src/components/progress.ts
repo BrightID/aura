@@ -1,13 +1,13 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-progress")
+@customElement('a-progress')
 export class ProgressElement extends LitElement {
-  @property({ type: Number, reflect: true }) declare value: number
+  @property({ type: Number, reflect: true }) declare value: number;
 
   constructor() {
-    super()
-    this.value = 0
+    super();
+    this.value = 0;
   }
 
   static styles: CSSResultGroup = css`
@@ -31,10 +31,10 @@ export class ProgressElement extends LitElement {
       border-radius: 9999px;
       transition: width 0.3s ease;
     }
-  `
+  `;
 
   private get _clamped() {
-    return Math.max(0, Math.min(100, this.value ?? 0))
+    return Math.max(0, Math.min(100, this.value ?? 0));
   }
 
   render() {
@@ -48,12 +48,12 @@ export class ProgressElement extends LitElement {
       >
         <div class="bar" style="width: ${this._clamped}%"></div>
       </div>
-    `
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-progress": ProgressElement
+    'a-progress': ProgressElement;
   }
 }

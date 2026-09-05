@@ -1,25 +1,25 @@
-import { createMemo, Show } from "solid-js"
-import Avatar from "@/components/home/avatar"
-import ProgressBar from "@/components/home/progress-bar"
-import LevelScore from "@/components/shared/level-score"
-import { useSubjectName } from "@/hooks/use-backup"
-import { useSubjectVerifications } from "@/hooks/use-subject-verifications"
-import { useViewMode } from "@/hooks/use-view-mode"
-import { calculateUserScorePercentage } from "@aura/domain/score"
+import { createMemo, Show } from 'solid-js';
+import Avatar from '@/components/home/avatar';
+import ProgressBar from '@/components/home/progress-bar';
+import LevelScore from '@/components/shared/level-score';
+import { useSubjectName } from '@/hooks/use-backup';
+import { useSubjectVerifications } from '@/hooks/use-subject-verifications';
+import { useViewMode } from '@/hooks/use-view-mode';
+import { calculateUserScorePercentage } from '@aura/domain/score';
 
 export default function ProfileHeaderCard(props: { subjectId: string }) {
-  const name = useSubjectName(() => props.subjectId)
-  const vm = useViewMode()
+  const name = useSubjectName(() => props.subjectId);
+  const vm = useViewMode();
   const v = useSubjectVerifications(
     () => props.subjectId,
     vm.currentRoleEvaluatorEvaluationCategory,
-  )
+  );
   const progress = createMemo(() =>
     calculateUserScorePercentage(
       vm.currentRoleEvaluatorEvaluationCategory(),
       v.auraScore() ?? 0,
     ),
-  )
+  );
 
   return (
     <a-card variant="glass" class="relative p-4">
@@ -40,5 +40,5 @@ export default function ProfileHeaderCard(props: { subjectId: string }) {
         </div>
       </div>
     </a-card>
-  )
+  );
 }

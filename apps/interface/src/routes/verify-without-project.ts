@@ -1,11 +1,11 @@
-import { EvaluationCategory } from '@/utils/aura'
-import { getLevelupProgress } from '@/utils/score'
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { EvaluationCategory } from '@/utils/aura';
+import { getLevelupProgress } from '@/utils/score';
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-import '@/components/common/profile-card'
-import '@/routes/brightid'
-import '@/routes/index'
+import '@/components/common/profile-card';
+import '@/routes/brightid';
+import '@/routes/index';
 
 import {
   levelUpProgress,
@@ -13,37 +13,37 @@ import {
   userEmail,
   userFirstName,
   userLastName,
-  userProfilePicture
-} from '@/states/user'
-import { signal, SignalWatcher } from '@lit-labs/signals'
+  userProfilePicture,
+} from '@/states/user';
+import { signal, SignalWatcher } from '@lit-labs/signals';
 
-const isPassed = signal(false)
+const isPassed = signal(false);
 
-const isBrightIDSection = signal(false)
+const isBrightIDSection = signal(false);
 
 @customElement('verify-without-project-page')
 export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
   @property({
-    type: Number
+    type: Number,
   })
-  level: number = 1
+  level: number = 1;
 
   @property({
-    type: String
+    type: String,
   })
-  projectName!: string
+  projectName!: string;
 
   @property({
-    type: String
+    type: String,
   })
-  description?: string
+  description?: string;
 
   @property({
-    type: String
+    type: String,
   })
-  image?: string
+  image?: string;
 
-  previousBrightID = signal(userBrightId.get())
+  previousBrightID = signal(userBrightId.get());
 
   static styles?: CSSResultGroup = css`
     .title {
@@ -142,49 +142,62 @@ export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
     .mt-5 {
       margin-top: 20px;
     }
-  `
+  `;
 
   connectedCallback(): void {
-    super.connectedCallback()
+    super.connectedCallback();
 
-    window.parent.postMessage(JSON.stringify({ type: 'app-ready', app: 'aura-get-verified' }), '*')
+    window.parent.postMessage(
+      JSON.stringify({ type: 'app-ready', app: 'aura-get-verified' }),
+      '*',
+    );
 
-    this.updateLevelUpProgress()
+    this.updateLevelUpProgress();
   }
 
   protected override updated(_changedProperties: PropertyValues): void {
-    super.updated(_changedProperties)
-    if (userBrightId.get() === this.previousBrightID.get()) return
+    super.updated(_changedProperties);
+    if (userBrightId.get() === this.previousBrightID.get()) return;
 
-    this.updateLevelUpProgress()
-    this.previousBrightID.set(userBrightId.get())
+    this.updateLevelUpProgress();
+    this.previousBrightID.set(userBrightId.get());
   }
 
   private updateLevelUpProgress() {
-    getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }).then((res) => {
-      const stepsToComplete = res.requirements.filter((item) => item.level === this.level)
+    getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }).then(
+      (res) => {
+        const stepsToComplete = res.requirements.filter(
+          (item) => item.level === this.level,
+        );
 
-      const isPassedRequirements =
-        stepsToComplete.filter((item) => item.status === 'passed').length === 0
-      isPassed.set(isPassedRequirements)
-      levelUpProgress.set(stepsToComplete)
+        const isPassedRequirements =
+          stepsToComplete.filter((item) => item.status === 'passed').length ===
+          0;
+        isPassed.set(isPassedRequirements);
+        levelUpProgress.set(stepsToComplete);
 
-      if (stepsToComplete.filter((c) => c.status === 'incomplete').length === 0) {
-        this.onUserVerified()
-      }
-    })
+        if (
+          stepsToComplete.filter((c) => c.status === 'incomplete').length === 0
+        ) {
+          this.onUserVerified();
+        }
+      },
+    );
   }
 
   protected onLoginWithBrightID() {
-    isBrightIDSection.set(true)
+    isBrightIDSection.set(true);
   }
 
   protected offLoginWithBrightID() {
-    isBrightIDSection.set(false)
+    isBrightIDSection.set(false);
   }
 
   protected onUserVerified() {
-    window.parent.postMessage('{"type": "verification-success", "app": "aura-get-verified"}', '*')
+    window.parent.postMessage(
+      '{"type": "verification-success", "app": "aura-get-verified"}',
+      '*',
+    );
   }
 
   protected render() {
@@ -196,88 +209,103 @@ export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
             @offBrightIDSection=${this.offLoginWithBrightID}
             withoutTitle
           ></brightid-login>
-        `
+        `;
       }
 
       return html`
         <h1 class="title">${this.projectName}</h1>
 
-        ${this.image
-          ? html`
-              <div class="image-container">
-                <img src=${this.image} alt="Project image" class="image" />
-              </div>
-            `
-          : ''}
+        ${
+          this.image
+            ? html`
+                <div class="image-container">
+                  <img src=${this.image} alt="Project image" class="image" />
+                </div>
+              `
+            : ''
+        }
 
         <div class="level-requirement">
           <span class="highlight-text">Requires Level: </span>
           <span>${this.level}</span>
         </div>
 
-        <home-page @onBrightLogin=${this.onLoginWithBrightID} withoutTitle></home-page>
-      `
+        <home-page
+          @onBrightLogin=${this.onLoginWithBrightID}
+          withoutTitle
+        ></home-page>
+      `;
     }
 
     return html`
       <h1 class="title">${this.projectName}</h1>
 
       <div class="image-container">
-        ${this.image
-          ? html`
-              <div class="image-container">
-                <img src=${this.image} alt="Project image" class="image" />
-              </div>
-            `
-          : ''}
+        ${
+          this.image
+            ? html`
+                <div class="image-container">
+                  <img src=${this.image} alt="Project image" class="image" />
+                </div>
+              `
+            : ''
+        }
 
         <div class="level-requirement">
           <span class="highlight-text">Requires Level: </span>
           <span>${this.level}</span>
         </div>
 
-        ${levelUpProgress.get().filter((item) => item.status === 'incomplete').length === 0
-          ? html` <div style="text-align:center;color:lightgreen;font-size:18px;font-weight:600;">
-              🎉 You are already verified!<br />
-              <span style="color:#dadada;font-size:14px;font-weight:400;">
-                You can continue your progress in the app.
-              </span>
-              <br />
-            </div>`
-          : html`
-              <profile-card
-                .firstName=${userFirstName.get()}
-                .lastName=${userLastName.get()}
-                .email=${userEmail.get()}
-                .image=${userProfilePicture.get()}
-              ></profile-card>
-              <div class="timeline">
-                ${levelUpProgress
-                  .get()
-                  .filter((item) => item.level >= this.level)
-                  .map(
-                    (req) => html`
-                      <div class="step">
-                        <div class="step-content">
-                          <h5 class="step-title">${req.reason}</h5>
-                          <p class="step-description">
-                            Status:
-                            <span
-                              style="color:${req.status === 'passed' ? 'lightgreen' : 'orange'}"
-                            >
-                              ${req.status}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                    `
-                  )}
-              </div>
-              <a target="_blank" class="highlight-text" href="/interface/login"
-                >Get Verified Here</a
+        ${
+          levelUpProgress.get().filter((item) => item.status === 'incomplete')
+            .length === 0
+            ? html` <div
+                style="text-align:center;color:lightgreen;font-size:18px;font-weight:600;"
               >
-            `}
+                🎉 You are already verified!<br />
+                <span style="color:#dadada;font-size:14px;font-weight:400;">
+                  You can continue your progress in the app.
+                </span>
+                <br />
+              </div>`
+            : html`
+                <profile-card
+                  .firstName=${userFirstName.get()}
+                  .lastName=${userLastName.get()}
+                  .email=${userEmail.get()}
+                  .image=${userProfilePicture.get()}
+                ></profile-card>
+                <div class="timeline">
+                  ${levelUpProgress
+                    .get()
+                    .filter((item) => item.level >= this.level)
+                    .map(
+                      (req) => html`
+                        <div class="step">
+                          <div class="step-content">
+                            <h5 class="step-title">${req.reason}</h5>
+                            <p class="step-description">
+                              Status:
+                              <span
+                                style="color:${req.status === 'passed' ? 'lightgreen' : 'orange'}"
+                              >
+                                ${req.status}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      `,
+                    )}
+                </div>
+                <a
+                  target="_blank"
+                  class="highlight-text"
+                  href="/interface/login"
+                  >Get Verified Here</a
+                >
+              `
+        }
       </div>
-    `
+    `;
   }
 }

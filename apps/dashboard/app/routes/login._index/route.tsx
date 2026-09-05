@@ -1,26 +1,26 @@
-import { loginWithApple, loginWithGoogle } from "~/lib/auth-actions"
-import { auth } from "~/lib/firebase"
-import { useEffect, useRef } from "react"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { useNavigate } from "react-router"
-import { Controller, useForm, type Control } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import z from "zod"
+import { loginWithApple, loginWithGoogle } from '~/lib/auth-actions';
+import { auth } from '~/lib/firebase';
+import { useEffect, useRef } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useNavigate } from 'react-router';
+import { Controller, useForm, type Control } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-} from "firebase/auth"
-import { toast } from "@aura/ui"
-import { IconBrandApple, IconBrandGoogle } from "@tabler/icons-react"
-import { useMutation } from "@tanstack/react-query"
-import { useAuraEvent } from "~/lib/aura"
+} from 'firebase/auth';
+import { toast } from '@aura/ui';
+import { IconBrandApple, IconBrandGoogle } from '@tabler/icons-react';
+import { useMutation } from '@tanstack/react-query';
+import { useAuraEvent } from '~/lib/aura';
 
 const formSchema = z.object({
   email: z.email(),
   password: z.string().min(6),
-})
+});
 
-type FormData = z.infer<typeof formSchema>
+type FormData = z.infer<typeof formSchema>;
 
 /** Native `<a-input>` bound to a react-hook-form field via its `change` event. */
 function AuraTextInput({
@@ -28,22 +28,26 @@ function AuraTextInput({
   name,
   ...props
 }: {
-  control: Control<FormData>
-  name: keyof FormData
-  id?: string
-  type?: "text" | "email" | "password" | "number"
-  placeholder?: string
-  className?: string
+  control: Control<FormData>;
+  name: keyof FormData;
+  id?: string;
+  type?: 'text' | 'email' | 'password' | 'number';
+  placeholder?: string;
+  className?: string;
 }) {
   return (
     <Controller
       control={control}
       name={name}
       render={({ field }) => (
-        <BoundInput value={field.value ?? ""} onChange={field.onChange} {...props} />
+        <BoundInput
+          value={field.value ?? ''}
+          onChange={field.onChange}
+          {...props}
+        />
       )}
     />
-  )
+  );
 }
 
 function BoundInput({
@@ -51,52 +55,55 @@ function BoundInput({
   onChange,
   ...props
 }: {
-  value: string
-  onChange: (v: string) => void
-  id?: string
-  type?: "text" | "email" | "password" | "number"
-  placeholder?: string
-  className?: string
+  value: string;
+  onChange: (v: string) => void;
+  id?: string;
+  type?: 'text' | 'email' | 'password' | 'number';
+  placeholder?: string;
+  className?: string;
 }) {
-  const ref = useRef<HTMLElement>(null)
-  useAuraEvent<string>(ref, "change", onChange)
-  return <a-input ref={ref} value={value} {...props} />
+  const ref = useRef<HTMLElement>(null);
+  useAuraEvent<string>(ref, 'change', onChange);
+  return <a-input ref={ref} value={value} {...props} />;
 }
 
 function LoginScreen() {
-  const [user] = useAuthState(auth)
-  const navigate = useNavigate()
+  const [user] = useAuthState(auth);
+  const navigate = useNavigate();
 
-  const loginForm = useForm<FormData>({ resolver: zodResolver(formSchema) })
-  const signupForm = useForm<FormData>({ resolver: zodResolver(formSchema) })
+  const loginForm = useForm<FormData>({ resolver: zodResolver(formSchema) });
+  const signupForm = useForm<FormData>({ resolver: zodResolver(formSchema) });
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: FormData) =>
       signInWithEmailAndPassword(auth, data.email, data.password),
-    mutationKey: ["login-with-password"],
-  })
+    mutationKey: ['login-with-password'],
+  });
   useEffect(() => {
-    if (user) navigate("/")
-  }, [user, navigate])
+    if (user) navigate('/');
+  }, [user, navigate]);
 
   const onLogin = async (data: FormData) => {
     try {
-      await mutateAsync(data)
+      await mutateAsync(data);
     } catch (e) {
-      toast((e as Error).message)
+      toast((e as Error).message);
     }
-  }
+  };
 
   const onSignup = async (data: FormData) => {
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password)
-      navigate("/onboarding")
+      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      navigate('/onboarding');
     } catch (e) {
-      toast((e as Error).message)
+      toast((e as Error).message);
     }
-  }
+  };
 
   return (
-    <a-card variant="default" className="relative z-10 w-full max-w-[26rem] p-8 shadow-2xl">
+    <a-card
+      variant="default"
+      className="relative z-10 w-full max-w-[26rem] p-8 shadow-2xl"
+    >
       <div className="space-y-1.5 pb-6 text-center">
         <a-head level="3" className="text-3xl font-bold tracking-tight">
           Welcome
@@ -147,7 +154,12 @@ function LoginScreen() {
               )}
             </div>
 
-            <a-button disabled={isPending} type="submit" size="lg" className="w-full font-semibold">
+            <a-button
+              disabled={isPending}
+              type="submit"
+              size="lg"
+              className="w-full font-semibold"
+            >
               Sign In
             </a-button>
           </form>
@@ -190,7 +202,12 @@ function LoginScreen() {
               )}
             </div>
 
-            <a-button disabled={isPending} type="submit" size="lg" className="w-full font-semibold">
+            <a-button
+              disabled={isPending}
+              type="submit"
+              size="lg"
+              className="w-full font-semibold"
+            >
               Sign Up
             </a-button>
           </form>
@@ -228,7 +245,7 @@ function LoginScreen() {
         </a-button>
       </div>
     </a-card>
-  )
+  );
 }
 
-export default LoginScreen
+export default LoginScreen;

@@ -1,19 +1,20 @@
-import externalLinkIcon from '@/assets/icons/external-link.svg'
-import ProfileIcon from '@/assets/icons/user.svg'
-import { pushRouter } from '@/router'
-import { userFirstName, userLastName } from '@/states/user'
-import { signal, SignalWatcher } from '@lit-labs/signals'
-import { css, CSSResultGroup, html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import externalLinkIcon from '@/assets/icons/external-link.svg';
+import ProfileIcon from '@/assets/icons/user.svg';
+import { pushRouter } from '@/router';
+import { userFirstName, userLastName } from '@/states/user';
+import { signal, SignalWatcher } from '@lit-labs/signals';
+import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-const name = signal('')
+const name = signal('');
 
 @customElement('complete-profile')
 export class CompleteProfile extends SignalWatcher(LitElement) {
   static styles?: CSSResultGroup = css`
     :host {
       display: block;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family:
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     .space-y-3 {
@@ -317,37 +318,45 @@ export class CompleteProfile extends SignalWatcher(LitElement) {
       gap: 0.75rem;
       margin-bottom: 0.5rem;
     }
-  `
+  `;
 
   private onInputChange(e: Event) {
-    const target = e.target as HTMLInputElement
+    const target = e.target as HTMLInputElement;
 
-    name.set(target.value)
+    name.set(target.value);
   }
 
   onSkip() {
-    pushRouter('/home')
+    pushRouter('/home');
   }
 
   onSubmit() {
-    const [firstName, lastName] = name.get().split(' ')
+    const [firstName, lastName] = name.get().split(' ');
 
-    userFirstName.set(firstName ?? '')
-    userLastName.set(lastName ?? '')
+    userFirstName.set(firstName ?? '');
+    userLastName.set(lastName ?? '');
 
-    pushRouter('/home')
+    pushRouter('/home');
   }
 
   protected render() {
     return html`
       <div class="wrapper">
-        <img src="${import.meta.env.BASE_URL}favicon.png" class="logo" alt="Aura" />
+        <img
+          src="${import.meta.env.BASE_URL}favicon.png"
+          class="logo"
+          alt="Aura"
+        />
 
         <div class="container">
           <h1 class="title">Aura Verified</h1>
           <p class="info-text">Decentralized verification platform</p>
 
-          <a href="https://brightid.gitbook.io/aura" target="_blank" class="desc-btn">
+          <a
+            href="https://brightid.gitbook.io/aura"
+            target="_blank"
+            class="desc-btn"
+          >
             <span>What is Aura?</span>
             <img src=${externalLinkIcon} alt="Aura" />
           </a>
@@ -357,7 +366,12 @@ export class CompleteProfile extends SignalWatcher(LitElement) {
             <h2 class="form-title">Complete your info</h2>
             <div class="name-wrapper">
               <div class="name-icon">
-                <img width="25" height="25" src="${ProfileIcon}" alt="profile" />
+                <img
+                  width="25"
+                  height="25"
+                  src="${ProfileIcon}"
+                  alt="profile"
+                />
               </div>
               <input
                 .value="${name.get()}"
@@ -369,12 +383,14 @@ export class CompleteProfile extends SignalWatcher(LitElement) {
             </div>
 
             <div class="btn-wrapper">
-              <button @click=${this.onSubmit} class="btn btn-name">Continue</button>
+              <button @click=${this.onSubmit} class="btn btn-name">
+                Continue
+              </button>
               <button @click=${this.onSkip} class="btn btn-skip">Skip</button>
             </div>
           </div>
         </div>
       </div>
-    `
+    `;
   }
 }

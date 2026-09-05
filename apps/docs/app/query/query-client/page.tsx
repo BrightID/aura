@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import { Callout, Code, Table } from "../_components/Code";
+import type { Metadata } from 'next';
+import { Callout, Code, Table } from '../_components/Code';
 export const metadata: Metadata = {
-  title: "QueryClient — @aura/query",
+  title: 'QueryClient — @aura/query',
   description:
-    "Configure and use the QueryClient to manage the shared query cache.",
+    'Configure and use the QueryClient to manage the shared query cache.',
 };
 
 export default function QueryClientPage() {
@@ -11,7 +11,7 @@ export default function QueryClientPage() {
     <article className="prose">
       <h1>QueryClient</h1>
       <p className="prose-lead">
-        The <code>QueryClient</code> is the central cache that all{" "}
+        The <code>QueryClient</code> is the central cache that all{' '}
         <code>Query</code> and <code>Mutation</code> controllers read from and
         write to. Create one per application and share it across components.
       </p>
@@ -46,44 +46,44 @@ class MyEl extends LitElement {
 
       <Callout type="note">
         If you omit the <code>client</code> option, controllers fall back to the
-        module-level <code>defaultClient</code> exported from{" "}
+        module-level <code>defaultClient</code> exported from{' '}
         <code>@aura/query</code>. For simple apps this is fine — just be aware
         that all controllers without an explicit client share one global cache.
       </Callout>
 
       <h2>Configuration options</h2>
       <Table
-        headers={["Option", "Type", "Default", "Description"]}
+        headers={['Option', 'Type', 'Default', 'Description']}
         rows={[
           [
             <code key="a">defaultStaleTime</code>,
-            "number (ms)",
-            "0",
-            "How long fetched data is considered fresh. While fresh, no background refetch occurs.",
+            'number (ms)',
+            '0',
+            'How long fetched data is considered fresh. While fresh, no background refetch occurs.',
           ],
           [
             <code key="b">defaultGcTime</code>,
-            "number (ms)",
-            "300 000 (5 min)",
-            "How long an inactive cache entry is kept before being garbage-collected.",
+            'number (ms)',
+            '300 000 (5 min)',
+            'How long an inactive cache entry is kept before being garbage-collected.',
           ],
           [
             <code key="c">defaultRetry</code>,
-            "number | false",
-            "3",
-            "Number of automatic retries on failure. Pass false to disable.",
+            'number | false',
+            '3',
+            'Number of automatic retries on failure. Pass false to disable.',
           ],
           [
             <code key="d">defaultRetryDelay</code>,
-            "number | (attempt) => number",
-            "exponential",
-            "Delay between retries. Defaults to min(1000 × 2ⁿ, 30 000) ms.",
+            'number | (attempt) => number',
+            'exponential',
+            'Delay between retries. Defaults to min(1000 × 2ⁿ, 30 000) ms.',
           ],
           [
             <code key="e">defaultRefetchOnWindowFocus</code>,
-            "boolean",
-            "true",
-            "Refetch stale queries when the browser window regains focus.",
+            'boolean',
+            'true',
+            'Refetch stale queries when the browser window regains focus.',
           ],
         ]}
       />
@@ -107,7 +107,7 @@ const cached = client.getQueryData<User>(['users', '42'])`}</Code>
 
       <h2>Invalidating queries</h2>
       <p>
-        After a mutation you usually want to refetch related queries.{" "}
+        After a mutation you usually want to refetch related queries.{' '}
         <code>invalidateQueries</code> marks matching cache entries as stale and
         notifies all active subscribers so they refetch automatically.
       </p>
@@ -118,8 +118,8 @@ client.invalidateQueries(['users'])
 client.invalidateQueries(['users', userId])`}</Code>
 
       <p>
-        The key prefix match works on the parsed array: passing{" "}
-        <code>['users']</code> will match <code>['users']</code>,{" "}
+        The key prefix match works on the parsed array: passing{' '}
+        <code>['users']</code> will match <code>['users']</code>,{' '}
         <code>['users', '1']</code>, <code>['users', '1', 'posts']</code>, etc.
       </p>
 

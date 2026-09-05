@@ -1,10 +1,10 @@
-import { create } from "zustand"
+import { create } from 'zustand';
 
 export const useUser = create<{
-  appUserId: string | null
-  privateKey: string | null
-  updateUserId: (userId: string) => void
-  generatePrivateKey: (key: string) => void
+  appUserId: string | null;
+  privateKey: string | null;
+  updateUserId: (userId: string) => void;
+  generatePrivateKey: (key: string) => void;
 }>((set) => ({
   appUserId: null as string | null,
   privateKey: null,
@@ -12,6 +12,6 @@ export const useUser = create<{
   generatePrivateKey: (key: string) => {
     set({
       privateKey: key,
-    })
+    });
   },
-}))
+}));

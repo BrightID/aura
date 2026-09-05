@@ -1,24 +1,24 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property, state } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
-export type AvatarSize = "sm" | "md" | "lg"
+export type AvatarSize = 'sm' | 'md' | 'lg';
 
-@customElement("a-avatar")
+@customElement('a-avatar')
 export class AvatarElement extends LitElement {
-  @property() declare src?: string
-  @property() declare alt: string
-  @property() declare fallback: string
-  @property({ reflect: true }) declare size: AvatarSize
+  @property() declare src?: string;
+  @property() declare alt: string;
+  @property() declare fallback: string;
+  @property({ reflect: true }) declare size: AvatarSize;
 
-  @state() private declare _errored: boolean
+  @state() declare private _errored: boolean;
 
   constructor() {
-    super()
-    this.src = undefined
-    this.alt = ""
-    this.fallback = ""
-    this.size = "md"
-    this._errored = false
+    super();
+    this.src = undefined;
+    this.alt = '';
+    this.fallback = '';
+    this.size = 'md';
+    this._errored = false;
   }
 
   static styles: CSSResultGroup = css`
@@ -39,19 +39,19 @@ export class AvatarElement extends LitElement {
       vertical-align: middle;
     }
 
-    :host([size="sm"]) {
+    :host([size='sm']) {
       width: 1.5rem;
       height: 1.5rem;
       font-size: 0.625rem;
     }
 
     :host,
-    :host([size="md"]) {
+    :host([size='md']) {
       width: 2rem;
       height: 2rem;
     }
 
-    :host([size="lg"]) {
+    :host([size='lg']) {
       width: 2.5rem;
       height: 2.5rem;
       font-size: 0.875rem;
@@ -65,30 +65,30 @@ export class AvatarElement extends LitElement {
       border-radius: inherit;
       display: block;
     }
-  `
+  `;
 
   render() {
-    const showImg = this.src && !this._errored
+    const showImg = this.src && !this._errored;
     return showImg
       ? html`<img
           src=${this.src as string}
           alt=${this.alt}
           @error=${this._onError}
         />`
-      : html`<span part="fallback">${this.fallback}</span>`
+      : html`<span part="fallback">${this.fallback}</span>`;
   }
 
   private _onError() {
-    this._errored = true
+    this._errored = true;
   }
 
   override willUpdate(changed: Map<string, unknown>) {
-    if (changed.has("src")) this._errored = false
+    if (changed.has('src')) this._errored = false;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-avatar": AvatarElement
+    'a-avatar': AvatarElement;
   }
 }

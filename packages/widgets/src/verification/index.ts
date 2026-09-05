@@ -1,26 +1,36 @@
-import { SignalWatcher } from '@lit-labs/signals'
-import { type CSSResultGroup, css, html, LitElement, PropertyValues } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
-import { focusedProject } from '@/lib/projects'
-import { projects } from '@/states/projects'
-import { userBrightId } from '@/states/user'
-import type { Project } from '@/types/projects'
-import { getProjects, verifyProject, type VerificationSignature } from '@/utils/apis'
-import { EvaluationCategory } from '@/utils/aura'
-import { getLevelupProgress } from '@/utils/score'
-import { getSubjectVerifications } from '@/utils/subject'
-import { widgetBase } from './shared-styles'
+import { SignalWatcher } from '@lit-labs/signals';
+import {
+  type CSSResultGroup,
+  css,
+  html,
+  LitElement,
+  PropertyValues,
+} from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { focusedProject } from '@/lib/projects';
+import { projects } from '@/states/projects';
+import { userBrightId } from '@/states/user';
+import type { Project } from '@/types/projects';
+import {
+  getProjects,
+  verifyProject,
+  type VerificationSignature,
+} from '@/utils/apis';
+import { EvaluationCategory } from '@/utils/aura';
+import { getLevelupProgress } from '@/utils/score';
+import { getSubjectVerifications } from '@/utils/subject';
+import { widgetBase } from './shared-styles';
 
-import './edit-profile'
-import './evaluations-step'
-import './find-players'
-import './footer'
-import './how-it-works'
-import './login'
-import './progress-step'
-import type { ProgressStepData } from './progress-step'
-import './score-step'
-import './success-step'
+import './edit-profile';
+import './evaluations-step';
+import './find-players';
+import './footer';
+import './how-it-works';
+import './login';
+import './progress-step';
+import type { ProgressStepData } from './progress-step';
+import './score-step';
+import './success-step';
 
 export type Step =
   | 'connect'
@@ -30,151 +40,158 @@ export type Step =
   | 'find-players'
   | 'edit-profile'
   | 'evaluations'
-  | 'score'
+  | 'score';
 
 @customElement('app-verification-embed')
 export class AppVerificationElement extends SignalWatcher(LitElement) {
   @property({ type: Number })
-  projectId!: number
+  projectId!: number;
 
   @property({ type: Number })
-  height: number = 550
+  height: number = 550;
 
   /** Testing/demo hooks — when `mock` is true, skip API calls and use the provided mock data */
-  @property({ type: Boolean }) mock = false
-  @property({ type: Object }) mockData: ProgressStepData | null = null
-  @property({ type: Object }) mockProject: Project | null = null
-  @property({ type: String }) initialStep: Step | null = null
+  @property({ type: Boolean }) mock = false;
+  @property({ type: Object }) mockData: ProgressStepData | null = null;
+  @property({ type: Object }) mockProject: Project | null = null;
+  @property({ type: String }) initialStep: Step | null = null;
 
   @query('#scrollbar')
-  private scrollbar!: HTMLElement
+  private scrollbar!: HTMLElement;
 
-  @state() private step: Step = 'connect'
-  @state() private previousStep: Step = 'connect'
-  @state() private isLoadingVerification = false
-  @state() private isGeneratingSignature = false
-  @state() private verificationData: ProgressStepData | null = null
+  @state() private step: Step = 'connect';
+  @state() private previousStep: Step = 'connect';
+  @state() private isLoadingVerification = false;
+  @state() private isGeneratingSignature = false;
+  @state() private verificationData: ProgressStepData | null = null;
 
   static styles: CSSResultGroup = [
     widgetBase,
     css`
-    :host {
-      display: block;
-      /* Establish a size-query container so the whole widget can scale to
+      :host {
+        display: block;
+        /* Establish a size-query container so the whole widget can scale to
          whatever box it is embedded in. All inner sizing is em-based, so
          scaling this single root font-size fluidly resizes everything. */
-      container-type: inline-size;
-      font-size: var(--verification-size, 0.875rem);
-      height: 100%;
-      overflow: hidden;
-    }
-
-    .frame {
-      width: 100%;
-      height: 100%;
-      /* Fluid root size: tracks container width, clamped to a sane range.
-         An explicit --verification-size still wins when the host sets one. */
-      font-size: var(--verification-size, clamp(0.8125rem, 0.7rem + 1cqi, 1.0625rem));
-      border-radius: var(--radius, 0.75rem);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--card);
-      position: relative;
-    }
-
-    .content {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      /* "safe" keeps content reachable (aligned to start) when it is taller
-         than the frame, instead of overflowing past the top unscrollably. */
-      justify-content: safe center;
-      padding: clamp(1em, 4cqi, 1.5em);
-    }
-
-    .loading-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 8em;
-      gap: 0.75em;
-      color: var(--muted-foreground);
-      font-size: 0.875em;
-    }
-
-    .spinner {
-      width: 1.25em;
-      height: 1.25em;
-      flex-shrink: 0;
-      border: 2px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 9999px;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+        container-type: inline-size;
+        font-size: var(--verification-size, 0.875rem);
+        height: 100%;
+        overflow: hidden;
       }
-    }
 
-  `
-  ]
+      .frame {
+        width: 100%;
+        height: 100%;
+        /* Fluid root size: tracks container width, clamped to a sane range.
+         An explicit --verification-size still wins when the host sets one. */
+        font-size: var(
+          --verification-size,
+          clamp(0.8125rem, 0.7rem + 1cqi, 1.0625rem)
+        );
+        border-radius: var(--radius, 0.75rem);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--card);
+        position: relative;
+      }
+
+      .content {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        /* "safe" keeps content reachable (aligned to start) when it is taller
+         than the frame, instead of overflowing past the top unscrollably. */
+        justify-content: safe center;
+        padding: clamp(1em, 4cqi, 1.5em);
+      }
+
+      .loading-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 8em;
+        gap: 0.75em;
+        color: var(--muted-foreground);
+        font-size: 0.875em;
+      }
+
+      .spinner {
+        width: 1.25em;
+        height: 1.25em;
+        flex-shrink: 0;
+        border: 2px solid var(--border);
+        border-top-color: var(--primary);
+        border-radius: 9999px;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+  ];
 
   connectedCallback(): void {
-    super.connectedCallback()
+    super.connectedCallback();
     if (this.mock) {
-      this._applyMock()
-      return
+      this._applyMock();
+      return;
     }
-    this._fetchProjects()
+    this._fetchProjects();
   }
 
   protected updated(changed: PropertyValues): void {
-    if (!this.mock) return
-    if (changed.has('mockData') || changed.has('mockProject') || changed.has('initialStep')) {
-      this._applyMock()
+    if (!this.mock) return;
+    if (
+      changed.has('mockData') ||
+      changed.has('mockProject') ||
+      changed.has('initialStep')
+    ) {
+      this._applyMock();
     }
   }
 
   private _applyMock() {
-    if (this.mockProject) focusedProject.set(this.mockProject)
-    this.verificationData = this.mockData
-    const requiredLevel = this.mockProject?.requirementLevel ?? 1
-    const auraLevel = this.mockData?.auraLevel ?? 0
-    const next = this.initialStep ?? (auraLevel >= requiredLevel ? 'success' : 'progress')
-    this._goToStep(next)
+    if (this.mockProject) focusedProject.set(this.mockProject);
+    this.verificationData = this.mockData;
+    const requiredLevel = this.mockProject?.requirementLevel ?? 1;
+    const auraLevel = this.mockData?.auraLevel ?? 0;
+    const next =
+      this.initialStep ?? (auraLevel >= requiredLevel ? 'success' : 'progress');
+    this._goToStep(next);
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    const scrollBar = this.scrollbar
-    if (!scrollBar) return
+    const scrollBar = this.scrollbar;
+    if (!scrollBar) return;
 
     // Fill the host (which itself fills its container) so the widget takes the
     // full available height instead of a fixed pixel box.
-    scrollBar.style.height = '100%'
+    scrollBar.style.height = '100%';
   }
 
   private _fetchProjects() {
     getProjects().then((res) => {
-      projects.set(res)
-      const project = res.find((item) => item.id === this.projectId)
-      if (project) focusedProject.set(project)
-    })
+      projects.set(res);
+      const project = res.find((item) => item.id === this.projectId);
+      if (project) focusedProject.set(project);
+    });
 
-    const brightId = userBrightId.get()
+    const brightId = userBrightId.get();
     if (brightId) {
-      this._fetchVerification(brightId)
+      this._fetchVerification(brightId);
     }
   }
 
   private async _fetchVerification(brightId: string) {
-    this.isLoadingVerification = true
+    this.isLoadingVerification = true;
     try {
       const [levelData, subjectData] = await Promise.all([
         getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }),
-        getSubjectVerifications(brightId, EvaluationCategory.SUBJECT)
-      ])
+        getSubjectVerifications(brightId, EvaluationCategory.SUBJECT),
+      ]);
 
       this.verificationData = {
         brightId,
@@ -182,16 +199,16 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
         auraScore: subjectData?.auraScore ?? 0,
         evaluationsReceived: subjectData?.auraImpacts?.length ?? 0,
         auraImpacts: subjectData?.auraImpacts ?? [],
-        requirements: levelData.requirements
-      }
+        requirements: levelData.requirements,
+      };
 
-      const project = focusedProject.get()
-      const requiredLevel = project?.requirementLevel ?? 1
-      const auraLevel = this.verificationData.auraLevel ?? 0
+      const project = focusedProject.get();
+      const requiredLevel = project?.requirementLevel ?? 1;
+      const auraLevel = this.verificationData.auraLevel ?? 0;
 
-      this._goToStep(auraLevel >= requiredLevel ? 'success' : 'progress')
+      this._goToStep(auraLevel >= requiredLevel ? 'success' : 'progress');
     } catch (err) {
-      console.error('Failed to fetch verification data', err)
+      console.error('Failed to fetch verification data', err);
       // Treat missing profile (404) as a new user with level 0 and score 0
       // so they can continue to find verifiers instead of being stuck on connect
       this.verificationData = {
@@ -200,50 +217,50 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
         auraScore: 0,
         evaluationsReceived: 0,
         auraImpacts: [],
-        requirements: []
-      }
-      this._goToStep('progress')
+        requirements: [],
+      };
+      this._goToStep('progress');
     } finally {
-      this.isLoadingVerification = false
+      this.isLoadingVerification = false;
     }
   }
 
   private _goToStep(next: Step) {
-    this.previousStep = this.step
-    this.step = next
+    this.previousStep = this.step;
+    this.step = next;
   }
 
   private _handleConnected() {
-    const brightId = userBrightId.get()
-    if (brightId) this._fetchVerification(brightId)
+    const brightId = userBrightId.get();
+    if (brightId) this._fetchVerification(brightId);
   }
 
   private _handleDisconnect() {
-    this.verificationData = null
-    this._goToStep('connect')
+    this.verificationData = null;
+    this._goToStep('connect');
   }
 
   private async _handleContinue() {
-    const brightId = userBrightId.get()
-    const data = this.verificationData
-    let signature: VerificationSignature | undefined
+    const brightId = userBrightId.get();
+    const data = this.verificationData;
+    let signature: VerificationSignature | undefined;
 
     // Only verified users reach the success step, so generate the signature
     // from the API before handing control back to the embedding app.
     if (brightId) {
-      this.isGeneratingSignature = true
+      this.isGeneratingSignature = true;
       try {
         const result = await verifyProject(this.projectId, {
           userId: brightId,
           client: focusedProject.get()?.name ?? 'aura-get-verified',
           auraScore: data?.auraScore,
-          auraLevel: data?.auraLevel
-        })
-        signature = result?.signature
+          auraLevel: data?.auraLevel,
+        });
+        signature = result?.signature;
       } catch (err) {
-        console.error('Failed to generate verification signature', err)
+        console.error('Failed to generate verification signature', err);
       } finally {
-        this.isGeneratingSignature = false
+        this.isGeneratingSignature = false;
       }
     }
 
@@ -255,21 +272,21 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
           brightId,
           signature,
           auraLevel: data?.auraLevel,
-          auraScore: data?.auraScore
-        }
+          auraScore: data?.auraScore,
+        },
       }),
-      '*'
-    )
+      '*',
+    );
   }
 
   protected render() {
-    const project = focusedProject.get()
+    const project = focusedProject.get();
     return html`
       <a-scroll-area .height=${this.height} id="scrollbar" class="frame">
         <div class="content">${this._renderStep(project)}</div>
         <verification-footer></verification-footer>
       </a-scroll-area>
-    `
+    `;
   }
 
   private _renderStep(project: Project | null) {
@@ -279,13 +296,13 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
           <div class="spinner"></div>
           <span>Checking your verification…</span>
         </div>
-      `
+      `;
     }
 
-    const appName = project?.name ?? ''
-    const appDescription = project?.description
-    const appLogo = project?.image
-    const requiredLevel = (project?.requirementLevel ?? 1) as 1 | 2 | 3 | 4
+    const appName = project?.name ?? '';
+    const appDescription = project?.description;
+    const appLogo = project?.image;
+    const requiredLevel = (project?.requirementLevel ?? 1) as 1 | 2 | 3 | 4;
 
     switch (this.step) {
       case 'connect':
@@ -298,7 +315,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
             @connected=${() => this._handleConnected()}
             @how-it-works=${() => this._goToStep('how-it-works')}
           ></verification-connect>
-        `
+        `;
       case 'progress':
         return html`
           <verification-progress
@@ -311,7 +328,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
             @show-evaluations=${() => this._goToStep('evaluations')}
             @show-score=${() => this._goToStep('score')}
           ></verification-progress>
-        `
+        `;
       case 'success':
         return html`
           <verification-success
@@ -320,13 +337,13 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
             .loading=${this.isGeneratingSignature}
             @continue=${() => this._handleContinue()}
           ></verification-success>
-        `
+        `;
       case 'how-it-works':
         return html`
           <verification-how-it-works
             @back=${() => this._goToStep(this.previousStep)}
           ></verification-how-it-works>
-        `
+        `;
       case 'find-players':
         return html`
           <verification-find-players
@@ -334,20 +351,20 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
             @back=${() => this._goToStep('progress')}
             @select-player=${(e: CustomEvent) => console.log('Selected player:', e.detail)}
           ></verification-find-players>
-        `
+        `;
       case 'edit-profile':
         return html`
           <verification-edit-profile
             @back=${() => this._goToStep('progress')}
           ></verification-edit-profile>
-        `
+        `;
       case 'evaluations':
         return html`
           <verification-evaluations
             .impacts=${this.verificationData?.auraImpacts ?? []}
             @back=${() => this._goToStep('progress')}
           ></verification-evaluations>
-        `
+        `;
       case 'score':
         return html`
           <verification-score
@@ -355,9 +372,9 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
             .totalScore=${this.verificationData?.auraScore ?? 0}
             @back=${() => this._goToStep('progress')}
           ></verification-score>
-        `
+        `;
       default:
-        return html``
+        return html``;
     }
   }
 }

@@ -1,23 +1,23 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const nav = [
   {
-    label: "Getting Started",
+    label: 'Getting Started',
     links: [
-      { href: "/query", label: "Introduction" },
-      { href: "/query/query-client", label: "QueryClient" },
+      { href: '/query', label: 'Introduction' },
+      { href: '/query/query-client', label: 'QueryClient' },
     ],
   },
   {
-    label: "Controllers",
+    label: 'Controllers',
     links: [
-      { href: "/query/queries", label: "Query" },
-      { href: "/query/mutations", label: "Mutation" },
+      { href: '/query/queries', label: 'Query' },
+      { href: '/query/mutations', label: 'Mutation' },
     ],
   },
   {
-    label: "Reference",
-    links: [{ href: "/query/api-reference", label: "API Reference" }],
+    label: 'Reference',
+    links: [{ href: '/query/api-reference', label: 'API Reference' }],
   },
 ];
 

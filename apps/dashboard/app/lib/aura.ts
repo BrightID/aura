@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from "react"
+import { useEffect, useRef, type RefObject } from 'react';
 
 /**
  * Bind a `CustomEvent<T>` dispatched by an `@aura/ui` custom element to a React
@@ -17,14 +17,14 @@ export function useAuraEvent<T = unknown, E extends EventTarget = HTMLElement>(
   event: string,
   handler: (detail: T) => void,
 ) {
-  const saved = useRef(handler)
-  saved.current = handler
+  const saved = useRef(handler);
+  saved.current = handler;
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const listener = (e: Event) => saved.current((e as CustomEvent<T>).detail)
-    el.addEventListener(event, listener)
-    return () => el.removeEventListener(event, listener)
-  }, [ref, event])
+    const el = ref.current;
+    if (!el) return;
+    const listener = (e: Event) => saved.current((e as CustomEvent<T>).detail);
+    el.addEventListener(event, listener);
+    return () => el.removeEventListener(event, listener);
+  }, [ref, event]);
 }

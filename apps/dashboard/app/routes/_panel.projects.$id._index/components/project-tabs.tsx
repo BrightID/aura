@@ -1,21 +1,18 @@
 import {
   BarChart3,
-  Zap,
   CreditCard,
   Settings,
-  Activity,
-  SunDim,
   SunDimIcon,
   View,
-} from "lucide-react"
-import OverviewSection from "./overview"
-import ProjectUsage from "./usage"
-import { UserRequiredLevelCard } from "./requirement-level"
-import ProjectBilling from "./billing"
-import { SettingsTab } from "./settings"
-import { BrightIdSettingsForm } from "./brightid-settings"
-import type { Project } from "~/types/projects"
-import PreviewTab from "./preview-tab"
+} from 'lucide-react';
+import OverviewSection from './overview';
+import ProjectUsage from './usage';
+import { UserRequiredLevelCard } from './requirement-level';
+import ProjectBilling from './billing';
+import { SettingsTab } from './settings';
+import { BrightIdSettingsForm } from './brightid-settings';
+import type { Project } from '~/types/projects';
+import PreviewTab from './preview-tab';
 
 export function ProjectTabs({ project }: { project: Project }) {
   return (
@@ -58,5 +55,5 @@ export function ProjectTabs({ project }: { project: Project }) {
         <PreviewTab project={project} />
       </a-tab-panel>
     </a-tabs>
-  )
+  );
 }

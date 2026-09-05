@@ -1,13 +1,13 @@
-"use client"
+'use client';
 
-import { formatDistanceToNow } from "date-fns"
-import { Globe, MoreVertical, ExternalLink, Calendar, Zap } from "lucide-react"
-import { Link } from "react-router"
-import type { Project } from "~/components/projects-table"
-import { cn } from "~/lib/utils"
+import { formatDistanceToNow } from 'date-fns';
+import { Globe, MoreVertical, ExternalLink, Calendar, Zap } from 'lucide-react';
+import { Link } from 'react-router';
+import type { Project } from '~/components/projects-table';
+import { cn } from '~/lib/utils';
 
 interface ProjectCardProps {
-  project: Project
+  project: Project;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
@@ -15,14 +15,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
     <Link
       to={`/projects/${project.id}`}
       className={cn(
-        "group relative cursor-pointer rounded-lg border bg-card p-4 transition-all hover:border-foreground/20 hover:shadow-md"
+        'group relative cursor-pointer rounded-lg border bg-card p-4 transition-all hover:border-foreground/20 hover:shadow-md',
       )}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
           {project.logoUrl ? (
             <img
-              src={project.logoUrl || "/placeholder.svg"}
+              src={project.logoUrl || '/placeholder.svg'}
               alt={project.name}
               className="h-10 w-10 rounded-md object-cover"
             />
@@ -39,7 +39,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Globe className="h-3 w-3" />
                 <span className="truncate max-w-[180px]">
-                  {project.websiteUrl.replace(/^https?:\/\//, "")}
+                  {project.websiteUrl.replace(/^https?:\/\//, '')}
                 </span>
               </div>
             )}
@@ -76,16 +76,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
       </div>
 
       <p className="mt-3 text-sm text-muted-foreground line-clamp-2">
-        {project.description || "No description provided"}
+        {project.description || 'No description provided'}
       </p>
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <a-badge
-            variant={project.isActive ? "default" : "secondary"}
+            variant={project.isActive ? 'default' : 'secondary'}
             className="text-xs"
           >
-            {project.isActive ? "Active" : "Inactive"}
+            {project.isActive ? 'Active' : 'Inactive'}
           </a-badge>
           {project.deadline && (
             <a-badge variant="outline" className="text-xs">
@@ -103,11 +103,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
       </div>
 
       <div className="mt-3 pt-3 border-t text-xs text-muted-foreground">
-        Updated{" "}
+        Updated{' '}
         {formatDistanceToNow(new Date(project.updatedAt || project.createdAt), {
           addSuffix: true,
         })}
       </div>
     </Link>
-  )
+  );
 }

@@ -1,26 +1,26 @@
-import '@/components/common/profile-card.ts'
-import { pushRouter } from '@/router.js'
-import { projects, trackedProject } from '@/states/projects'
+import '@/components/common/profile-card.ts';
+import { pushRouter } from '@/router.js';
+import { projects, trackedProject } from '@/states/projects';
 import {
   levelUpProgress,
   userBrightId,
   userEmail,
   userFirstName,
   userLastName,
-  userProfilePicture
-} from '@/states/user'
-import { getProjects, queryClient } from '@/utils/apis/index'
-import { EvaluationCategory } from '@/utils/aura'
-import { createBlockiesImage } from '@/utils/image.js'
-import { getLevelupProgress } from '@/utils/score'
-import { signal, SignalWatcher } from '@lit-labs/signals'
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import { map } from 'lit/directives/map.js'
-import '../components/common/verification-card-skeleton.ts'
-import '../components/common/verification-card.ts'
+  userProfilePicture,
+} from '@/states/user';
+import { getProjects, queryClient } from '@/utils/apis/index';
+import { EvaluationCategory } from '@/utils/aura';
+import { createBlockiesImage } from '@/utils/image.js';
+import { getLevelupProgress } from '@/utils/score';
+import { signal, SignalWatcher } from '@lit-labs/signals';
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { map } from 'lit/directives/map.js';
+import '../components/common/verification-card-skeleton.ts';
+import '../components/common/verification-card.ts';
 
-const isLoading = signal(true)
+const isLoading = signal(true);
 
 @customElement('my-home')
 export class HomeElement extends SignalWatcher(LitElement) {
@@ -55,35 +55,37 @@ export class HomeElement extends SignalWatcher(LitElement) {
       border-radius: 24px;
       z-index: -10;
     }
-  `
+  `;
 
   constructor() {
-    super()
+    super();
 
     if (!userBrightId.get()) {
-      pushRouter('/login')
+      pushRouter('/login');
     }
   }
 
   connectedCallback(): void {
-    super.connectedCallback()
+    super.connectedCallback();
     const fetchData = queryClient
       .ensureQueryData({
         queryKey: ['projects'],
-        queryFn: getProjects
+        queryFn: getProjects,
       })
       .then((res) => {
-        projects.set(res)
-        isLoading.set(false)
-      })
+        projects.set(res);
+        isLoading.set(false);
+      });
 
-    getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }).then((res) => {
-      levelUpProgress.set(res.requirements)
-    })
+    getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }).then(
+      (res) => {
+        levelUpProgress.set(res.requirements);
+      },
+    );
   }
 
   protected render() {
-    const trackP = trackedProject.get()
+    const trackP = trackedProject.get();
     return html` <div class="body">
       <div class="profile-card-wrapper">
         <profile-card
@@ -105,35 +107,41 @@ export class HomeElement extends SignalWatcher(LitElement) {
       <div class="apps-section">
         <a-head level="2">Apps needing verification</a-head>
 
-        ${isLoading.get()
-          ? html`
-              <verification-card-skeleton></verification-card-skeleton>
-              <verification-card-skeleton></verification-card-skeleton>
-              <verification-card-skeleton></verification-card-skeleton>
-            `
-          : map(trackP ? [trackP] : projects.get(), (project) => {
-              const totalSteps = levelUpProgress
-                .get()
-                .filter((item) => item.level <= project.requirementLevel)
-
-              const stepsCompleted = totalSteps.filter((item) => item.status === 'passed').length
-
-              return html`
-                <verification-card
-                  .status=${stepsCompleted === 0
-                    ? 'Not Started'
-                    : stepsCompleted < totalSteps.length
-                      ? 'In progress'
-                      : 'Completed'}
-                  .name=${project.name}
-                  .levelRequirement=${project.requirementLevel}
-                  .stepsCompleted="${stepsCompleted}"
-                  .totalSteps="${totalSteps.length}"
-                  .projectId=${project.id}
-                ></verification-card>
+        ${
+          isLoading.get()
+            ? html`
+                <verification-card-skeleton></verification-card-skeleton>
+                <verification-card-skeleton></verification-card-skeleton>
+                <verification-card-skeleton></verification-card-skeleton>
               `
-            })}
+            : map(trackP ? [trackP] : projects.get(), (project) => {
+                const totalSteps = levelUpProgress
+                  .get()
+                  .filter((item) => item.level <= project.requirementLevel);
+
+                const stepsCompleted = totalSteps.filter(
+                  (item) => item.status === 'passed',
+                ).length;
+
+                return html`
+                  <verification-card
+                    .status=${
+                      stepsCompleted === 0
+                        ? 'Not Started'
+                        : stepsCompleted < totalSteps.length
+                          ? 'In progress'
+                          : 'Completed'
+                    }
+                    .name=${project.name}
+                    .levelRequirement=${project.requirementLevel}
+                    .stepsCompleted="${stepsCompleted}"
+                    .totalSteps="${totalSteps.length}"
+                    .projectId=${project.id}
+                  ></verification-card>
+                `;
+              })
+        }
       </div>
-    </div>`
+    </div>`;
   }
 }

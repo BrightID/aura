@@ -22,5 +22,5 @@ export function ProjectDetailSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

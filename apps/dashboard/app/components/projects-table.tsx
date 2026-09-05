@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table';
 import {
   flexRender,
   getCoreRowModel,
@@ -14,23 +14,23 @@ import {
   useReactTable,
   type ColumnDef,
   type SortingState,
-} from "@tanstack/react-table"
-import { useAuraEvent } from "~/lib/aura"
-import { ArrowUpDown, Edit2, Eye, Plus } from "lucide-react"
-import { Link } from "react-router"
-import { useProjectStore } from "~/store/project-store"
-import { format } from "date-fns"
-export type { Project } from "~/types/projects"
-import type { Project } from "~/types/projects"
+} from '@tanstack/react-table';
+import { useAuraEvent } from '~/lib/aura';
+import { ArrowUpDown, Eye, Plus } from 'lucide-react';
+import { Link } from 'react-router';
+import { useProjectStore } from '~/store/project-store';
+import { format } from 'date-fns';
+export type { Project } from '~/types/projects';
+import type { Project } from '~/types/projects';
 
 const columns: ColumnDef<Project>[] = [
   {
-    accessorKey: "name",
+    accessorKey: 'name',
     header: ({ column }) => (
       <a-button
         variant="ghost"
         size="sm"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
         Project
         <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -54,8 +54,8 @@ const columns: ColumnDef<Project>[] = [
     ),
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: 'description',
+    header: 'Description',
     cell: ({ row }) => (
       <p className="text-sm text-muted-foreground line-clamp-2">
         {row.original.description}
@@ -63,45 +63,45 @@ const columns: ColumnDef<Project>[] = [
     ),
   },
   {
-    accessorKey: "remainingtokens",
-    header: "Remaining Tokens",
-    cell: ({ getValue }) => getValue() ?? "-",
+    accessorKey: 'remainingtokens',
+    header: 'Remaining Tokens',
+    cell: ({ getValue }) => getValue() ?? '-',
   },
   {
-    accessorKey: "createdAt",
-    header: "Created At",
+    accessorKey: 'createdAt',
+    header: 'Created At',
     cell: ({ getValue }) =>
-      getValue() ? format(new Date(getValue() as string), "PP") : "-",
+      getValue() ? format(new Date(getValue() as string), 'PP') : '-',
   },
   {
-    accessorKey: "selectedPlanId",
-    header: "Plan",
+    accessorKey: 'selectedPlanId',
+    header: 'Plan',
     cell: ({ getValue }) => {
-      const planId = getValue() as number | null
+      const planId = getValue() as number | null;
       return planId === null ? (
         <span className="text-green-600 font-medium">Free</span>
       ) : (
         `#${planId}`
-      )
+      );
     },
   },
   {
-    accessorKey: "isActive",
-    header: "Status",
+    accessorKey: 'isActive',
+    header: 'Status',
     cell: ({ getValue }) => (
       <span
         className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
           getValue()
-            ? "bg-green-100 text-green-800"
-            : "bg-gray-100 text-gray-800"
+            ? 'bg-green-100 text-green-800'
+            : 'bg-gray-100 text-gray-800'
         }`}
       >
-        {getValue() ? "Active" : "Inactive"}
+        {getValue() ? 'Active' : 'Inactive'}
       </span>
     ),
   },
   {
-    id: "actions",
+    id: 'actions',
     cell: ({ row }) => (
       <Link to={`/projects/${row.original.id}`}>
         <a-button variant="ghost" size="icon">
@@ -110,20 +110,20 @@ const columns: ColumnDef<Project>[] = [
       </Link>
     ),
   },
-]
+];
 
 export function ProjectsTable({ data }: { data: Project[] }) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [filter, setFilter] = useState("")
-  const filterRef = useRef<HTMLElement>(null)
-  useAuraEvent<string>(filterRef, "change", setFilter)
-  const { setSelectedProject } = useProjectStore()
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [filter, setFilter] = useState('');
+  const filterRef = useRef<HTMLElement>(null);
+  useAuraEvent<string>(filterRef, 'change', setFilter);
+  const { setSelectedProject } = useProjectStore();
 
   const filteredData = useMemo(
     () =>
       data.filter((p) => p.name.toLowerCase().includes(filter.toLowerCase())),
-    [data, filter]
-  )
+    [data, filter],
+  );
 
   const table = useReactTable({
     data: filteredData,
@@ -132,7 +132,7 @@ export function ProjectsTable({ data }: { data: Project[] }) {
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     state: { sorting },
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -160,7 +160,7 @@ export function ProjectsTable({ data }: { data: Project[] }) {
                   <TableHead key={header.id}>
                     {flexRender(
                       header.column.columnDef.header,
-                      header.getContext()
+                      header.getContext(),
                     )}
                   </TableHead>
                 ))}
@@ -178,7 +178,7 @@ export function ProjectsTable({ data }: { data: Project[] }) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -198,5 +198,5 @@ export function ProjectsTable({ data }: { data: Project[] }) {
         </Table>
       </div>
     </div>
-  )
+  );
 }

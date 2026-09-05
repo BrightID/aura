@@ -1,9 +1,9 @@
-import { For } from "solid-js"
+import { For } from 'solid-js';
 import {
   subjectRatingColorMap,
   userRatingColorMap,
   valueColorMap,
-} from "@/components/charts/colors"
+} from '@/components/charts/colors';
 
 /** Info dialog explaining the impact chart's bar colors. */
 export default function ChartHelp() {
@@ -11,11 +11,11 @@ export default function ChartHelp() {
     <div class="flex flex-col gap-1">
       <p class="text-sm font-medium text-foreground">{props.label}</p>
       <div class="flex w-full">
-        <For each={["-4", "-3", "-2", "-1", "1", "2", "3", "4"]}>
+        <For each={['-4', '-3', '-2', '-1', '1', '2', '3', '4']}>
           {(key) => (
             <div
               class="h-3 flex-1 first:rounded-l last:rounded-r"
-              style={{ "background-color": props.map[key] }}
+              style={{ 'background-color': props.map[key] }}
             />
           )}
         </For>
@@ -25,7 +25,7 @@ export default function ChartHelp() {
         <span>+4 (positive)</span>
       </div>
     </div>
-  )
+  );
 
   return (
     <a-dialog>
@@ -59,5 +59,5 @@ export default function ChartHelp() {
         </a>
       </div>
     </a-dialog>
-  )
+  );
 }

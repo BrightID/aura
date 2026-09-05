@@ -1,29 +1,29 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit"
-import { customElement, property } from "lit/decorators.js"
-import { live } from "lit/directives/live.js"
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 
 export interface SelectOption {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
-@customElement("a-select")
+@customElement('a-select')
 export class SelectElement extends LitElement {
-  @property() declare label: string | undefined
-  @property() declare name: string
-  @property({ reflect: true }) declare value: string
-  @property({ type: Boolean }) declare disabled: boolean
-  @property({ type: Array }) declare options: SelectOption[]
-  @property() declare placeholder: string
+  @property() declare label: string | undefined;
+  @property() declare name: string;
+  @property({ reflect: true }) declare value: string;
+  @property({ type: Boolean }) declare disabled: boolean;
+  @property({ type: Array }) declare options: SelectOption[];
+  @property() declare placeholder: string;
 
   constructor() {
-    super()
-    this.label = undefined
-    this.name = "select"
-    this.value = ""
-    this.disabled = false
-    this.options = []
-    this.placeholder = ""
+    super();
+    this.label = undefined;
+    this.name = 'select';
+    this.value = '';
+    this.disabled = false;
+    this.options = [];
+    this.placeholder = '';
   }
 
   static styles: CSSResultGroup = css`
@@ -73,7 +73,11 @@ export class SelectElement extends LitElement {
     }
 
     select:hover:not(:disabled):not(:focus) {
-      border-color: color-mix(in oklch, var(--border) 85%, var(--foreground) 15%);
+      border-color: color-mix(
+        in oklch,
+        var(--border) 85%,
+        var(--foreground) 15%
+      );
       background: color-mix(in oklch, var(--background) 78%, transparent);
     }
 
@@ -98,11 +102,11 @@ export class SelectElement extends LitElement {
       color: var(--muted-foreground);
       pointer-events: none;
     }
-  `
+  `;
 
   render() {
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : ""}
+      ${this.label ? html`<label>${this.label}</label>` : ''}
       <div class="select-wrapper">
         <select
           .value=${live(this.value)}
@@ -110,9 +114,12 @@ export class SelectElement extends LitElement {
           ?disabled=${this.disabled}
           name=${this.name}
         >
-          ${this.placeholder ? html`<option value="">${this.placeholder}</option>` : ""}
+          ${this.placeholder ? html`<option value="">${this.placeholder}</option>` : ''}
           ${this.options.map(
-            (o) => html`<option value=${o.value} ?selected=${o.value === this.value}>${o.label}</option>`,
+            (o) =>
+              html`<option value=${o.value} ?selected=${o.value === this.value}>
+                ${o.label}
+              </option>`,
           )}
         </select>
         <span class="chevron">
@@ -127,26 +134,26 @@ export class SelectElement extends LitElement {
           </svg>
         </span>
       </div>
-    `
+    `;
   }
 
   private _onChange(e: Event) {
-    e.stopPropagation()
-    const target = e.target as HTMLSelectElement
-    this.value = target.value
+    e.stopPropagation();
+    const target = e.target as HTMLSelectElement;
+    this.value = target.value;
 
     this.dispatchEvent(
-      new CustomEvent("change", {
+      new CustomEvent('change', {
         detail: target.value,
         bubbles: false,
         composed: false,
       }),
-    )
+    );
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-select": SelectElement
+    'a-select': SelectElement;
   }
 }

@@ -1,21 +1,21 @@
-import { css, html, LitElement, type PropertyValues } from "lit"
+import { css, html, LitElement, type PropertyValues } from 'lit';
 import {
   customElement,
   property,
   queryAssignedElements,
-} from "lit/decorators.js"
+} from 'lit/decorators.js';
 
-@customElement("a-tabs")
+@customElement('a-tabs')
 export class TabsElement extends LitElement {
   @property({ type: String, reflect: true })
-  declare value: string
+  declare value: string;
 
-  @queryAssignedElements({ selector: "a-tab" })
-  declare private tabs: HTMLElement[]
+  @queryAssignedElements({ selector: 'a-tab' })
+  declare private tabs: HTMLElement[];
 
   constructor() {
-    super()
-    this.value = ""
+    super();
+    this.value = '';
   }
 
   static styles = css`
@@ -58,111 +58,111 @@ export class TabsElement extends LitElement {
       flex: 1 1 0;
       min-width: 0;
     }
-  `
+  `;
 
   // Re-measure the indicator whenever the tab strip changes size (responsive
   // layouts, tabs appearing/disappearing change every sibling's width).
-  private _resizeObserver = new ResizeObserver(() => this._updateIndicator())
+  private _resizeObserver = new ResizeObserver(() => this._updateIndicator());
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-    this._resizeObserver.disconnect()
+    super.disconnectedCallback();
+    this._resizeObserver.disconnect();
   }
 
   private _initialize() {
     if (!this.value && this.tabs.length > 0) {
-      this.value = (this.tabs[0] as any).value || ""
+      this.value = (this.tabs[0] as any).value || '';
     }
-    this._updateIndicator()
-    this._updatePanelsAndTabs()
-    this.requestUpdate()
+    this._updateIndicator();
+    this._updatePanelsAndTabs();
+    this.requestUpdate();
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    const container = this.renderRoot.querySelector(".tab-list")
-    if (container) this._resizeObserver.observe(container)
+    const container = this.renderRoot.querySelector('.tab-list');
+    if (container) this._resizeObserver.observe(container);
     requestAnimationFrame(() => {
       if (!this.value && this.tabs.length > 0) {
-        this.value = (this.tabs[0] as any).value || ""
+        this.value = (this.tabs[0] as any).value || '';
       }
-      this._updateIndicator()
-      this._updatePanelsAndTabs()
-    })
+      this._updateIndicator();
+      this._updatePanelsAndTabs();
+    });
   }
 
   updated(changed: Map<PropertyKey, unknown>) {
-    if (changed.has("value")) {
-      this._updateIndicator()
-      this._updatePanelsAndTabs()
+    if (changed.has('value')) {
+      this._updateIndicator();
+      this._updatePanelsAndTabs();
     }
   }
 
   private _updateIndicator() {
     const indicator = this.renderRoot.querySelector(
-      ".indicator",
-    ) as HTMLElement | null
-    if (!indicator) return
+      '.indicator',
+    ) as HTMLElement | null;
+    if (!indicator) return;
 
-    const activeTab = this.tabs.find((el) => (el as any).value === this.value)
+    const activeTab = this.tabs.find((el) => (el as any).value === this.value);
     if (!activeTab) {
-      indicator.style.width = "0"
-      return
+      indicator.style.width = '0';
+      return;
     }
 
     // Layout metrics, not getBoundingClientRect: rects are scaled while an
     // ancestor animates with `transform: scale()` (e.g. a-dialog opening) and
     // ResizeObserver never fires for transforms, so a scaled measurement
     // would stick.
-    const container = this.renderRoot.querySelector(".tab-list") as HTMLElement
-    const styles = getComputedStyle(container)
-    const gap = parseFloat(styles.columnGap) || 0
-    let left = parseFloat(styles.paddingLeft) || 0
+    const container = this.renderRoot.querySelector('.tab-list') as HTMLElement;
+    const styles = getComputedStyle(container);
+    const gap = parseFloat(styles.columnGap) || 0;
+    let left = parseFloat(styles.paddingLeft) || 0;
     for (const tab of this.tabs) {
-      if (tab === activeTab) break
-      left += tab.offsetWidth + gap
+      if (tab === activeTab) break;
+      left += tab.offsetWidth + gap;
     }
 
-    indicator.style.width = `${activeTab.offsetWidth}px`
-    indicator.style.transform = `translateX(${left}px)`
+    indicator.style.width = `${activeTab.offsetWidth}px`;
+    indicator.style.transform = `translateX(${left}px)`;
   }
 
   private _updatePanelsAndTabs() {
     this.tabs.forEach((tab) => {
-      const isActive = (tab as any).value === this.value
-      tab.toggleAttribute("active", isActive)
-      tab.setAttribute("aria-selected", isActive ? "true" : "false")
-    })
+      const isActive = (tab as any).value === this.value;
+      tab.toggleAttribute('active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
 
     const panels = this.querySelectorAll(
-      "a-tab-panel",
-    ) as NodeListOf<TabPanelElement>
+      'a-tab-panel',
+    ) as NodeListOf<TabPanelElement>;
     panels.forEach((panel) => {
-      const isActive = panel.value === this.value
-      panel.toggleAttribute("active", isActive)
-      panel.hidden = !isActive
-    })
+      const isActive = panel.value === this.value;
+      panel.toggleAttribute('active', isActive);
+      panel.hidden = !isActive;
+    });
   }
 
   private onTabClick(e: Event) {
-    e.stopPropagation()
-    const tab = (e.target as HTMLElement).closest("a-tab") as TabElement | null
-    if (!tab) return
+    e.stopPropagation();
+    const tab = (e.target as HTMLElement).closest('a-tab') as TabElement | null;
+    if (!tab) return;
 
     // Prevent action if tab is disabled
-    if (tab.disabled) return
+    if (tab.disabled) return;
 
-    const newValue = tab.value
+    const newValue = tab.value;
     if (newValue && newValue !== this.value) {
-      this.value = newValue
+      this.value = newValue;
 
       this.dispatchEvent(
-        new CustomEvent("change", {
+        new CustomEvent('change', {
           detail: { value: newValue },
           bubbles: true,
           composed: true,
           cancelable: true,
         }),
-      )
+      );
     }
   }
 
@@ -178,31 +178,31 @@ export class TabsElement extends LitElement {
       <div class="panels">
         <slot name="panel"></slot>
       </div>
-    `
+    `;
   }
 }
 
 // ==================== TAB ELEMENT WITH DISABLED SUPPORT ====================
 
-@customElement("a-tab")
+@customElement('a-tab')
 export class TabElement extends LitElement {
   @property({ type: String, reflect: true })
-  declare value: string
+  declare value: string;
 
   @property({ type: Boolean, reflect: true })
-  declare active: boolean
+  declare active: boolean;
 
   @property({ type: Boolean, reflect: true })
-  declare disabled: boolean
+  declare disabled: boolean;
 
   @property({})
-  declare class: string | undefined
+  declare class: string | undefined;
 
   constructor() {
-    super()
-    this.value = ""
-    this.active = false
-    this.disabled = false
+    super();
+    this.value = '';
+    this.active = false;
+    this.disabled = false;
   }
 
   static styles = css`
@@ -253,32 +253,32 @@ export class TabElement extends LitElement {
       outline: 2px solid var(--primary, #0066cc);
       outline-offset: 2px;
     }
-  `
+  `;
 
   render() {
     return html`
       <button
         .class=${this.class}
         role="tab"
-        aria-selected=${this.active ? "true" : "false"}
-        aria-disabled=${this.disabled ? "true" : "false"}
-        tabindex=${this.active && !this.disabled ? "0" : "-1"}
+        aria-selected=${this.active ? 'true' : 'false'}
+        aria-disabled=${this.disabled ? 'true' : 'false'}
+        tabindex=${this.active && !this.disabled ? '0' : '-1'}
         ?disabled=${this.disabled}
       >
         <slot></slot>
       </button>
-    `
+    `;
   }
 }
 
-@customElement("a-tab-panel")
+@customElement('a-tab-panel')
 export class TabPanelElement extends LitElement {
   @property({ type: String, reflect: true })
-  declare value: string
+  declare value: string;
 
   constructor() {
-    super()
-    this.value = ""
+    super();
+    this.value = '';
   }
 
   static styles = css`
@@ -298,21 +298,21 @@ export class TabPanelElement extends LitElement {
       opacity: 1;
       transform: translateY(0);
     }
-  `
+  `;
 
   render() {
     return html`
       <div class="content" role="tabpanel">
         <slot></slot>
       </div>
-    `
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-tab-panel": TabPanelElement
-    "a-tabs": TabsElement
-    "a-tab": TabElement
+    'a-tab-panel': TabPanelElement;
+    'a-tabs': TabsElement;
+    'a-tab': TabElement;
   }
 }

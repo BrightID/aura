@@ -1,15 +1,15 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import { property } from 'lit/decorators.js'
-import thumbsUpGreen from '@/assets/icons/thumbs-up.svg'
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
+import thumbsUpGreen from '@/assets/icons/thumbs-up.svg';
 
 @customElement('notification-card')
 export class NotificationCard extends LitElement {
-  @property({ type: String }) userName = ''
-  @property({ type: Number }) timestamp = 0
-  @property({ type: String }) description = ''
-  @property({ type: String }) icon = thumbsUpGreen
-  @property({ type: String }) profileImage = '/images/v134_1907.png'
+  @property({ type: String }) userName = '';
+  @property({ type: Number }) timestamp = 0;
+  @property({ type: String }) description = '';
+  @property({ type: String }) icon = thumbsUpGreen;
+  @property({ type: String }) profileImage = '/images/v134_1907.png';
 
   static styles?: CSSResultGroup | undefined = css`
     .notification-card {
@@ -77,11 +77,14 @@ export class NotificationCard extends LitElement {
     .notification-description strong {
       color: #5cc975;
     }
-  `
+  `;
   protected render() {
     return html`
       <div class="notification-card">
-        <div class="profile-section" style="background-image: url('${this.profileImage}');"></div>
+        <div
+          class="profile-section"
+          style="background-image: url('${this.profileImage}');"
+        ></div>
         <div class="content">
           <div class="title-section">
             <span class="user-name">${this.userName}</span>
@@ -93,6 +96,6 @@ export class NotificationCard extends LitElement {
           </div>
         </div>
       </div>
-    `
+    `;
   }
 }

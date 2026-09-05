@@ -1,16 +1,16 @@
-import { downloadFromChannel, listChannel, uploadToChannel } from "./channel"
-import { b64ToUrlSafeB64, decryptData, hash } from "./crypto"
+import { downloadFromChannel, listChannel, uploadToChannel } from './channel';
+import { b64ToUrlSafeB64, decryptData, hash } from './crypto';
 
-export const RECOVERY_CHANNEL_TTL = 24 * 60 * 60 * 1000 // 1 day
-export const CHANNEL_POLL_INTERVAL = 3000
+export const RECOVERY_CHANNEL_TTL = 24 * 60 * 60 * 1000; // 1 day
+export const CHANNEL_POLL_INTERVAL = 3000;
 
-const IMPORT_PREFIX = "sig_"
-const QR_TYPE_ADD_SUPER_USER_APP = "5"
+const IMPORT_PREFIX = 'sig_';
+const QR_TYPE_ADD_SUPER_USER_APP = '5';
 
 export interface RecoveredUser {
-  id: string
-  name?: string
-  password: string
+  id: string;
+  name?: string;
+  password: string;
 }
 
 /** Build the channel url embedded in the QR code. */
@@ -19,16 +19,16 @@ export function buildRecoveryChannelQrUrl({
   href,
   name,
 }: {
-  aesKey: string
-  href: string
-  name?: string
+  aesKey: string;
+  href: string;
+  name?: string;
 }): string {
-  const url = new URL(href)
-  url.searchParams.append("aes", aesKey)
-  url.searchParams.append("t", QR_TYPE_ADD_SUPER_USER_APP)
-  if (name) url.searchParams.append("n", name)
-  url.searchParams.append("p", "false")
-  return url.href
+  const url = new URL(href);
+  url.searchParams.append('aes', aesKey);
+  url.searchParams.append('t', QR_TYPE_ADD_SUPER_USER_APP);
+  if (name) url.searchParams.append('n', name);
+  url.searchParams.append('p', 'false');
+  return url.href;
 }
 
 export async function uploadRecoveryData({
@@ -37,20 +37,20 @@ export async function uploadRecoveryData({
   publicKey,
   timestamp,
 }: {
-  channelUrl: string
-  aesKey: string
-  publicKey: string
-  timestamp: number
+  channelUrl: string;
+  aesKey: string;
+  publicKey: string;
+  timestamp: number;
 }): Promise<void> {
-  const channelId = hash(aesKey)
-  const data = JSON.stringify({ signingKey: publicKey, timestamp })
+  const channelId = hash(aesKey);
+  const data = JSON.stringify({ signingKey: publicKey, timestamp });
   await uploadToChannel({
     channelUrl,
     channelId,
     data,
-    dataId: "data",
+    dataId: 'data',
     requestedTtl: RECOVERY_CHANNEL_TTL,
-  })
+  });
 }
 
 export async function pollRecoveredUser({
@@ -59,27 +59,27 @@ export async function pollRecoveredUser({
   aesKey,
   signingKey,
 }: {
-  channelUrl: string
-  channelId: string
-  aesKey: string
-  signingKey: string
+  channelUrl: string;
+  channelId: string;
+  aesKey: string;
+  signingKey: string;
 }): Promise<RecoveredUser | null> {
-  const dataIds = await listChannel({ channelUrl, channelId })
+  const dataIds = await listChannel({ channelUrl, channelId });
 
-  const prefix = `${IMPORT_PREFIX}userinfo_`
-  const self = b64ToUrlSafeB64(signingKey)
+  const prefix = `${IMPORT_PREFIX}userinfo_`;
+  const self = b64ToUrlSafeB64(signingKey);
   const dataId = dataIds.find(
     (id) =>
-      id.startsWith(prefix) && id.replace(prefix, "").split(":")[1] !== self,
-  )
-  if (!dataId) return null
+      id.startsWith(prefix) && id.replace(prefix, '').split(':')[1] !== self,
+  );
+  if (!dataId) return null;
 
   const encrypted = await downloadFromChannel({
     channelUrl,
     channelId,
     dataId,
     deleteAfterDownload: true,
-  })
-  const info = JSON.parse(decryptData(encrypted, aesKey)) as RecoveredUser
-  return info
+  });
+  const info = JSON.parse(decryptData(encrypted, aesKey)) as RecoveredUser;
+  return info;
 }

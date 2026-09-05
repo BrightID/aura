@@ -20,12 +20,12 @@ export default function EvidenceHelp() {
           <a-text size="sm" class="text-muted-foreground">
             Evidence is what other participants think of this subject.
             <span class="mt-2 block">
-              <span class="font-medium text-foreground">Evaluations</span> —
-              who rated this subject in the current role, with their confidence
-              and impact.
+              <span class="font-medium text-foreground">Evaluations</span> — who
+              rated this subject in the current role, with their confidence and
+              impact.
             </span>
             <span class="mt-2 block">
-              <span class="font-medium text-foreground">Connections</span> /{" "}
+              <span class="font-medium text-foreground">Connections</span> /{' '}
               <span class="font-medium text-foreground">Activity</span> — their
               BrightID connections (Player view), or the evaluations they have
               made themselves (Trainer/Manager views).
@@ -47,5 +47,5 @@ export default function EvidenceHelp() {
         </div>
       </a-dialog>
     </div>
-  )
+  );
 }

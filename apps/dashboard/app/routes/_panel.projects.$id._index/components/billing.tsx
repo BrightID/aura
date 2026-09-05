@@ -1,11 +1,11 @@
-import { CreditCard } from "lucide-react"
-import { format } from "date-fns"
-import { plans } from "~/constants/subscriptions"
-import { Link } from "react-router"
-import type { Project } from "~/types/projects"
+import { CreditCard } from 'lucide-react';
+import { format } from 'date-fns';
+import { plans } from '~/constants/subscriptions';
+import { Link } from 'react-router';
+import type { Project } from '~/types/projects';
 
 export default function ProjectBilling({ project }: { project: Project }) {
-  const sub = plans.find((item) => project.selectedPlanId === item.id)!
+  const sub = plans.find((item) => project.selectedPlanId === item.id)!;
 
   return (
     <div className="space-y-6">
@@ -24,12 +24,12 @@ export default function ProjectBilling({ project }: { project: Project }) {
               </div>
               <div>
                 <p className="font-semibold">
-                  {sub ? `Plan #${sub.name}` : "No Plan Selected"}
+                  {sub ? `Plan #${sub.name}` : 'No Plan Selected'}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {project.selectedPlanId
-                    ? "Active subscription"
-                    : "Select a plan to get started"}
+                    ? 'Active subscription'
+                    : 'Select a plan to get started'}
                 </p>
               </div>
             </div>
@@ -59,13 +59,13 @@ export default function ProjectBilling({ project }: { project: Project }) {
               <p className="text-sm text-muted-foreground">Billing Cycle End</p>
               <p className="text-2xl font-semibold mt-1">
                 {project.deadline
-                  ? format(new Date(project.deadline), "MMM d, yyyy")
-                  : "N/A"}
+                  ? format(new Date(project.deadline), 'MMM d, yyyy')
+                  : 'N/A'}
               </p>
             </div>
           </div>
         </div>
       </a-card>
     </div>
-  )
+  );
 }

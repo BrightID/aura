@@ -1,22 +1,31 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement, property, queryAssignedElements } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import {
+  customElement,
+  property,
+  queryAssignedElements,
+} from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 @customElement('a-popover')
 export class PopoverElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) declare open: boolean
-  @property({ reflect: true }) declare side: 'top' | 'right' | 'bottom' | 'left'
-  @property({ reflect: true }) declare align: 'start' | 'center' | 'end'
-  @property({ type: Number }) declare sideOffset: number
+  @property({ type: Boolean, reflect: true }) declare open: boolean;
+  @property({ reflect: true }) declare side:
+    | 'top'
+    | 'right'
+    | 'bottom'
+    | 'left';
+  @property({ reflect: true }) declare align: 'start' | 'center' | 'end';
+  @property({ type: Number }) declare sideOffset: number;
 
-  @queryAssignedElements({ slot: 'trigger' }) private declare triggerElements: HTMLElement[]
+  @queryAssignedElements({ slot: 'trigger' })
+  declare private triggerElements: HTMLElement[];
 
   constructor() {
-    super()
-    this.open = false
-    this.side = 'bottom'
-    this.align = 'center'
-    this.sideOffset = 4
+    super();
+    this.open = false;
+    this.side = 'bottom';
+    this.align = 'center';
+    this.sideOffset = 4;
   }
 
   static styles: CSSResultGroup = css`
@@ -190,99 +199,102 @@ export class PopoverElement extends LitElement {
       left: 50%;
       transform: translateX(var(--align-transform, -50%));
     }
-  `
+  `;
 
   connectedCallback() {
-    super.connectedCallback()
-    PopoverElement._register(this)
+    super.connectedCallback();
+    PopoverElement._register(this);
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-    PopoverElement._unregister(this)
+    super.disconnectedCallback();
+    PopoverElement._unregister(this);
   }
 
-  private static _instances = new Set<PopoverElement>()
-  private static _listenersAttached = false
+  private static _instances = new Set<PopoverElement>();
+  private static _listenersAttached = false;
 
   private static _onDocClick = (e: MouseEvent) => {
-    PopoverElement._instances.forEach((p) => p._handleOutsideClick(e))
-  }
+    PopoverElement._instances.forEach((p) => p._handleOutsideClick(e));
+  };
   private static _onDocKey = (e: KeyboardEvent) => {
-    PopoverElement._instances.forEach((p) => p._handleEsc(e))
-  }
+    PopoverElement._instances.forEach((p) => p._handleEsc(e));
+  };
 
   private static _register(p: PopoverElement) {
-    PopoverElement._instances.add(p)
+    PopoverElement._instances.add(p);
     if (!PopoverElement._listenersAttached) {
-      document.addEventListener('click', PopoverElement._onDocClick)
-      document.addEventListener('keydown', PopoverElement._onDocKey)
-      PopoverElement._listenersAttached = true
+      document.addEventListener('click', PopoverElement._onDocClick);
+      document.addEventListener('keydown', PopoverElement._onDocKey);
+      PopoverElement._listenersAttached = true;
     }
   }
 
   private static _unregister(p: PopoverElement) {
-    PopoverElement._instances.delete(p)
-    if (PopoverElement._instances.size === 0 && PopoverElement._listenersAttached) {
-      document.removeEventListener('click', PopoverElement._onDocClick)
-      document.removeEventListener('keydown', PopoverElement._onDocKey)
-      PopoverElement._listenersAttached = false
+    PopoverElement._instances.delete(p);
+    if (
+      PopoverElement._instances.size === 0 &&
+      PopoverElement._listenersAttached
+    ) {
+      document.removeEventListener('click', PopoverElement._onDocClick);
+      document.removeEventListener('keydown', PopoverElement._onDocKey);
+      PopoverElement._listenersAttached = false;
     }
   }
 
-  private _internalChange = false
+  private _internalChange = false;
 
   private _setOpenInternal(next: boolean) {
-    if (this.open === next) return
-    this._internalChange = true
-    this.open = next
+    if (this.open === next) return;
+    this._internalChange = true;
+    this.open = next;
   }
 
   private _handleTriggerClick = (e: Event) => {
-    e.stopPropagation()
-    this._setOpenInternal(!this.open)
-  }
+    e.stopPropagation();
+    this._setOpenInternal(!this.open);
+  };
 
   private _handleOutsideClick = (e: MouseEvent) => {
-    if (!this.open) return
+    if (!this.open) return;
 
-    const target = e.target as Node | null
-    if (!target) return
+    const target = e.target as Node | null;
+    if (!target) return;
 
     if (this.contains(target)) {
-      return
+      return;
     }
 
-    this._setOpenInternal(false)
-  }
+    this._setOpenInternal(false);
+  };
 
   private _handleEsc = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && this.open) {
-      this._setOpenInternal(false)
-      e.preventDefault()
+      this._setOpenInternal(false);
+      e.preventDefault();
     }
-  }
+  };
 
   private _attachTriggerListeners() {
     this.triggerElements.forEach((el) => {
-      el.addEventListener('click', this._handleTriggerClick)
-    })
+      el.addEventListener('click', this._handleTriggerClick);
+    });
   }
 
   firstUpdated() {
-    this._attachTriggerListeners()
+    this._attachTriggerListeners();
   }
 
   updated(changedProperties: Map<string, unknown>) {
     if (changedProperties.has('open') && this._internalChange) {
-      this._internalChange = false
+      this._internalChange = false;
       this.dispatchEvent(
         new CustomEvent('open-change', {
           detail: { open: this.open },
           bubbles: true,
-          composed: true
-        })
-      )
+          composed: true,
+        }),
+      );
     }
   }
 
@@ -290,7 +302,7 @@ export class PopoverElement extends LitElement {
     const contentClasses = classMap({
       content: true,
       'animate-in': this.open,
-    })
+    });
 
     return html`
       <!-- Trigger slot -->
@@ -299,24 +311,26 @@ export class PopoverElement extends LitElement {
       </div>
 
       <!-- Content (no portal in this simple version – can add later if needed) -->
-      ${this.open
-        ? html`
-            <div
-              class=${contentClasses}
-              data-side=${this.side}
-              data-state=${this.open ? 'open' : 'closed'}
-              style="--side-offset: ${this.sideOffset}px;"
-            >
-              <slot name="content"></slot>
-            </div>
-          `
-        : ''}
-    `
+      ${
+        this.open
+          ? html`
+              <div
+                class=${contentClasses}
+                data-side=${this.side}
+                data-state=${this.open ? 'open' : 'closed'}
+                style="--side-offset: ${this.sideOffset}px;"
+              >
+                <slot name="content"></slot>
+              </div>
+            `
+          : ''
+      }
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'a-popover': PopoverElement
+    'a-popover': PopoverElement;
   }
 }

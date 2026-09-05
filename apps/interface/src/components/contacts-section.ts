@@ -1,23 +1,31 @@
-import contactsIcon from '@/assets/icons/contacts.svg'
-import googleIcon from '@/assets/icons/google.svg'
-import { contactsList, foundAuraPlayersFromContact, hashedContactsList } from '@/lib/data/contacts'
-import { clientAPI } from '@/utils/apis'
-import { extractHashsedSocialsFromContact } from '@/utils/integrations/contacts'
-import { getContactsList } from '@/utils/integrations/google'
+import contactsIcon from '@/assets/icons/contacts.svg';
+import googleIcon from '@/assets/icons/google.svg';
+import {
+  contactsList,
+  foundAuraPlayersFromContact,
+  hashedContactsList,
+} from '@/lib/data/contacts';
+import { clientAPI } from '@/utils/apis';
+import { extractHashsedSocialsFromContact } from '@/utils/integrations/contacts';
+import { getContactsList } from '@/utils/integrations/google';
 // import appleIcon from '@/assets/icons/apple.svg'
 
-import { signal, SignalWatcher } from '@lit-labs/signals'
-import { css, CSSResultGroup, html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import { map } from 'lit/directives/map.js'
+import { signal, SignalWatcher } from '@lit-labs/signals';
+import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { map } from 'lit/directives/map.js';
 
-const isTried = signal(false)
+const isTried = signal(false);
 
 @customElement('contacts-section')
 export class ContactsSection extends SignalWatcher(LitElement) {
   static styles?: CSSResultGroup | undefined = css`
     .card {
-      background: linear-gradient(to bottom, rgba(46, 51, 90, 0.26), rgba(28, 27, 51, 0.26) 100%);
+      background: linear-gradient(
+        to bottom,
+        rgba(46, 51, 90, 0.26),
+        rgba(28, 27, 51, 0.26) 100%
+      );
       box-shadow: 0px 1px 0px 0px #ffffff40 inset;
       backdrop-filter: blur(31.5px);
       border-radius: 0.75rem;
@@ -94,73 +102,81 @@ export class ContactsSection extends SignalWatcher(LitElement) {
       border-color: #45454b;
       margin: 20px;
     }
-  `
+  `;
 
   constructor() {
-    super()
+    super();
   }
 
   protected async onGoogleContactsClick() {
-    const res = await getContactsList()
+    const res = await getContactsList();
 
-    if (!res?.length) return
+    if (!res?.length) return;
 
-    contactsList.set(res)
+    contactsList.set(res);
 
     const hashContacts = await Promise.all(
-      res.map((item) => extractHashsedSocialsFromContact(item))
-    )
+      res.map((item) => extractHashsedSocialsFromContact(item)),
+    );
 
-    hashedContactsList.set(hashContacts.flat())
+    hashedContactsList.set(hashContacts.flat());
 
-    const contactsHashMap = hashContacts.reduce((prev, curr, index) => {
-      const contact = res[index]
+    const contactsHashMap = hashContacts.reduce(
+      (prev, curr, index) => {
+        const contact = res[index];
 
-      const infos = [...(contact?.phoneNumbers ?? []), ...(contact?.emailAddresses ?? [])]
+        const infos = [
+          ...(contact?.phoneNumbers ?? []),
+          ...(contact?.emailAddresses ?? []),
+        ];
 
-      let count = 0
+        let count = 0;
 
-      for (const hash of curr) {
-        prev[hash] = {
-          name: contact?.names.at(0)?.displayName,
-          value: infos[count]?.value
+        for (const hash of curr) {
+          prev[hash] = {
+            name: contact?.names.at(0)?.displayName,
+            value: infos[count]?.value,
+          };
+
+          count++;
         }
 
-        count++
-      }
-
-      return prev
-    }, {} as Record<string, any>)
+        return prev;
+      },
+      {} as Record<string, any>,
+    );
 
     const playersFetch = await clientAPI.POST(
       '/check-aura-player' as never,
       {
         body: {
-          hashes: hashedContactsList.get()
-        }
-      } as never
-    )
+          hashes: hashedContactsList.get(),
+        },
+      } as never,
+    );
 
-    if (!playersFetch.data) return
+    if (!playersFetch.data) return;
 
-    isTried.set(true)
+    isTried.set(true);
 
-    const players = (playersFetch as { data: { hash: string }[] }).data.map((item) => item.hash)
+    const players = (playersFetch as { data: { hash: string }[] }).data.map(
+      (item) => item.hash,
+    );
 
     const importedContacts = players.map((hash) => {
-      return contactsHashMap[hash]
-    })
+      return contactsHashMap[hash];
+    });
 
-    foundAuraPlayersFromContact.set(importedContacts)
+    foundAuraPlayersFromContact.set(importedContacts);
   }
 
   protected openContactMethod(contact: string): void {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(contact)) {
-      window.location.href = `mailto:${contact}`
+      window.location.href = `mailto:${contact}`;
     } else if (/^\+?[\d\s-]{10,}$/.test(contact)) {
-      window.location.href = `sms:${contact}`
+      window.location.href = `sms:${contact}`;
     } else {
-      console.error('Invalid email or phone number')
+      console.error('Invalid email or phone number');
     }
   }
 
@@ -173,11 +189,13 @@ export class ContactsSection extends SignalWatcher(LitElement) {
 
       <p class="muted">Discover who in your contacts is in Aura.</p>
 
-      ${isTried.get() && foundAuraPlayersFromContact.get().length === 0
-        ? html`<p>No Contacts Found in aura</p>`
-        : foundAuraPlayersFromContact.get().length > 0
-        ? html`<p>Aura Players List</p>`
-        : ``}
+      ${
+        isTried.get() && foundAuraPlayersFromContact.get().length === 0
+          ? html`<p>No Contacts Found in aura</p>`
+          : foundAuraPlayersFromContact.get().length > 0
+            ? html`<p>Aura Players List</p>`
+            : ``
+      }
       ${map(
         foundAuraPlayersFromContact.get(),
         (contact) => html`
@@ -186,9 +204,11 @@ export class ContactsSection extends SignalWatcher(LitElement) {
               <h5 class="contact-header">${contact.name}</h5>
               <p class="contact-value">${contact.value}</p>
             </div>
-            <button @click=${this.openContactMethod.bind(null, contact.value)}>Contact</button>
+            <button @click=${this.openContactMethod.bind(null, contact.value)}>
+              Contact
+            </button>
           </div>
-        `
+        `,
       )}
       <hr />
       <div class="integrations">
@@ -198,7 +218,9 @@ export class ContactsSection extends SignalWatcher(LitElement) {
         </button>
       </div>
 
-      <p class="muted text-xs">This is completely private, <a href="#">learn more</a></p>
-    </div>`
+      <p class="muted text-xs">
+        This is completely private, <a href="#">learn more</a>
+      </p>
+    </div>`;
   }
 }

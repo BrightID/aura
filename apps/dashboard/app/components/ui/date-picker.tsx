@@ -1,51 +1,51 @@
-import * as React from "react"
-import { CalendarIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import * as React from 'react';
+import { CalendarIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from '@/components/ui/popover';
 
 function formatDate(date: Date | undefined) {
-  if (!date) return ""
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  })
+  if (!date) return '';
+  return date.toLocaleDateString('en-US', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 function isValidDate(date: Date | undefined) {
-  if (!date) return false
-  return !isNaN(date.getTime())
+  if (!date) return false;
+  return !isNaN(date.getTime());
 }
 
 export default function DatePicker({
-  label = "",
-  name = "date",
+  label = '',
+  name = 'date',
   defaultValue,
   onChange,
 }: {
-  label?: string
-  name?: string
-  defaultValue?: Date
-  onChange?: (date: Date | undefined) => void
+  label?: string;
+  name?: string;
+  defaultValue?: Date;
+  onChange?: (date: Date | undefined) => void;
 }) {
-  const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(defaultValue)
-  const [month, setMonth] = React.useState<Date | undefined>(defaultValue)
-  const [value, setValue] = React.useState(formatDate(defaultValue))
+  const [open, setOpen] = React.useState(false);
+  const [date, setDate] = React.useState<Date | undefined>(defaultValue);
+  const [month, setMonth] = React.useState<Date | undefined>(defaultValue);
+  const [value, setValue] = React.useState(formatDate(defaultValue));
 
   const handleSelect = (d: Date | undefined) => {
-    setDate(d)
-    setValue(formatDate(d))
-    setOpen(false)
-    onChange?.(d)
-  }
+    setDate(d);
+    setValue(formatDate(d));
+    setOpen(false);
+    onChange?.(d);
+  };
 
   return (
     <div className="flex flex-col gap-3 w-full">
@@ -60,18 +60,18 @@ export default function DatePicker({
           placeholder="Select date"
           className="bg-background pr-10"
           onChange={(e) => {
-            const d = new Date(e.target.value)
-            setValue(e.target.value)
+            const d = new Date(e.target.value);
+            setValue(e.target.value);
             if (isValidDate(d)) {
-              setDate(d)
-              setMonth(d)
-              onChange?.(d)
+              setDate(d);
+              setMonth(d);
+              onChange?.(d);
             }
           }}
           onKeyDown={(e) => {
-            if (e.key === "ArrowDown") {
-              e.preventDefault()
-              setOpen(true)
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              setOpen(true);
             }
           }}
         />
@@ -104,5 +104,5 @@ export default function DatePicker({
         </Popover>
       </div>
     </div>
-  )
+  );
 }

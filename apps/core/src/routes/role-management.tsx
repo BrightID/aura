@@ -1,34 +1,34 @@
-import { For, Show } from "solid-js"
-import LevelScore from "@/components/shared/level-score"
-import { useLevelupProgress } from "@/hooks/use-levelup-progress"
-import { useRequireSession } from "@/hooks/use-require-session"
-import { useSubjectVerifications } from "@/hooks/use-subject-verifications"
-import { EvaluationCategory } from "@aura/domain/types/evaluations"
+import { For, Show } from 'solid-js';
+import LevelScore from '@/components/shared/level-score';
+import { useLevelupProgress } from '@/hooks/use-levelup-progress';
+import { useRequireSession } from '@/hooks/use-require-session';
+import { useSubjectVerifications } from '@/hooks/use-subject-verifications';
+import { EvaluationCategory } from '@aura/domain/types/evaluations';
 
 const ROLES: {
-  label: string
-  category: EvaluationCategory
+  label: string;
+  category: EvaluationCategory;
   /** Roles past Player must be unlocked via level-up progress. */
-  gated: boolean
+  gated: boolean;
 }[] = [
-  { label: "Player", category: EvaluationCategory.PLAYER, gated: false },
-  { label: "Trainer", category: EvaluationCategory.TRAINER, gated: true },
-  { label: "Manager", category: EvaluationCategory.MANAGER, gated: true },
-]
+  { label: 'Player', category: EvaluationCategory.PLAYER, gated: false },
+  { label: 'Trainer', category: EvaluationCategory.TRAINER, gated: true },
+  { label: 'Manager', category: EvaluationCategory.MANAGER, gated: true },
+];
 
 /**
  * One card per role with level/score and unlock state. The old app's three
  * near-identical role-card components collapsed into this one.
  */
 function RoleCard(props: {
-  subjectId: () => string
-  label: string
-  category: EvaluationCategory
-  gated: boolean
+  subjectId: () => string;
+  label: string;
+  category: EvaluationCategory;
+  gated: boolean;
 }) {
-  const v = useSubjectVerifications(props.subjectId, () => props.category)
-  const progress = useLevelupProgress(() => props.category)
-  const unlocked = () => !props.gated || progress().isUnlocked
+  const v = useSubjectVerifications(props.subjectId, () => props.category);
+  const progress = useLevelupProgress(() => props.category);
+  const unlocked = () => !props.gated || progress().isUnlocked;
 
   return (
     <a-card
@@ -53,12 +53,12 @@ function RoleCard(props: {
       </div>
       <LevelScore level={v.auraLevel()} score={v.auraScore()} />
     </a-card>
-  )
+  );
 }
 
 /** /role-management — level, score and unlock state for each role. */
 export default function RoleManagementPage() {
-  const subjectId = useRequireSession()
+  const subjectId = useRequireSession();
 
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
@@ -77,5 +77,5 @@ export default function RoleManagementPage() {
         </For>
       </Show>
     </div>
-  )
+  );
 }

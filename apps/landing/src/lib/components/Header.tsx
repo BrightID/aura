@@ -1,25 +1,25 @@
-import { createSignal, onMount, onCleanup, Show } from "solid-js"
+import { createSignal, onMount, onCleanup, Show } from 'solid-js';
 
 export default function Header() {
-  const [scrolled, setScrolled] = createSignal(false)
-  const [mobileOpen, setMobileOpen] = createSignal(false)
+  const [scrolled, setScrolled] = createSignal(false);
+  const [mobileOpen, setMobileOpen] = createSignal(false);
 
-  const toggleMobile = () => setMobileOpen(!mobileOpen())
-  const closeMobile = () => setMobileOpen(false)
+  const toggleMobile = () => setMobileOpen(!mobileOpen());
+  const closeMobile = () => setMobileOpen(false);
 
   onMount(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50)
-    handleScroll()
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    onCleanup(() => window.removeEventListener("scroll", handleScroll))
-  })
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    onCleanup(() => window.removeEventListener('scroll', handleScroll));
+  });
 
   return (
     <header
       class={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled()
-          ? "bg-background/80 backdrop-blur-xl border-b border-border"
-          : "bg-transparent"
+          ? 'bg-background/80 backdrop-blur-xl border-b border-border'
+          : 'bg-transparent'
       }`}
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
@@ -130,5 +130,5 @@ export default function Header() {
         </Show>
       </div>
     </header>
-  )
+  );
 }

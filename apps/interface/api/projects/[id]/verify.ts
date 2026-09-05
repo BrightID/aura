@@ -1,96 +1,108 @@
-import { VercelRequest, VercelResponse } from '@vercel/node'
-import { and, eq } from 'drizzle-orm'
-import { z } from 'zod'
-import withCors from '../../lib/cors.js'
-import { db } from '../../lib/db.js'
-import { projectsTable, verificationsTable } from '../../lib/schema.js'
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { and, eq } from 'drizzle-orm';
+import { z } from 'zod';
+import withCors from '../../lib/cors.js';
+import { db } from '../../lib/db.js';
+import { projectsTable, verificationsTable } from '../../lib/schema.js';
 
 const verifySchema = z.object({
   client: z.string().min(1).max(100),
   auraScore: z.number().optional(),
   auraLevel: z.number().int().optional(),
-  userId: z.string()
-})
+  userId: z.string(),
+});
 
 async function handler(req: VercelRequest, res: VercelResponse) {
-  const rawId = Array.isArray(req.query['id']) ? req.query['id'][0] : req.query['id']
-  const projectId = Number(rawId)
+  const rawId = Array.isArray(req.query['id'])
+    ? req.query['id'][0]
+    : req.query['id'];
+  const projectId = Number(rawId);
 
-  let body: z.infer<typeof verifySchema>
+  let body: z.infer<typeof verifySchema>;
   try {
-    body = verifySchema.parse(req.body)
+    body = verifySchema.parse(req.body);
     if (!Number.isInteger(projectId)) {
-      return res.status(400).json({ error: 'Invalid project id' })
+      return res.status(400).json({ error: 'Invalid project id' });
     }
   } catch {
-    return res.status(400).json({ error: 'Invalid request' })
+    return res.status(400).json({ error: 'Invalid request' });
   }
 
   const log = (msg: string, extra?: unknown) =>
-    console.log(`[verify project=${projectId} user=${body.userId}] ${msg}`, extra ?? '')
+    console.log(
+      `[verify project=${projectId} user=${body.userId}] ${msg}`,
+      extra ?? '',
+    );
 
   try {
-    log('start')
+    log('start');
 
     const [project] = await db
       .select({
         id: projectsTable.id,
         remainingtokens: projectsTable.remainingtokens,
         creatorId: projectsTable.creatorId,
-        brightIdAppId: projectsTable.brightIdAppId
+        brightIdAppId: projectsTable.brightIdAppId,
       })
       .from(projectsTable)
       .where(
         and(
           eq(projectsTable.id, projectId),
           // gt(projectsTable.remainingtokens, -1000),
-          eq(projectsTable.isActive, true)
+          eq(projectsTable.isActive, true),
           // TODO: add deadline filtering aswell
-        )
+        ),
       )
-      .limit(1)
+      .limit(1);
 
     if (!project) {
-      log('project not found or inactive')
-      return res.status(400).json({ error: 'Invalid project or no tokens' })
+      log('project not found or inactive');
+      return res.status(400).json({ error: 'Invalid project or no tokens' });
     }
 
-    const now = new Date()
+    const now = new Date();
 
     const alreadyVerified = await db
       .select()
       .from(verificationsTable)
       .where(
-        and(eq(verificationsTable.userId, body.userId), eq(verificationsTable.projectId, projectId))
+        and(
+          eq(verificationsTable.userId, body.userId),
+          eq(verificationsTable.projectId, projectId),
+        ),
       )
-      .limit(1)
+      .limit(1);
 
     if (alreadyVerified.length > 0) {
-      log('already verified')
-      return res.status(200).json({ message: 'Already verified', data: alreadyVerified })
+      log('already verified');
+      return res
+        .status(200)
+        .json({ message: 'Already verified', data: alreadyVerified });
     }
 
-    log('fetching brightid verification')
-    let apiRes: Response
+    log('fetching brightid verification');
+    let apiRes: Response;
     try {
       apiRes = await fetch(
         `${process.env['VITE_SOME_AURA_BACKEND_URL']}/brightid/v6/verifications/${project.brightIdAppId}/${body.userId}?signed=nacl`,
-        { signal: AbortSignal.timeout(10_000) }
-      )
+        { signal: AbortSignal.timeout(10_000) },
+      );
     } catch (err) {
-      log('brightid fetch failed/timeout', err)
-      return res.status(504).json({ error: 'Verification service unavailable' })
+      log('brightid fetch failed/timeout', err);
+      return res
+        .status(504)
+        .json({ error: 'Verification service unavailable' });
     }
-    log(`brightid responded status=${apiRes.status}`)
+    log(`brightid responded status=${apiRes.status}`);
 
     if (!apiRes.ok) {
-      log('brightid non-ok status')
-      return res.status(502).json({ error: 'Verification service error' })
+      log('brightid non-ok status');
+      return res.status(502).json({ error: 'Verification service error' });
     }
 
-    const payload = await apiRes.json()
+    const payload = await apiRes.json();
 
-    return res.json(payload)
+    return res.json(payload);
 
     // log(payload)
 
@@ -155,9 +167,9 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     //   }
     // })
   } catch (error) {
-    log('unhandled error', error)
-    return res.status(500).json({ error: 'Internal server error' })
+    log('unhandled error', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-export default withCors(handler)
+export default withCors(handler);

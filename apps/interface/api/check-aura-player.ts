@@ -1,34 +1,36 @@
-import { VercelRequest, VercelResponse } from '@vercel/node'
-import { inArray } from 'drizzle-orm'
-import { z } from 'zod'
-import withCors from './lib/cors.js'
-import { db } from './lib/db.js'
-import { auraPlayersSocialTable } from './lib/schema.js'
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { inArray } from 'drizzle-orm';
+import { z } from 'zod';
+import withCors from './lib/cors.js';
+import { db } from './lib/db.js';
+import { auraPlayersSocialTable } from './lib/schema.js';
 
 const hashSchema = z.array(
-  z.string().regex(/^\$2[ab]\$[0-9]{2}\$[A-Za-z0-9./]{53}$/, 'Invalid bcrypt hash')
-)
+  z
+    .string()
+    .regex(/^\$2[ab]\$[0-9]{2}\$[A-Za-z0-9./]{53}$/, 'Invalid bcrypt hash'),
+);
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
-    res.status(405).send('Method not allowed')
-    return
+    res.status(405).send('Method not allowed');
+    return;
   }
 
   try {
-    const { hashes } = req.body
-    const validateds = hashSchema.parse(hashes)
+    const { hashes } = req.body;
+    const validateds = hashSchema.parse(hashes);
 
     const results = await db
       .select()
       .from(auraPlayersSocialTable)
-      .where(inArray(auraPlayersSocialTable.hash, validateds))
+      .where(inArray(auraPlayersSocialTable.hash, validateds));
 
-    res.status(200).json(results)
+    res.status(200).json(results);
   } catch (error) {
-    console.log(error)
-    res.status(404).json({ error: 'Not found' })
+    console.log(error);
+    res.status(404).json({ error: 'Not found' });
   }
 }
 
-export default withCors(handler)
+export default withCors(handler);

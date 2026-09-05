@@ -1,16 +1,16 @@
-import { A } from "@solidjs/router"
-import type { JSX } from "solid-js"
-import { Show } from "solid-js"
+import { A } from '@solidjs/router';
+import type { JSX } from 'solid-js';
+import { Show } from 'solid-js';
 
 /** A settings row card — either a link (href) or a button (onClick). */
 export default function SettingCard(props: {
-  icon?: string
-  label?: string
-  href?: string
-  external?: boolean
-  onClick?: () => void
-  testid?: string
-  children?: JSX.Element
+  icon?: string;
+  label?: string;
+  href?: string;
+  external?: boolean;
+  onClick?: () => void;
+  testid?: string;
+  children?: JSX.Element;
 }) {
   const card = (
     <a-card
@@ -27,7 +27,7 @@ export default function SettingCard(props: {
       </Show>
       {props.children}
     </a-card>
-  )
+  );
 
   return (
     <Show when={props.href} fallback={card}>
@@ -45,5 +45,5 @@ export default function SettingCard(props: {
         </a>
       </Show>
     </Show>
-  )
+  );
 }

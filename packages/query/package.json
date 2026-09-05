@@ -1,10 +1,14 @@
 {
   "name": "@aura/query",
   "version": "0.1.0",
-  "type": "module",
   "description": "TanStack-like query/mutation reactive controllers for Lit",
   "license": "MIT",
-  "files": ["dist", "src", "package.json"],
+  "files": [
+    "dist",
+    "src",
+    "package.json"
+  ],
+  "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
@@ -16,12 +20,12 @@
     "build": "tsc --noEmit",
     "check-types": "tsc --noEmit"
   },
-  "peerDependencies": {
-    "lit": ">=3.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "lit": "^3.3.0",
     "typescript": "~5.9.3"
   },
-  "dependencies": {}
+  "peerDependencies": {
+    "lit": ">=3.0.0"
+  }
 }

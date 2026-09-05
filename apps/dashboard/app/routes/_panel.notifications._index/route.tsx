@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react"
-import { useAuthState } from "react-firebase-hooks/auth"
+import { useEffect, useRef, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import {
   collection,
   doc,
@@ -10,8 +10,8 @@ import {
   query,
   setDoc,
   updateDoc,
-} from "firebase/firestore"
-import { formatDistanceToNow } from "date-fns"
+} from 'firebase/firestore';
+import { formatDistanceToNow } from 'date-fns';
 import {
   Bell,
   CheckCircle2,
@@ -22,41 +22,41 @@ import {
   Zap,
   Shield,
   MessageSquare,
-} from "lucide-react"
-import { toast } from "@aura/ui"
+} from 'lucide-react';
+import { toast } from '@aura/ui';
 
-import { auth, db } from "~/lib/firebase"
-import { useAuraEvent } from "~/lib/aura"
+import { auth, db } from '~/lib/firebase';
+import { useAuraEvent } from '~/lib/aura';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface NotificationChannel {
-  paymentSuccess: boolean
-  paymentFailed: boolean
-  planActivated: boolean
-  usageLow: boolean
-  usageExhausted: boolean
-  projectUpdates: boolean
-  securityAlerts: boolean
+  paymentSuccess: boolean;
+  paymentFailed: boolean;
+  planActivated: boolean;
+  usageLow: boolean;
+  usageExhausted: boolean;
+  projectUpdates: boolean;
+  securityAlerts: boolean;
 }
 
 interface EmailNotifications extends NotificationChannel {
-  productUpdates: boolean
+  productUpdates: boolean;
 }
 
 interface NotificationPrefs {
-  email: EmailNotifications
-  inApp: NotificationChannel
+  email: EmailNotifications;
+  inApp: NotificationChannel;
 }
 
-type EventType = "success" | "error" | "warning" | "info"
+type EventType = 'success' | 'error' | 'warning' | 'info';
 
 interface NotificationEvent {
-  id: string
-  title: string
-  type: EventType
-  timestamp: Date
-  read: boolean
+  id: string;
+  title: string;
+  type: EventType;
+  timestamp: Date;
+  read: boolean;
 }
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
@@ -81,74 +81,74 @@ const defaultPrefs: NotificationPrefs = {
     projectUpdates: false,
     securityAlerts: true,
   },
-}
+};
 
 // ─── Notification row config ──────────────────────────────────────────────────
 
-type EmailKey = keyof EmailNotifications
-type InAppKey = keyof NotificationChannel
+type EmailKey = keyof EmailNotifications;
+type InAppKey = keyof NotificationChannel;
 
 interface NotificationRow<K extends string> {
-  key: K
-  label: string
-  description: string
-  icon: React.ReactNode
+  key: K;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
 }
 
 const emailRows: NotificationRow<EmailKey>[] = [
   {
-    key: "paymentSuccess",
-    label: "Payment confirmed",
-    description: "When a payment successfully processes",
+    key: 'paymentSuccess',
+    label: 'Payment confirmed',
+    description: 'When a payment successfully processes',
     icon: <CreditCard className="size-4 text-green-500" />,
   },
   {
-    key: "paymentFailed",
-    label: "Payment failed",
-    description: "When a payment fails or expires",
+    key: 'paymentFailed',
+    label: 'Payment failed',
+    description: 'When a payment fails or expires',
     icon: <CreditCard className="size-4 text-red-500" />,
   },
   {
-    key: "planActivated",
-    label: "Subscription activated",
-    description: "When your plan is upgraded",
+    key: 'planActivated',
+    label: 'Subscription activated',
+    description: 'When your plan is upgraded',
     icon: <Zap className="size-4 text-yellow-500" />,
   },
   {
-    key: "usageLow",
-    label: "Low token usage",
+    key: 'usageLow',
+    label: 'Low token usage',
     description: "When you've used 90% of your tokens",
     icon: <AlertTriangle className="size-4 text-amber-500" />,
   },
   {
-    key: "usageExhausted",
-    label: "Tokens exhausted",
+    key: 'usageExhausted',
+    label: 'Tokens exhausted',
     description: "When you've run out of tokens",
     icon: <AlertTriangle className="size-4 text-red-500" />,
   },
   {
-    key: "projectUpdates",
-    label: "Project updates",
-    description: "When project settings are changed",
+    key: 'projectUpdates',
+    label: 'Project updates',
+    description: 'When project settings are changed',
     icon: <MessageSquare className="size-4 text-blue-500" />,
   },
   {
-    key: "securityAlerts",
-    label: "Security alerts",
-    description: "New sign-in from unknown device or password change",
+    key: 'securityAlerts',
+    label: 'Security alerts',
+    description: 'New sign-in from unknown device or password change',
     icon: <Shield className="size-4 text-violet-500" />,
   },
   {
-    key: "productUpdates",
-    label: "Product updates",
-    description: "New features and changelog (weekly digest)",
+    key: 'productUpdates',
+    label: 'Product updates',
+    description: 'New features and changelog (weekly digest)',
     icon: <Info className="size-4 text-muted-foreground" />,
   },
-]
+];
 
 const inAppRows: NotificationRow<InAppKey>[] = emailRows
-  .filter((r) => r.key !== "productUpdates")
-  .map((r) => r as NotificationRow<InAppKey>)
+  .filter((r) => r.key !== 'productUpdates')
+  .map((r) => r as NotificationRow<InAppKey>);
 
 // ─── Event type styling ───────────────────────────────────────────────────────
 
@@ -157,7 +157,7 @@ const eventIconMap: Record<EventType, React.ReactNode> = {
   error: <AlertTriangle className="size-4 text-red-500 mt-0.5 shrink-0" />,
   warning: <AlertTriangle className="size-4 text-amber-500 mt-0.5 shrink-0" />,
   info: <Info className="size-4 text-blue-500 mt-0.5 shrink-0" />,
-}
+};
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -188,18 +188,18 @@ function SectionSkeleton() {
         </div>
       </div>
     </a-card>
-  )
+  );
 }
 
 // ─── Toggle row ───────────────────────────────────────────────────────────────
 
 interface ToggleRowProps {
-  id: string
-  icon: React.ReactNode
-  label: string
-  description: string
-  checked: boolean
-  onCheckedChange: (val: boolean) => void
+  id: string;
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+  checked: boolean;
+  onCheckedChange: (val: boolean) => void;
 }
 
 function ToggleRow({
@@ -210,8 +210,8 @@ function ToggleRow({
   checked,
   onCheckedChange,
 }: ToggleRowProps) {
-  const switchRef = useRef<HTMLElement>(null)
-  useAuraEvent<boolean>(switchRef, "change", onCheckedChange)
+  const switchRef = useRef<HTMLElement>(null);
+  useAuraEvent<boolean>(switchRef, 'change', onCheckedChange);
   return (
     <div className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
       <div className="flex items-start gap-3">
@@ -228,126 +228,126 @@ function ToggleRow({
       </div>
       <a-switch ref={switchRef} name={id} checked={checked} />
     </div>
-  )
+  );
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function NotificationsPage() {
-  const [user] = useAuthState(auth)
-  const [prefs, setPrefs] = useState<NotificationPrefs | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [events, setEvents] = useState<NotificationEvent[]>([])
-  const [eventsLoading, setEventsLoading] = useState(true)
+  const [user] = useAuthState(auth);
+  const [prefs, setPrefs] = useState<NotificationPrefs | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<NotificationEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
   // Debounce timer ref — one timer per field key
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Load prefs ────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (!user) return
+    if (!user) return;
 
     async function loadPrefs() {
       try {
-        const ref = doc(db, "notifications", user!.uid)
-        const snap = await getDoc(ref)
+        const ref = doc(db, 'notifications', user!.uid);
+        const snap = await getDoc(ref);
 
         if (snap.exists()) {
-          setPrefs(snap.data() as NotificationPrefs)
+          setPrefs(snap.data() as NotificationPrefs);
         } else {
           // Create document with defaults
-          await setDoc(ref, defaultPrefs)
-          setPrefs(defaultPrefs)
+          await setDoc(ref, defaultPrefs);
+          setPrefs(defaultPrefs);
         }
       } catch (err) {
-        console.error("Failed to load notification prefs:", err)
-        setPrefs(defaultPrefs)
+        console.error('Failed to load notification prefs:', err);
+        setPrefs(defaultPrefs);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    loadPrefs()
-  }, [user])
+    loadPrefs();
+  }, [user]);
 
   // ── Load notification history ─────────────────────────────────────────────
 
   useEffect(() => {
-    if (!user) return
+    if (!user) return;
 
     async function loadEvents() {
       try {
         const eventsRef = collection(
           db,
-          "notifications_log",
+          'notifications_log',
           user!.uid,
-          "events"
-        )
-        const q = query(eventsRef, orderBy("timestamp", "desc"), limit(10))
-        const snap = await getDocs(q)
+          'events',
+        );
+        const q = query(eventsRef, orderBy('timestamp', 'desc'), limit(10));
+        const snap = await getDocs(q);
 
         const loaded: NotificationEvent[] = snap.docs.map((d) => {
-          const data = d.data()
+          const data = d.data();
           return {
             id: d.id,
-            title: data.title ?? "Notification",
-            type: (data.type as EventType) ?? "info",
+            title: data.title ?? 'Notification',
+            type: (data.type as EventType) ?? 'info',
             timestamp: data.timestamp?.toDate?.() ?? new Date(),
             read: data.read ?? true,
-          }
-        })
+          };
+        });
 
-        setEvents(loaded)
+        setEvents(loaded);
       } catch {
         // Collection may not exist — silently ignore
-        setEvents([])
+        setEvents([]);
       } finally {
-        setEventsLoading(false)
+        setEventsLoading(false);
       }
     }
 
-    loadEvents()
-  }, [user])
+    loadEvents();
+  }, [user]);
 
   // ── Persist a single toggle immediately (debounced 500ms) ─────────────────
 
   function handleToggle(
-    channel: "email" | "inApp",
+    channel: 'email' | 'inApp',
     key: EmailKey | InAppKey,
-    value: boolean
+    value: boolean,
   ) {
-    if (!user || !prefs) return
+    if (!user || !prefs) return;
 
     // Optimistic update
     setPrefs((prev) => {
-      if (!prev) return prev
+      if (!prev) return prev;
       return {
         ...prev,
         [channel]: { ...prev[channel], [key]: value },
-      }
-    })
+      };
+    });
 
     // Debounce the Firestore write
-    if (saveTimer.current) clearTimeout(saveTimer.current)
+    if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       try {
-        const ref = doc(db, "notifications", user.uid)
-        await updateDoc(ref, { [`${channel}.${key}`]: value })
-        toast.success("Preferences saved")
+        const ref = doc(db, 'notifications', user.uid);
+        await updateDoc(ref, { [`${channel}.${key}`]: value });
+        toast.success('Preferences saved');
       } catch (err) {
-        console.error("Failed to save notification pref:", err)
-        toast.error("Failed to save preferences")
+        console.error('Failed to save notification pref:', err);
+        toast.error('Failed to save preferences');
         // Revert optimistic update
         setPrefs((prev) => {
-          if (!prev) return prev
+          if (!prev) return prev;
           return {
             ...prev,
             [channel]: { ...prev[channel], [key]: !value },
-          }
-        })
+          };
+        });
       }
-    }, 500)
+    }, 500);
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -393,7 +393,7 @@ export default function NotificationsPage() {
                       description={row.description}
                       checked={prefs?.email[row.key] ?? false}
                       onCheckedChange={(val) =>
-                        handleToggle("email", row.key, val)
+                        handleToggle('email', row.key, val)
                       }
                     />
                   ))}
@@ -425,7 +425,7 @@ export default function NotificationsPage() {
                       description={row.description}
                       checked={prefs?.inApp[row.key] ?? false}
                       onCheckedChange={(val) =>
-                        handleToggle("inApp", row.key, val)
+                        handleToggle('inApp', row.key, val)
                       }
                     />
                   ))}
@@ -501,5 +501,5 @@ export default function NotificationsPage() {
         </a-card>
       </div>
     </div>
-  )
+  );
 }

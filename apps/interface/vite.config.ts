@@ -1,36 +1,36 @@
-import { resolve } from "node:path"
-import { defineConfig } from "vite"
-import tsconfigPaths from "vite-tsconfig-paths"
-import { litHMRPlugin } from "./vite-plugin-lit-hmr"
-import { injectRemoteCss } from "../vite-inject-remote-css"
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { litHMRPlugin } from './vite-plugin-lit-hmr';
+import { injectRemoteCss } from '../vite-inject-remote-css';
 
-const PORT = 3000
+const PORT = 3000;
 
 export default defineConfig({
-  root: ".",
-  base: "/interface/",
+  root: '.',
+  base: '/interface/',
   build: {
-    outDir: "dist",
-    target: "esnext",
+    outDir: 'dist',
+    target: 'esnext',
     rollupOptions: {
       input: {
-        index: resolve(__dirname, "index.html"),
-        mount: resolve(__dirname, "src/mount.ts"),
+        index: resolve(__dirname, 'index.html'),
+        mount: resolve(__dirname, 'src/mount.ts'),
       },
-      preserveEntrySignatures: "exports-only",
+      preserveEntrySignatures: 'exports-only',
       output: {
         entryFileNames: (chunk) =>
-          chunk.name === "mount" ? "remoteEntry.js" : "assets/[name]-[hash].js",
+          chunk.name === 'mount' ? 'remoteEntry.js' : 'assets/[name]-[hash].js',
       },
     },
   },
   define: {
-    "process.env": {},
+    'process.env': {},
   },
-  plugins: [tsconfigPaths(), litHMRPlugin(), injectRemoteCss("/interface/")],
+  plugins: [tsconfigPaths(), litHMRPlugin(), injectRemoteCss('/interface/')],
   server: {
     host: true,
-    allowedHosts: ["localhost", ".localhost"],
+    allowedHosts: ['localhost', '.localhost'],
     port: PORT,
     origin: `http://localhost:${PORT}`,
     cors: true,
@@ -41,4 +41,4 @@ export default defineConfig({
     port: PORT,
     cors: true,
   },
-})
+});

@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import {
   IconDots,
@@ -6,7 +6,7 @@ import {
   IconShare3,
   IconTrash,
   type Icon,
-} from "@tabler/icons-react"
+} from '@tabler/icons-react';
 
 import {
   SidebarGroup,
@@ -16,18 +16,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "~/components/ui/sidebar"
+} from '~/components/ui/sidebar';
 
 export function NavDocuments({
   items,
 }: {
   items: {
-    name: string
-    url: string
-    icon: Icon
-  }[]
+    name: string;
+    url: string;
+    icon: Icon;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -42,8 +42,8 @@ export function NavDocuments({
               </a>
             </SidebarMenuButton>
             <a-dropdown-menu
-              side={isMobile ? "bottom" : "right"}
-              align={isMobile ? "end" : "start"}
+              side={isMobile ? 'bottom' : 'right'}
+              align={isMobile ? 'end' : 'start'}
             >
               <SidebarMenuAction
                 slot="trigger"
@@ -79,5 +79,5 @@ export function NavDocuments({
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

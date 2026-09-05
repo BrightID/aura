@@ -1,17 +1,17 @@
-import { css, html, LitElement } from "lit"
-import { customElement, property, state } from "lit/decorators.js"
+import { css, html, LitElement } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
-@customElement("a-alert-dialog")
+@customElement('a-alert-dialog')
 export class AlertDialogElement extends LitElement {
-  @property({ type: Boolean }) declare open: boolean
+  @property({ type: Boolean }) declare open: boolean;
 
-  @state() private declare _animatingOut: boolean
-  private _hideTimer?: ReturnType<typeof setTimeout>
+  @state() declare private _animatingOut: boolean;
+  private _hideTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
-    super()
-    this.open = false
-    this._animatingOut = false
+    super();
+    this.open = false;
+    this._animatingOut = false;
   }
 
   static styles = css`
@@ -55,89 +55,89 @@ export class AlertDialogElement extends LitElement {
       transform: scale(1);
       opacity: 1;
     }
-  `
+  `;
 
   protected render() {
     return html`
       <slot name="trigger" @click=${this._onTriggerClick}></slot>
 
-      <div class="wrapper ${this.open ? "visible" : ""}">
+      <div class="wrapper ${this.open ? 'visible' : ''}">
         <div class="content" role="alertdialog" aria-modal="true">
           <slot name="content"></slot>
         </div>
       </div>
-    `
+    `;
   }
 
   private _onTriggerClick(e: Event) {
-    e.stopPropagation()
-    this.show()
+    e.stopPropagation();
+    this.show();
   }
 
   show() {
-    if (this.open && !this._animatingOut) return
+    if (this.open && !this._animatingOut) return;
     if (this._hideTimer) {
-      clearTimeout(this._hideTimer)
-      this._hideTimer = undefined
+      clearTimeout(this._hideTimer);
+      this._hideTimer = undefined;
     }
-    this.open = true
-    this._animatingOut = false
+    this.open = true;
+    this._animatingOut = false;
 
     this.dispatchEvent(
-      new CustomEvent("open-change", {
+      new CustomEvent('open-change', {
         bubbles: true,
         composed: true,
         detail: { open: true },
       }),
-    )
+    );
   }
 
   hide() {
-    if (!this.open || this._animatingOut) return
-    this._animatingOut = true
-    this.open = false
+    if (!this.open || this._animatingOut) return;
+    this._animatingOut = true;
+    this.open = false;
 
     this.dispatchEvent(
-      new CustomEvent("open-change", {
+      new CustomEvent('open-change', {
         bubbles: true,
         composed: true,
         detail: { open: false },
       }),
-    )
+    );
 
     this._hideTimer = setTimeout(() => {
-      this._animatingOut = false
-      this._hideTimer = undefined
+      this._animatingOut = false;
+      this._hideTimer = undefined;
 
       this.dispatchEvent(
-        new CustomEvent("after-hide", { bubbles: true, composed: true }),
-      )
-    }, 220)
+        new CustomEvent('after-hide', { bubbles: true, composed: true }),
+      );
+    }, 220);
   }
 
   connectedCallback() {
-    super.connectedCallback()
-    this.addEventListener("keydown", this._onKeyDown)
+    super.connectedCallback();
+    this.addEventListener('keydown', this._onKeyDown);
   }
 
   disconnectedCallback() {
-    this.removeEventListener("keydown", this._onKeyDown)
-    super.disconnectedCallback()
+    this.removeEventListener('keydown', this._onKeyDown);
+    super.disconnectedCallback();
   }
 
   // Alert dialogs stay open on backdrop click — the user must choose an action.
   // Escape still cancels, matching native alertdialog affordances.
   private _onKeyDown = (e: KeyboardEvent) => {
-    if (this.open && e.key === "Escape") {
-      e.preventDefault()
-      e.stopPropagation()
-      this.hide()
+    if (this.open && e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.hide();
     }
-  }
+  };
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-alert-dialog": AlertDialogElement
+    'a-alert-dialog': AlertDialogElement;
   }
 }

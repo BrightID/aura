@@ -1,18 +1,18 @@
-import { Outlet } from "react-router"
-import { AppSidebar } from "~/components/app-sidebar"
-import { SiteHeader } from "~/components/site-header"
-import { SidebarProvider, SidebarInset } from "~/components/ui/sidebar"
-import { RequireAuth } from "../_components/require-auth"
+import { Outlet } from 'react-router';
+import { AppSidebar } from '~/components/app-sidebar';
+import { SiteHeader } from '~/components/site-header';
+import { SidebarProvider, SidebarInset } from '~/components/ui/sidebar';
+import { RequireAuth } from '../_components/require-auth';
 
-import "./styles.css"
+import './styles.css';
 
 export default function PanelLayout() {
   return (
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
+          '--sidebar-width': 'calc(var(--spacing) * 72)',
+          '--header-height': 'calc(var(--spacing) * 12)',
         } as React.CSSProperties
       }
     >
@@ -27,5 +27,5 @@ export default function PanelLayout() {
       </SidebarInset>
       <RequireAuth />
     </SidebarProvider>
-  )
+  );
 }

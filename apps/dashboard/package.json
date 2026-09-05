@@ -1,8 +1,8 @@
 {
   "name": "aura-dashboard",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
-  "version": "0.0.1",
   "scripts": {
     "build": "rm -rf dist && vite build",
     "dev": "vite --port 5174",
@@ -72,12 +72,12 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.4",
     "@tailwindcss/vite": "^4.1.4",
     "@types/lodash": "^4.17.20",
     "@types/node": "^20",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "^4.1.4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.8.3",

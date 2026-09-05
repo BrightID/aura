@@ -1,23 +1,23 @@
-"use client"
+'use client';
 
-import { LevelBadge } from "./level-badge"
-import { AuraLogo } from "./aura-logo"
-import type { VerificationLevel } from "./types"
+import { LevelBadge } from './level-badge';
+import { AuraLogo } from './aura-logo';
+import type { VerificationLevel } from './types';
 
 interface IntroStepProps {
-  appName: string
-  appDescription: string
-  appLogo?: string
-  requiredLevel: VerificationLevel
-  onContinue: () => void
-  onHowItWorks: () => void
+  appName: string;
+  appDescription: string;
+  appLogo?: string;
+  requiredLevel: VerificationLevel;
+  onContinue: () => void;
+  onHowItWorks: () => void;
 }
 
 const levelDescriptions = {
-  1: "Basic verification for general access",
-  2: "Enhanced verification for trusted features",
-  3: "Premium verification for full access",
-}
+  1: 'Basic verification for general access',
+  2: 'Enhanced verification for trusted features',
+  3: 'Premium verification for full access',
+};
 
 export function IntroStep({
   appName,
@@ -33,7 +33,7 @@ export function IntroStep({
       <div className="flex items-start gap-3">
         {appLogo ? (
           <img
-            src={appLogo || "/placeholder.svg"}
+            src={appLogo || '/placeholder.svg'}
             alt={appName}
             className="w-12 h-12 rounded-xl object-cover"
           />
@@ -109,5 +109,5 @@ export function IntroStep({
         level.
       </p>
     </div>
-  )
+  );
 }

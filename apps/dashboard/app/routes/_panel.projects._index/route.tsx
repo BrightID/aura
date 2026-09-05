@@ -1,5 +1,5 @@
-import ProjectsList from "./components/projects-list"
+import ProjectsList from './components/projects-list';
 
 export default function DashboardProjectsList() {
-  return <ProjectsList />
+  return <ProjectsList />;
 }

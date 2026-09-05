@@ -4,30 +4,30 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
-} from "@tabler/icons-react"
-import type { User } from "firebase/auth"
-import { useNavigate, Link } from "react-router"
+} from '@tabler/icons-react';
+import type { User } from 'firebase/auth';
+import { useNavigate, Link } from 'react-router';
 
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "~/components/ui/sidebar"
-import { logUserOut } from "~/lib/auth-actions"
+} from '~/components/ui/sidebar';
+import { logUserOut } from '~/lib/auth-actions';
 
 export function NavUser({ user }: { user: User | null | undefined }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  if (!user) return null
+  if (!user) return null;
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <a-dropdown-menu
-          side={isMobile ? "bottom" : "right"}
+          side={isMobile ? 'bottom' : 'right'}
           align="end"
           sideOffset={4}
         >
@@ -38,7 +38,7 @@ export function NavUser({ user }: { user: User | null | undefined }) {
           >
             <a-avatar
               className="h-8 w-8 rounded-lg grayscale"
-              src={user.photoURL ?? ""}
+              src={user.photoURL ?? ''}
               alt={user.displayName ?? user.email!}
               fallback="CN"
             />
@@ -57,7 +57,7 @@ export function NavUser({ user }: { user: User | null | undefined }) {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <a-avatar
                   className="h-8 w-8 rounded-lg"
-                  src={user.photoURL || ""}
+                  src={user.photoURL || ''}
                   alt={user.displayName || user.email!}
                   fallback="CN"
                 />
@@ -93,8 +93,8 @@ export function NavUser({ user }: { user: User | null | undefined }) {
             <a-dropdown-separator />
             <a-dropdown-item
               onClick={() => {
-                logUserOut()
-                navigate("/")
+                logUserOut();
+                navigate('/');
               }}
             >
               <IconLogout />
@@ -104,5 +104,5 @@ export function NavUser({ user }: { user: User | null | undefined }) {
         </a-dropdown-menu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

@@ -1,40 +1,40 @@
-import { useState } from "react"
-import { AuraLogo } from "./aura-logo"
-import type { UserVerificationStatus } from "./types"
+import { useState } from 'react';
+import { AuraLogo } from './aura-logo';
+import type { UserVerificationStatus } from './types';
 
 interface ConnectStepProps {
-  onConnect: (status: UserVerificationStatus) => void
-  onHowItWorks: () => void
+  onConnect: (status: UserVerificationStatus) => void;
+  onHowItWorks: () => void;
 }
 
 export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
-  const [isConnecting, setIsConnecting] = useState(false)
+  const [isConnecting, setIsConnecting] = useState(false);
   const [connectMethod, setConnectMethod] = useState<
-    "brightid" | "passkey" | null
-  >(null)
+    'brightid' | 'passkey' | null
+  >(null);
 
-  const handleConnect = async (method: "brightid" | "passkey") => {
-    setConnectMethod(method)
-    setIsConnecting(true)
+  const handleConnect = async (method: 'brightid' | 'passkey') => {
+    setConnectMethod(method);
+    setIsConnecting(true);
 
     // Simulate connection - in real implementation, this would:
     // 1. Open BrightID app or passkey flow
     // 2. Fetch user's verification status from Aura network
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Mock status - replace with actual Aura API call
     const mockStatus: UserVerificationStatus = {
       isConnected: true,
-      userId: "aura_" + Math.random().toString(36).substring(7),
+      userId: 'aura_' + Math.random().toString(36).substring(7),
       currentLevel: 1,
       evaluationsReceived: 2,
       evaluationsNeeded: 3,
       score: 45,
       scoreNeeded: 100,
-    }
+    };
 
-    onConnect(mockStatus)
-  }
+    onConnect(mockStatus);
+  };
 
   return (
     <div className="space-y-5">
@@ -56,7 +56,7 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
         <a-button
           variant="outline"
           className="w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
-          onClick={() => handleConnect("brightid")}
+          onClick={() => handleConnect('brightid')}
           disabled={isConnecting}
         >
           <div className="w-9 h-9 rounded-lg bg-orange/10 flex items-center justify-center flex-shrink-0">
@@ -71,12 +71,12 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
           <div className="flex-1 text-left">
             <div className="font-medium text-foreground text-sm">BrightID</div>
             <div className="text-xs text-muted-foreground">
-              {isConnecting && connectMethod === "brightid"
-                ? "Opening BrightID..."
-                : "Connect with existing identity"}
+              {isConnecting && connectMethod === 'brightid'
+                ? 'Opening BrightID...'
+                : 'Connect with existing identity'}
             </div>
           </div>
-          {isConnecting && connectMethod === "brightid" && (
+          {isConnecting && connectMethod === 'brightid' && (
             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           )}
         </a-button>
@@ -84,7 +84,7 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
         <a-button
           variant="outline"
           className="w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
-          onClick={() => handleConnect("passkey")}
+          onClick={() => handleConnect('passkey')}
           disabled={isConnecting}
         >
           <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -105,12 +105,12 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
           <div className="flex-1 text-left">
             <div className="font-medium text-foreground text-sm">Passkey</div>
             <div className="text-xs text-muted-foreground">
-              {isConnecting && connectMethod === "passkey"
-                ? "Authenticating..."
-                : "Create or use existing passkey"}
+              {isConnecting && connectMethod === 'passkey'
+                ? 'Authenticating...'
+                : 'Create or use existing passkey'}
             </div>
           </div>
-          {isConnecting && connectMethod === "passkey" && (
+          {isConnecting && connectMethod === 'passkey' && (
             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           )}
         </a-button>
@@ -191,5 +191,5 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

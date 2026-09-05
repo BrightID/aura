@@ -1,32 +1,32 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-badge")
+@customElement('a-badge')
 export class BadgeElement extends LitElement {
   @property({ reflect: true })
   declare variant:
-    | "default"
-    | "secondary"
-    | "outline"
-    | "destructive"
-    | "accent"
-    | "glass"
+    | 'default'
+    | 'secondary'
+    | 'outline'
+    | 'destructive'
+    | 'accent'
+    | 'glass';
 
   @property({ reflect: true })
-  declare size: "sm" | "md" | "lg" | "xs"
+  declare size: 'sm' | 'md' | 'lg' | 'xs';
 
   @property({ type: Boolean, reflect: true })
-  declare rounded: boolean
+  declare rounded: boolean;
 
   @property({ type: Boolean, reflect: true })
-  declare removable: boolean
+  declare removable: boolean;
 
   constructor() {
-    super()
-    this.variant = "default"
-    this.size = "md"
-    this.rounded = false
-    this.removable = false
+    super();
+    this.variant = 'default';
+    this.size = 'md';
+    this.rounded = false;
+    this.removable = false;
   }
 
   static styles: CSSResultGroup = css`
@@ -44,25 +44,25 @@ export class BadgeElement extends LitElement {
       vertical-align: middle;
     }
 
-    :host([size="xs"]) {
+    :host([size='xs']) {
       font-size: 0.7rem;
       padding: 0.2rem 0.5rem;
       min-height: 1rem;
     }
 
-    :host([size="sm"]) {
+    :host([size='sm']) {
       font-size: 0.75rem;
       padding: 0.25rem 0.55rem;
       min-height: 1.4rem;
     }
 
-    :host([size="md"]) {
+    :host([size='md']) {
       font-size: 0.875rem;
       padding: 0.35rem 0.75rem;
       min-height: 1.75rem;
     }
 
-    :host([size="lg"]) {
+    :host([size='lg']) {
       font-size: 1rem;
       padding: 0.45rem 0.95rem;
       min-height: 2rem;
@@ -78,31 +78,31 @@ export class BadgeElement extends LitElement {
       border: 1px solid transparent;
     }
 
-    :host([variant="secondary"]) {
+    :host([variant='secondary']) {
       background-color: var(--secondary);
       color: var(--secondary-foreground);
       border-color: transparent;
     }
 
-    :host([variant="destructive"]) {
+    :host([variant='destructive']) {
       background-color: var(--destructive);
       color: var(--destructive-foreground);
       border-color: transparent;
     }
 
-    :host([variant="accent"]) {
+    :host([variant='accent']) {
       background-color: var(--accent);
       color: var(--accent-foreground);
       border-color: transparent;
     }
 
-    :host([variant="outline"]) {
+    :host([variant='outline']) {
       background-color: transparent;
       color: var(--foreground);
       border: 1px solid var(--border);
     }
 
-    :host([variant="glass"]) {
+    :host([variant='glass']) {
       background-color: color-mix(in oklch, var(--background) 35%, transparent);
       backdrop-filter: blur(12px) saturate(1.8);
       -webkit-backdrop-filter: blur(12px) saturate(1.8);
@@ -142,40 +142,42 @@ export class BadgeElement extends LitElement {
     slot {
       display: contents;
     }
-  `
+  `;
 
   private _handleRemove(e: Event) {
-    e.stopPropagation()
+    e.stopPropagation();
     this.dispatchEvent(
-      new CustomEvent("remove", {
+      new CustomEvent('remove', {
         bubbles: true,
         composed: true,
         detail: { badge: this },
       }),
-    )
+    );
   }
 
   render() {
     return html`
       <slot></slot>
 
-      ${this.removable
-        ? html`
-            <button
-              class="remove-btn"
-              aria-label="Remove"
-              @click=${this._handleRemove}
-            >
-              ×
-            </button>
-          `
-        : ""}
-    `
+      ${
+        this.removable
+          ? html`
+              <button
+                class="remove-btn"
+                aria-label="Remove"
+                @click=${this._handleRemove}
+              >
+                ×
+              </button>
+            `
+          : ''
+      }
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-badge": BadgeElement
+    'a-badge': BadgeElement;
   }
 }

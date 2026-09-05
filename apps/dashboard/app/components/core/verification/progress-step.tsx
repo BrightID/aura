@@ -1,17 +1,17 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { LevelBadge, LevelRequirement } from "./level-badge"
-import { ProgressIndicator } from "./progress-indicator"
-import type { VerificationLevel, UserVerificationStatus } from "./types"
+import { useState } from 'react';
+import { LevelBadge, LevelRequirement } from './level-badge';
+import { ProgressIndicator } from './progress-indicator';
+import type { VerificationLevel, UserVerificationStatus } from './types';
 
 interface ProgressStepProps {
-  status: UserVerificationStatus
-  requiredLevel: VerificationLevel
-  appName: string
-  onStartVerification: () => void
-  onDisconnect: () => void
-  onFindPlayers: () => void
+  status: UserVerificationStatus;
+  requiredLevel: VerificationLevel;
+  appName: string;
+  onStartVerification: () => void;
+  onDisconnect: () => void;
+  onFindPlayers: () => void;
 }
 
 export function ProgressStep({
@@ -22,9 +22,9 @@ export function ProgressStep({
   onDisconnect,
   onFindPlayers,
 }: ProgressStepProps) {
-  const isMet = status.currentLevel >= requiredLevel
-  const needsMoreLevel = requiredLevel - status.currentLevel
-  const [showTips, setShowTips] = useState(false)
+  const isMet = status.currentLevel >= requiredLevel;
+  const needsMoreLevel = requiredLevel - status.currentLevel;
+  const [showTips, setShowTips] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -92,7 +92,7 @@ export function ProgressStep({
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {needsMoreLevel === 1
-                ? "You need 1 more level. Get evaluated by people who know you to increase your score."
+                ? 'You need 1 more level. Get evaluated by people who know you to increase your score.'
                 : `You need ${needsMoreLevel} more levels. Complete evaluations and build your verification score.`}
             </p>
 
@@ -163,7 +163,7 @@ export function ProgressStep({
               Tips to level up faster
             </span>
             <svg
-              className={`w-4 h-4 transition-transform ${showTips ? "rotate-180" : ""}`}
+              className={`w-4 h-4 transition-transform ${showTips ? 'rotate-180' : ''}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -230,5 +230,5 @@ export function ProgressStep({
         </div>
       )}
     </div>
-  )
+  );
 }

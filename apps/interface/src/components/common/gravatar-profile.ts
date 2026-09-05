@@ -1,21 +1,27 @@
-import { signal, SignalWatcher } from '@lit-labs/signals'
-import { css, html, LitElement, PropertyDeclaration, type CSSResultGroup } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { signal, SignalWatcher } from '@lit-labs/signals';
+import {
+  css,
+  html,
+  LitElement,
+  PropertyDeclaration,
+  type CSSResultGroup,
+} from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 const response = signal(
   null as {
-    display_name: string
-    profile_url: string
-    avatar_url: string
-  } | null
-)
+    display_name: string;
+    profile_url: string;
+    avatar_url: string;
+  } | null,
+);
 
 @customElement('gravatar-profile')
 export class GravatarProfile extends SignalWatcher(LitElement) {
   @property({
-    type: String
+    type: String,
   })
-  hashedEmail?: string
+  hashedEmail?: string;
 
   static styles?: CSSResultGroup | undefined = css`
     .container {
@@ -60,53 +66,60 @@ export class GravatarProfile extends SignalWatcher(LitElement) {
       line-height: 20px;
       margin-bottom: 15px;
     }
-  `
+  `;
 
   constructor() {
-    super()
+    super();
   }
 
-  requestUpdate(name?: PropertyKey, oldValue?: unknown, options?: PropertyDeclaration): void {
-    super.requestUpdate(name, oldValue, options)
+  requestUpdate(
+    name?: PropertyKey,
+    oldValue?: unknown,
+    options?: PropertyDeclaration,
+  ): void {
+    super.requestUpdate(name, oldValue, options);
 
-    if (name === 'hashedEmail') this.onEmailChange()
+    if (name === 'hashedEmail') this.onEmailChange();
   }
 
   protected async onEmailChange() {
     if (!this.hashedEmail) {
-      response.set(null)
-      return
+      response.set(null);
+      return;
     }
 
-    const profileUrl = `https://api.gravatar.com/v3/profiles/${this.hashedEmail}`
+    const profileUrl = `https://api.gravatar.com/v3/profiles/${this.hashedEmail}`;
 
-    const profile = await fetch(profileUrl).then((res) => res.json())
+    const profile = await fetch(profileUrl).then((res) => res.json());
 
     if (!profile?.hash) {
-      response.set(null)
-      return
+      response.set(null);
+      return;
     }
 
-    response.set(profile)
+    response.set(profile);
   }
 
   protected render() {
     if (!response.get())
       return html`
         <div class="container-prompt">
-          Enter your gravatar email to provide some basic information to aura players to get
-          verified
+          Enter your gravatar email to provide some basic information to aura
+          players to get verified
           <br />
-          Create a gravatar account <a target="_blank" href="https://gravatar.com">Here.</a>
+          Create a gravatar account
+          <a target="_blank" href="https://gravatar.com">Here.</a>
         </div>
-      `
+      `;
 
     return html`
       <div class="container">
         <img src="${response.get()!.avatar_url}" alt="Avatar" />
         <h2>${response.get()!.display_name}</h2>
-        <a href="${response.get()!.profile_url}" target="_blank">View Profile</a>
+        <a href="${response.get()!.profile_url}" target="_blank"
+          >View Profile</a
+        >
       </div>
-    `
+    `;
   }
 }

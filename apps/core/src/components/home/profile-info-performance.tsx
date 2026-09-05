@@ -1,19 +1,19 @@
-import { Show } from "solid-js"
-import ProgressBar from "@/components/home/progress-bar"
-import { useLevelupProgress } from "@/hooks/use-levelup-progress"
-import { useSubjectVerifications } from "@/hooks/use-subject-verifications"
-import { useViewMode } from "@/hooks/use-view-mode"
-import { compactFormat } from "@/shared/lib/number"
-import { EvaluationCategory } from "@aura/domain/types/evaluations"
+import { Show } from 'solid-js';
+import ProgressBar from '@/components/home/progress-bar';
+import { useLevelupProgress } from '@/hooks/use-levelup-progress';
+import { useSubjectVerifications } from '@/hooks/use-subject-verifications';
+import { useViewMode } from '@/hooks/use-view-mode';
+import { compactFormat } from '@/shared/lib/number';
+import { EvaluationCategory } from '@aura/domain/types/evaluations';
 
 /** Level-up progress toward the evaluator role. Hidden once unlocked. */
 export default function ProfileInfoPerformance(props: { subjectId: string }) {
-  const vm = useViewMode()
-  const category = vm.currentRoleEvaluatorEvaluationCategory
-  const v = useSubjectVerifications(() => props.subjectId, category)
-  const progress = useLevelupProgress(category)
+  const vm = useViewMode();
+  const category = vm.currentRoleEvaluatorEvaluationCategory;
+  const v = useSubjectVerifications(() => props.subjectId, category);
+  const progress = useLevelupProgress(category);
 
-  const percent = () => Math.max(0, Math.min(100, progress().percent))
+  const percent = () => Math.max(0, Math.min(100, progress().percent));
 
   return (
     <Show when={!progress().isUnlocked}>
@@ -35,7 +35,7 @@ export default function ProfileInfoPerformance(props: { subjectId: string }) {
             </div>
           </div>
           <span class="bg-foreground/10 shrink-0 rounded-full px-2.5 py-1 text-xs text-muted-foreground">
-            Score{" "}
+            Score{' '}
             <span class="font-semibold text-foreground">
               {compactFormat(v.auraScore() ?? 0)}
             </span>
@@ -56,5 +56,5 @@ export default function ProfileInfoPerformance(props: { subjectId: string }) {
         </Show>
       </a-card>
     </Show>
-  )
+  );
 }

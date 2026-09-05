@@ -1,51 +1,57 @@
-import { askedEvaluationPlayers } from '@/lib/data/contacts'
+import { askedEvaluationPlayers } from '@/lib/data/contacts';
 import {
   userBrightId,
   userFirstName,
   userLastName,
-  userProfilePicture
-} from '@/states/user'
-import type { AuraImpact } from '@/types/evaluation'
-import type { Project } from '@/types/projects'
-import { computeRequirements } from '@/utils/score'
-import { SignalWatcher } from '@lit-labs/signals'
-import { css, type CSSResultGroup, html, LitElement, type PropertyValues } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+  userProfilePicture,
+} from '@/states/user';
+import type { AuraImpact } from '@/types/evaluation';
+import type { Project } from '@/types/projects';
+import { computeRequirements } from '@/utils/score';
+import { SignalWatcher } from '@lit-labs/signals';
+import {
+  css,
+  type CSSResultGroup,
+  html,
+  LitElement,
+  type PropertyValues,
+} from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 
-import type { Step } from './index'
-import './index'
-import type { ProgressStepData } from './progress-step'
+import type { Step } from './index';
+import './index';
+import type { ProgressStepData } from './progress-step';
 
-type StepOption = 'auto' | Step
+type StepOption = 'auto' | Step;
 
-const DEFAULT_BRIGHTID = 'demo-brightid-0x1234567890abcdef'
+const DEFAULT_BRIGHTID = 'demo-brightid-0x1234567890abcdef';
 
 @customElement('verification-test-harness')
 export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
-  @state() private brightId = DEFAULT_BRIGHTID
-  @state() private firstName = 'Alice'
-  @state() private lastName = 'Example'
-  @state() private profilePicture = ''
+  @state() private brightId = DEFAULT_BRIGHTID;
+  @state() private firstName = 'Alice';
+  @state() private lastName = 'Example';
+  @state() private profilePicture = '';
 
-  @state() private appName = 'Demo App'
-  @state() private appDescription = 'A sample app using Aura verification'
-  @state() private appLogo = ''
-  @state() private requiredLevel: 1 | 2 | 3 | 4 = 2
+  @state() private appName = 'Demo App';
+  @state() private appDescription = 'A sample app using Aura verification';
+  @state() private appLogo = '';
+  @state() private requiredLevel: 1 | 2 | 3 | 4 = 2;
 
-  @state() private auraLevel: 0 | 1 | 2 | 3 | 4 = 1
-  @state() private auraScore = 12_500_000
+  @state() private auraLevel: 0 | 1 | 2 | 3 | 4 = 1;
+  @state() private auraScore = 12_500_000;
 
   // Synthetic evaluations: counts by evaluator level × confidence
-  @state() private lowFromL1 = 1
-  @state() private mediumFromL1 = 0
-  @state() private highFromL2 = 0
-  @state() private mediumFromL2 = 0
-  @state() private highFromL3 = 0
-  @state() private mediumFromL3 = 0
+  @state() private lowFromL1 = 1;
+  @state() private mediumFromL1 = 0;
+  @state() private highFromL2 = 0;
+  @state() private mediumFromL2 = 0;
+  @state() private highFromL3 = 0;
+  @state() private mediumFromL3 = 0;
 
-  @state() private askedCount = 2
-  @state() private initialStep: StepOption = 'auto'
-  @state() private sticky = true
+  @state() private askedCount = 2;
+  @state() private initialStep: StepOption = 'auto';
+  @state() private sticky = true;
 
   static styles: CSSResultGroup = css`
     :host {
@@ -198,7 +204,11 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
     }
     .preset-btn:hover,
     .action-btn:hover {
-      background: color-mix(in srgb, var(--secondary) 70%, var(--foreground) 6%);
+      background: color-mix(
+        in srgb,
+        var(--secondary) 70%,
+        var(--foreground) 6%
+      );
     }
     .action-btn.primary {
       background: var(--primary);
@@ -242,31 +252,31 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
       max-width: 480px;
       height: 600px;
     }
-  `
+  `;
 
   protected updated(_changed: PropertyValues) {
-    this._syncSignals()
+    this._syncSignals();
   }
 
   private _syncSignals() {
-    userBrightId.set(this.brightId)
-    userFirstName.set(this.firstName)
-    userLastName.set(this.lastName)
-    userProfilePicture.set(this.profilePicture)
-    const now = Date.now()
+    userBrightId.set(this.brightId);
+    userFirstName.set(this.firstName);
+    userLastName.set(this.lastName);
+    userProfilePicture.set(this.profilePicture);
+    const now = Date.now();
     askedEvaluationPlayers.set(
       Array.from({ length: this.askedCount }, (_, i) => ({
         name: `Pending Player ${i + 1}`,
         value: `pending-${i}@example.com`,
-        askedAt: now - i * 60_000
-      }))
-    )
+        askedAt: now - i * 60_000,
+      })),
+    );
   }
 
   protected render() {
-    const project = this._buildProject()
-    const mockData = this._buildMockData()
-    const initial = this.initialStep === 'auto' ? null : this.initialStep
+    const project = this._buildProject();
+    const mockData = this._buildMockData();
+    const initial = this.initialStep === 'auto' ? null : this.initialStep;
 
     return html`
       <div class="layout">
@@ -279,16 +289,28 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
           <fieldset>
             <legend>Presets</legend>
             <div class="presets">
-              <button class="preset-btn" @click=${() => this._applyPreset('new')}>
+              <button
+                class="preset-btn"
+                @click=${() => this._applyPreset('new')}
+              >
                 New user
               </button>
-              <button class="preset-btn" @click=${() => this._applyPreset('level1')}>
+              <button
+                class="preset-btn"
+                @click=${() => this._applyPreset('level1')}
+              >
                 Level 1
               </button>
-              <button class="preset-btn" @click=${() => this._applyPreset('level2')}>
+              <button
+                class="preset-btn"
+                @click=${() => this._applyPreset('level2')}
+              >
                 Level 2
               </button>
-              <button class="preset-btn" @click=${() => this._applyPreset('verified')}>
+              <button
+                class="preset-btn"
+                @click=${() => this._applyPreset('verified')}
+              >
                 Verified
               </button>
             </div>
@@ -305,7 +327,10 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
                   @input=${(e: Event) =>
                     (this.brightId = (e.target as HTMLInputElement).value)}
                 />
-                <button class="preset-btn" @click=${() => this._randomizeBrightId()}>
+                <button
+                  class="preset-btn"
+                  @click=${() => this._randomizeBrightId()}
+                >
                   Random
                 </button>
               </div>
@@ -374,16 +399,18 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
               Required level
               <select
                 @change=${(e: Event) =>
-                  (this.requiredLevel = Number((e.target as HTMLSelectElement).value) as 1 |
-                    2 |
-                    3 |
-                    4)}
+                  (this.requiredLevel = Number(
+                    (e.target as HTMLSelectElement).value,
+                  ) as 1 | 2 | 3 | 4)}
               >
                 ${[1, 2, 3, 4].map(
                   (l) =>
-                    html`<option value=${l} ?selected=${this.requiredLevel === l}>
+                    html`<option
+                      value=${l}
+                      ?selected=${this.requiredLevel === l}
+                    >
                       Level ${l}
-                    </option>`
+                    </option>`,
                 )}
               </select>
             </label>
@@ -401,12 +428,9 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
                   step="1"
                   .value=${String(this.auraLevel)}
                   @input=${(e: Event) =>
-                    (this.auraLevel = Number((e.target as HTMLInputElement).value) as
-                      | 0
-                      | 1
-                      | 2
-                      | 3
-                      | 4)}
+                    (this.auraLevel = Number(
+                      (e.target as HTMLInputElement).value,
+                    ) as 0 | 1 | 2 | 3 | 4)}
                 />
                 <span class="range-value">L${this.auraLevel}</span>
               </div>
@@ -421,9 +445,13 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
                   step="500000"
                   .value=${String(this.auraScore)}
                   @input=${(e: Event) =>
-                    (this.auraScore = Number((e.target as HTMLInputElement).value))}
+                    (this.auraScore = Number(
+                      (e.target as HTMLInputElement).value,
+                    ))}
                 />
-                <span class="range-value">${this._formatScore(this.auraScore)}</span>
+                <span class="range-value"
+                  >${this._formatScore(this.auraScore)}</span
+                >
               </div>
             </label>
           </fieldset>
@@ -450,7 +478,9 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
                   step="1"
                   .value=${String(this.askedCount)}
                   @input=${(e: Event) =>
-                    (this.askedCount = Number((e.target as HTMLInputElement).value))}
+                    (this.askedCount = Number(
+                      (e.target as HTMLInputElement).value,
+                    ))}
                 />
                 <span class="range-value">${this.askedCount}</span>
               </div>
@@ -459,7 +489,8 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
               Initial step
               <select
                 @change=${(e: Event) =>
-                  (this.initialStep = (e.target as HTMLSelectElement).value as StepOption)}
+                  (this.initialStep = (e.target as HTMLSelectElement)
+                    .value as StepOption)}
               >
                 ${(
                   [
@@ -471,11 +502,13 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
                     'find-players',
                     'edit-profile',
                     'evaluations',
-                    'score'
+                    'score',
                   ] as StepOption[]
                 ).map(
                   (s) =>
-                    html`<option value=${s} ?selected=${this.initialStep === s}>${s}</option>`
+                    html`<option value=${s} ?selected=${this.initialStep === s}>
+                      ${s}
+                    </option>`,
                 )}
               </select>
             </label>
@@ -489,7 +522,6 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
               Sticky controls
             </label>
           </fieldset>
-
         </div>
 
         <div class="preview">
@@ -509,7 +541,7 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
           </div>
         </div>
       </div>
-    `
+    `;
   }
 
   private _renderEvalCounter(
@@ -520,7 +552,7 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
       | 'highFromL2'
       | 'mediumFromL2'
       | 'highFromL3'
-      | 'mediumFromL3'
+      | 'mediumFromL3',
   ) {
     return html`
       <label>
@@ -533,16 +565,18 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
             step="1"
             .value=${String(this[key])}
             @input=${(e: Event) =>
-              ((this[key] as number) = Number((e.target as HTMLInputElement).value))}
+              ((this[key] as number) = Number(
+                (e.target as HTMLInputElement).value,
+              ))}
           />
           <span class="range-value">${this[key]}</span>
         </div>
       </label>
-    `
+    `;
   }
 
   private _buildProject(): Project {
-    const now = new Date().toISOString()
+    const now = new Date().toISOString();
     return {
       id: 0,
       name: this.appName,
@@ -551,13 +585,18 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
       requirementLevel: this.requiredLevel,
       createdAt: now,
       updatedAt: now,
-      deadline: now
-    }
+      deadline: now,
+    };
   }
 
   private _buildImpacts(): AuraImpact[] {
-    const impacts: AuraImpact[] = []
-    const add = (count: number, level: number, confidence: number, prefix: string) => {
+    const impacts: AuraImpact[] = [];
+    const add = (
+      count: number,
+      level: number,
+      confidence: number,
+      prefix: string,
+    ) => {
       for (let i = 0; i < count; i++) {
         impacts.push({
           evaluator: `${prefix}-${i}`,
@@ -565,93 +604,92 @@ export class VerificationTestHarnessElement extends SignalWatcher(LitElement) {
           level,
           confidence,
           score: 10_000_000,
-          impact: 1_000_000
-        })
+          impact: 1_000_000,
+        });
       }
-    }
+    };
     // Strongest shape first so it always satisfies higher-level reqs.
-    add(this.highFromL3, 3, 3, 'H3')
-    add(this.mediumFromL3, 3, 2, 'M3')
-    add(this.highFromL2, 2, 3, 'H2')
-    add(this.mediumFromL2, 2, 2, 'M2')
-    add(this.mediumFromL1, 1, 2, 'M1')
-    add(this.lowFromL1, 1, 1, 'L1')
-    return impacts
+    add(this.highFromL3, 3, 3, 'H3');
+    add(this.mediumFromL3, 3, 2, 'M3');
+    add(this.highFromL2, 2, 3, 'H2');
+    add(this.mediumFromL2, 2, 2, 'M2');
+    add(this.mediumFromL1, 1, 2, 'M1');
+    add(this.lowFromL1, 1, 1, 'L1');
+    return impacts;
   }
 
   private _buildMockData(): ProgressStepData {
-    const auraImpacts = this._buildImpacts()
+    const auraImpacts = this._buildImpacts();
     return {
       brightId: this.brightId,
       auraLevel: this.auraLevel,
       auraScore: this.auraScore,
       evaluationsReceived: auraImpacts.length,
       auraImpacts,
-      requirements: computeRequirements(this.auraScore, auraImpacts)
-    }
+      requirements: computeRequirements(this.auraScore, auraImpacts),
+    };
   }
 
   private _formatScore(n: number): string {
-    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
-    return n.toString()
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+    return n.toString();
   }
 
   private _randomizeBrightId() {
     const rand = Array.from(crypto.getRandomValues(new Uint8Array(16)))
       .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')
-    this.brightId = `demo-${rand}`
+      .join('');
+    this.brightId = `demo-${rand}`;
   }
 
   private _applyPreset(preset: 'new' | 'level1' | 'level2' | 'verified') {
     switch (preset) {
       case 'new':
-        this.auraLevel = 0
-        this.auraScore = 0
-        this.lowFromL1 = 0
-        this.mediumFromL1 = 0
-        this.highFromL2 = 0
-        this.mediumFromL2 = 0
-        this.highFromL3 = 0
-        this.mediumFromL3 = 0
-        this.askedCount = 0
-        break
+        this.auraLevel = 0;
+        this.auraScore = 0;
+        this.lowFromL1 = 0;
+        this.mediumFromL1 = 0;
+        this.highFromL2 = 0;
+        this.mediumFromL2 = 0;
+        this.highFromL3 = 0;
+        this.mediumFromL3 = 0;
+        this.askedCount = 0;
+        break;
       case 'level1':
-        this.auraLevel = 1
-        this.auraScore = 15_000_000
-        this.lowFromL1 = 1
-        this.mediumFromL1 = 0
-        this.highFromL2 = 0
-        this.mediumFromL2 = 0
-        this.highFromL3 = 0
-        this.mediumFromL3 = 0
-        this.askedCount = 2
-        break
+        this.auraLevel = 1;
+        this.auraScore = 15_000_000;
+        this.lowFromL1 = 1;
+        this.mediumFromL1 = 0;
+        this.highFromL2 = 0;
+        this.mediumFromL2 = 0;
+        this.highFromL3 = 0;
+        this.mediumFromL3 = 0;
+        this.askedCount = 2;
+        break;
       case 'level2':
-        this.auraLevel = 2
-        this.auraScore = 60_000_000
-        this.lowFromL1 = 1
-        this.mediumFromL1 = 1
-        this.highFromL2 = 0
-        this.mediumFromL2 = 0
-        this.highFromL3 = 0
-        this.mediumFromL3 = 0
-        this.askedCount = 1
-        break
+        this.auraLevel = 2;
+        this.auraScore = 60_000_000;
+        this.lowFromL1 = 1;
+        this.mediumFromL1 = 1;
+        this.highFromL2 = 0;
+        this.mediumFromL2 = 0;
+        this.highFromL3 = 0;
+        this.mediumFromL3 = 0;
+        this.askedCount = 1;
+        break;
       case 'verified':
-        this.auraLevel = 4
-        this.auraScore = 180_000_000
-        this.lowFromL1 = 1
-        this.mediumFromL1 = 1
-        this.highFromL2 = 1
-        this.mediumFromL2 = 1
-        this.highFromL3 = 1
-        this.mediumFromL3 = 1
-        this.askedCount = 0
-        break
+        this.auraLevel = 4;
+        this.auraScore = 180_000_000;
+        this.lowFromL1 = 1;
+        this.mediumFromL1 = 1;
+        this.highFromL2 = 1;
+        this.mediumFromL2 = 1;
+        this.highFromL3 = 1;
+        this.mediumFromL3 = 1;
+        this.askedCount = 0;
+        break;
     }
-    this.requiredLevel = preset === 'verified' ? 4 : 2
+    this.requiredLevel = preset === 'verified' ? 4 : 2;
   }
-
 }

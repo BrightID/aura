@@ -1,4 +1,4 @@
-import "react";
+import 'react';
 
 type AuraElement<T = Record<string, unknown>> = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLElement>,
@@ -6,11 +6,11 @@ type AuraElement<T = Record<string, unknown>> = React.DetailedHTMLProps<
 > &
   T & { class?: string };
 
-declare module "react" {
+declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
-      "a-theme-provider": AuraElement;
-      "a-button": AuraElement<{
+      'a-theme-provider': AuraElement;
+      'a-button': AuraElement<{
         variant?: string;
         size?: string;
         color?: string;
@@ -18,14 +18,14 @@ declare module "react" {
         disabled?: boolean;
         selected?: boolean;
       }>;
-      "a-badge": AuraElement<{
+      'a-badge': AuraElement<{
         variant?: string;
         size?: string;
         rounded?: boolean;
         removable?: boolean;
       }>;
-      "a-card": AuraElement<{ variant?: string; interactive?: boolean }>;
-      "a-input": AuraElement<{
+      'a-card': AuraElement<{ variant?: string; interactive?: boolean }>;
+      'a-input': AuraElement<{
         type?: string;
         label?: string;
         name?: string;
@@ -33,8 +33,8 @@ declare module "react" {
         value?: string;
         disabled?: boolean;
       }>;
-      "a-text": AuraElement<{ variant?: string; size?: string }>;
-      "a-separator": AuraElement<{ orientation?: string }>;
+      'a-text': AuraElement<{ variant?: string; size?: string }>;
+      'a-separator': AuraElement<{ orientation?: string }>;
     }
   }
 }

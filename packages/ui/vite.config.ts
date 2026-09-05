@@ -1,26 +1,26 @@
-import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
-import { resolve } from "path";
-import dts from "vite-plugin-dts";
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
-import pkg from "./package.json" with { type: "json" };
+import pkg from './package.json' with { type: 'json' };
 
 export default defineConfig({
   plugins: [tsconfigPaths(), dts()],
 
   build: {
     lib: {
-      entry: [resolve(__dirname, "src/index.ts")],
-      formats: ["es", "cjs"],
-      fileName: (format) => `[name].${format === "es" ? "mjs" : "js"}`,
+      entry: [resolve(__dirname, 'src/index.ts')],
+      formats: ['es', 'cjs'],
+      fileName: (format) => `[name].${format === 'es' ? 'mjs' : 'js'}`,
     },
 
     rollupOptions: {
       output: {
         preserveModules: true,
-        preserveModulesRoot: "src",
+        preserveModulesRoot: 'src',
 
-        assetFileNames: "assets/[name][extname]",
+        assetFileNames: 'assets/[name][extname]',
       },
 
       external: [
@@ -30,7 +30,7 @@ export default defineConfig({
       ],
     },
 
-    target: "esnext",
+    target: 'esnext',
     sourcemap: true,
     minify: false,
   },

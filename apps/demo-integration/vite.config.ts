@@ -1,24 +1,24 @@
-import { resolve } from "node:path"
-import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
-import { injectRemoteCss } from "../vite-inject-remote-css"
+import { resolve } from 'node:path';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import { injectRemoteCss } from '../vite-inject-remote-css';
 
-const PORT = 5175
+const PORT = 5175;
 
 export default defineConfig({
-  base: "/demo/",
-  plugins: [react(), injectRemoteCss("/demo/")],
+  base: '/demo/',
+  plugins: [react(), injectRemoteCss('/demo/')],
   build: {
-    target: "esnext",
+    target: 'esnext',
     rollupOptions: {
       input: {
-        index: resolve(__dirname, "index.html"),
-        mount: resolve(__dirname, "src/mount.tsx"),
+        index: resolve(__dirname, 'index.html'),
+        mount: resolve(__dirname, 'src/mount.tsx'),
       },
-      preserveEntrySignatures: "exports-only",
+      preserveEntrySignatures: 'exports-only',
       output: {
         entryFileNames: (chunk) =>
-          chunk.name === "mount" ? "remoteEntry.js" : "assets/[name]-[hash].js",
+          chunk.name === 'mount' ? 'remoteEntry.js' : 'assets/[name]-[hash].js',
       },
     },
   },
@@ -27,10 +27,10 @@ export default defineConfig({
     origin: `http://localhost:${PORT}`,
     cors: true,
     host: true,
-    allowedHosts: ["localhost", ".localhost"],
+    allowedHosts: ['localhost', '.localhost'],
   },
   preview: {
     port: PORT,
     cors: true,
   },
-})
+});

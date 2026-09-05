@@ -1,4 +1,4 @@
-import { scrollReveal } from "$lib/scroll-reveal"
+import { scrollReveal } from '$lib/scroll-reveal';
 
 export default function Comparison() {
   return (
@@ -30,15 +30,24 @@ export default function Comparison() {
             </h3>
             <ul class="space-y-3">
               <li class="flex items-start gap-2 text-sm text-muted-foreground">
-                <a-icon name="x" class="text-base text-rose-300 mt-0.5 shrink-0" />
+                <a-icon
+                  name="x"
+                  class="text-base text-rose-300 mt-0.5 shrink-0"
+                />
                 Uploads your ID and biometrics to a company
               </li>
               <li class="flex items-start gap-2 text-sm text-muted-foreground">
-                <a-icon name="x" class="text-base text-rose-300 mt-0.5 shrink-0" />
+                <a-icon
+                  name="x"
+                  class="text-base text-rose-300 mt-0.5 shrink-0"
+                />
                 One breach exposes everyone at once
               </li>
               <li class="flex items-start gap-2 text-sm text-muted-foreground">
-                <a-icon name="x" class="text-base text-rose-300 mt-0.5 shrink-0" />
+                <a-icon
+                  name="x"
+                  class="text-base text-rose-300 mt-0.5 shrink-0"
+                />
                 Excludes anyone without formal documents
               </li>
             </ul>
@@ -53,15 +62,24 @@ export default function Comparison() {
             </h3>
             <ul class="space-y-3">
               <li class="flex items-start gap-2 text-sm text-muted-foreground">
-                <a-icon name="x" class="text-base text-rose-300 mt-0.5 shrink-0" />
+                <a-icon
+                  name="x"
+                  class="text-base text-rose-300 mt-0.5 shrink-0"
+                />
                 Solved by bots, botched by humans
               </li>
               <li class="flex items-start gap-2 text-sm text-muted-foreground">
-                <a-icon name="x" class="text-base text-rose-300 mt-0.5 shrink-0" />
+                <a-icon
+                  name="x"
+                  class="text-base text-rose-300 mt-0.5 shrink-0"
+                />
                 Blocks real people with accessibility needs
               </li>
               <li class="flex items-start gap-2 text-sm text-muted-foreground">
-                <a-icon name="x" class="text-base text-rose-300 mt-0.5 shrink-0" />
+                <a-icon
+                  name="x"
+                  class="text-base text-rose-300 mt-0.5 shrink-0"
+                />
                 Can't tell one person from ten accounts
               </li>
             </ul>
@@ -78,15 +96,24 @@ export default function Comparison() {
               </h3>
               <ul class="space-y-3 relative z-10">
                 <li class="flex items-start gap-2 text-sm text-foreground">
-                  <a-icon name="check" class="text-base text-cyan-300 mt-0.5 shrink-0" />
+                  <a-icon
+                    name="check"
+                    class="text-base text-cyan-300 mt-0.5 shrink-0"
+                  />
                   Verified by people who already know you
                 </li>
                 <li class="flex items-start gap-2 text-sm text-foreground">
-                  <a-icon name="check" class="text-base text-cyan-300 mt-0.5 shrink-0" />
+                  <a-icon
+                    name="check"
+                    class="text-base text-cyan-300 mt-0.5 shrink-0"
+                  />
                   No ID, no biometrics, no central database
                 </li>
                 <li class="flex items-start gap-2 text-sm text-foreground">
-                  <a-icon name="check" class="text-base text-cyan-300 mt-0.5 shrink-0" />
+                  <a-icon
+                    name="check"
+                    class="text-base text-cyan-300 mt-0.5 shrink-0"
+                  />
                   One private attestation, reusable everywhere
                 </li>
               </ul>
@@ -95,5 +122,5 @@ export default function Comparison() {
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -1,219 +1,219 @@
-import type { ReactiveControllerHost } from "lit"
-import { defaultClient, hashKey, QueryClient } from "./client.js"
+import type { ReactiveControllerHost } from 'lit';
+import { defaultClient, hashKey, QueryClient } from './client.js';
 import type {
   FetchStatus,
   QueryFunctionContext,
   QueryOptions,
   QueryStatus,
-} from "./types.js"
+} from './types.js';
 
 export class Query<TData, TError = Error> {
-  data: TData | undefined = undefined
-  error: TError | null = null
-  status: QueryStatus = "pending"
-  fetchStatus: FetchStatus = "idle"
+  data: TData | undefined = undefined;
+  error: TError | null = null;
+  status: QueryStatus = 'pending';
+  fetchStatus: FetchStatus = 'idle';
 
   get isPending(): boolean {
-    return this.status === "pending"
+    return this.status === 'pending';
   }
   get isSuccess(): boolean {
-    return this.status === "success"
+    return this.status === 'success';
   }
   get isError(): boolean {
-    return this.status === "error"
+    return this.status === 'error';
   }
   get isFetching(): boolean {
-    return this.fetchStatus === "fetching"
+    return this.fetchStatus === 'fetching';
   }
   get isLoading(): boolean {
-    return this.isPending && this.isFetching
+    return this.isPending && this.isFetching;
   }
 
   // ─── Private ──────────────────────────────────────────────────────────────
 
-  private host: ReactiveControllerHost
-  private options: QueryOptions<TData, TError>
-  private client: QueryClient
-  private unsubscribe?: () => void
-  private abortController?: AbortController
-  private pollTimer?: ReturnType<typeof setInterval>
-  private focusListener?: () => void
+  private host: ReactiveControllerHost;
+  private options: QueryOptions<TData, TError>;
+  private client: QueryClient;
+  private unsubscribe?: () => void;
+  private abortController?: AbortController;
+  private pollTimer?: ReturnType<typeof setInterval>;
+  private focusListener?: () => void;
 
   constructor(
     host: ReactiveControllerHost,
     options: QueryOptions<TData, TError>,
   ) {
-    this.host = host
-    this.options = options
-    this.client = options.client ?? defaultClient
-    host.addController(this)
+    this.host = host;
+    this.options = options;
+    this.client = options.client ?? defaultClient;
+    host.addController(this);
   }
 
   // ─── Controller lifecycle ─────────────────────────────────────────────────
 
   hostConnected(): void {
-    this.subscribe()
+    this.subscribe();
     if (
       this.options.refetchOnWindowFocus ??
       this.client.getDefaultRefetchOnWindowFocus()
     ) {
       this.focusListener = () => {
-        if (!this.isStale()) return
-        this.fetch()
-      }
-      window.addEventListener("focus", this.focusListener)
+        if (!this.isStale()) return;
+        this.fetch();
+      };
+      window.addEventListener('focus', this.focusListener);
     }
   }
 
   hostDisconnected(): void {
-    this.unsubscribe?.()
-    this.abortController?.abort()
-    clearInterval(this.pollTimer)
+    this.unsubscribe?.();
+    this.abortController?.abort();
+    clearInterval(this.pollTimer);
     if (this.focusListener)
-      window.removeEventListener("focus", this.focusListener)
+      window.removeEventListener('focus', this.focusListener);
   }
 
   refetch(): Promise<TData | undefined> {
-    return this.fetch()
+    return this.fetch();
   }
 
   updateOptions(options: Partial<QueryOptions<TData, TError>>): void {
     const keyChanged =
       options.queryKey &&
-      hashKey(options.queryKey) !== hashKey(this.options.queryKey)
-    this.options = { ...this.options, ...options }
-    this.client = this.options.client ?? defaultClient
+      hashKey(options.queryKey) !== hashKey(this.options.queryKey);
+    this.options = { ...this.options, ...options };
+    this.client = this.options.client ?? defaultClient;
     if (keyChanged) {
-      this.unsubscribe?.()
-      this.subscribe()
+      this.unsubscribe?.();
+      this.subscribe();
     } else if (options.enabled !== undefined) {
-      if (options.enabled && this.isStale()) this.fetch()
+      if (options.enabled && this.isStale()) this.fetch();
     }
   }
 
   private get cacheKey(): string {
-    return hashKey(this.options.queryKey)
+    return hashKey(this.options.queryKey);
   }
 
   private subscribe(): void {
-    this.unsubscribe?.()
-    const key = this.cacheKey
-    this.unsubscribe = this.client.subscribe(key, () => this.syncFromCache())
-    this.syncFromCache()
+    this.unsubscribe?.();
+    const key = this.cacheKey;
+    this.unsubscribe = this.client.subscribe(key, () => this.syncFromCache());
+    this.syncFromCache();
     if (this.options.enabled !== false && this.isStale()) {
-      this.fetch()
+      this.fetch();
     }
-    this.setupPolling()
+    this.setupPolling();
   }
 
   private syncFromCache(): void {
-    const entry = this.client.getEntry<TData, TError>(this.cacheKey)
-    if (!entry) return
-    let changed = false
+    const entry = this.client.getEntry<TData, TError>(this.cacheKey);
+    if (!entry) return;
+    let changed = false;
     if (this.data !== entry.data) {
-      this.data = entry.data
-      changed = true
+      this.data = entry.data;
+      changed = true;
     }
     if (this.error !== entry.error) {
-      this.error = entry.error
-      changed = true
+      this.error = entry.error;
+      changed = true;
     }
     if (this.status !== entry.status) {
-      this.status = entry.status
-      changed = true
+      this.status = entry.status;
+      changed = true;
     }
     if (this.fetchStatus !== entry.fetchStatus) {
-      this.fetchStatus = entry.fetchStatus
-      changed = true
+      this.fetchStatus = entry.fetchStatus;
+      changed = true;
     }
 
-    if (this.status === "pending" && this.data === undefined) {
-      const ph = this.options.placeholderData
+    if (this.status === 'pending' && this.data === undefined) {
+      const ph = this.options.placeholderData;
       const resolved =
-        typeof ph === "function"
+        typeof ph === 'function'
           ? (ph as (prev: TData | undefined) => TData | undefined)(undefined)
-          : ph
+          : ph;
       if (resolved !== undefined) {
-        this.data = resolved
-        changed = true
+        this.data = resolved;
+        changed = true;
       }
     }
 
-    if (changed) this.host.requestUpdate()
+    if (changed) this.host.requestUpdate();
   }
 
   private isStale(): boolean {
-    const entry = this.client.getEntry(this.cacheKey)
-    if (!entry || entry.status === "pending") return true
+    const entry = this.client.getEntry(this.cacheKey);
+    if (!entry || entry.status === 'pending') return true;
     const staleTime =
-      this.options.staleTime ?? this.client.getDefaultStaleTime()
-    return Date.now() - entry.updatedAt > staleTime
+      this.options.staleTime ?? this.client.getDefaultStaleTime();
+    return Date.now() - entry.updatedAt > staleTime;
   }
 
   private async fetch(attempt = 0): Promise<TData | undefined> {
-    if (this.options.enabled === false) return undefined
+    if (this.options.enabled === false) return undefined;
 
-    this.abortController?.abort()
-    this.abortController = new AbortController()
-    const signal = this.abortController.signal
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+    const signal = this.abortController.signal;
 
     const ctx: QueryFunctionContext = {
       queryKey: this.options.queryKey,
       signal,
-    }
+    };
 
     this.client.setEntry<TData, TError>(this.cacheKey, {
-      fetchStatus: "fetching",
-    })
+      fetchStatus: 'fetching',
+    });
 
     try {
-      const data = await this.options.queryFn(ctx)
-      if (signal.aborted) return undefined
+      const data = await this.options.queryFn(ctx);
+      if (signal.aborted) return undefined;
 
       this.client.setEntry<TData, TError>(this.cacheKey, {
         data,
         error: null,
-        status: "success",
-        fetchStatus: "idle",
+        status: 'success',
+        fetchStatus: 'idle',
         updatedAt: Date.now(),
-      })
-      this.options.onSuccess?.(data)
-      this.options.onSettled?.(data, null)
-      return data
+      });
+      this.options.onSuccess?.(data);
+      this.options.onSettled?.(data, null);
+      return data;
     } catch (err) {
-      if (signal.aborted) return undefined
+      if (signal.aborted) return undefined;
 
-      const error = err as TError
-      const maxRetries = this.options.retry ?? this.client.getDefaultRetry()
+      const error = err as TError;
+      const maxRetries = this.options.retry ?? this.client.getDefaultRetry();
       if (maxRetries !== false && attempt < maxRetries) {
         const delay = resolveDelay(
           this.options.retryDelay ?? this.client.getDefaultRetryDelay(),
           attempt,
-        )
-        await sleep(delay)
-        if (!signal.aborted) return this.fetch(attempt + 1)
-        return undefined
+        );
+        await sleep(delay);
+        if (!signal.aborted) return this.fetch(attempt + 1);
+        return undefined;
       }
 
       this.client.setEntry<TData, TError>(this.cacheKey, {
         error,
-        status: "error",
-        fetchStatus: "idle",
+        status: 'error',
+        fetchStatus: 'idle',
         updatedAt: Date.now(),
-      })
-      this.options.onError?.(error)
-      this.options.onSettled?.(undefined, error)
-      return undefined
+      });
+      this.options.onError?.(error);
+      this.options.onSettled?.(undefined, error);
+      return undefined;
     }
   }
 
   private setupPolling(): void {
-    clearInterval(this.pollTimer)
-    const interval = this.options.refetchInterval
+    clearInterval(this.pollTimer);
+    const interval = this.options.refetchInterval;
     if (interval && interval > 0) {
       this.pollTimer = setInterval(() => {
-        if (this.options.enabled !== false) this.fetch()
-      }, interval)
+        if (this.options.enabled !== false) this.fetch();
+      }, interval);
     }
   }
 }
@@ -222,9 +222,9 @@ function resolveDelay(
   delay: number | ((n: number) => number),
   attempt: number,
 ): number {
-  return typeof delay === "function" ? delay(attempt) : delay
+  return typeof delay === 'function' ? delay(attempt) : delay;
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms))
+  return new Promise((r) => setTimeout(r, ms));
 }

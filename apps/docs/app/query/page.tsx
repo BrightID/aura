@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { Callout, Code } from "./_components/Code";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Callout, Code } from './_components/Code';
 export const metadata: Metadata = {
-  title: "@aura/query — Introduction",
+  title: '@aura/query — Introduction',
   description:
-    "TanStack-like reactive query and mutation controllers for Lit web components.",
+    'TanStack-like reactive query and mutation controllers for Lit web components.',
 };
 
 export default function IntroPage() {
@@ -20,8 +20,8 @@ export default function IntroPage() {
       <h2>Why @aura/query?</h2>
       <p>
         Lit&apos;s <code>@lit/task</code> handles one-shot fetches, but it
-        doesn&apos;t cache across components, deduplicate concurrent requests, or
-        retry on failure. <code>@aura/query</code> fills that gap:
+        doesn&apos;t cache across components, deduplicate concurrent requests,
+        or retry on failure. <code>@aura/query</code> fills that gap:
       </p>
       <ul>
         <li>
@@ -42,9 +42,9 @@ export default function IntroPage() {
           user returns to the tab.
         </li>
         <li>
-          <strong>Mutations with cache invalidation</strong> — call{" "}
-          <code>client.invalidateQueries()</code> after a write to
-          transparently refetch stale data.
+          <strong>Mutations with cache invalidation</strong> — call{' '}
+          <code>client.invalidateQueries()</code> after a write to transparently
+          refetch stale data.
         </li>
         <li>
           <strong>Polling</strong> — pass <code>refetchInterval</code> to keep
@@ -114,8 +114,8 @@ class UserList extends LitElement {
 }`}</Code>
 
       <Callout type="tip">
-        <code>Query</code> and <code>Mutation</code> call{" "}
-        <code>host.requestUpdate()</code> whenever their state changes, so your{" "}
+        <code>Query</code> and <code>Mutation</code> call{' '}
+        <code>host.requestUpdate()</code> whenever their state changes, so your{' '}
         <code>render()</code> is always in sync — no manual subscriptions
         needed.
       </Callout>

@@ -1,8 +1,8 @@
 {
   "name": "@aura/core",
   "version": "2.1.1",
-  "type": "module",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "vite --port 5173",
     "build": "rm -rf dist && vite build",

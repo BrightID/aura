@@ -1,9 +1,9 @@
-import { makePersisted } from "@solid-primitives/storage"
-import { createStore } from "solid-js/store"
+import { makePersisted } from '@solid-primitives/storage';
+import { createStore } from 'solid-js/store';
 
 export interface RolesState {
-  hasManagerRole: boolean
-  hasTrainerRole: boolean
+  hasManagerRole: boolean;
+  hasTrainerRole: boolean;
 }
 
 const [rolesStore, setRolesStore] = makePersisted(
@@ -11,6 +11,6 @@ const [rolesStore, setRolesStore] = makePersisted(
     hasManagerRole: false,
     hasTrainerRole: false,
   }),
-)
+);
 
-export { rolesStore, setRolesStore }
+export { rolesStore, setRolesStore };

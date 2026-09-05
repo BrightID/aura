@@ -1,35 +1,35 @@
-import { css, html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
-import thumbsUpGreen from '@/assets/icons/thumbs-up.svg'
+import { css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import thumbsUpGreen from '@/assets/icons/thumbs-up.svg';
 
 @customElement('verifier-card')
 export class VerifierCard extends LitElement {
   @property({ type: String })
-  verifierName = 'Ali Maktabi'
+  verifierName = 'Ali Maktabi';
 
   @property({ type: String })
-  verifierEmail = 'maktabi876@gmail.com'
+  verifierEmail = 'maktabi876@gmail.com';
 
   @property({ type: String })
-  verifierPicture = '/images/profile-photo.png?height=64&width=64'
+  verifierPicture = '/images/profile-photo.png?height=64&width=64';
 
   @property({ type: Number })
-  verifierLevel = 3
+  verifierLevel = 3;
 
   @property({ type: Number })
-  progressPercent = 30
+  progressPercent = 30;
 
   @property({ type: Number })
-  evaluationScore = 4
+  evaluationScore = 4;
 
   @property({ type: String })
-  evaluationText = 'Very High'
+  evaluationText = 'Very High';
 
   @property({ type: String })
-  evaluationIcon = thumbsUpGreen
+  evaluationIcon = thumbsUpGreen;
 
   @property({ type: String })
-  evaluationNote = 'Evaluated you'
+  evaluationNote = 'Evaluated you';
 
   static styles = css`
     .verifier-header {
@@ -89,7 +89,7 @@ export class VerifierCard extends LitElement {
       font-size: 10px;
       color: var(--muted-foreground);
     }
-  `
+  `;
 
   protected render() {
     return html`
@@ -99,13 +99,23 @@ export class VerifierCard extends LitElement {
             <img src="${this.verifierPicture}" alt="verifier picture" />
           </div>
           <div class="verifier-info">
-            <a-head level="5" style="margin: 0; font-size: 0.9375rem">${this.verifierName}</a-head>
-            ${this.verifierEmail
-              ? html`<a-text variant="muted" style="display: block; margin-top: 2px">${this.verifierEmail}</a-text>`
-              : ''}
+            <a-head level="5" style="margin: 0; font-size: 0.9375rem"
+              >${this.verifierName}</a-head
+            >
+            ${
+              this.verifierEmail
+                ? html`<a-text
+                    variant="muted"
+                    style="display: block; margin-top: 2px"
+                    >${this.verifierEmail}</a-text
+                  >`
+                : ''
+            }
           </div>
           <div class="verifier-level">
-            <a-badge variant="secondary" size="xs">Level ${this.verifierLevel}</a-badge>
+            <a-badge variant="secondary" size="xs"
+              >Level ${this.verifierLevel}</a-badge
+            >
           </div>
         </div>
 
@@ -114,13 +124,18 @@ export class VerifierCard extends LitElement {
         </div>
 
         <div class="evaluation">
-          <img width="14" height="14" src="${this.evaluationIcon}" alt="evaluation" />
+          <img
+            width="14"
+            height="14"
+            src="${this.evaluationIcon}"
+            alt="evaluation"
+          />
           <a-text variant="small" style="color: var(--aura-success)">
             +${this.evaluationScore} ${this.evaluationText}
           </a-text>
           <span class="evaluation-note">${this.evaluationNote}</span>
         </div>
       </a-card>
-    `
+    `;
   }
 }

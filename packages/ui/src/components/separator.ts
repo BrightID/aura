@@ -1,14 +1,14 @@
-import { css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-separator")
+@customElement('a-separator')
 export class SeparatorElement extends LitElement {
   @property({ reflect: true })
-  declare orientation: "horizontal" | "vertical"
+  declare orientation: 'horizontal' | 'vertical';
 
   constructor() {
-    super()
-    this.orientation = "horizontal"
+    super();
+    this.orientation = 'horizontal';
   }
 
   static styles = css`
@@ -18,41 +18,41 @@ export class SeparatorElement extends LitElement {
       flex-shrink: 0;
     }
 
-    :host([orientation="horizontal"]) {
+    :host([orientation='horizontal']) {
       height: 1px;
       width: 100%;
       margin: 1.5rem 0;
     }
 
-    :host([orientation="vertical"]) {
+    :host([orientation='vertical']) {
       width: 1px;
       height: 100%;
       margin: 0 1.5rem;
       align-self: stretch;
     }
-  `
+  `;
 
   connectedCallback() {
-    super.connectedCallback()
-    if (!this.hasAttribute("role")) this.setAttribute("role", "separator")
-    this._syncAria()
+    super.connectedCallback();
+    if (!this.hasAttribute('role')) this.setAttribute('role', 'separator');
+    this._syncAria();
   }
 
   updated(changed: Map<PropertyKey, unknown>) {
-    if (changed.has("orientation")) this._syncAria()
+    if (changed.has('orientation')) this._syncAria();
   }
 
   private _syncAria() {
-    this.setAttribute("aria-orientation", this.orientation)
+    this.setAttribute('aria-orientation', this.orientation);
   }
 
   render() {
-    return html``
+    return html``;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-separator": SeparatorElement
+    'a-separator': SeparatorElement;
   }
 }

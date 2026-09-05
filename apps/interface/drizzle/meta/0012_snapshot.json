@@ -145,12 +145,8 @@
           "name": "projects_selectedPlanId_plans_id_fk",
           "tableFrom": "projects",
           "tableTo": "plans",
-          "columnsFrom": [
-            "selectedPlanId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["selectedPlanId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -344,12 +340,8 @@
           "name": "verifications_projectId_projects_id_fk",
           "tableFrom": "verifications",
           "tableTo": "projects",
-          "columnsFrom": [
-            "projectId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["projectId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -359,9 +351,7 @@
         "verifications_signature_unique": {
           "name": "verifications_signature_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "signature"
-          ]
+          "columns": ["signature"]
         }
       },
       "policies": {},

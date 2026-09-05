@@ -1,10 +1,14 @@
-import { For } from "solid-js"
-import { scrollReveal } from "$lib/scroll-reveal"
-import { faqItems } from "$lib/data"
+import { For } from 'solid-js';
+import { scrollReveal } from '$lib/scroll-reveal';
+import { faqItems } from '$lib/data';
 
 export default function FAQ() {
   return (
-    <section ref={scrollReveal} id="faq" class="py-24 lg:py-32 relative overflow-hidden">
+    <section
+      ref={scrollReveal}
+      id="faq"
+      class="py-24 lg:py-32 relative overflow-hidden"
+    >
       <div class="absolute inset-0 bg-[radial-gradient(45%_50%_at_50%_0%,rgba(34,211,238,0.07),transparent_70%)]" />
 
       <div class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,12 +35,14 @@ export default function FAQ() {
                     class="text-xl text-cyan-300 shrink-0 transition-transform group-open:rotate-180"
                   />
                 </summary>
-                <p class="text-muted-foreground leading-relaxed mt-4">{item.answer}</p>
+                <p class="text-muted-foreground leading-relaxed mt-4">
+                  {item.answer}
+                </p>
               </details>
             )}
           </For>
         </div>
       </div>
     </section>
-  )
+  );
 }

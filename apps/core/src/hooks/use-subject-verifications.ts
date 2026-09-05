@@ -1,17 +1,17 @@
-import { createMemo } from "solid-js"
-import { createBrightIdProfileQuery } from "@/queries/connections"
-import { parseVerifications } from "@aura/domain/verifications"
-import type { EvaluationCategory } from "@aura/domain/types/evaluations"
+import { createMemo } from 'solid-js';
+import { createBrightIdProfileQuery } from '@/queries/connections';
+import { parseVerifications } from '@aura/domain/verifications';
+import type { EvaluationCategory } from '@aura/domain/types/evaluations';
 
 /** Level / score / impacts for a subject in a category, from the aura node. */
 export function useSubjectVerifications(
   subjectId: () => string,
   category: () => EvaluationCategory,
 ) {
-  const query = createBrightIdProfileQuery(subjectId)
+  const query = createBrightIdProfileQuery(subjectId);
   const parsed = createMemo(() =>
     parseVerifications(query.data?.verifications, category()),
-  )
+  );
 
   return {
     query,
@@ -22,5 +22,5 @@ export function useSubjectVerifications(
     auraImpacts: () => parsed().auraImpacts,
     userHasRecovery: () => parsed().userHasRecovery,
     refresh: () => query.refetch(),
-  }
+  };
 }

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import { useAuraEvent } from "~/lib/aura";
-import { WidgetPreviewFrame } from "~/components/core/verification/WidgetPreviewFrame";
+import { useRef, useState } from 'react';
+import { useAuraEvent } from '~/lib/aura';
+import { WidgetPreviewFrame } from '~/components/core/verification/WidgetPreviewFrame';
 import {
   DEFAULT_DEMO_CONFIG,
   DEMO_APP_PRESETS,
   DEMO_THEMES,
   type DemoConfig,
-} from "~/components/core/verification/demo-config";
-import type { VerificationLevel } from "~/components/core/verification/types";
-import type { Project } from "~/types/projects";
+} from '~/components/core/verification/demo-config';
+import type { VerificationLevel } from '~/components/core/verification/types';
+import type { Project } from '~/types/projects';
 
 export default function PreviewTab({ project }: { project: Project }) {
   const [config, setConfig] = useState<DemoConfig>({
@@ -32,16 +32,16 @@ export default function PreviewTab({ project }: { project: Project }) {
   const evaluationsRef = useRef<HTMLElement>(null);
   const scoreRef = useRef<HTMLElement>(null);
 
-  useAuraEvent<number>(requiredLevelRef, "change", (v) =>
-    update({ requiredLevel: v as VerificationLevel })
+  useAuraEvent<number>(requiredLevelRef, 'change', (v) =>
+    update({ requiredLevel: v as VerificationLevel }),
   );
-  useAuraEvent<number>(currentLevelRef, "change", (v) =>
-    update({ currentLevel: v as 0 | 1 | 2 | 3 })
+  useAuraEvent<number>(currentLevelRef, 'change', (v) =>
+    update({ currentLevel: v as 0 | 1 | 2 | 3 }),
   );
-  useAuraEvent<number>(evaluationsRef, "change", (v) =>
-    update({ evaluationsReceived: v })
+  useAuraEvent<number>(evaluationsRef, 'change', (v) =>
+    update({ evaluationsReceived: v }),
   );
-  useAuraEvent<number>(scoreRef, "change", (v) => update({ score: v }));
+  useAuraEvent<number>(scoreRef, 'change', (v) => update({ score: v }));
 
   return (
     <div className="mx-auto px-4 py-8">
@@ -92,8 +92,8 @@ export default function PreviewTab({ project }: { project: Project }) {
                       }
                       className={`text-left px-3 py-2 rounded-lg border text-xs transition-all ${
                         config.appName === preset.appName
-                          ? "border-primary bg-primary/10 text-foreground"
-                          : "border-border hover:border-muted-foreground/50 text-muted-foreground"
+                          ? 'border-primary bg-primary/10 text-foreground'
+                          : 'border-border hover:border-muted-foreground/50 text-muted-foreground'
                       }`}
                     >
                       <span className="font-medium">{preset.label}</span>
@@ -240,8 +240,8 @@ export default function PreviewTab({ project }: { project: Project }) {
                     onClick={() => update({ theme: theme.value })}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
                       config.theme === theme.value
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-muted-foreground/50"
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-muted-foreground/50'
                     }`}
                   >
                     <div

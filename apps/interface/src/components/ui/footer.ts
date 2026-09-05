@@ -1,38 +1,38 @@
-import 'iconify-icon'
-import { currentPath, pushRouter, toAppPath } from '@/router'
-import { SignalWatcher } from '@lit-labs/signals'
-import { css, html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import 'iconify-icon';
+import { currentPath, pushRouter, toAppPath } from '@/router';
+import { SignalWatcher } from '@lit-labs/signals';
+import { css, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 const menuItems = [
   { icon: 'lucide:house', href: '/home' },
   { icon: 'lucide:activity', href: '/activities' },
   { icon: 'lucide:bell', href: '/notifications', small: true },
-  { icon: 'lucide:share-2', href: '/share' }
-]
+  { icon: 'lucide:share-2', href: '/share' },
+];
 
 @customElement('app-footer')
 export class AppFooter extends SignalWatcher(LitElement) {
-  private _onPopState = () => currentPath.set(window.location.pathname)
+  private _onPopState = () => currentPath.set(window.location.pathname);
 
   connectedCallback() {
-    super.connectedCallback()
-    window.addEventListener('popstate', this._onPopState)
+    super.connectedCallback();
+    window.addEventListener('popstate', this._onPopState);
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-    window.removeEventListener('popstate', this._onPopState)
+    super.disconnectedCallback();
+    window.removeEventListener('popstate', this._onPopState);
   }
 
   private navigate(e: Event, href: string) {
-    e.preventDefault()
-    pushRouter(href)
+    e.preventDefault();
+    pushRouter(href);
   }
 
   private isActive(href: string) {
-    const path = currentPath.get()
-    return path === href || path.startsWith(href + '/')
+    const path = currentPath.get();
+    return path === href || path.startsWith(href + '/');
   }
 
   static styles = css`
@@ -99,7 +99,9 @@ export class AppFooter extends SignalWatcher(LitElement) {
       height: 34px;
       border-radius: 12px;
       background: transparent;
-      transition: background 220ms ease, transform 180ms ease;
+      transition:
+        background 220ms ease,
+        transform 180ms ease;
     }
 
     .nav-item.active .icon-wrap {
@@ -133,14 +135,16 @@ export class AppFooter extends SignalWatcher(LitElement) {
       background: rgba(195, 185, 255, 0.75);
       opacity: 0;
       transform: scale(0);
-      transition: opacity 200ms ease, transform 200ms ease;
+      transition:
+        opacity 200ms ease,
+        transform 200ms ease;
     }
 
     .nav-item.active .dot {
       opacity: 1;
       transform: scale(1);
     }
-  `
+  `;
 
   render() {
     return html`
@@ -161,9 +165,9 @@ export class AppFooter extends SignalWatcher(LitElement) {
               </div>
               <div class="dot"></div>
             </a>
-          `
+          `,
         )}
       </nav>
-    `
+    `;
   }
 }

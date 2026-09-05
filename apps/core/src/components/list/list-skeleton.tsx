@@ -1,5 +1,5 @@
-import { For } from "solid-js"
-import Skeleton from "@/components/shared/skeleton"
+import { For } from 'solid-js';
+import Skeleton from '@/components/shared/skeleton';
 
 /**
  * Placeholder rows shown while a subject / evaluation / connection list loads.
@@ -23,5 +23,5 @@ export default function ListSkeleton(props: { rows?: number }) {
         )}
       </For>
     </div>
-  )
+  );
 }

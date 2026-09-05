@@ -1,7 +1,7 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-@customElement("a-skeleton")
+@customElement('a-skeleton')
 export class SkeletonElement extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
@@ -18,15 +18,15 @@ export class SkeletonElement extends LitElement {
         opacity: 0.5;
       }
     }
-  `
+  `;
 
   render() {
-    return html`<slot></slot>`
+    return html`<slot></slot>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-skeleton": SkeletonElement
+    'a-skeleton': SkeletonElement;
   }
 }

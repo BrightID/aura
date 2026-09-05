@@ -1,7 +1,7 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit"
-import { customElement } from "lit/decorators.js"
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-@customElement("a-container")
+@customElement('a-container')
 export class ContainerElement extends LitElement {
   static styles?: CSSResultGroup = css`
     section {
@@ -26,19 +26,19 @@ export class ContainerElement extends LitElement {
         padding-right: 2rem;
       }
     }
-  `
+  `;
 
   protected render(): unknown {
     return html`
       <section>
         <slot></slot>
       </section>
-    `
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-container": ContainerElement
+    'a-container': ContainerElement;
   }
 }

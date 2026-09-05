@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Map Tailwind color utilities onto the tokens defined by <a-theme-provider>.
    `inline` keeps the var() reference so it resolves via inheritance at use site. */

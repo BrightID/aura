@@ -1,19 +1,19 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-switch")
+@customElement('a-switch')
 export class SwitchElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) declare checked: boolean
-  @property({ type: Boolean, reflect: true }) declare disabled: boolean
-  @property() declare name: string
-  @property() declare label: string | undefined
+  @property({ type: Boolean, reflect: true }) declare checked: boolean;
+  @property({ type: Boolean, reflect: true }) declare disabled: boolean;
+  @property() declare name: string;
+  @property() declare label: string | undefined;
 
   constructor() {
-    super()
-    this.checked = false
-    this.disabled = false
-    this.name = "switch"
-    this.label = undefined
+    super();
+    this.checked = false;
+    this.disabled = false;
+    this.name = 'switch';
+    this.label = undefined;
   }
 
   static styles: CSSResultGroup = css`
@@ -42,13 +42,16 @@ export class SwitchElement extends LitElement {
       border-radius: 999px;
       cursor: pointer;
       border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
-      background: var(--input, color-mix(in oklch, var(--muted-foreground) 25%, transparent));
+      background: var(
+        --input,
+        color-mix(in oklch, var(--muted-foreground) 25%, transparent)
+      );
       transition:
         background-color 0.15s ease,
         border-color 0.15s ease;
     }
 
-    button[aria-checked="true"] {
+    button[aria-checked='true'] {
       background: var(--primary);
       border-color: transparent;
     }
@@ -76,10 +79,10 @@ export class SwitchElement extends LitElement {
       transition: transform 0.15s ease;
     }
 
-    button[aria-checked="true"] .thumb {
+    button[aria-checked='true'] .thumb {
       transform: translateX(1.25rem);
     }
-  `
+  `;
 
   render() {
     return html`
@@ -93,26 +96,26 @@ export class SwitchElement extends LitElement {
       >
         <span class="thumb"></span>
       </button>
-      ${this.label ? html`<label @click=${this._toggle}>${this.label}</label>` : ""}
-    `
+      ${this.label ? html`<label @click=${this._toggle}>${this.label}</label>` : ''}
+    `;
   }
 
   private _toggle() {
-    if (this.disabled) return
-    this.checked = !this.checked
+    if (this.disabled) return;
+    this.checked = !this.checked;
 
     this.dispatchEvent(
-      new CustomEvent("change", {
+      new CustomEvent('change', {
         detail: this.checked,
         bubbles: false,
         composed: false,
       }),
-    )
+    );
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-switch": SwitchElement
+    'a-switch': SwitchElement;
   }
 }

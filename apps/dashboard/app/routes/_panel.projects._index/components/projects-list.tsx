@@ -1,28 +1,28 @@
-"use client"
+'use client';
 
-import { useRef, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { Search, Plus, LayoutGrid, List } from "lucide-react"
-import { getUserProjects } from "~/utils/apis"
-import { useAuraEvent } from "~/lib/aura"
-import { cn } from "~/lib/utils"
-import type { Project } from "~/components/projects-table"
-import { ProjectCard } from "./project-card"
-import { Link } from "react-router"
+import { useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Search, Plus, LayoutGrid, List } from 'lucide-react';
+import { getUserProjects } from '~/utils/apis';
+import { useAuraEvent } from '~/lib/aura';
+import { cn } from '~/lib/utils';
+import type { Project } from '~/components/projects-table';
+import { ProjectCard } from './project-card';
+import { Link } from 'react-router';
 
 export default function ProjectsList() {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<
-    "all" | "active" | "inactive"
-  >("all")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+    'all' | 'active' | 'inactive'
+  >('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  const searchRef = useRef<HTMLElement>(null)
-  const statusRef = useRef<HTMLElement>(null)
-  useAuraEvent<string>(searchRef, "change", setSearchQuery)
-  useAuraEvent<string>(statusRef, "change", (v) =>
-    setStatusFilter(v as "all" | "active" | "inactive"),
-  )
+  const searchRef = useRef<HTMLElement>(null);
+  const statusRef = useRef<HTMLElement>(null);
+  useAuraEvent<string>(searchRef, 'change', setSearchQuery);
+  useAuraEvent<string>(statusRef, 'change', (v) =>
+    setStatusFilter(v as 'all' | 'active' | 'inactive'),
+  );
 
   const {
     data: projects,
@@ -30,19 +30,19 @@ export default function ProjectsList() {
     isLoading,
   } = useQuery({
     queryFn: getUserProjects,
-    queryKey: ["user-projects"],
-  })
+    queryKey: ['user-projects'],
+  });
 
   const filteredProjects = projects?.filter((project: Project) => {
     const matchesSearch =
       project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      project.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "active" && project.isActive) ||
-      (statusFilter === "inactive" && !project.isActive)
-    return matchesSearch && matchesStatus
-  })
+      statusFilter === 'all' ||
+      (statusFilter === 'active' && project.isActive) ||
+      (statusFilter === 'inactive' && !project.isActive);
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="flex flex-col overflow-hidden">
@@ -79,25 +79,25 @@ export default function ProjectsList() {
             placeholder="Status"
             className="w-[140px]"
             options={[
-              { value: "all", label: "All Status" },
-              { value: "active", label: "Active" },
-              { value: "inactive", label: "Inactive" },
+              { value: 'all', label: 'All Status' },
+              { value: 'active', label: 'Active' },
+              { value: 'inactive', label: 'Inactive' },
             ]}
           />
           <div className="flex items-center border rounded-md">
             <a-button
-              variant={viewMode === "grid" ? "secondary" : "ghost"}
+              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-9 w-9 rounded-r-none"
-              onClick={() => setViewMode("grid")}
+              onClick={() => setViewMode('grid')}
             >
               <LayoutGrid className="h-4 w-4" />
             </a-button>
             <a-button
-              variant={viewMode === "list" ? "secondary" : "ghost"}
+              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-9 w-9 rounded-l-none"
-              onClick={() => setViewMode("list")}
+              onClick={() => setViewMode('list')}
             >
               <List className="h-4 w-4" />
             </a-button>
@@ -109,10 +109,10 @@ export default function ProjectsList() {
         {isLoading ? (
           <div
             className={cn(
-              "gap-4",
-              viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                : "flex flex-col"
+              'gap-4',
+              viewMode === 'grid'
+                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                : 'flex flex-col',
             )}
           >
             {Array.from({ length: 6 }).map((_, i) => (
@@ -149,8 +149,8 @@ export default function ProjectsList() {
             <p className="font-medium">No projects found</p>
             <p className="text-sm text-muted-foreground mt-1">
               {searchQuery
-                ? "Try adjusting your search or filters"
-                : "Create your first project to get started"}
+                ? 'Try adjusting your search or filters'
+                : 'Create your first project to get started'}
             </p>
             {!searchQuery && (
               <Link to="/projects/new">
@@ -164,10 +164,10 @@ export default function ProjectsList() {
         ) : (
           <div
             className={cn(
-              "gap-4",
-              viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                : "flex flex-col"
+              'gap-4',
+              viewMode === 'grid'
+                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                : 'flex flex-col',
             )}
           >
             {filteredProjects?.map((project: Project) => (
@@ -177,5 +177,5 @@ export default function ProjectsList() {
         )}
       </div>
     </div>
-  )
+  );
 }

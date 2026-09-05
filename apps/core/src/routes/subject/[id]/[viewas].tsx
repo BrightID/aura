@@ -1,39 +1,47 @@
-import { A, useNavigate, useParams, useSearchParams } from "@solidjs/router"
-import { createEffect, createMemo, createSignal, For, Match, Show, Switch } from "solid-js"
-import EvaluationsChart from "@/components/charts/evaluations-chart"
-import ChartHelp from "@/components/charts/chart-help"
-import CredibilityDetails from "@/components/evaluation/credibility-details"
-import EvaluateModal from "@/components/evaluation/evaluate-modal"
-import EvaluationCard from "@/components/evaluation/evaluation-card"
-import ProfileNotFoundHint from "@/components/home/profile-not-found-hint"
-import IncrementalList from "@/components/list/incremental-list"
-import ListState from "@/components/list/list-state"
-import { roleColor, roleIcon } from "@/shared/lib/role-style"
-import ConnectionCard from "@/components/subject/connection-card"
-import EvidenceHelp from "@/components/subject/evidence-help"
-import SubjectProfileCard from "@/components/subject/subject-profile-card"
-import { useRequireSession } from "@/hooks/use-require-session"
+import { A, useNavigate, useParams, useSearchParams } from '@solidjs/router';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  Match,
+  Show,
+  Switch,
+} from 'solid-js';
+import EvaluationsChart from '@/components/charts/evaluations-chart';
+import ChartHelp from '@/components/charts/chart-help';
+import CredibilityDetails from '@/components/evaluation/credibility-details';
+import EvaluateModal from '@/components/evaluation/evaluate-modal';
+import EvaluationCard from '@/components/evaluation/evaluation-card';
+import ProfileNotFoundHint from '@/components/home/profile-not-found-hint';
+import IncrementalList from '@/components/list/incremental-list';
+import ListState from '@/components/list/list-state';
+import { roleColor, roleIcon } from '@/shared/lib/role-style';
+import ConnectionCard from '@/components/subject/connection-card';
+import EvidenceHelp from '@/components/subject/evidence-help';
+import SubjectProfileCard from '@/components/subject/subject-profile-card';
+import { useRequireSession } from '@/hooks/use-require-session';
 import {
   useSubjectInboundConnections,
   useSubjectInboundEvaluations,
   useSubjectOutboundEvaluations,
-} from "@/hooks/use-subject-inbound-evaluations"
-import { useSubjectVerifications } from "@/hooks/use-subject-verifications"
-import { useViewMode } from "@/hooks/use-view-mode"
-import { authStore } from "@/store/auth"
-import { isNotFound } from "@aura/domain/http"
-import { categoryLabel } from "@aura/domain/labels"
-import { PreferredView } from "@aura/domain/types/dashboard"
-import { EvaluationCategory } from "@aura/domain/types/evaluations"
+} from '@/hooks/use-subject-inbound-evaluations';
+import { useSubjectVerifications } from '@/hooks/use-subject-verifications';
+import { useViewMode } from '@/hooks/use-view-mode';
+import { authStore } from '@/store/auth';
+import { isNotFound } from '@aura/domain/http';
+import { categoryLabel } from '@aura/domain/labels';
+import { PreferredView } from '@aura/domain/types/dashboard';
+import { EvaluationCategory } from '@aura/domain/types/evaluations';
 
-type ProfileTab = "overview" | "evaluations" | "connections" | "activity"
+type ProfileTab = 'overview' | 'evaluations' | 'connections' | 'activity';
 
 /** Which category an "Activity" tab shows per view (one role below). */
 const ACTIVITY_CATEGORY: Partial<Record<PreferredView, EvaluationCategory>> = {
   [PreferredView.TRAINER]: EvaluationCategory.SUBJECT,
   [PreferredView.MANAGER_EVALUATING_TRAINER]: EvaluationCategory.PLAYER,
   [PreferredView.MANAGER_EVALUATING_MANAGER]: EvaluationCategory.TRAINER,
-}
+};
 
 /**
  * Subject profile — ported from the old app's `_app.subject.$id`: a single
@@ -43,82 +51,96 @@ const ACTIVITY_CATEGORY: Partial<Record<PreferredView, EvaluationCategory>> = {
  * manager-on-manager extra activity tab.
  */
 export default function SubjectPage() {
-  const params = useParams()
-  useRequireSession()
-  const navigate = useNavigate()
-  const [query, setQuery] = useSearchParams()
+  const params = useParams();
+  useRequireSession();
+  const navigate = useNavigate();
+  const [query, setQuery] = useSearchParams();
 
-  const subjectId = () => params.id ?? ""
-  const vm = useViewMode()
-  const category = vm.currentEvaluationCategory
-  const v = useSubjectVerifications(subjectId, category)
+  const subjectId = () => params.id ?? '';
+  const vm = useViewMode();
+  const category = vm.currentEvaluationCategory;
+  const v = useSubjectVerifications(subjectId, category);
 
-  const [evaluating, setEvaluating] = createSignal<string | null>(null)
-  const [detailsId, setDetailsId] = createSignal<string | null>(null)
-  const [search, setSearch] = createSignal("")
+  const [evaluating, setEvaluating] = createSignal<string | null>(null);
+  const [detailsId, setDetailsId] = createSignal<string | null>(null);
+  const [search, setSearch] = createSignal('');
 
   // ── Tabs (tracked in ?tab=, like the old app) ───────────
-  const isPlayerView = () => vm.currentViewMode() === PreferredView.PLAYER
+  const isPlayerView = () => vm.currentViewMode() === PreferredView.PLAYER;
   const tab = createMemo<ProfileTab>(() => {
-    const t = query.tab
-    if (t === "evaluations" || t === "overview") return t
-    if (t === "connections" && isPlayerView()) return t
-    if (t === "activity" && !isPlayerView()) return t
-    return "overview"
-  })
+    const t = query.tab;
+    if (t === 'evaluations' || t === 'overview') return t;
+    if (t === 'connections' && isPlayerView()) return t;
+    if (t === 'activity' && !isPlayerView()) return t;
+    return 'overview';
+  });
   const setTab = (t: ProfileTab) => {
-    setSearch("")
-    setQuery({ tab: t })
-  }
+    setSearch('');
+    setQuery({ tab: t });
+  };
   // Leaving the view that owns the current tab resets to overview.
   createEffect(() => {
-    if (query.tab === "connections" && !isPlayerView()) setTab("overview")
-    if (query.tab === "activity" && isPlayerView()) setTab("overview")
-  })
+    if (query.tab === 'connections' && !isPlayerView()) setTab('overview');
+    if (query.tab === 'activity' && isPlayerView()) setTab('overview');
+  });
 
   // ── Data ────────────────────────────────────────────────
-  const inbound = useSubjectInboundEvaluations(subjectId, category)
-  const connections = useSubjectInboundConnections(subjectId)
+  const inbound = useSubjectInboundEvaluations(subjectId, category);
+  const connections = useSubjectInboundConnections(subjectId);
   const activity = useSubjectOutboundEvaluations(
     subjectId,
     () => ACTIVITY_CATEGORY[vm.currentViewMode()] ?? EvaluationCategory.SUBJECT,
-  )
+  );
 
   // View-as options: Subject always; a role once the subject has activity in
   // it (same gating as the old header's authorized tabs).
   const activityIn = {
-    [EvaluationCategory.PLAYER]: useSubjectOutboundEvaluations(subjectId, () => EvaluationCategory.PLAYER),
-    [EvaluationCategory.TRAINER]: useSubjectOutboundEvaluations(subjectId, () => EvaluationCategory.TRAINER),
-    [EvaluationCategory.MANAGER]: useSubjectOutboundEvaluations(subjectId, () => EvaluationCategory.MANAGER),
-  }
+    [EvaluationCategory.PLAYER]: useSubjectOutboundEvaluations(
+      subjectId,
+      () => EvaluationCategory.PLAYER,
+    ),
+    [EvaluationCategory.TRAINER]: useSubjectOutboundEvaluations(
+      subjectId,
+      () => EvaluationCategory.TRAINER,
+    ),
+    [EvaluationCategory.MANAGER]: useSubjectOutboundEvaluations(
+      subjectId,
+      () => EvaluationCategory.MANAGER,
+    ),
+  };
   const authorizedViewAs = createMemo(() =>
     Object.values(EvaluationCategory).filter(
       (c) =>
         c === EvaluationCategory.SUBJECT ||
-        (activityIn[c as keyof typeof activityIn].evaluations()?.length ?? 0) > 0,
+        (activityIn[c as keyof typeof activityIn].evaluations()?.length ?? 0) >
+          0,
     ),
-  )
+  );
 
-  const profileMissing = () => isNotFound(v.query.error)
-  const isSelf = () => subjectId() === authStore.user?.brightId
+  const profileMissing = () => isNotFound(v.query.error);
+  const isSelf = () => subjectId() === authStore.user?.brightId;
 
   // ── Search (shared signal, cleared on tab switch) ───────
   const matches = (id: string, name: string) => {
-    const q = search().trim().toLowerCase()
-    return !q || name.toLowerCase().includes(q) || id.toLowerCase().includes(q)
-  }
+    const q = search().trim().toLowerCase();
+    return !q || name.toLowerCase().includes(q) || id.toLowerCase().includes(q);
+  };
   const filteredEvaluations = createMemo(
-    () => inbound.evaluations()?.filter((e) => matches(e.evaluatorId, e.name)) ?? [],
-  )
+    () =>
+      inbound.evaluations()?.filter((e) => matches(e.evaluatorId, e.name)) ??
+      [],
+  );
   const filteredActivity = createMemo(
-    () => activity.evaluations()?.filter((e) => matches(e.evaluatorId, e.name)) ?? [],
-  )
+    () =>
+      activity.evaluations()?.filter((e) => matches(e.evaluatorId, e.name)) ??
+      [],
+  );
   const filteredConnections = createMemo(
     () =>
       connections
         .connections()
         ?.filter((c) => matches(c.id, connections.nameOf(c.id))) ?? [],
-  )
+  );
 
   // Component (not a shared element) — each panel needs its own DOM node.
   const SearchInput = () => (
@@ -131,7 +153,7 @@ export default function SubjectPage() {
     >
       <a-icon name="search" slot="prefix" />
     </a-input>
-  )
+  );
 
   return (
     <div class="flex flex-col gap-4 px-5 pt-6 pb-10">
@@ -156,7 +178,7 @@ export default function SubjectPage() {
                 onClick={() =>
                   navigate(
                     `/subject/${subjectId()}/${c}${
-                      query.tab ? `?tab=${query.tab}` : ""
+                      query.tab ? `?tab=${query.tab}` : ''
                     }`,
                   )
                 }
@@ -174,10 +196,10 @@ export default function SubjectPage() {
         subjectId={subjectId}
         onEvaluate={() => setEvaluating(subjectId())}
         fallbackName={() =>
-          typeof query.name === "string" ? query.name : undefined
+          typeof query.name === 'string' ? query.name : undefined
         }
         fallbackPhoto={() =>
-          typeof query.gravatar === "string" && query.gravatar
+          typeof query.gravatar === 'string' && query.gravatar
             ? `https://www.gravatar.com/avatar/${query.gravatar}?s=256&d=identicon`
             : undefined
         }
@@ -212,7 +234,7 @@ export default function SubjectPage() {
                   data-testid="subject-positive-count"
                   class="text-xl font-bold text-aura-success"
                 >
-                  {inbound.positiveCount() ?? "-"}
+                  {inbound.positiveCount() ?? '-'}
                 </span>
                 <span class="text-sm text-muted-foreground">Positive</span>
               </div>
@@ -221,13 +243,13 @@ export default function SubjectPage() {
                   data-testid="subject-negative-count"
                   class="text-xl font-bold text-destructive"
                 >
-                  {inbound.negativeCount() ?? "-"}
+                  {inbound.negativeCount() ?? '-'}
                 </span>
                 <span class="text-sm text-muted-foreground">Negative</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-xl font-bold text-foreground">
-                  {inbound.evaluations()?.length ?? "-"}
+                  {inbound.evaluations()?.length ?? '-'}
                 </span>
                 <span class="text-sm text-muted-foreground">Total</span>
               </div>
@@ -250,7 +272,7 @@ export default function SubjectPage() {
             <a-button
               variant="glass"
               data-testid="subject-show-evidence"
-              onClick={() => setTab("evaluations")}
+              onClick={() => setTab('evaluations')}
             >
               View evaluations
             </a-button>
@@ -270,7 +292,10 @@ export default function SubjectPage() {
                 class="flex flex-col gap-3"
               >
                 {(evaluation) => (
-                  <EvaluationCard evaluation={evaluation} onClick={setDetailsId} />
+                  <EvaluationCard
+                    evaluation={evaluation}
+                    onClick={setDetailsId}
+                  />
                 )}
               </IncrementalList>
             </ListState>
@@ -317,7 +342,10 @@ export default function SubjectPage() {
                     class="flex flex-col gap-3"
                   >
                     {(evaluation) => (
-                      <EvaluationCard evaluation={evaluation} onClick={setDetailsId} />
+                      <EvaluationCard
+                        evaluation={evaluation}
+                        onClick={setDetailsId}
+                      />
                     )}
                   </IncrementalList>
                 </ListState>
@@ -327,8 +355,14 @@ export default function SubjectPage() {
         </Switch>
       </a-tabs>
 
-      <EvaluateModal subjectId={evaluating} onClose={() => setEvaluating(null)} />
-      <CredibilityDetails subjectId={detailsId} onClose={() => setDetailsId(null)} />
+      <EvaluateModal
+        subjectId={evaluating}
+        onClose={() => setEvaluating(null)}
+      />
+      <CredibilityDetails
+        subjectId={detailsId}
+        onClose={() => setDetailsId(null)}
+      />
     </div>
-  )
+  );
 }

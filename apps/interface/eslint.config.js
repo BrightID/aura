@@ -1,4 +1,4 @@
-import { BaseConfig } from '@aura/eslint-config/base'
+import { BaseConfig } from '@aura/eslint-config/base';
 
 /** @type {import("eslint").Linter.Config[]} */
-export default BaseConfig
+export default BaseConfig;

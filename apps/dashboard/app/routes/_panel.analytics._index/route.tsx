@@ -3,5 +3,5 @@ export default function DashboardAnalyticsPage() {
     <div className="flex items-center justify-center text-xl h-full font-semibold">
       Coming Soon.
     </div>
-  )
+  );
 }

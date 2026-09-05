@@ -1,32 +1,41 @@
-import type { Verification } from '@/types/brightid'
-import type { AuraImpact } from '@/types/evaluation'
-import { getBrightId, queryClient } from './apis'
-import type { EvaluationCategory } from './aura'
+import type { Verification } from '@/types/brightid';
+import type { AuraImpact } from '@/types/evaluation';
+import { getBrightId, queryClient } from './apis';
+import type { EvaluationCategory } from './aura';
 
-export const getUserHasRecovery = (verifications: Verification[] | undefined) => {
-  if (!verifications) return null
-  return !!verifications.find((verification) => verification.name === 'SocialRecoverySetup')
-}
+export const getUserHasRecovery = (
+  verifications: Verification[] | undefined,
+) => {
+  if (!verifications) return null;
+  return !!verifications.find(
+    (verification) => verification.name === 'SocialRecoverySetup',
+  );
+};
 export const getAuraVerification = (
   verifications: Verification[] | undefined,
-  evaluationCategory: EvaluationCategory
+  evaluationCategory: EvaluationCategory,
 ) => {
-  if (!verifications) return null
-  const auraVerification = verifications.find((verification) => verification.name === 'Aura')
+  if (!verifications) return null;
+  const auraVerification = verifications.find(
+    (verification) => verification.name === 'Aura',
+  );
   return auraVerification?.domains
     ?.find((d) => d.name === 'BrightID')
-    ?.categories.find((c) => c.name === evaluationCategory)
-}
+    ?.categories.find((c) => c.name === evaluationCategory);
+};
 
 export function parseBrightIdVerificationData(
   verifications: Verification[] | undefined,
-  evaluationCategory: EvaluationCategory
+  evaluationCategory: EvaluationCategory,
 ) {
-  const userHasRecovery = getUserHasRecovery(verifications)
-  const auraVerification = getAuraVerification(verifications, evaluationCategory)
+  const userHasRecovery = getUserHasRecovery(verifications);
+  const auraVerification = getAuraVerification(
+    verifications,
+    evaluationCategory,
+  );
 
-  const auraLevel = auraVerification?.level ?? null
-  const auraScore = auraVerification?.score ?? null
+  const auraLevel = auraVerification?.level ?? null;
+  const auraScore = auraVerification?.score ?? null;
 
   const auraImpacts: AuraImpact[] | null =
     auraVerification?.impacts.map((impact) => {
@@ -37,32 +46,35 @@ export function parseBrightIdVerificationData(
 
       return {
         evaluatorName: `${impact.evaluator.slice(0, 7)}`,
-        ...impact
-      }
-    }) ?? null
+        ...impact,
+      };
+    }) ?? null;
 
   return {
     userHasRecovery,
     auraVerification,
     auraScore,
     auraLevel,
-    auraImpacts
-  }
+    auraImpacts,
+  };
 }
 
 export const getSubjectVerifications = async (
   subjectId: string | undefined,
-  evaluationCategory: EvaluationCategory
+  evaluationCategory: EvaluationCategory,
 ) => {
-  if (!subjectId) return
+  if (!subjectId) return;
   const profileQuery = await queryClient.ensureQueryData({
     queryKey: ['profile', subjectId],
-    queryFn: () => getBrightId(subjectId)
-  })
+    queryFn: () => getBrightId(subjectId),
+  });
 
-  const verifications = profileQuery?.verifications
+  const verifications = profileQuery?.verifications;
 
-  const parsedData = parseBrightIdVerificationData(verifications, evaluationCategory)
+  const parsedData = parseBrightIdVerificationData(
+    verifications,
+    evaluationCategory,
+  );
 
-  return parsedData
-}
+  return parsedData;
+};

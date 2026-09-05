@@ -8,101 +8,97 @@ import {
   IconFileWord,
   IconFolder,
   IconHelp,
-  IconInnerShadowTop,
   IconListDetails,
   IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers,
   IconCreditCard,
   IconBell,
   IconUser,
-} from "@tabler/icons-react"
+} from '@tabler/icons-react';
 
 export const dashboardLinks = {
   navMain: [
     {
-      title: "Dashboard",
-      url: "/",
+      title: 'Dashboard',
+      url: '/',
       icon: IconDashboard,
     },
     {
-      title: "Projects",
-      url: "/projects",
+      title: 'Projects',
+      url: '/projects',
       icon: IconFolder,
     },
     {
-      title: "Analytics",
-      url: "/analytics",
+      title: 'Analytics',
+      url: '/analytics',
       icon: IconChartBar,
     },
     {
-      title: "Pricing",
-      url: "/pricing",
+      title: 'Pricing',
+      url: '/pricing',
       icon: IconListDetails,
     },
   ],
   navAccount: [
     {
-      title: "Account",
-      url: "/account",
+      title: 'Account',
+      url: '/account',
       icon: IconUser,
     },
     {
-      title: "Billing",
-      url: "/billing",
+      title: 'Billing',
+      url: '/billing',
       icon: IconCreditCard,
     },
     {
-      title: "Notifications",
-      url: "/notifications",
+      title: 'Notifications',
+      url: '/notifications',
       icon: IconBell,
     },
   ],
   navClouds: [
     {
-      title: "Capture",
+      title: 'Capture',
       icon: IconCamera,
       isActive: true,
-      url: "#",
+      url: '#',
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: 'Active Proposals',
+          url: '#',
         },
         {
-          title: "Archived",
-          url: "#",
+          title: 'Archived',
+          url: '#',
         },
       ],
     },
     {
-      title: "Proposal",
+      title: 'Proposal',
       icon: IconFileDescription,
-      url: "#",
+      url: '#',
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: 'Active Proposals',
+          url: '#',
         },
         {
-          title: "Archived",
-          url: "#",
+          title: 'Archived',
+          url: '#',
         },
       ],
     },
     {
-      title: "Prompts",
+      title: 'Prompts',
       icon: IconFileAi,
-      url: "#",
+      url: '#',
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: 'Active Proposals',
+          url: '#',
         },
         {
-          title: "Archived",
-          url: "#",
+          title: 'Archived',
+          url: '#',
         },
       ],
     },
@@ -114,8 +110,8 @@ export const dashboardLinks = {
     //   icon: IconSettings,
     // },
     {
-      title: "Get Help",
-      url: "https://discord.gg/pcWy6NqM",
+      title: 'Get Help',
+      url: 'https://discord.gg/pcWy6NqM',
       icon: IconHelp,
     },
     // {
@@ -126,19 +122,19 @@ export const dashboardLinks = {
   ],
   documents: [
     {
-      name: "Data Library",
-      url: "#",
+      name: 'Data Library',
+      url: '#',
       icon: IconDatabase,
     },
     {
-      name: "Reports",
-      url: "#",
+      name: 'Reports',
+      url: '#',
       icon: IconReport,
     },
     {
-      name: "Word Assistant",
-      url: "#",
+      name: 'Word Assistant',
+      url: '#',
       icon: IconFileWord,
     },
   ],
-}
+};

@@ -1,7 +1,7 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-@customElement("a-theme-provider")
+@customElement('a-theme-provider')
 export class ThemeProvider extends LitElement {
   static styles?: CSSResultGroup = css`
     :host {
@@ -61,15 +61,15 @@ export class ThemeProvider extends LitElement {
       --radius: 0.625rem;
 
       /* aura semantic colors */
-      --aura-success: oklch(0.70 0.15 154);
+      --aura-success: oklch(0.7 0.15 154);
       --aura-warning: oklch(0.78 0.15 76);
       --aura-info: oklch(0.665 0.12 226);
-      --aura-error: oklch(0.62 0.20 25);
+      --aura-error: oklch(0.62 0.2 25);
 
       /* aura level indicators (low → high trust) */
       --aura-level-1: oklch(0.74 0.13 82);
       --aura-level-2: oklch(0.665 0.12 226);
-      --aura-level-3: oklch(0.70 0.15 154);
+      --aura-level-3: oklch(0.7 0.15 154);
 
       /* chart palette — visually distinct */
       --chart-1: oklch(0.69 0.14 182);
@@ -88,15 +88,15 @@ export class ThemeProvider extends LitElement {
       --sidebar-border: oklch(0.265 0.016 244);
       --sidebar-ring: oklch(0.69 0.14 182);
     }
-  `
+  `;
 
   protected render(): unknown {
-    return html`<slot></slot>`
+    return html`<slot></slot>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-theme-provider": ThemeProvider
+    'a-theme-provider': ThemeProvider;
   }
 }

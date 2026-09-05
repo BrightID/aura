@@ -1,55 +1,52 @@
-import { useQuery } from "@tanstack/react-query"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { useQuery } from '@tanstack/react-query';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "~/components/ui/chart"
-import { useIsMobile } from "~/hooks/use-mobile"
-import { useAuraEvent } from "~/lib/aura"
-import { API_BASE_URL } from "~/constants"
-import * as React from "react"
+} from '~/components/ui/chart';
+import { useIsMobile } from '~/hooks/use-mobile';
+import { useAuraEvent } from '~/lib/aura';
+import { API_BASE_URL } from '~/constants';
+import * as React from 'react';
 
 const chartConfig = {
-  verifications: { label: "Verifications", color: "hsl(var(--primary))" },
-} satisfies import("~/components/ui/chart").ChartConfig
+  verifications: { label: 'Verifications', color: 'hsl(var(--primary))' },
+} satisfies import('~/components/ui/chart').ChartConfig;
 
 async function fetchUsage(projectId: string) {
-  const res = await fetch(
-    `${API_BASE_URL}/api/projects/${projectId}/usage`,
-    {
-      headers: {
-        authorization: `Bearer ${await (await import("firebase/auth")).getAuth().currentUser?.getIdToken()}`,
-      },
-    }
-  )
-  if (!res.ok) throw new Error("Failed")
-  const json = await res.json()
-  return json.data as { date: string; verifications: number }[]
+  const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/usage`, {
+    headers: {
+      authorization: `Bearer ${await (await import('firebase/auth')).getAuth().currentUser?.getIdToken()}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed');
+  const json = await res.json();
+  return json.data as { date: string; verifications: number }[];
 }
 
 export function ProjectUsageChart({ projectId }: { projectId: string }) {
-  const isMobile = useIsMobile()
-  const [timeRange, setTimeRange] = React.useState("90d")
-  const toggleRef = React.useRef<HTMLElement>(null)
-  const selectRef = React.useRef<HTMLElement>(null)
-  useAuraEvent<string>(toggleRef, "change", (v) => v && setTimeRange(v))
-  useAuraEvent<string>(selectRef, "change", setTimeRange)
+  const isMobile = useIsMobile();
+  const [timeRange, setTimeRange] = React.useState('90d');
+  const toggleRef = React.useRef<HTMLElement>(null);
+  const selectRef = React.useRef<HTMLElement>(null);
+  useAuraEvent<string>(toggleRef, 'change', (v) => v && setTimeRange(v));
+  useAuraEvent<string>(selectRef, 'change', setTimeRange);
 
   const { data: chartData = [] } = useQuery({
-    queryKey: ["project-usage", projectId],
+    queryKey: ['project-usage', projectId],
     queryFn: () => fetchUsage(projectId),
-  })
+  });
 
   const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const days = timeRange === "90d" ? 90 : timeRange === "30d" ? 30 : 7
-    return date >= new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-  })
+    const date = new Date(item.date);
+    const days = timeRange === '90d' ? 90 : timeRange === '30d' ? 30 : 7;
+    return date >= new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  });
 
   React.useEffect(() => {
-    isMobile && setTimeRange("7d")
-  }, [isMobile])
+    isMobile && setTimeRange('7d');
+  }, [isMobile]);
 
   return (
     <a-card>
@@ -58,12 +55,12 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
           Project Verifications
         </a-head>
         <p className="text-muted-foreground text-sm">
-          Last{" "}
-          {timeRange === "90d"
-            ? "3 months"
-            : timeRange === "30d"
-              ? "30 days"
-              : "7 days"}
+          Last{' '}
+          {timeRange === '90d'
+            ? '3 months'
+            : timeRange === '30d'
+              ? '30 days'
+              : '7 days'}
         </p>
         <div className="flex justify-end">
           <a-toggle-group
@@ -87,9 +84,9 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
             value={timeRange}
             className="w-40 @[767px]:hidden"
             options={[
-              { value: "90d", label: "Last 3 months" },
-              { value: "30d", label: "Last 30 days" },
-              { value: "7d", label: "Last 7 days" },
+              { value: '90d', label: 'Last 3 months' },
+              { value: '30d', label: 'Last 30 days' },
+              { value: '7d', label: 'Last 7 days' },
             ]}
           />
         </div>
@@ -115,9 +112,9 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
             <XAxis
               dataKey="date"
               tickFormatter={(v) =>
-                new Date(v).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
+                new Date(v).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
                 })
               }
             />
@@ -132,5 +129,5 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
         </ChartContainer>
       </div>
     </a-card>
-  )
+  );
 }

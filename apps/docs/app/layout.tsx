@@ -1,26 +1,26 @@
-import type { Metadata } from "next"
-import localFont from "next/font/local"
-import { Providers } from "./components/providers"
-import "./globals.css"
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import { Providers } from './components/providers';
+import './globals.css';
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-})
+  src: './fonts/GeistVF.woff',
+  variable: '--font-geist-sans',
+});
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-})
+  src: './fonts/GeistMonoVF.woff',
+  variable: '--font-geist-mono',
+});
 
 export const metadata: Metadata = {
-  title: "Aura Docs",
-  description: "Aura developer documentation",
-}
+  title: 'Aura Docs',
+  description: 'Aura developer documentation',
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -30,5 +30,5 @@ export default function RootLayout({
         <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }

@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
-import { Callout, Code, Table } from "../_components/Code";
+import type { Metadata } from 'next';
+import { Callout, Code, Table } from '../_components/Code';
 export const metadata: Metadata = {
-  title: "Mutation controller — @aura/query",
-  description: "Create, update, and delete data from Lit components with automatic cache invalidation.",
+  title: 'Mutation controller — @aura/query',
+  description:
+    'Create, update, and delete data from Lit components with automatic cache invalidation.',
 };
 
 export default function MutationsPage() {
@@ -72,31 +73,98 @@ class CreatePost extends LitElement {
 
       <h2>State fields</h2>
       <Table
-        headers={["Field", "Type", "Description"]}
+        headers={['Field', 'Type', 'Description']}
         rows={[
-          [<code key="a">status</code>, <code key="b">&quot;idle&quot; | &quot;pending&quot; | &quot;success&quot; | &quot;error&quot;</code>, "Current lifecycle state."],
-          [<code key="c">data</code>, "TData | undefined", "Resolved data from the last successful call."],
-          [<code key="d">error</code>, "TError | null", "Error from the last failed call."],
-          [<code key="e">variables</code>, "TVariables | undefined", "The argument passed to the last mutate() call."],
-          [<code key="f">isIdle</code>, "boolean", "No call has been made yet (or after reset())."],
-          [<code key="g">isPending</code>, "boolean", "A call is in flight."],
-          [<code key="h">isSuccess</code>, "boolean", "The last call succeeded."],
-          [<code key="i">isError</code>, "boolean", "The last call failed."],
+          [
+            <code key="a">status</code>,
+            <code key="b">
+              &quot;idle&quot; | &quot;pending&quot; | &quot;success&quot; |
+              &quot;error&quot;
+            </code>,
+            'Current lifecycle state.',
+          ],
+          [
+            <code key="c">data</code>,
+            'TData | undefined',
+            'Resolved data from the last successful call.',
+          ],
+          [
+            <code key="d">error</code>,
+            'TError | null',
+            'Error from the last failed call.',
+          ],
+          [
+            <code key="e">variables</code>,
+            'TVariables | undefined',
+            'The argument passed to the last mutate() call.',
+          ],
+          [
+            <code key="f">isIdle</code>,
+            'boolean',
+            'No call has been made yet (or after reset()).',
+          ],
+          [<code key="g">isPending</code>, 'boolean', 'A call is in flight.'],
+          [
+            <code key="h">isSuccess</code>,
+            'boolean',
+            'The last call succeeded.',
+          ],
+          [<code key="i">isError</code>, 'boolean', 'The last call failed.'],
         ]}
       />
 
       <h2>Options</h2>
       <Table
-        headers={["Option", "Type", "Default", "Description"]}
+        headers={['Option', 'Type', 'Default', 'Description']}
         rows={[
-          [<code key="a">mutationFn</code>, "(vars: TVariables) => Promise<TData>", "—", "The async function that performs the write."],
-          [<code key="b">retry</code>, "number | false", "false", "Retries on failure. Mutations don't retry by default."],
-          [<code key="c">retryDelay</code>, "number | (n) => number", "exponential", "Delay between retries."],
-          [<code key="d">onMutate</code>, "(vars) => TContext", "—", "Called before mutationFn. Return value is the context passed to other callbacks."],
-          [<code key="e">onSuccess</code>, "(data, vars, ctx) => void", "—", "Called after a successful mutation."],
-          [<code key="f">onError</code>, "(error, vars, ctx) => void", "—", "Called after failure (post-retry)."],
-          [<code key="g">onSettled</code>, "(data, error, vars, ctx) => void", "—", "Called after either outcome."],
-          [<code key="h">client</code>, "QueryClient", "defaultClient", "Cache to invalidate/seed."],
+          [
+            <code key="a">mutationFn</code>,
+            '(vars: TVariables) => Promise<TData>',
+            '—',
+            'The async function that performs the write.',
+          ],
+          [
+            <code key="b">retry</code>,
+            'number | false',
+            'false',
+            "Retries on failure. Mutations don't retry by default.",
+          ],
+          [
+            <code key="c">retryDelay</code>,
+            'number | (n) => number',
+            'exponential',
+            'Delay between retries.',
+          ],
+          [
+            <code key="d">onMutate</code>,
+            '(vars) => TContext',
+            '—',
+            'Called before mutationFn. Return value is the context passed to other callbacks.',
+          ],
+          [
+            <code key="e">onSuccess</code>,
+            '(data, vars, ctx) => void',
+            '—',
+            'Called after a successful mutation.',
+          ],
+          [
+            <code key="f">onError</code>,
+            '(error, vars, ctx) => void',
+            '—',
+            'Called after failure (post-retry).',
+          ],
+          [
+            <code key="g">onSettled</code>,
+            '(data, error, vars, ctx) => void',
+            '—',
+            'Called after either outcome.',
+          ],
+          [
+            <code key="h">client</code>,
+            'QueryClient',
+            'defaultClient',
+            'Cache to invalidate/seed.',
+          ],
         ]}
       />
 
@@ -143,15 +211,15 @@ class CreatePost extends LitElement {
 
       <Callout type="note">
         <code>onMutate</code> runs synchronously before <code>mutationFn</code>.
-        The value it returns becomes the <code>context</code> argument in{" "}
-        <code>onSuccess</code>, <code>onError</code>, and{" "}
-        <code>onSettled</code>.
+        The value it returns becomes the <code>context</code> argument in{' '}
+        <code>onSuccess</code>, <code>onError</code>, and <code>onSettled</code>
+        .
       </Callout>
 
       <h2>Resetting state</h2>
       <p>
-        Call <code>reset()</code> to clear the mutation back to its idle state
-        — useful after displaying a success/error message.
+        Call <code>reset()</code> to clear the mutation back to its idle state —
+        useful after displaying a success/error message.
       </p>
       <Code>{`html\`
   \${this.#create.isSuccess
@@ -164,7 +232,9 @@ class CreatePost extends LitElement {
 \``}</Code>
 
       <h2>Delete with confirmation</h2>
-      <p>A common pattern — disable the button while the request is in flight:</p>
+      <p>
+        A common pattern — disable the button while the request is in flight:
+      </p>
       <Code>{`#delete = new Mutation<void, string>(this, {
   mutationFn: (id) =>
     fetch(\`/api/posts/\${id}\`, { method: 'DELETE' }),

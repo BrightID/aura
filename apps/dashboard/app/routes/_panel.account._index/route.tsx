@@ -1,8 +1,8 @@
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { useAuthState } from "react-firebase-hooks/auth"
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import {
   updateProfile,
   updatePassword,
@@ -10,10 +10,10 @@ import {
   reauthenticateWithCredential,
   sendEmailVerification,
   type User,
-} from "firebase/auth"
-import { useNavigate } from "react-router"
-import { auth } from "~/lib/firebase"
-import { toast } from "sonner"
+} from 'firebase/auth';
+import { useNavigate } from 'react-router';
+import { auth } from '~/lib/firebase';
+import { toast } from 'sonner';
 
 import {
   Card,
@@ -21,13 +21,13 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { Badge } from "~/components/ui/badge"
-import { Separator } from "~/components/ui/separator"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+} from '~/components/ui/card';
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
+import { Badge } from '~/components/ui/badge';
+import { Separator } from '~/components/ui/separator';
+import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
@@ -35,7 +35,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "~/components/ui/dialog"
+} from '~/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -44,7 +44,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
-} from "~/components/ui/alert-dialog"
+} from '~/components/ui/alert-dialog';
 import {
   Form,
   FormControl,
@@ -52,7 +52,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/form"
+} from '~/components/ui/form';
 
 import {
   User as UserIcon,
@@ -68,106 +68,104 @@ import {
   Save,
   Copy,
   CheckCheck,
-} from "lucide-react"
+} from 'lucide-react';
 
 // ─── Zod schemas ────────────────────────────────────────────────────────────
 
 const profileSchema = z.object({
-  displayName: z.string().min(1, "Display name is required"),
-  photoURL: z.string().url("Must be a valid URL").or(z.literal("")),
-})
+  displayName: z.string().min(1, 'Display name is required'),
+  photoURL: z.string().url('Must be a valid URL').or(z.literal('')),
+});
 
 const passwordSchema = z
   .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
   .refine((d) => d.newPassword === d.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  })
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
-type ProfileValues = z.infer<typeof profileSchema>
-type PasswordValues = z.infer<typeof passwordSchema>
+type ProfileValues = z.infer<typeof profileSchema>;
+type PasswordValues = z.infer<typeof passwordSchema>;
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function getProviderLabel(providerId: string): string {
   switch (providerId) {
-    case "google.com":
-      return "Google"
-    case "apple.com":
-      return "Apple"
-    case "password":
-      return "Email / Password"
+    case 'google.com':
+      return 'Google';
+    case 'apple.com':
+      return 'Apple';
+    case 'password':
+      return 'Email / Password';
     default:
-      return providerId
+      return providerId;
   }
 }
 
 function getAvatarFallback(user: User): string {
-  if (user.displayName) return user.displayName[0].toUpperCase()
-  if (user.email) return user.email[0].toUpperCase()
-  return "U"
+  if (user.displayName) return user.displayName[0].toUpperCase();
+  if (user.email) return user.email[0].toUpperCase();
+  return 'U';
 }
 
 function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return "—"
+  if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 // ─── Section 1: Profile ─────────────────────────────────────────────────────
 
 function ProfileSection({ user }: { user: User }) {
-  const [photoDialogOpen, setPhotoDialogOpen] = useState(false)
-  const [pendingPhotoURL, setPendingPhotoURL] = useState(user.photoURL ?? "")
-  const [sendingVerification, setSendingVerification] = useState(false)
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const [pendingPhotoURL, setPendingPhotoURL] = useState(user.photoURL ?? '');
+  const [sendingVerification, setSendingVerification] = useState(false);
 
   const form = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      displayName: user.displayName ?? "",
-      photoURL: user.photoURL ?? "",
+      displayName: user.displayName ?? '',
+      photoURL: user.photoURL ?? '',
     },
-  })
+  });
 
   const onSubmit = async (values: ProfileValues) => {
     try {
       await updateProfile(user, {
         displayName: values.displayName,
         photoURL: values.photoURL || null,
-      })
-      toast.success("Profile updated successfully")
+      });
+      toast.success('Profile updated successfully');
     } catch {
-      toast.error("Failed to update profile")
+      toast.error('Failed to update profile');
     }
-  }
+  };
 
   const handleApplyPhoto = () => {
-    form.setValue("photoURL", pendingPhotoURL, { shouldDirty: true })
-    setPhotoDialogOpen(false)
-  }
+    form.setValue('photoURL', pendingPhotoURL, { shouldDirty: true });
+    setPhotoDialogOpen(false);
+  };
 
   const handleResendVerification = async () => {
-    setSendingVerification(true)
+    setSendingVerification(true);
     try {
-      await sendEmailVerification(user)
-      toast.success("Verification email sent. Check your inbox.")
+      await sendEmailVerification(user);
+      toast.success('Verification email sent. Check your inbox.');
     } catch {
-      toast.error("Failed to send verification email")
+      toast.error('Failed to send verification email');
     } finally {
-      setSendingVerification(false)
+      setSendingVerification(false);
     }
-  }
+  };
 
-  const currentPhotoURL = form.watch("photoURL")
+  const currentPhotoURL = form.watch('photoURL');
 
   return (
     <>
@@ -189,7 +187,7 @@ function ProfileSection({ user }: { user: User }) {
                 <Avatar className="h-20 w-20">
                   <AvatarImage
                     src={currentPhotoURL || user.photoURL || undefined}
-                    alt={user.displayName ?? "Avatar"}
+                    alt={user.displayName ?? 'Avatar'}
                   />
                   <AvatarFallback className="text-2xl font-semibold">
                     {getAvatarFallback(user)}
@@ -202,8 +200,8 @@ function ProfileSection({ user }: { user: User }) {
                     size="sm"
                     className="gap-2"
                     onClick={() => {
-                      setPendingPhotoURL(form.getValues("photoURL"))
-                      setPhotoDialogOpen(true)
+                      setPendingPhotoURL(form.getValues('photoURL'));
+                      setPhotoDialogOpen(true);
                     }}
                   >
                     <Camera className="h-4 w-4" />
@@ -215,7 +213,9 @@ function ProfileSection({ user }: { user: User }) {
                       variant="ghost"
                       size="sm"
                       className="text-muted-foreground text-xs"
-                      onClick={() => form.setValue("photoURL", "", { shouldDirty: true })}
+                      onClick={() =>
+                        form.setValue('photoURL', '', { shouldDirty: true })
+                      }
                     >
                       Remove photo
                     </Button>
@@ -247,7 +247,7 @@ function ProfileSection({ user }: { user: User }) {
                   </Label>
                   <div className="flex items-center gap-2">
                     <Input
-                      value={user.email ?? ""}
+                      value={user.email ?? ''}
                       readOnly
                       className="bg-muted text-muted-foreground cursor-not-allowed"
                     />
@@ -279,8 +279,8 @@ function ProfileSection({ user }: { user: User }) {
                       onClick={handleResendVerification}
                     >
                       {sendingVerification
-                        ? "Sending…"
-                        : "Resend verification email"}
+                        ? 'Sending…'
+                        : 'Resend verification email'}
                     </Button>
                   )}
                 </div>
@@ -289,11 +289,13 @@ function ProfileSection({ user }: { user: User }) {
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  disabled={form.formState.isSubmitting || !form.formState.isDirty}
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isDirty
+                  }
                   className="gap-2"
                 >
                   <Save className="h-4 w-4" />
-                  {form.formState.isSubmitting ? "Saving…" : "Save changes"}
+                  {form.formState.isSubmitting ? 'Saving…' : 'Save changes'}
                 </Button>
               </div>
             </form>
@@ -338,56 +340,56 @@ function ProfileSection({ user }: { user: User }) {
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }
 
 // ─── Section 2: Security / Password ─────────────────────────────────────────
 
 function SecuritySection({ user }: { user: User }) {
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
 
-  const primaryProvider = user.providerData[0]?.providerId ?? "password"
-  const isPasswordProvider = primaryProvider === "password"
+  const primaryProvider = user.providerData[0]?.providerId ?? 'password';
+  const isPasswordProvider = primaryProvider === 'password';
 
   const form = useForm<PasswordValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     },
-  })
+  });
 
   const onSubmit = async (values: PasswordValues) => {
     if (!user.email) {
-      toast.error("No email associated with this account")
-      return
+      toast.error('No email associated with this account');
+      return;
     }
     try {
       const credential = EmailAuthProvider.credential(
         user.email,
-        values.currentPassword
-      )
-      await reauthenticateWithCredential(user, credential)
-      await updatePassword(user, values.newPassword)
-      toast.success("Password updated successfully")
-      form.reset()
+        values.currentPassword,
+      );
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, values.newPassword);
+      toast.success('Password updated successfully');
+      form.reset();
     } catch (err: unknown) {
-      const code = (err as { code?: string }).code
+      const code = (err as { code?: string }).code;
       if (
-        code === "auth/wrong-password" ||
-        code === "auth/invalid-credential"
+        code === 'auth/wrong-password' ||
+        code === 'auth/invalid-credential'
       ) {
-        form.setError("currentPassword", {
-          message: "Incorrect password",
-        })
+        form.setError('currentPassword', {
+          message: 'Incorrect password',
+        });
       } else {
-        toast.error("Failed to update password")
+        toast.error('Failed to update password');
       }
     }
-  }
+  };
 
   return (
     <Card>
@@ -396,14 +398,16 @@ function SecuritySection({ user }: { user: User }) {
           <Lock className="h-5 w-5" />
           Security
         </CardTitle>
-        <CardDescription>Manage your password and sign-in method.</CardDescription>
+        <CardDescription>
+          Manage your password and sign-in method.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {!isPasswordProvider ? (
           <div className="flex items-center gap-3 rounded-lg border bg-muted/40 px-4 py-3">
             <Shield className="h-5 w-5 text-muted-foreground shrink-0" />
             <p className="text-sm text-muted-foreground">
-              You signed in with{" "}
+              You signed in with{' '}
               <span className="font-medium text-foreground">
                 {getProviderLabel(primaryProvider)}
               </span>
@@ -422,7 +426,7 @@ function SecuritySection({ user }: { user: User }) {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          type={showCurrentPassword ? "text" : "password"}
+                          type={showCurrentPassword ? 'text' : 'password'}
                           placeholder="••••••••"
                           className="pr-10"
                           {...field}
@@ -430,9 +434,7 @@ function SecuritySection({ user }: { user: User }) {
                         <button
                           type="button"
                           className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground"
-                          onClick={() =>
-                            setShowCurrentPassword((v) => !v)
-                          }
+                          onClick={() => setShowCurrentPassword((v) => !v)}
                           tabIndex={-1}
                         >
                           {showCurrentPassword ? (
@@ -457,7 +459,7 @@ function SecuritySection({ user }: { user: User }) {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          type={showNewPassword ? "text" : "password"}
+                          type={showNewPassword ? 'text' : 'password'}
                           placeholder="Min 8 characters"
                           className="pr-10"
                           {...field}
@@ -490,7 +492,7 @@ function SecuritySection({ user }: { user: User }) {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          type={showConfirmPassword ? "text" : "password"}
+                          type={showConfirmPassword ? 'text' : 'password'}
                           placeholder="Re-enter new password"
                           className="pr-10"
                           {...field}
@@ -498,9 +500,7 @@ function SecuritySection({ user }: { user: User }) {
                         <button
                           type="button"
                           className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground"
-                          onClick={() =>
-                            setShowConfirmPassword((v) => !v)
-                          }
+                          onClick={() => setShowConfirmPassword((v) => !v)}
                           tabIndex={-1}
                         >
                           {showConfirmPassword ? (
@@ -524,8 +524,8 @@ function SecuritySection({ user }: { user: User }) {
                 >
                   <Lock className="h-4 w-4" />
                   {form.formState.isSubmitting
-                    ? "Updating…"
-                    : "Update Password"}
+                    ? 'Updating…'
+                    : 'Update Password'}
                 </Button>
               </div>
             </form>
@@ -533,20 +533,20 @@ function SecuritySection({ user }: { user: User }) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // ─── Section 3: Account Details ──────────────────────────────────────────────
 
 function AccountDetailsSection({ user }: { user: User }) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(user.uid).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
-  }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <Card>
@@ -625,62 +625,62 @@ function AccountDetailsSection({ user }: { user: User }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // ─── Section 4: Danger Zone ──────────────────────────────────────────────────
 
 function DangerZoneSection({ user }: { user: User }) {
-  const navigate = useNavigate()
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [confirmText, setConfirmText] = useState("")
-  const [isDeleting, setIsDeleting] = useState(false)
+  const navigate = useNavigate();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Reauthentication dialog state (needed if session is too old)
-  const [reAuthDialogOpen, setReAuthDialogOpen] = useState(false)
-  const [reAuthPassword, setReAuthPassword] = useState("")
-  const [reAuthError, setReAuthError] = useState("")
-  const [showReAuthPassword, setShowReAuthPassword] = useState(false)
+  const [reAuthDialogOpen, setReAuthDialogOpen] = useState(false);
+  const [reAuthPassword, setReAuthPassword] = useState('');
+  const [reAuthError, setReAuthError] = useState('');
+  const [showReAuthPassword, setShowReAuthPassword] = useState(false);
 
-  const primaryProvider = user.providerData[0]?.providerId ?? "password"
-  const requiresPassword = primaryProvider === "password"
+  const primaryProvider = user.providerData[0]?.providerId ?? 'password';
+  const requiresPassword = primaryProvider === 'password';
 
   const handleDeleteAccount = async () => {
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await user.delete()
-      toast.success("Account deleted")
-      navigate("/")
+      await user.delete();
+      toast.success('Account deleted');
+      navigate('/');
     } catch (err: unknown) {
-      const code = (err as { code?: string }).code
-      if (code === "auth/requires-recent-login") {
-        setDeleteDialogOpen(false)
-        setReAuthDialogOpen(true)
+      const code = (err as { code?: string }).code;
+      if (code === 'auth/requires-recent-login') {
+        setDeleteDialogOpen(false);
+        setReAuthDialogOpen(true);
       } else {
-        toast.error("Failed to delete account")
+        toast.error('Failed to delete account');
       }
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const handleReAuth = async () => {
-    if (!user.email) return
-    setReAuthError("")
+    if (!user.email) return;
+    setReAuthError('');
     try {
       const credential = EmailAuthProvider.credential(
         user.email,
-        reAuthPassword
-      )
-      await reauthenticateWithCredential(user, credential)
-      setReAuthDialogOpen(false)
+        reAuthPassword,
+      );
+      await reauthenticateWithCredential(user, credential);
+      setReAuthDialogOpen(false);
       // Re-open delete confirm dialog
-      setConfirmText("")
-      setDeleteDialogOpen(true)
+      setConfirmText('');
+      setDeleteDialogOpen(true);
     } catch {
-      setReAuthError("Incorrect password. Please try again.")
+      setReAuthError('Incorrect password. Please try again.');
     }
-  }
+  };
 
   return (
     <>
@@ -706,8 +706,8 @@ function DangerZoneSection({ user }: { user: User }) {
               variant="outline"
               className="gap-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
               onClick={() => {
-                setConfirmText("")
-                setDeleteDialogOpen(true)
+                setConfirmText('');
+                setDeleteDialogOpen(true);
               }}
             >
               <Trash2 className="h-4 w-4" />
@@ -728,15 +728,13 @@ function DangerZoneSection({ user }: { user: User }) {
             <AlertDialogDescription asChild>
               <div className="space-y-3">
                 <p>
-                  This will{" "}
-                  <strong>permanently delete your account</strong> and all
-                  associated projects. This action{" "}
+                  This will <strong>permanently delete your account</strong> and
+                  all associated projects. This action{' '}
                   <strong>cannot be undone</strong>.
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="confirm-delete" className="text-foreground">
-                    Type{" "}
-                    <span className="font-mono font-bold">DELETE</span> to
+                    Type <span className="font-mono font-bold">DELETE</span> to
                     confirm
                   </Label>
                   <Input
@@ -754,10 +752,10 @@ function DangerZoneSection({ user }: { user: User }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Button
               variant="destructive"
-              disabled={confirmText !== "DELETE" || isDeleting}
+              disabled={confirmText !== 'DELETE' || isDeleting}
               onClick={handleDeleteAccount}
             >
-              {isDeleting ? "Deleting…" : "Delete Account"}
+              {isDeleting ? 'Deleting…' : 'Delete Account'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -770,8 +768,8 @@ function DangerZoneSection({ user }: { user: User }) {
             <DialogHeader>
               <DialogTitle>Confirm Your Identity</DialogTitle>
               <DialogDescription>
-                For security, please re-enter your password before deleting
-                your account.
+                For security, please re-enter your password before deleting your
+                account.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 py-2">
@@ -780,13 +778,13 @@ function DangerZoneSection({ user }: { user: User }) {
                 <div className="relative">
                   <Input
                     id="reauth-password"
-                    type={showReAuthPassword ? "text" : "password"}
+                    type={showReAuthPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     className="pr-10"
                     value={reAuthPassword}
                     onChange={(e) => {
-                      setReAuthPassword(e.target.value)
-                      setReAuthError("")
+                      setReAuthPassword(e.target.value);
+                      setReAuthError('');
                     }}
                   />
                   <button
@@ -826,20 +824,20 @@ function DangerZoneSection({ user }: { user: User }) {
         </Dialog>
       )}
     </>
-  )
+  );
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function AccountPage() {
-  const [user] = useAuthState(auth)
+  const [user] = useAuthState(auth);
 
   if (!user) {
     return (
       <div className="flex flex-1 items-center justify-center py-20 text-muted-foreground">
         Loading account…
       </div>
-    )
+    );
   }
 
   return (
@@ -867,5 +865,5 @@ export default function AccountPage() {
         <DangerZoneSection user={user} />
       </div>
     </div>
-  )
+  );
 }

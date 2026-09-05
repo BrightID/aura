@@ -1,10 +1,14 @@
-import Link from "next/link";
-import { registry } from "./_registry";
+import Link from 'next/link';
+import { registry } from './_registry';
 
 const sectionLinkBase =
-  "block rounded-md px-2.5 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground";
+  'block rounded-md px-2.5 py-1.5 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground';
 
-export default function ComponentsDocsLayout({ children }: { children: React.ReactNode }) {
+export default function ComponentsDocsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex min-h-screen font-[family-name:var(--font-geist-sans)]">
       <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col gap-7 overflow-y-auto border-r border-border px-5 py-7 max-md:hidden">
@@ -42,7 +46,11 @@ export default function ComponentsDocsLayout({ children }: { children: React.Rea
             Components
           </p>
           {registry.map((c) => (
-            <Link key={c.slug} href={`/components/${c.slug}`} className={sectionLinkBase}>
+            <Link
+              key={c.slug}
+              href={`/components/${c.slug}`}
+              className={sectionLinkBase}
+            >
               {c.name}
             </Link>
           ))}

@@ -1,45 +1,46 @@
-import type { DialogElement } from "@aura/ui"
-import { toast } from "@aura/ui"
-import { createSignal, For, Show } from "solid-js"
-import ListState from "@/components/list/list-state"
-import { useRequireSession } from "@/hooks/use-require-session"
-import { createStoreContactMutation } from "@/queries/contacts"
-import { addContact, type ContactType, contactsStore } from "@/store/contacts"
+import type { DialogElement } from '@aura/ui';
+import { toast } from '@aura/ui';
+import { createSignal, For, Show } from 'solid-js';
+import ListState from '@/components/list/list-state';
+import { useRequireSession } from '@/hooks/use-require-session';
+import { createStoreContactMutation } from '@/queries/contacts';
+import { addContact, type ContactType, contactsStore } from '@/store/contacts';
 
-const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-const isValidPhone = (phone: string) => /^\+?[1-9]\d{1,14}$/.test(phone)
+const isValidEmail = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const isValidPhone = (phone: string) => /^\+?[1-9]\d{1,14}$/.test(phone);
 
 export default function ContactInfoPage() {
-  useRequireSession()
-  let dialog: DialogElement | undefined
+  useRequireSession();
+  let dialog: DialogElement | undefined;
 
-  const [type, setType] = createSignal<ContactType>("email")
-  const [value, setValue] = createSignal("")
-  const [error, setError] = createSignal("")
+  const [type, setType] = createSignal<ContactType>('email');
+  const [value, setValue] = createSignal('');
+  const [error, setError] = createSignal('');
 
-  const store = createStoreContactMutation()
+  const store = createStoreContactMutation();
 
   const submit = () => {
-    const v = value().trim()
-    if (type() === "email" && !isValidEmail(v))
-      return setError("Invalid email address")
-    if (type() === "phone" && !isValidPhone(v))
-      return setError("Invalid phone number")
+    const v = value().trim();
+    if (type() === 'email' && !isValidEmail(v))
+      return setError('Invalid email address');
+    if (type() === 'phone' && !isValidPhone(v))
+      return setError('Invalid phone number');
 
     store.mutate(v, {
       onSuccess: (hash) => {
-        addContact({ type: type(), hash })
-        setValue("")
-        setError("")
-        dialog?.hide()
-        toast.success("Contact saved", {
-          description: "Only a hash of it is stored.",
-        })
+        addContact({ type: type(), hash });
+        setValue('');
+        setError('');
+        dialog?.hide();
+        toast.success('Contact saved', {
+          description: 'Only a hash of it is stored.',
+        });
       },
       onError: (e: unknown) =>
         setError(e instanceof Error ? e.message : String(e)),
-    })
-  }
+    });
+  };
 
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
@@ -82,10 +83,10 @@ export default function ContactInfoPage() {
             <a-button
               class="flex-1"
               data-testid="contact-type-email"
-              variant={type() === "email" ? "default" : "outline"}
+              variant={type() === 'email' ? 'default' : 'outline'}
               onClick={() => {
-                setType("email")
-                setError("")
+                setType('email');
+                setError('');
               }}
             >
               Email
@@ -93,10 +94,10 @@ export default function ContactInfoPage() {
             <a-button
               class="flex-1"
               data-testid="contact-type-phone"
-              variant={type() === "phone" ? "default" : "outline"}
+              variant={type() === 'phone' ? 'default' : 'outline'}
               onClick={() => {
-                setType("phone")
-                setError("")
+                setType('phone');
+                setError('');
               }}
             >
               Phone
@@ -106,14 +107,14 @@ export default function ContactInfoPage() {
           <div class="flex flex-col gap-1">
             <a-input
               data-testid="contact-value"
-              label={type() === "email" ? "Email address" : "Phone number"}
+              label={type() === 'email' ? 'Email address' : 'Phone number'}
               placeholder={
-                type() === "email" ? "you@example.com" : "+1234567890"
+                type() === 'email' ? 'you@example.com' : '+1234567890'
               }
               value={value()}
               onChange={(e: CustomEvent<string>) => {
-                setValue(e.detail)
-                setError("")
+                setValue(e.detail);
+                setError('');
               }}
             />
             <Show when={error()}>
@@ -133,5 +134,5 @@ export default function ContactInfoPage() {
         </div>
       </a-dialog>
     </div>
-  )
+  );
 }

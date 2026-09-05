@@ -1,43 +1,43 @@
-import { notFound } from "next/navigation"
-import type { ReactNode } from "react"
-import { Playground } from "../_components/Playground"
-import { CssVarTable, PropsTable } from "../_components/PropsTable"
-import { getComponent, registry } from "../_registry"
+import { notFound } from 'next/navigation';
+import type { ReactNode } from 'react';
+import { Playground } from '../_components/Playground';
+import { CssVarTable, PropsTable } from '../_components/PropsTable';
+import { getComponent, registry } from '../_registry';
 
 export function generateStaticParams() {
-  return registry.map((c) => ({ slug: c.slug }))
+  return registry.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params
-  const doc = getComponent(slug)
-  return { title: doc ? `${doc.name} — Aura UI` : "Aura UI" }
+  const { slug } = await params;
+  const doc = getComponent(slug);
+  return { title: doc ? `${doc.name} — Aura UI` : 'Aura UI' };
 }
 
 function renderInline(text: string): ReactNode[] {
   return text
     .split(/(`[^`]+`)/g)
     .map((part, i) =>
-      part.startsWith("`") && part.endsWith("`") ? (
+      part.startsWith('`') && part.endsWith('`') ? (
         <code key={i}>{part.slice(1, -1)}</code>
       ) : (
         <span key={i}>{part}</span>
       ),
-    )
+    );
 }
 
 export default async function ComponentPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params
-  const doc = getComponent(slug)
-  if (!doc) notFound()
+  const { slug } = await params;
+  const doc = getComponent(slug);
+  if (!doc) notFound();
 
   return (
     <div className="prose">
@@ -55,7 +55,7 @@ export default async function ComponentPage({
 
       <h2>Theme variables</h2>
       <p>
-        These CSS custom properties are inherited from{" "}
+        These CSS custom properties are inherited from{' '}
         <code>&lt;a-theme-provider&gt;</code>. Override them on any ancestor —
         or live in the <strong>Theme</strong> tab above — to restyle the
         component.
@@ -64,5 +64,5 @@ export default async function ComponentPage({
         <CssVarTable doc={doc} />
       </div>
     </div>
-  )
+  );
 }

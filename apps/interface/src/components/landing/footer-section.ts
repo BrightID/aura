@@ -1,6 +1,6 @@
-import brightIDIcon from '@/assets/icons/brightid.svg'
-import { css, CSSResultGroup, html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import brightIDIcon from '@/assets/icons/brightid.svg';
+import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 @customElement('footer-section')
 export class FooterSectionElement extends LitElement {
@@ -53,7 +53,7 @@ export class FooterSectionElement extends LitElement {
     .privacy:hover {
       text-decoration: underline;
     }
-  `
+  `;
   protected render() {
     return html` <div class="bottom-bar">
       <div class="brand">
@@ -62,6 +62,6 @@ export class FooterSectionElement extends LitElement {
         <span class="brand-name">BrightID</span>
       </div>
       <a href="/interface/privacy-policy" class="privacy">Privacy Policy</a>
-    </div>`
+    </div>`;
   }
 }

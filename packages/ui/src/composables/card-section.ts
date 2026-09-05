@@ -1,10 +1,10 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit"
-import { customElement } from "lit/decorators.js"
-import { toast } from "../components"
-import "../components/card"
-import "../components/head"
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { toast } from '../components';
+import '../components/card';
+import '../components/head';
 
-@customElement("cards-section")
+@customElement('cards-section')
 export class CardsSectionElement extends LitElement {
   static styles?: CSSResultGroup = css`
     a-card {
@@ -20,10 +20,10 @@ export class CardsSectionElement extends LitElement {
     a-flex {
       margin-top: var(--lg);
     }
-  `
+  `;
 
   protected onClick() {
-    toast("Clicked :Check:")
+    toast('Clicked :Check:');
   }
 
   protected render() {
@@ -114,6 +114,6 @@ export class CardsSectionElement extends LitElement {
           </div>
         </a-hover-card-content>
       </a-hover-card>
-    `
+    `;
   }
 }

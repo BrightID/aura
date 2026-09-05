@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm';
 import {
   boolean,
   decimal,
@@ -8,18 +8,18 @@ import {
   text,
   timestamp,
   uniqueIndex,
-  varchar
-} from 'drizzle-orm/pg-core'
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 export const usersTable = pgTable('users', {
   id: varchar({ length: 43 }).notNull().primaryKey(),
   createdAt: timestamp().defaultNow(),
-  integrations: varchar({ length: 255 }).notNull().array().default([])
-})
+  integrations: varchar({ length: 255 }).notNull().array().default([]),
+});
 
 export const auraPlayersSocialTable = pgTable('socialRecords', {
-  hash: varchar({ length: 300 }).primaryKey()
-})
+  hash: varchar({ length: 300 }).primaryKey(),
+});
 
 export const projectsTable = pgTable('projects', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -34,12 +34,14 @@ export const projectsTable = pgTable('projects', {
   websiteUrl: varchar({ length: 1000 }),
   remainingtokens: integer().default(0),
   selectedPlanId: integer().references(() => verificationPlansTable.id),
-  brightIdAppId: varchar({ length: 500 }).references(() => brightIdAppsTable.key),
+  brightIdAppId: varchar({ length: 500 }).references(
+    () => brightIdAppsTable.key,
+  ),
   deadline: timestamp(),
 
   createdAt: timestamp().defaultNow(),
-  updatedAt: timestamp().default(sql`CURRENT_TIMESTAMP`)
-})
+  updatedAt: timestamp().default(sql`CURRENT_TIMESTAMP`),
+});
 
 export const verificationPlansTable = pgTable('plans', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -55,19 +57,25 @@ export const verificationPlansTable = pgTable('plans', {
   yearlyPrice: integer().default(0),
   order: integer().default(0),
   createdAt: timestamp().defaultNow(),
-  updatedAt: timestamp().default(sql`CURRENT_TIMESTAMP`)
-})
+  updatedAt: timestamp().default(sql`CURRENT_TIMESTAMP`),
+});
 
 export const upgradeRequest = pgTable('upgrade_requests', {
-  projectId: integer().references(() => projectsTable.id, { onDelete: 'cascade' }),
+  projectId: integer().references(() => projectsTable.id, {
+    onDelete: 'cascade',
+  }),
   createdAt: timestamp().defaultNow(),
-  planId: integer().references(() => verificationPlansTable.id, { onDelete: 'cascade' })
-})
+  planId: integer().references(() => verificationPlansTable.id, {
+    onDelete: 'cascade',
+  }),
+});
 
 export const paymentsTable = pgTable('payments', {
   id: serial('id').primaryKey(),
   orderId: varchar('order_id', { length: 100 }).notNull().unique(),
-  projectId: integer('project_id').notNull().references(() => projectsTable.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id')
+    .notNull()
+    .references(() => projectsTable.id, { onDelete: 'cascade' }),
   planId: integer('plan_id').notNull(),
   userId: varchar('user_id', { length: 43 }).notNull(),
   isYearly: boolean('is_yearly').default(false),
@@ -76,22 +84,29 @@ export const paymentsTable = pgTable('payments', {
   status: varchar('status', { length: 30 }).default('pending'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
-export const verificationsTable = pgTable('verifications', {
-  id: serial().primaryKey(),
-  userId: varchar({ length: 43 }).notNull(),
-  projectId: integer()
-    .notNull()
-    .references(() => projectsTable.id, { onDelete: 'cascade' }),
-  client: varchar({ length: 100 }).notNull(),
-  signature: varchar({ length: 500 }).notNull().unique(),
-  auraScore: integer(),
-  auraLevel: integer(),
-  verifiedAt: timestamp().notNull().defaultNow()
-}, (table) => [
-  uniqueIndex('verifications_user_project_uidx').on(table.userId, table.projectId)
-])
+export const verificationsTable = pgTable(
+  'verifications',
+  {
+    id: serial().primaryKey(),
+    userId: varchar({ length: 43 }).notNull(),
+    projectId: integer()
+      .notNull()
+      .references(() => projectsTable.id, { onDelete: 'cascade' }),
+    client: varchar({ length: 100 }).notNull(),
+    signature: varchar({ length: 500 }).notNull().unique(),
+    auraScore: integer(),
+    auraLevel: integer(),
+    verifiedAt: timestamp().notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('verifications_user_project_uidx').on(
+      table.userId,
+      table.projectId,
+    ),
+  ],
+);
 
 export const brightIdAppsTable = pgTable('brightid_apps', {
   key: text('key').primaryKey(), // Unique key
@@ -110,5 +125,5 @@ export const brightIdAppsTable = pgTable('brightid_apps', {
   links: text('links'), // JSON string recommended
   images: text('images'), // JSON string recommended
   callbackUrl: text('callback_url'),
-  joined: timestamp('joined').notNull().defaultNow()
-})
+  joined: timestamp('joined').notNull().defaultNow(),
+});

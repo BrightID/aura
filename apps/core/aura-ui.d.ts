@@ -1,4 +1,4 @@
-import "@aura/ui/jsx/solid"
+import '@aura/ui/jsx/solid';
 
 // Base `a-*` intrinsic-element typings live in `@aura/ui/jsx/solid` (shared
 // across every solid-js app). Add core-only custom elements/props here by

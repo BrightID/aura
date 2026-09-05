@@ -1,11 +1,11 @@
-import { A } from "@solidjs/router"
-import FadeIn from "@/components/motions/fade-in"
-import Scale from "@/components/motions/scale"
-import { createResource, Show } from "solid-js"
-import { checkIndexedDB } from "@/shared/lib/db-check"
+import { A } from '@solidjs/router';
+import FadeIn from '@/components/motions/fade-in';
+import Scale from '@/components/motions/scale';
+import { createResource, Show } from 'solid-js';
+import { checkIndexedDB } from '@/shared/lib/db-check';
 
 const Splash = () => {
-  const [dbHealthy] = createResource(checkIndexedDB)
+  const [dbHealthy] = createResource(checkIndexedDB);
 
   return (
     <Show
@@ -77,7 +77,7 @@ const Splash = () => {
         </FadeIn>
       </div>
     </Show>
-  )
-}
+  );
+};
 
-export default Splash
+export default Splash;

@@ -1,24 +1,24 @@
-import '@/components/common/profile-card'
-import { pushRouter } from '@/router'
-import { projects, trackedProject } from '@/states/projects'
-import { levelUpProgress } from '@/states/user'
-import { Project } from '@/types/projects'
-import { getProjects, queryClient } from '@/utils/apis'
-import { EvaluationCategory } from '@/utils/aura'
-import { getLevelupProgress } from '@/utils/score'
-import { signal, SignalWatcher } from '@lit-labs/signals'
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import '@/components/common/profile-card';
+import { pushRouter } from '@/router';
+import { projects, trackedProject } from '@/states/projects';
+import { levelUpProgress } from '@/states/user';
+import { Project } from '@/types/projects';
+import { getProjects, queryClient } from '@/utils/apis';
+import { EvaluationCategory } from '@/utils/aura';
+import { getLevelupProgress } from '@/utils/score';
+import { signal, SignalWatcher } from '@lit-labs/signals';
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-const focusedProject = signal(null as Project | null)
-const progress = signal(0)
+const focusedProject = signal(null as Project | null);
+const progress = signal(0);
 
 @customElement('project-landing')
 export class ProjectLandingElement extends SignalWatcher(LitElement) {
   @property({
-    type: Number
+    type: Number,
   })
-  projectId!: number
+  projectId!: number;
 
   static styles?: CSSResultGroup = css`
     :host {
@@ -141,42 +141,54 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
         flex-direction: column;
       }
     }
-  `
+  `;
 
   connectedCallback(): void {
-    super.connectedCallback()
+    super.connectedCallback();
     const fetchData = queryClient
       .ensureQueryData({
         queryKey: ['projects'],
-        queryFn: getProjects
+        queryFn: getProjects,
       })
       .then((res) => {
-        projects.set(res)
-        focusedProject.set(res.find((item) => item.id === this.projectId) ?? null)
-      })
+        projects.set(res);
+        focusedProject.set(
+          res.find((item) => item.id === this.projectId) ?? null,
+        );
+      });
 
-    getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }).then((res) => {
-      progress.set(res.percent)
-      levelUpProgress.set(res.requirements)
-    })
+    getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }).then(
+      (res) => {
+        progress.set(res.percent);
+        levelUpProgress.set(res.requirements);
+      },
+    );
   }
 
   protected trackProject() {
-    trackedProject.set(focusedProject.get())
-    pushRouter(`/`)
+    trackedProject.set(focusedProject.get());
+    pushRouter(`/`);
   }
 
   protected render() {
-    const project = focusedProject.get()
-    if (!project) return html`<p>Loading...</p>`
+    const project = focusedProject.get();
+    if (!project) return html`<p>Loading...</p>`;
 
     return html`
       <div class="container">
-        ${project.image
-          ? html`<img src="${project.image}" alt="${project.name}" class="project-image" />`
-          : ''}
+        ${
+          project.image
+            ? html`<img
+                src="${project.image}"
+                alt="${project.name}"
+                class="project-image"
+              />`
+            : ''
+        }
         <h1>${project.name} Verification</h1>
-        <p class="description">${project.description || 'No description available.'}</p>
+        <p class="description">
+          ${project.description || 'No description available.'}
+        </p>
 
         <p class="description">
           To claim your reward, complete the verification process through Aura.
@@ -185,12 +197,17 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
           <div class="progress-fill" style="width: ${progress.get()}%"></div>
         </div> -->
         <button class="continue-button" @click=${this.trackProject}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
           Continue to Verification
         </button>
       </div>
-    `
+    `;
   }
 }

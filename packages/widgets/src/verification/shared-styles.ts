@@ -1,4 +1,4 @@
-import { css, type CSSResult } from 'lit'
+import { css, type CSSResult } from 'lit';
 
 /**
  * Base styles shared by every verification widget component.
@@ -40,4 +40,4 @@ export const widgetBase: CSSResult = css`
       scroll-behavior: auto !important;
     }
   }
-`
+`;

@@ -1,9 +1,9 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-label")
+@customElement('a-label')
 export class LabelElement extends LitElement {
-  @property() declare for?: string
+  @property() declare for?: string;
 
   static styles: CSSResultGroup = css`
     :host {
@@ -28,15 +28,15 @@ export class LabelElement extends LitElement {
       opacity: 0.5;
       cursor: not-allowed;
     }
-  `
+  `;
 
   render() {
-    return html`<label for=${this.for ?? ""}><slot></slot></label>`
+    return html`<label for=${this.for ?? ''}><slot></slot></label>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-label": LabelElement
+    'a-label': LabelElement;
   }
 }

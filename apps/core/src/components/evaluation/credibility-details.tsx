@@ -1,53 +1,53 @@
-import { categoryLabel, confidenceLabel } from "@aura/domain/labels"
-import { calculateUserScorePercentage, impactShare } from "@aura/domain/score"
-import { EvaluationCategory } from "@aura/domain/types/evaluations"
-import type { DialogElement } from "@aura/ui"
-import { useNavigate } from "@solidjs/router"
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js"
-import EvaluationsChart from "@/components/charts/evaluations-chart"
-import EvaluateModal from "@/components/evaluation/evaluate-modal"
-import Avatar from "@/components/home/avatar"
-import ProgressBar from "@/components/home/progress-bar"
-import LevelScore from "@/components/shared/level-score"
-import { useSubjectName } from "@/hooks/use-backup"
-import { useMyRating } from "@/hooks/use-my-evaluations"
-import { useSubjectInboundEvaluations } from "@/hooks/use-subject-inbound-evaluations"
-import { useSubjectVerifications } from "@/hooks/use-subject-verifications"
-import { roleColor, roleIcon } from "@/shared/lib/role-style"
-import { authStore } from "@/store/auth"
+import { categoryLabel, confidenceLabel } from '@aura/domain/labels';
+import { calculateUserScorePercentage, impactShare } from '@aura/domain/score';
+import { EvaluationCategory } from '@aura/domain/types/evaluations';
+import type { DialogElement } from '@aura/ui';
+import { useNavigate } from '@solidjs/router';
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
+import EvaluationsChart from '@/components/charts/evaluations-chart';
+import EvaluateModal from '@/components/evaluation/evaluate-modal';
+import Avatar from '@/components/home/avatar';
+import ProgressBar from '@/components/home/progress-bar';
+import LevelScore from '@/components/shared/level-score';
+import { useSubjectName } from '@/hooks/use-backup';
+import { useMyRating } from '@/hooks/use-my-evaluations';
+import { useSubjectInboundEvaluations } from '@/hooks/use-subject-inbound-evaluations';
+import { useSubjectVerifications } from '@/hooks/use-subject-verifications';
+import { roleColor, roleIcon } from '@/shared/lib/role-style';
+import { authStore } from '@/store/auth';
 
 /** One role's stats panel: standing, your evaluation, impacts chart. */
 function RoleStats(props: {
-  subjectId: () => string
-  category: EvaluationCategory
-  onNavigate: (subjectId: string) => void
-  onEvaluate: (category: EvaluationCategory) => void
+  subjectId: () => string;
+  category: EvaluationCategory;
+  onNavigate: (subjectId: string) => void;
+  onEvaluate: (category: EvaluationCategory) => void;
 }) {
-  const v = useSubjectVerifications(props.subjectId, () => props.category)
+  const v = useSubjectVerifications(props.subjectId, () => props.category);
   const inbound = useSubjectInboundEvaluations(
     props.subjectId,
     () => props.category,
-  )
+  );
   const progress = createMemo(() =>
     calculateUserScorePercentage(props.category, v.auraScore() ?? 0),
-  )
+  );
 
   // My evaluation of this subject in this role + its share of total impact.
-  const my = useMyRating(props.subjectId, () => props.category)
+  const my = useMyRating(props.subjectId, () => props.category);
   const myImpactPercent = createMemo(() =>
     impactShare(v.auraImpacts(), authStore.user?.brightId),
-  )
-  const isSelf = () => props.subjectId() === authStore.user?.brightId
+  );
+  const isSelf = () => props.subjectId() === authStore.user?.brightId;
 
   return (
     <div class="flex flex-col gap-2 pt-2">
       <LevelScore level={v.auraLevel()} score={v.auraScore()} />
       <p class="text-sm text-muted-foreground">
-        Evaluations:{" "}
+        Evaluations:{' '}
         <span class="font-medium text-foreground">
-          {inbound.evaluations()?.length ?? "…"}
-        </span>{" "}
-        ({inbound.positiveCount() ?? "…"} pos / {inbound.negativeCount() ?? "…"}{" "}
+          {inbound.evaluations()?.length ?? '…'}
+        </span>{' '}
+        ({inbound.positiveCount() ?? '…'} pos / {inbound.negativeCount() ?? '…'}{' '}
         neg)
       </p>
       <Show when={progress() >= 0}>
@@ -56,12 +56,12 @@ function RoleStats(props: {
 
       <div class="flex items-center justify-between text-sm text-muted-foreground">
         <span>
-          Your evaluation:{" "}
+          Your evaluation:{' '}
           <Show when={my.rating() !== undefined} fallback="-">
             <span
-              class={`font-medium ${my.rating()! > 0 ? "text-aura-success" : "text-destructive"}`}
+              class={`font-medium ${my.rating()! > 0 ? 'text-aura-success' : 'text-destructive'}`}
             >
-              {(my.rating()! > 0 ? "+" : "") + my.rating()}{" "}
+              {(my.rating()! > 0 ? '+' : '') + my.rating()}{' '}
               {confidenceLabel(my.rating()!)}
             </span>
             <Show when={myImpactPercent() !== null}>
@@ -89,23 +89,23 @@ function RoleStats(props: {
         loading={() => v.loading()}
       />
     </div>
-  )
+  );
 }
 
 export default function CredibilityDetails(props: {
-  subjectId: () => string | null
-  onClose: () => void
+  subjectId: () => string | null;
+  onClose: () => void;
 }) {
-  let dialog: DialogElement | undefined
-  const navigate = useNavigate()
+  let dialog: DialogElement | undefined;
+  const navigate = useNavigate();
 
-  const id = () => props.subjectId() ?? ""
-  const name = useSubjectName(id)
+  const id = () => props.subjectId() ?? '';
+  const name = useSubjectName(id);
 
   const roleChecks = Object.values(EvaluationCategory).map((category) => ({
     category,
     v: useSubjectVerifications(id, () => category),
-  }))
+  }));
   const authorizedRoles = createMemo(() =>
     roleChecks
       .filter(
@@ -113,19 +113,19 @@ export default function CredibilityDetails(props: {
           category === EvaluationCategory.SUBJECT || (v.auraLevel() ?? 0) > 0,
       )
       .map(({ category }) => category),
-  )
+  );
 
   const [evaluatingCategory, setEvaluatingCategory] =
-    createSignal<EvaluationCategory | null>(null)
+    createSignal<EvaluationCategory | null>(null);
 
   const goTo = (subjectId: string) => {
-    dialog?.hide()
-    navigate(`/subject/${subjectId}`)
-  }
+    dialog?.hide();
+    navigate(`/subject/${subjectId}`);
+  };
   createEffect(() => {
-    if (props.subjectId()) dialog?.show()
-    else dialog?.hide()
-  })
+    if (props.subjectId()) dialog?.show();
+    else dialog?.hide();
+  });
 
   return (
     <>
@@ -182,5 +182,5 @@ export default function CredibilityDetails(props: {
         onClose={() => setEvaluatingCategory(null)}
       />
     </>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-import { html, LitElement } from "lit"
-import { customElement } from "lit/decorators.js"
+import { html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-@customElement("tooltips-section")
+@customElement('tooltips-section')
 export class TooltipsSectionElement extends LitElement {
   protected render() {
     return html`
@@ -49,12 +49,12 @@ export class TooltipsSectionElement extends LitElement {
           </button>
         </a-tooltip>
       </div>
-    `
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "tooltips-section": TooltipsSectionElement
+    'tooltips-section': TooltipsSectionElement;
   }
 }

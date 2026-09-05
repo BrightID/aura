@@ -1,77 +1,76 @@
-import { CopyIcon } from "lucide-react"
-import { QRCode } from "react-qrcode-logo"
-import { Link } from "react-router"
-import { FadeIn } from "~/components/animations"
-import { copyToClipboard } from "~/utils/clipboard"
-import { generateDeeplink } from "brightid_sdk_v6/dist/appMethods"
-import { useCallback, useEffect, useState } from "react"
-import { toast } from "@aura/ui"
-import { useUser } from "~/store"
-import { useQuery } from "@tanstack/react-query"
-import { brightIdSponsor } from "~/utils/brightid"
-import { generatePrivateKey } from "viem/accounts"
-import { Buffer } from "buffer"
-import { v4 } from "uuid"
-import tweetnacl from "tweetnacl"
-import { b64FromUint8Array, strToUint8Array } from "~/utils/crypto"
+import { CopyIcon } from 'lucide-react';
+import { QRCode } from 'react-qrcode-logo';
+import { Link } from 'react-router';
+import { FadeIn } from '~/components/animations';
+import { copyToClipboard } from '~/utils/clipboard';
+import { generateDeeplink } from 'brightid_sdk_v6/dist/appMethods';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from '@aura/ui';
+import { useUser } from '~/store';
+import { useQuery } from '@tanstack/react-query';
+import { brightIdSponsor } from '~/utils/brightid';
+import { generatePrivateKey } from 'viem/accounts';
+import { Buffer } from 'buffer';
+import { v4 } from 'uuid';
+import tweetnacl from 'tweetnacl';
 
-const appId = "AuraDashboard"
+const appId = 'AuraDashboard';
 
-const { sign } = tweetnacl
+const { sign } = tweetnacl;
 
 export default function LoginWithBrightId() {
-  const [universalLink, setUniversalLink] = useState("")
-  const [qrCodeSize, setQrCodeSize] = useState(400)
-  const [appUserId, setAppUserId] = useState(v4().replace(/-/g, ""))
-  const user = useUser()
+  const [universalLink, setUniversalLink] = useState('');
+  const [qrCodeSize, setQrCodeSize] = useState(400);
+  const [appUserId, setAppUserId] = useState(v4().replace(/-/g, ''));
+  const user = useUser();
 
-  const [userSig, setUserSig] = useState("")
+  const [userSig, setUserSig] = useState('');
 
   const {} = useQuery({
-    queryKey: ["sponsorship", appUserId],
+    queryKey: ['sponsorship', appUserId],
     queryFn: async () => {
       try {
-        const { publicKey, secretKey } = sign.keyPair()
+        const { publicKey, secretKey } = sign.keyPair();
 
         const res = await brightIdSponsor(
-          Buffer.from(secretKey).toString("base64"),
+          Buffer.from(secretKey).toString('base64'),
           appId,
-          Buffer.from(publicKey).toString("base64")
-        )
-        console.log(res)
+          Buffer.from(publicKey).toString('base64'),
+        );
+        console.log(res);
       } catch (error) {
-        console.error("Sponsor error:", error)
-        toast.error("Failed to sponsor user", {
+        console.error('Sponsor error:', error);
+        toast.error('Failed to sponsor user', {
           description: `${error}`,
-        })
+        });
       }
 
-      return {}
+      return {};
     },
-  })
+  });
 
   const copyQr = () => {
-    if (!universalLink) return
-    copyToClipboard(universalLink)
-    toast("Open this link with the BrightID app.", {
+    if (!universalLink) return;
+    copyToClipboard(universalLink);
+    toast('Open this link with the BrightID app.', {
       description: universalLink,
-    })
-  }
+    });
+  };
 
   const generateBrightIDLink = useCallback(() => {
-    const privateKey = generatePrivateKey()
+    const privateKey = generatePrivateKey();
 
-    user.generatePrivateKey(privateKey)
+    user.generatePrivateKey(privateKey);
 
-    const deepLink = generateDeeplink(appId, privateKey)
-    setUniversalLink(deepLink)
-  }, [])
+    const deepLink = generateDeeplink(appId, privateKey);
+    setUniversalLink(deepLink);
+  }, []);
 
   useEffect(() => {
-    if (universalLink.length) return
-    setQrCodeSize(Math.min(window.innerWidth * 0.9 - 40, 270))
-    generateBrightIDLink()
-  }, [generateBrightIDLink, universalLink])
+    if (universalLink.length) return;
+    setQrCodeSize(Math.min(window.innerWidth * 0.9 - 40, 270));
+    generateBrightIDLink();
+  }, [generateBrightIDLink, universalLink]);
 
   return (
     <div className="max-w-2xl pt-20 mx-auto">
@@ -132,7 +131,7 @@ export default function LoginWithBrightId() {
             <a
               href={universalLink}
               target="_blank"
-              data-testid={universalLink && "import-universal-link"}
+              data-testid={universalLink && 'import-universal-link'}
               className="text-left w-sm whitespace-nowrap line-clamp-1 text-sm text-ellipsis font-medium text-white underline"
               rel="noreferrer"
             >
@@ -157,5 +156,5 @@ export default function LoginWithBrightId() {
         </footer>
       </FadeIn>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { scrollReveal } from "$lib/scroll-reveal"
+import { scrollReveal } from '$lib/scroll-reveal';
 
 export default function UseCases() {
   return (
@@ -18,8 +18,8 @@ export default function UseCases() {
             Where Your Verification Works
           </h2>
           <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-            One attestation, built to answer one question — "is this a real, unique
-            person?" — everywhere that question comes up.
+            One attestation, built to answer one question — "is this a real,
+            unique person?" — everywhere that question comes up.
           </p>
         </div>
 
@@ -45,8 +45,8 @@ export default function UseCases() {
               Grants &amp; Airdrops
             </h3>
             <p class="text-muted-foreground leading-relaxed">
-              Prove you're one real person, so rewards reach real communities instead
-              of sybil farms.
+              Prove you're one real person, so rewards reach real communities
+              instead of sybil farms.
             </p>
           </div>
 
@@ -58,8 +58,8 @@ export default function UseCases() {
               Governance &amp; Voting
             </h3>
             <p class="text-muted-foreground leading-relaxed">
-              One person, one vote — even in fully decentralized communities with no
-              central ID checks.
+              One person, one vote — even in fully decentralized communities
+              with no central ID checks.
             </p>
           </div>
 
@@ -71,8 +71,8 @@ export default function UseCases() {
               Proof of Personhood for Apps
             </h3>
             <p class="text-muted-foreground leading-relaxed">
-              Let any product confirm you're a unique human without ever seeing your
-              personal data.
+              Let any product confirm you're a unique human without ever seeing
+              your personal data.
             </p>
           </div>
 
@@ -97,7 +97,8 @@ export default function UseCases() {
               Sybil-Resistant Communities
             </h3>
             <p class="text-muted-foreground leading-relaxed">
-              Keep forums, DAOs, and marketplaces free of duplicate accounts and bots.
+              Keep forums, DAOs, and marketplaces free of duplicate accounts and
+              bots.
             </p>
           </div>
         </div>
@@ -126,5 +127,5 @@ export default function UseCases() {
         </div>
       </div>
     </section>
-  )
+  );
 }

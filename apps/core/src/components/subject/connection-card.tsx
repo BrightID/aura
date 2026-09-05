@@ -1,12 +1,12 @@
-import Avatar from "@/components/home/avatar"
-import { formatDuration } from "@/shared/lib/time"
-import type { AuraNodeBrightIdConnection } from "@aura/domain/types/aura"
+import Avatar from '@/components/home/avatar';
+import { formatDuration } from '@/shared/lib/time';
+import type { AuraNodeBrightIdConnection } from '@aura/domain/types/aura';
 
 /** Inbound-connection row: who, how close, and since when. */
 export default function ConnectionCard(props: {
-  connection: AuraNodeBrightIdConnection
-  name: string
-  onClick?: (id: string) => void
+  connection: AuraNodeBrightIdConnection;
+  name: string;
+  onClick?: (id: string) => void;
 }) {
   return (
     <a-card
@@ -32,5 +32,5 @@ export default function ConnectionCard(props: {
         {props.connection.level}
       </span>
     </a-card>
-  )
+  );
 }

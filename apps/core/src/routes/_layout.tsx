@@ -1,5 +1,5 @@
-import type { ParentComponent } from "solid-js"
-import AppHeader from "@/components/shared/app-header"
+import type { ParentComponent } from 'solid-js';
+import AppHeader from '@/components/shared/app-header';
 
 const Layout: ParentComponent = (props) => {
   return (
@@ -18,7 +18,7 @@ const Layout: ParentComponent = (props) => {
         {props.children}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

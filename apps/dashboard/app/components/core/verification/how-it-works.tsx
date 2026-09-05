@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import { AuraLogo } from "./aura-logo"
+import { AuraLogo } from './aura-logo';
 
 interface HowItWorksProps {
-  onBack: () => void
+  onBack: () => void;
 }
 
 const steps = [
@@ -23,9 +23,9 @@ const steps = [
         />
       </svg>
     ),
-    title: "Connect Your Identity",
+    title: 'Connect Your Identity',
     description:
-      "Link your BrightID or create a universal identifier that you control.",
+      'Link your BrightID or create a universal identifier that you control.',
   },
   {
     icon: (
@@ -43,9 +43,9 @@ const steps = [
         />
       </svg>
     ),
-    title: "Get Evaluated",
+    title: 'Get Evaluated',
     description:
-      "People who know you evaluate your uniqueness. No personal info is shared.",
+      'People who know you evaluate your uniqueness. No personal info is shared.',
   },
   {
     icon: (
@@ -63,9 +63,9 @@ const steps = [
         />
       </svg>
     ),
-    title: "Earn Levels",
+    title: 'Earn Levels',
     description:
-      "Your verification level increases as you receive positive evaluations.",
+      'Your verification level increases as you receive positive evaluations.',
   },
   {
     icon: (
@@ -83,11 +83,11 @@ const steps = [
         />
       </svg>
     ),
-    title: "Unlock Access",
+    title: 'Unlock Access',
     description:
-      "Apps verify your level to grant access—without seeing your identity.",
+      'Apps verify your level to grant access—without seeing your identity.',
   },
-]
+];
 
 export function HowItWorks({ onBack }: HowItWorksProps) {
   return (
@@ -171,5 +171,5 @@ export function HowItWorks({ onBack }: HowItWorksProps) {
         Got it
       </a-button>
     </div>
-  )
+  );
 }

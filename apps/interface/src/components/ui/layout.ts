@@ -1,7 +1,7 @@
-import { css, html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-import './footer.ts'
+import './footer.ts';
 
 @customElement('app-layout')
 export class AppLayout extends LitElement {
@@ -9,13 +9,13 @@ export class AppLayout extends LitElement {
     width: Math.random() * 2 + 1 + 'px',
     height: Math.random() * 2 + 1 + 'px',
     top: Math.random() * 100 + '%',
-    left: Math.random() * 100 + '%'
-  }))
+    left: Math.random() * 100 + '%',
+  }));
 
   @property({
-    type: Boolean
+    type: Boolean,
   })
-  isEmbeded = false
+  isEmbeded = false;
 
   static styles = css`
     .layout-wrapper {
@@ -76,13 +76,13 @@ export class AppLayout extends LitElement {
     main {
       padding: 40px 0;
     }
-  `
+  `;
 
   render() {
     if (this.isEmbeded) {
       return html` <div class="embed-layout">
         <slot></slot>
-      </div>`
+      </div>`;
     }
     return html`
       <div class="layout-wrapper">
@@ -96,7 +96,7 @@ export class AppLayout extends LitElement {
                 html` <div
                   class="star"
                   style="width: ${particle.width}; height: ${particle.height}; top: ${particle.top}; left: ${particle.left};"
-                ></div>`
+                ></div>`,
             )}
           </div>
 
@@ -105,6 +105,6 @@ export class AppLayout extends LitElement {
           </main>
         </div>
       </div>
-    `
+    `;
   }
 }

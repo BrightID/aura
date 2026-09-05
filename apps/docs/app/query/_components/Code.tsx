@@ -4,7 +4,7 @@ interface CodeProps {
   children: string;
 }
 
-export function Code({ lang = "ts", filename, children }: CodeProps) {
+export function Code({ lang = 'ts', filename, children }: CodeProps) {
   return (
     <div className="my-5 overflow-hidden rounded-[10px] border border-border">
       <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2 font-[family-name:var(--font-geist-mono)] text-xs text-muted-foreground">
@@ -20,20 +20,22 @@ export function Code({ lang = "ts", filename, children }: CodeProps) {
 }
 
 interface CalloutProps {
-  type?: "note" | "tip" | "warn";
+  type?: 'note' | 'tip' | 'warn';
   children: React.ReactNode;
 }
 
-const icons = { note: "ℹ", tip: "✦", warn: "⚠" };
+const icons = { note: 'ℹ', tip: '✦', warn: '⚠' };
 const variants = {
-  note: "bg-blue-500/[0.08] border border-blue-500/20 text-blue-500/90",
-  tip: "bg-green-500/[0.08] border border-green-500/20 text-green-500/90",
-  warn: "bg-yellow-500/[0.08] border border-yellow-500/20 text-yellow-500/90",
+  note: 'bg-blue-500/[0.08] border border-blue-500/20 text-blue-500/90',
+  tip: 'bg-green-500/[0.08] border border-green-500/20 text-green-500/90',
+  warn: 'bg-yellow-500/[0.08] border border-yellow-500/20 text-yellow-500/90',
 };
 
-export function Callout({ type = "note", children }: CalloutProps) {
+export function Callout({ type = 'note', children }: CalloutProps) {
   return (
-    <div className={`my-5 flex gap-3 rounded-lg px-4 py-3.5 text-sm leading-relaxed ${variants[type]}`}>
+    <div
+      className={`my-5 flex gap-3 rounded-lg px-4 py-3.5 text-sm leading-relaxed ${variants[type]}`}
+    >
       <span className="shrink-0 text-base">{icons[type]}</span>
       <div>{children}</div>
     </div>

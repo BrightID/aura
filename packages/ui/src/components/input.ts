@@ -1,31 +1,31 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property, state } from "lit/decorators.js"
-import { live } from "lit/directives/live.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 
-@customElement("a-input")
+@customElement('a-input')
 export class InputElement extends LitElement {
-  @property() declare type: "text" | "email" | "password" | "number"
-  @property() declare label?: string
-  @property() declare name: string
-  @property() declare placeholder: string
+  @property() declare type: 'text' | 'email' | 'password' | 'number';
+  @property() declare label?: string;
+  @property() declare name: string;
+  @property() declare placeholder: string;
 
-  @property({ reflect: true }) declare value: string
-  @property({ type: Boolean }) declare disabled: boolean
+  @property({ reflect: true }) declare value: string;
+  @property({ type: Boolean }) declare disabled: boolean;
 
-  @state() private declare _hasPrefix: boolean
-  @state() private declare _hasSuffix: boolean
+  @state() declare private _hasPrefix: boolean;
+  @state() declare private _hasSuffix: boolean;
 
-  private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`
+  private readonly _inputId = `a-input-${Math.random().toString(36).slice(2, 9)}`;
 
   constructor() {
-    super()
-    this.type = "text"
-    this.name = "input-text"
-    this.placeholder = ""
-    this.value = ""
-    this.disabled = false
-    this._hasPrefix = false
-    this._hasSuffix = false
+    super();
+    this.type = 'text';
+    this.name = 'input-text';
+    this.placeholder = '';
+    this.value = '';
+    this.disabled = false;
+    this._hasPrefix = false;
+    this._hasSuffix = false;
   }
 
   static styles: CSSResultGroup = css`
@@ -51,8 +51,8 @@ export class InputElement extends LitElement {
     }
 
     /* Icon Slots */
-    ::slotted([slot="prefix"]),
-    ::slotted([slot="suffix"]) {
+    ::slotted([slot='prefix']),
+    ::slotted([slot='suffix']) {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -67,11 +67,11 @@ export class InputElement extends LitElement {
       justify-content: center;
     }
 
-    ::slotted([slot="prefix"]) {
+    ::slotted([slot='prefix']) {
       left: 0.875rem;
     }
 
-    ::slotted([slot="suffix"]) {
+    ::slotted([slot='suffix']) {
       right: 0.875rem;
     }
 
@@ -135,13 +135,15 @@ export class InputElement extends LitElement {
       background: color-mix(in oklch, var(--background) 90%, transparent);
       border-color: color-mix(in oklch, var(--border) 60%, transparent);
     }
-  `
+  `;
 
   render() {
     return html`
-      ${this.label
-        ? html`<label for=${this._inputId}>${this.label}</label>`
-        : ""}
+      ${
+        this.label
+          ? html`<label for=${this._inputId}>${this.label}</label>`
+          : ''
+      }
 
       <div class="input-wrapper">
         <!-- Prefix Icon Slot -->
@@ -150,10 +152,10 @@ export class InputElement extends LitElement {
         <input
           id=${this._inputId}
           class=${[
-            this._hasPrefix ? "has-prefix" : "",
-            this._hasSuffix ? "has-suffix" : "",
+            this._hasPrefix ? 'has-prefix' : '',
+            this._hasSuffix ? 'has-suffix' : '',
           ]
-            .join(" ")
+            .join(' ')
             .trim()}
           .value=${live(this.value)}
           @input=${this.onInputChange}
@@ -167,36 +169,36 @@ export class InputElement extends LitElement {
         <!-- Suffix Icon Slot -->
         <slot name="suffix" @slotchange=${this._onSuffixSlotChange}></slot>
       </div>
-    `
+    `;
   }
 
   private _onPrefixSlotChange(e: Event) {
-    const slot = e.target as HTMLSlotElement
-    this._hasPrefix = slot.assignedElements().length > 0
+    const slot = e.target as HTMLSlotElement;
+    this._hasPrefix = slot.assignedElements().length > 0;
   }
 
   private _onSuffixSlotChange(e: Event) {
-    const slot = e.target as HTMLSlotElement
-    this._hasSuffix = slot.assignedElements().length > 0
+    const slot = e.target as HTMLSlotElement;
+    this._hasSuffix = slot.assignedElements().length > 0;
   }
 
   private onInputChange(e: Event) {
-    e.stopPropagation()
-    const target = e.target as HTMLInputElement
-    this.value = target.value
+    e.stopPropagation();
+    const target = e.target as HTMLInputElement;
+    this.value = target.value;
 
     this.dispatchEvent(
-      new CustomEvent("change", {
+      new CustomEvent('change', {
         detail: target.value,
         bubbles: false,
         composed: false,
       }),
-    )
+    );
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-input": InputElement
+    'a-input': InputElement;
   }
 }

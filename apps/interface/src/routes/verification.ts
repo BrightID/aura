@@ -1,23 +1,23 @@
-import { projects } from '@/states/projects'
-import { levelUpProgress, userBrightId } from '@/states/user'
-import type { Project } from '@/types/projects'
-import { getProjects, queryClient } from '@/utils/apis'
-import { EvaluationCategory } from '@/utils/aura'
-import { getLevelupProgress } from '@/utils/score'
-import { getSubjectVerifications } from '@/utils/subject'
-import { signal, SignalWatcher } from '@lit-labs/signals'
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { projects } from '@/states/projects';
+import { levelUpProgress, userBrightId } from '@/states/user';
+import type { Project } from '@/types/projects';
+import { getProjects, queryClient } from '@/utils/apis';
+import { EvaluationCategory } from '@/utils/aura';
+import { getLevelupProgress } from '@/utils/score';
+import { getSubjectVerifications } from '@/utils/subject';
+import { signal, SignalWatcher } from '@lit-labs/signals';
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
-const focusedProject = signal(null as Project | null)
+const focusedProject = signal(null as Project | null);
 
 @customElement('verification-page')
 export class VerificationPage extends SignalWatcher(LitElement) {
   @property({ type: Number })
-  projectId!: number
+  projectId!: number;
 
-  @state() private auraLevel = 0
-  @state() private isLoading = true
+  @state() private auraLevel = 0;
+  @state() private isLoading = true;
 
   static styles?: CSSResultGroup = css`
     :host {
@@ -36,7 +36,8 @@ export class VerificationPage extends SignalWatcher(LitElement) {
       min-height: 100vh;
       color: var(--foreground);
       font-family:
-        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+        sans-serif;
       padding: 32px 24px;
       box-sizing: border-box;
       display: flex;
@@ -135,7 +136,10 @@ export class VerificationPage extends SignalWatcher(LitElement) {
       background-color: transparent;
     }
 
-    .req-content { flex: 1; text-align: left; }
+    .req-content {
+      flex: 1;
+      text-align: left;
+    }
 
     .req-reason {
       font-size: 13px;
@@ -223,48 +227,62 @@ export class VerificationPage extends SignalWatcher(LitElement) {
       margin-top: 40px;
       font-size: 14px;
     }
-  `
+  `;
 
   connectedCallback(): void {
-    super.connectedCallback()
-    this._load()
+    super.connectedCallback();
+    this._load();
   }
 
   private async _load() {
-    this.isLoading = true
+    this.isLoading = true;
     try {
       const [projectsRes, levelData, subjectData] = await Promise.all([
-        queryClient.ensureQueryData({ queryKey: ['projects'], queryFn: getProjects }),
+        queryClient.ensureQueryData({
+          queryKey: ['projects'],
+          queryFn: getProjects,
+        }),
         userBrightId.get()
-          ? getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT })
+          ? getLevelupProgress({
+              evaluationCategory: EvaluationCategory.SUBJECT,
+            })
           : Promise.resolve(null),
         userBrightId.get()
-          ? getSubjectVerifications(userBrightId.get(), EvaluationCategory.SUBJECT)
-          : Promise.resolve(null)
-      ])
+          ? getSubjectVerifications(
+              userBrightId.get(),
+              EvaluationCategory.SUBJECT,
+            )
+          : Promise.resolve(null),
+      ]);
 
-      projects.set(projectsRes)
-      focusedProject.set(projectsRes.find((item) => item.id === this.projectId) ?? null)
+      projects.set(projectsRes);
+      focusedProject.set(
+        projectsRes.find((item) => item.id === this.projectId) ?? null,
+      );
 
-      if (levelData) levelUpProgress.set(levelData.requirements)
-      if (subjectData) this.auraLevel = subjectData.auraLevel ?? 0
+      if (levelData) levelUpProgress.set(levelData.requirements);
+      if (subjectData) this.auraLevel = subjectData.auraLevel ?? 0;
     } finally {
-      this.isLoading = false
+      this.isLoading = false;
     }
   }
 
   protected render() {
-    const project = focusedProject.get()
-    const requirements = levelUpProgress.get()
-    const brightId = userBrightId.get()
+    const project = focusedProject.get();
+    const requirements = levelUpProgress.get();
+    const brightId = userBrightId.get();
 
     if (this.isLoading || !project) {
-      return html`<div class="container"><div class="loading">Loading project details…</div></div>`
+      return html`<div class="container">
+        <div class="loading">Loading project details…</div>
+      </div>`;
     }
 
     // Fix: check auraLevel directly against the requirement, not a broken array length check
-    const isVerified = this.auraLevel >= project.requirementLevel
-    const activeRequirements = requirements.filter((r) => r.level <= project.requirementLevel)
+    const isVerified = this.auraLevel >= project.requirementLevel;
+    const activeRequirements = requirements.filter(
+      (r) => r.level <= project.requirementLevel,
+    );
 
     return html`
       <div class="container">
@@ -276,13 +294,15 @@ export class VerificationPage extends SignalWatcher(LitElement) {
           </div>
         </div>
 
-        ${!brightId
-          ? this._renderAuthGate()
-          : isVerified
-            ? this._renderSuccess(project)
-            : this._renderRequirements(activeRequirements)}
+        ${
+          !brightId
+            ? this._renderAuthGate()
+            : isVerified
+              ? this._renderSuccess(project)
+              : this._renderRequirements(activeRequirements)
+        }
       </div>
-    `
+    `;
   }
 
   private _renderAuthGate() {
@@ -293,25 +313,32 @@ export class VerificationPage extends SignalWatcher(LitElement) {
           <a href="/interface/login" class="back-btn">Sign In</a>
         </div>
       </div>
-    `
+    `;
   }
 
   private _renderSuccess(project: Project) {
     return html`
       <div class="success-container">
         <div class="success-title">Verification Complete</div>
-        <p style="color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0 0 4px;">
-          You have met all the requirements to access <strong>${project.name}</strong>.
+        <p
+          style="color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0 0 4px;"
+        >
+          You have met all the requirements to access
+          <strong>${project.name}</strong>.
         </p>
         <div class="actions">
           <a href="/interface/home" class="back-btn">Continue to App</a>
         </div>
       </div>
-    `
+    `;
   }
 
   private _renderRequirements(
-    requirements: { reason: string; status: 'passed' | 'incomplete'; level: number }[]
+    requirements: {
+      reason: string;
+      status: 'passed' | 'incomplete';
+      level: number;
+    }[],
   ) {
     return html`
       <div>
@@ -319,28 +346,29 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
         <div class="requirements-list">
           ${requirements.map((req) => {
-            const passed = req.status === 'passed'
+            const passed = req.status === 'passed';
             return html`
               <div class="req-card ${passed ? 'passed' : ''}">
-                <div class="status-indicator ${passed ? 'passed' : 'pending'}"></div>
+                <div
+                  class="status-indicator ${passed ? 'passed' : 'pending'}"
+                ></div>
                 <div class="req-content">
                   <p class="req-reason">${req.reason}</p>
-                  <div class="req-status-text">${passed ? 'Requirement met' : 'Action required'}</div>
+                  <div class="req-status-text">
+                    ${passed ? 'Requirement met' : 'Action required'}
+                  </div>
                 </div>
               </div>
-            `
+            `;
           })}
         </div>
 
         <div class="actions">
-          <a
-            href="/interface/home"
-            class="back-btn secondary"
-          >
+          <a href="/interface/home" class="back-btn secondary">
             Back to Overview
           </a>
         </div>
       </div>
-    `
+    `;
   }
 }

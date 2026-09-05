@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
-import { Code, Table } from "../_components/Code";
+import type { Metadata } from 'next';
+import { Code, Table } from '../_components/Code';
 export const metadata: Metadata = {
-  title: "API Reference — @aura/query",
-  description: "Complete TypeScript interface reference for @aura/query.",
+  title: 'API Reference — @aura/query',
+  description: 'Complete TypeScript interface reference for @aura/query.',
 };
 
 export default function ApiReferencePage() {
@@ -10,7 +10,7 @@ export default function ApiReferencePage() {
     <article className="prose">
       <h1>API Reference</h1>
       <p className="prose-lead">
-        Complete TypeScript signatures for every export in{" "}
+        Complete TypeScript signatures for every export in{' '}
         <code>@aura/query</code>.
       </p>
 
@@ -43,13 +43,17 @@ export default function ApiReferencePage() {
 
       <h3>QueryClientConfig</h3>
       <Table
-        headers={["Property", "Type", "Default"]}
+        headers={['Property', 'Type', 'Default']}
         rows={[
-          [<code key="a">defaultStaleTime</code>, "number (ms)", "0"],
-          [<code key="b">defaultGcTime</code>, "number (ms)", "300 000"],
-          [<code key="c">defaultRetry</code>, "number | false", "3"],
-          [<code key="d">defaultRetryDelay</code>, "number | (attempt) => number", "exponential backoff"],
-          [<code key="e">defaultRefetchOnWindowFocus</code>, "boolean", "true"],
+          [<code key="a">defaultStaleTime</code>, 'number (ms)', '0'],
+          [<code key="b">defaultGcTime</code>, 'number (ms)', '300 000'],
+          [<code key="c">defaultRetry</code>, 'number | false', '3'],
+          [
+            <code key="d">defaultRetryDelay</code>,
+            'number | (attempt) => number',
+            'exponential backoff',
+          ],
+          [<code key="e">defaultRefetchOnWindowFocus</code>, 'boolean', 'true'],
         ]}
       />
 
@@ -84,22 +88,57 @@ export default function ApiReferencePage() {
 
       <h3>QueryOptions&lt;TData, TError&gt;</h3>
       <Table
-        headers={["Property", "Type", "Required", "Default"]}
+        headers={['Property', 'Type', 'Required', 'Default']}
         rows={[
-          [<code key="a">queryKey</code>, "unknown[]", "yes", "—"],
-          [<code key="b">queryFn</code>, "(ctx: QueryFunctionContext) => Promise<TData>", "yes", "—"],
-          [<code key="c">staleTime</code>, "number (ms)", "no", "client default"],
-          [<code key="d">gcTime</code>, "number (ms)", "no", "client default"],
-          [<code key="e">enabled</code>, "boolean", "no", "true"],
-          [<code key="f">retry</code>, "number | false", "no", "client default"],
-          [<code key="g">retryDelay</code>, "number | (n) => number", "no", "client default"],
-          [<code key="h">refetchInterval</code>, "number | false", "no", "false"],
-          [<code key="i">refetchOnWindowFocus</code>, "boolean", "no", "client default"],
-          [<code key="j">placeholderData</code>, "TData | (prev) => TData", "no", "—"],
-          [<code key="k">client</code>, "QueryClient", "no", "defaultClient"],
-          [<code key="l">onSuccess</code>, "(data: TData) => void", "no", "—"],
-          [<code key="m">onError</code>, "(error: TError) => void", "no", "—"],
-          [<code key="n">onSettled</code>, "(data, error) => void", "no", "—"],
+          [<code key="a">queryKey</code>, 'unknown[]', 'yes', '—'],
+          [
+            <code key="b">queryFn</code>,
+            '(ctx: QueryFunctionContext) => Promise<TData>',
+            'yes',
+            '—',
+          ],
+          [
+            <code key="c">staleTime</code>,
+            'number (ms)',
+            'no',
+            'client default',
+          ],
+          [<code key="d">gcTime</code>, 'number (ms)', 'no', 'client default'],
+          [<code key="e">enabled</code>, 'boolean', 'no', 'true'],
+          [
+            <code key="f">retry</code>,
+            'number | false',
+            'no',
+            'client default',
+          ],
+          [
+            <code key="g">retryDelay</code>,
+            'number | (n) => number',
+            'no',
+            'client default',
+          ],
+          [
+            <code key="h">refetchInterval</code>,
+            'number | false',
+            'no',
+            'false',
+          ],
+          [
+            <code key="i">refetchOnWindowFocus</code>,
+            'boolean',
+            'no',
+            'client default',
+          ],
+          [
+            <code key="j">placeholderData</code>,
+            'TData | (prev) => TData',
+            'no',
+            '—',
+          ],
+          [<code key="k">client</code>, 'QueryClient', 'no', 'defaultClient'],
+          [<code key="l">onSuccess</code>, '(data: TData) => void', 'no', '—'],
+          [<code key="m">onError</code>, '(error: TError) => void', 'no', '—'],
+          [<code key="n">onSettled</code>, '(data, error) => void', 'no', '—'],
         ]}
       />
 
@@ -145,16 +184,46 @@ export default function ApiReferencePage() {
 
       <h3>MutationOptions</h3>
       <Table
-        headers={["Property", "Type", "Required", "Default"]}
+        headers={['Property', 'Type', 'Required', 'Default']}
         rows={[
-          [<code key="a">mutationFn</code>, "(vars: TVariables) => Promise<TData>", "yes", "—"],
-          [<code key="b">retry</code>, "number | false", "no", "false"],
-          [<code key="c">retryDelay</code>, "number | (n) => number", "no", "exponential"],
-          [<code key="d">onMutate</code>, "(vars) => Promise<TContext> | TContext", "no", "—"],
-          [<code key="e">onSuccess</code>, "(data, vars, ctx) => void", "no", "—"],
-          [<code key="f">onError</code>, "(error, vars, ctx) => void", "no", "—"],
-          [<code key="g">onSettled</code>, "(data, error, vars, ctx) => void", "no", "—"],
-          [<code key="h">client</code>, "QueryClient", "no", "defaultClient"],
+          [
+            <code key="a">mutationFn</code>,
+            '(vars: TVariables) => Promise<TData>',
+            'yes',
+            '—',
+          ],
+          [<code key="b">retry</code>, 'number | false', 'no', 'false'],
+          [
+            <code key="c">retryDelay</code>,
+            'number | (n) => number',
+            'no',
+            'exponential',
+          ],
+          [
+            <code key="d">onMutate</code>,
+            '(vars) => Promise<TContext> | TContext',
+            'no',
+            '—',
+          ],
+          [
+            <code key="e">onSuccess</code>,
+            '(data, vars, ctx) => void',
+            'no',
+            '—',
+          ],
+          [
+            <code key="f">onError</code>,
+            '(error, vars, ctx) => void',
+            'no',
+            '—',
+          ],
+          [
+            <code key="g">onSettled</code>,
+            '(data, error, vars, ctx) => void',
+            'no',
+            '—',
+          ],
+          [<code key="h">client</code>, 'QueryClient', 'no', 'defaultClient'],
         ]}
       />
 

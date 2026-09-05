@@ -1,11 +1,11 @@
-import { css, html, LitElement } from "lit"
-import { customElement, state } from "lit/decorators.js"
-import { repeat } from "lit/directives/repeat.js"
-import { subscribe, type ToastData, type ToastVariant, toast } from "./toast"
+import { css, html, LitElement } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
+import { subscribe, type ToastData, type ToastVariant, toast } from './toast';
 
-@customElement("a-toaster")
+@customElement('a-toaster')
 export class ToasterElement extends LitElement {
-  @state() private toasts: ToastData[] = []
+  @state() private toasts: ToastData[] = [];
 
   static styles = css`
     :host {
@@ -190,36 +190,36 @@ export class ToasterElement extends LitElement {
     .action-btn:hover {
       background: color-mix(in oklch, var(--card-foreground) 10%, transparent);
     }
-  `
+  `;
 
   connectedCallback() {
-    super.connectedCallback()
+    super.connectedCallback();
     this.removeOnUnmount = subscribe((ts) => {
-      this.toasts = ts
-    })
+      this.toasts = ts;
+    });
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-    this.removeOnUnmount?.()
+    super.disconnectedCallback();
+    this.removeOnUnmount?.();
   }
 
-  private removeOnUnmount?: () => void
+  private removeOnUnmount?: () => void;
 
   private renderIcon(variant?: ToastVariant) {
     switch (variant) {
-      case "success":
-        return "✓"
-      case "error":
-        return "✕"
-      case "warning":
-        return "⚠"
-      case "info":
-        return "ℹ"
-      case "loading":
-        return null
+      case 'success':
+        return '✓';
+      case 'error':
+        return '✕';
+      case 'warning':
+        return '⚠';
+      case 'info':
+        return 'ℹ';
+      case 'loading':
+        return null;
       default:
-        return "→"
+        return '→';
     }
   }
 
@@ -231,8 +231,9 @@ export class ToasterElement extends LitElement {
           (t) => t.id,
           (t) => html`
             <div
-              class="toast ${t.visible ? "visible" : "exit"} ${t.variant ||
-              "default"}"
+              class="toast ${t.visible ? 'visible' : 'exit'} ${
+                t.variant || 'default'
+              }"
               @pointerdown=${(e: PointerEvent) =>
                 this.handleSwipeStart(e, t.id)}
               @pointermove=${(e: PointerEvent) => this.handleSwipeMove(e)}
@@ -241,68 +242,74 @@ export class ToasterElement extends LitElement {
               @click=${() => toast.dismiss(t.id)}
             >
               <div class="content">
-                ${t.variant === "loading"
-                  ? html`<div class="spinner"></div>`
-                  : html`<span class="icon"
-                      >${this.renderIcon(t.variant)}</span
-                    >`}
+                ${
+                  t.variant === 'loading'
+                    ? html`<div class="spinner"></div>`
+                    : html`<span class="icon"
+                        >${this.renderIcon(t.variant)}</span
+                      >`
+                }
                 <div class="text-content">
                   <div class="title">${t.message}</div>
-                  ${t.description
-                    ? html`<div class="description">${t.description}</div>`
-                    : ""}
-                  ${t.action
-                    ? html`<button
-                        class="action-btn"
-                        @click=${(e: Event) => {
-                          e.stopPropagation()
-                          t.action!.onClick()
-                        }}
-                      >
-                        ${t.action.label}
-                      </button>`
-                    : ""}
+                  ${
+                    t.description
+                      ? html`<div class="description">${t.description}</div>`
+                      : ''
+                  }
+                  ${
+                    t.action
+                      ? html`<button
+                          class="action-btn"
+                          @click=${(e: Event) => {
+                            e.stopPropagation();
+                            t.action!.onClick();
+                          }}
+                        >
+                          ${t.action.label}
+                        </button>`
+                      : ''
+                  }
                 </div>
               </div>
             </div>
           `,
         )}
       </div>
-    `
+    `;
   }
 
-  private swipeStartX = 0
+  private swipeStartX = 0;
   // private swipeStartY = 0;
-  private currentToastId: string | null = null
+  private currentToastId: string | null = null;
 
   private handleSwipeStart(e: PointerEvent, id: string) {
-    if (e.pointerType !== "mouse" && e.pointerType !== "touch") return
-    this.currentToastId = id
-    this.swipeStartX = e.clientX
+    if (e.pointerType !== 'mouse' && e.pointerType !== 'touch') return;
+    this.currentToastId = id;
+    this.swipeStartX = e.clientX;
     // this.swipeStartY = e.clientY;
-    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }
 
   private handleSwipeMove(e: PointerEvent) {
-    if (!this.currentToastId) return
-    const dx = e.clientX - this.swipeStartX
+    if (!this.currentToastId) return;
+    const dx = e.clientX - this.swipeStartX;
     if (dx > 60) {
-      toast.dismiss(this.currentToastId)
-      this.resetSwipe()
+      toast.dismiss(this.currentToastId);
+      this.resetSwipe();
     }
   }
 
   private handleSwipeEnd(_e: PointerEvent, _id: string) {
-    this.resetSwipe()
+    this.resetSwipe();
   }
 
   private resetSwipe() {
-    this.currentToastId = null
+    this.currentToastId = null;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-toaster": ToasterElement
+    'a-toaster': ToasterElement;
   }
 }

@@ -1,13 +1,13 @@
-import { Check } from "lucide-react"
-import { ParticlesBackground } from "@/components/particles-background"
-import { useRef, useState } from "react"
-import { useAuraEvent } from "~/lib/aura"
-import { plans } from "~/constants/subscriptions"
+import { Check } from 'lucide-react';
+import { ParticlesBackground } from '@/components/particles-background';
+import { useRef, useState } from 'react';
+import { useAuraEvent } from '~/lib/aura';
+import { plans } from '~/constants/subscriptions';
 
 export default function PricingSection() {
-  const [isYearly, setIsYearly] = useState(false)
-  const yearlyRef = useRef<HTMLElement>(null)
-  useAuraEvent<boolean>(yearlyRef, "change", setIsYearly)
+  const [isYearly, setIsYearly] = useState(false);
+  const yearlyRef = useRef<HTMLElement>(null);
+  useAuraEvent<boolean>(yearlyRef, 'change', setIsYearly);
 
   return (
     <section className="w-full overflow-hidden py-5">
@@ -19,19 +19,19 @@ export default function PricingSection() {
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground mx-auto text-balance">
             {
-              "Start building for free. Scale as you grow with flexible pricing designed for teams of all sizes."
+              'Start building for free. Scale as you grow with flexible pricing designed for teams of all sizes.'
             }
           </p>
 
           <div className="flex items-center justify-center gap-4 mt-8">
             <span
-              className={`text-sm font-medium transition-colors ${!isYearly ? "text-foreground" : "text-muted-foreground"}`}
+              className={`text-sm font-medium transition-colors ${!isYearly ? 'text-foreground' : 'text-muted-foreground'}`}
             >
               Monthly
             </span>
             <a-switch ref={yearlyRef} checked={isYearly} />
             <span
-              className={`text-sm font-medium transition-colors ${isYearly ? "text-foreground" : "text-muted-foreground"}`}
+              className={`text-sm font-medium transition-colors ${isYearly ? 'text-foreground' : 'text-muted-foreground'}`}
             >
               Yearly
             </span>
@@ -46,8 +46,8 @@ export default function PricingSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
           {plans.map((plan, index) => {
-            const Icon = plan.icon
-            const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice
+            const Icon = plan.icon;
+            const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
             const savings =
               plan.monthlyPrice > 0 && isYearly
                 ? (
@@ -55,16 +55,16 @@ export default function PricingSection() {
                       plan.monthlyPrice) *
                     100
                   ).toFixed(0)
-                : 0
+                : 0;
 
             return (
               <a-card
                 key={plan.name}
                 className={`group relative p-8 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
-                    ? "border-primary/50 shadow-[0_0_40px_rgba(99,102,241,0.2)] bg-card/60 hover:shadow-[0_0_60px_rgba(99,102,241,0.3)]"
-                    : "border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]"
-                } ${index === 1 ? "lg:scale-105" : ""}`}
+                    ? 'border-primary/50 shadow-[0_0_40px_rgba(99,102,241,0.2)] bg-card/60 hover:shadow-[0_0_60px_rgba(99,102,241,0.3)]'
+                    : 'border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]'
+                } ${index === 1 ? 'lg:scale-105' : ''}`}
                 style={{
                   animationDelay: `${index * 100}ms`,
                 }}
@@ -80,12 +80,12 @@ export default function PricingSection() {
                 <div
                   className={`w-12 h-12 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 ${
                     plan.popular
-                      ? "bg-gradient-to-br from-primary to-primary/50 shadow-lg shadow-primary/50"
-                      : "bg-gradient-to-br from-primary/20 to-primary/5"
+                      ? 'bg-gradient-to-br from-primary to-primary/50 shadow-lg shadow-primary/50'
+                      : 'bg-gradient-to-br from-primary/20 to-primary/5'
                   }`}
                 >
                   <Icon
-                    className={`h-6 w-6 ${plan.popular ? "text-primary-foreground" : "text-primary"}`}
+                    className={`h-6 w-6 ${plan.popular ? 'text-primary-foreground' : 'text-primary'}`}
                   />
                 </div>
 
@@ -105,7 +105,7 @@ export default function PricingSection() {
                       <span className="text-muted-foreground text-sm">
                         {plan.period}
                       </span>
-                      {savings !== 0 && savings !== "0%" && isYearly && (
+                      {savings !== 0 && savings !== '0%' && isYearly && (
                         <span className="text-xs text-primary font-medium">
                           Save {savings}%
                         </span>
@@ -136,8 +136,8 @@ export default function PricingSection() {
                 <a-button
                   className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
                     plan.popular
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]"
-                      : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]'
+                      : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
                   }`}
                   size="lg"
                 >
@@ -146,14 +146,14 @@ export default function PricingSection() {
 
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               </a-card>
-            )
+            );
           })}
         </div>
 
         <div className="mt-24 text-center space-y-6">
           <div className="inline-block p-6 rounded-lg bg-card/40 backdrop-blur-sm border border-border/50">
             <p className="text-muted-foreground">
-              {"Need a custom plan? "}
+              {'Need a custom plan? '}
               <a
                 href="#contact"
                 className="text-primary hover:underline font-medium inline-flex items-center gap-1 group"
@@ -183,5 +183,5 @@ export default function PricingSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

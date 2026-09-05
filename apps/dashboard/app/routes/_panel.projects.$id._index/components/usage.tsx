@@ -1,8 +1,8 @@
-import { plans } from "~/constants/subscriptions"
-import type { Project } from "~/types/projects"
+import { plans } from '~/constants/subscriptions';
+import type { Project } from '~/types/projects';
 
 export default function ProjectUsage({ project }: { project: Project }) {
-  const sub = plans.find((item) => project.selectedPlanId === item.id)!
+  const sub = plans.find((item) => project.selectedPlanId === item.id)!;
 
   return (
     <div className="space-y-6">
@@ -22,14 +22,14 @@ export default function ProjectUsage({ project }: { project: Project }) {
                 Remaining Tokens
               </span>
               <span className="text-sm font-medium">
-                {project.remainingtokens.toLocaleString()} /{" "}
+                {project.remainingtokens.toLocaleString()} /{' '}
                 {sub.tokens.toLocaleString()}
               </span>
             </div>
             <a-progress
               value={Math.min(
                 (project.remainingtokens / sub.tokens) * 100,
-                100
+                100,
               )}
               className="h-3"
             />
@@ -60,6 +60,5 @@ export default function ProjectUsage({ project }: { project: Project }) {
         </div>
       </a-card>
     </div>
-  )
+  );
 }
-

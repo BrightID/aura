@@ -1,22 +1,22 @@
-import { For, Show } from "solid-js"
-import type { useSubjectsList } from "@/hooks/use-subjects-list"
-import type { SubjectRatedState, SubjectSort } from "@/hooks/use-subjects-list"
-import { toTitleCase } from "@/shared/lib/text"
-import type { ConnectionLevel } from "@aura/domain/types/aura"
-import type { DialogElement } from "@aura/ui"
+import { For, Show } from 'solid-js';
+import type { useSubjectsList } from '@/hooks/use-subjects-list';
+import type { SubjectRatedState, SubjectSort } from '@/hooks/use-subjects-list';
+import { toTitleCase } from '@/shared/lib/text';
+import type { ConnectionLevel } from '@aura/domain/types/aura';
+import type { DialogElement } from '@aura/ui';
 
-type Controls = ReturnType<typeof useSubjectsList>
+type Controls = ReturnType<typeof useSubjectsList>;
 
 const SORTS: { id: SubjectSort; label: string }[] = [
-  { id: "recency", label: "Recency" },
-  { id: "name", label: "Name" },
-]
+  { id: 'recency', label: 'Recency' },
+  { id: 'name', label: 'Name' },
+];
 
 const RATED_STATES: { id: SubjectRatedState; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "unrated", label: "Unrated" },
-  { id: "rated", label: "Rated" },
-]
+  { id: 'all', label: 'All' },
+  { id: 'unrated', label: 'Unrated' },
+  { id: 'rated', label: 'Rated' },
+];
 
 /**
  * Search + filter + sort controls for the subjects list. Collapses the old
@@ -24,14 +24,14 @@ const RATED_STATES: { id: SubjectRatedState; label: string }[] = [
  * single inline search box and one `<a-dialog>` holding the filter/sort toggles.
  */
 export default function SubjectListControls(props: {
-  controls: Controls
-  count: number
+  controls: Controls;
+  count: number;
 }) {
-  let dialog: DialogElement | undefined
+  let dialog: DialogElement | undefined;
 
-  const c = () => props.controls
+  const c = () => props.controls;
   const activeFilters = () =>
-    c().levels().length + (c().ratedState() !== "all" ? 1 : 0)
+    c().levels().length + (c().ratedState() !== 'all' ? 1 : 0);
 
   return (
     <div class="flex flex-col gap-2">
@@ -109,7 +109,7 @@ export default function SubjectListControls(props: {
                 <For each={c().levelOptions}>
                   {(level: ConnectionLevel) => (
                     <a-button
-                      data-testid={`subject-level-${level.split(" ").join("-")}`}
+                      data-testid={`subject-level-${level.split(' ').join('-')}`}
                       size="sm"
                       variant="glass"
                       color="secondary"
@@ -145,9 +145,9 @@ export default function SubjectListControls(props: {
         </a-dialog>
 
         <span data-testid="subject-results" class="ml-auto">
-          {props.count} result{props.count === 1 ? "" : "s"}
+          {props.count} result{props.count === 1 ? '' : 's'}
         </span>
       </div>
     </div>
-  )
+  );
 }

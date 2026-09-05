@@ -225,12 +225,8 @@
           "name": "payments_project_id_projects_id_fk",
           "tableFrom": "payments",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -240,9 +236,7 @@
         "payments_order_id_unique": {
           "name": "payments_order_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "order_id"
-          ]
+          "columns": ["order_id"]
         }
       },
       "policies": {},
@@ -371,12 +365,8 @@
           "name": "projects_selectedPlanId_plans_id_fk",
           "tableFrom": "projects",
           "tableTo": "plans",
-          "columnsFrom": [
-            "selectedPlanId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["selectedPlanId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -384,12 +374,8 @@
           "name": "projects_brightIdAppId_brightid_apps_key_fk",
           "tableFrom": "projects",
           "tableTo": "brightid_apps",
-          "columnsFrom": [
-            "brightIdAppId"
-          ],
-          "columnsTo": [
-            "key"
-          ],
+          "columnsFrom": ["brightIdAppId"],
+          "columnsTo": ["key"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -430,12 +416,8 @@
           "name": "upgrade_requests_projectId_projects_id_fk",
           "tableFrom": "upgrade_requests",
           "tableTo": "projects",
-          "columnsFrom": [
-            "projectId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["projectId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -443,12 +425,8 @@
           "name": "upgrade_requests_planId_plans_id_fk",
           "tableFrom": "upgrade_requests",
           "tableTo": "plans",
-          "columnsFrom": [
-            "planId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["planId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -669,12 +647,8 @@
           "name": "verifications_projectId_projects_id_fk",
           "tableFrom": "verifications",
           "tableTo": "projects",
-          "columnsFrom": [
-            "projectId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["projectId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -684,9 +658,7 @@
         "verifications_signature_unique": {
           "name": "verifications_signature_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "signature"
-          ]
+          "columns": ["signature"]
         }
       },
       "policies": {},

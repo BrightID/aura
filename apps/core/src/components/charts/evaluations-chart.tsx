@@ -1,30 +1,30 @@
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js"
-import { barColor } from "@/components/charts/colors"
-import ZoomControls from "@/components/charts/zoom-controls"
-import Avatar from "@/components/home/avatar"
-import { useNameResolver } from "@/hooks/use-backup"
-import { compactFormat } from "@/shared/lib/number"
-import { formatDuration } from "@/shared/lib/time"
-import { authStore } from "@/store/auth"
-import { confidenceLabel } from "@aura/domain/labels"
-import type { AuraImpactRaw } from "@aura/domain/types/aura"
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
+import { barColor } from '@/components/charts/colors';
+import ZoomControls from '@/components/charts/zoom-controls';
+import Avatar from '@/components/home/avatar';
+import { useNameResolver } from '@/hooks/use-backup';
+import { compactFormat } from '@/shared/lib/number';
+import { formatDuration } from '@/shared/lib/time';
+import { authStore } from '@/store/auth';
+import { confidenceLabel } from '@aura/domain/labels';
+import type { AuraImpactRaw } from '@aura/domain/types/aura';
 
 // Old chart showed evaluator pictures for up to 20 bars, 16–40px by count.
-const MAX_AVATARS = 20
+const MAX_AVATARS = 20;
 
 const avatarSize = (count: number) =>
-  Math.round(40 - ((40 - 16) / (MAX_AVATARS - 1)) * (count - 1))
+  Math.round(40 - ((40 - 16) / (MAX_AVATARS - 1)) * (count - 1));
 
 interface Bar {
-  id: string
-  name: string
+  id: string;
+  name: string;
   /** Share of the subject's total absolute impact, signed (-100..100). */
-  percent: number
-  color: string
+  percent: number;
+  color: string;
   /** Raw values carried for the hover tooltip (old recharts tooltip parity). */
-  score: number | null
-  confidence: number
-  modified: number
+  score: number | null;
+  confidence: number;
+  modified: number;
 }
 
 /**
@@ -42,19 +42,19 @@ interface Bar {
  * that slide a window over the bars (see {@link ZoomControls}).
  */
 export default function EvaluationsChart(props: {
-  impacts: () => AuraImpactRaw[] | null
-  onBarClick?: (evaluatorId: string) => void
+  impacts: () => AuraImpactRaw[] | null;
+  onBarClick?: (evaluatorId: string) => void;
   /** Highlighted subject (orange palette), e.g. the profile being viewed. */
-  focusedSubjectId?: () => string
+  focusedSubjectId?: () => string;
   /** Show a skeleton instead of the empty state while the data loads. */
-  loading?: () => boolean
+  loading?: () => boolean;
 }) {
-  const nameOf = useNameResolver()
+  const nameOf = useNameResolver();
 
   const allBars = createMemo<Bar[]>(() => {
-    const impacts = (props.impacts() ?? []).filter((i) => i.impact !== 0)
-    const total = impacts.reduce((sum, i) => sum + Math.abs(i.impact), 0)
-    if (!total) return []
+    const impacts = (props.impacts() ?? []).filter((i) => i.impact !== 0);
+    const total = impacts.reduce((sum, i) => sum + Math.abs(i.impact), 0);
+    if (!total) return [];
     return [...impacts]
       .sort((a, b) => a.impact - b.impact)
       .map((i) => ({
@@ -70,68 +70,71 @@ export default function EvaluationsChart(props: {
         score: i.score,
         confidence: i.confidence * Math.sign(i.impact),
         modified: i.modified,
-      }))
-  })
+      }));
+  });
 
   // Visible window [start, end] into allBars(). Reset to the full range
   // whenever the data changes.
-  const [start, setStart] = createSignal(0)
-  const [end, setEnd] = createSignal(0)
+  const [start, setStart] = createSignal(0);
+  const [end, setEnd] = createSignal(0);
   createEffect(() => {
-    setStart(0)
-    setEnd(Math.max(0, allBars().length - 1))
-  })
+    setStart(0);
+    setEnd(Math.max(0, allBars().length - 1));
+  });
 
-  const count = () => allBars().length
-  const bars = createMemo(() => allBars().slice(start(), end() + 1))
+  const count = () => allBars().length;
+  const bars = createMemo(() => allBars().slice(start(), end() + 1));
 
   // Heights are normalized to the tallest bar *in the window*, so zooming into
   // a flat region still spreads the bars across the full plot height.
   const windowMaxAbs = createMemo(() =>
     Math.max(1, ...bars().map((b) => Math.abs(b.percent))),
-  )
+  );
   const heightOf = (percent: number) =>
-    Math.max(8, Math.round((Math.abs(percent) / windowMaxAbs()) * 100))
+    Math.max(8, Math.round((Math.abs(percent) / windowMaxAbs()) * 100));
 
-  const showAvatars = () => bars().length <= MAX_AVATARS
+  const showAvatars = () => bars().length <= MAX_AVATARS;
   // Only reserve plot halves that have bars — an all-positive window would
   // otherwise leave an empty bottom half between the bars and the avatars.
-  const hasPositive = createMemo(() => bars().some((b) => b.percent > 0))
-  const hasNegative = createMemo(() => bars().some((b) => b.percent < 0))
+  const hasPositive = createMemo(() => bars().some((b) => b.percent > 0));
+  const hasNegative = createMemo(() => bars().some((b) => b.percent < 0));
 
-  const isFull = () => start() === 0 && end() === count() - 1
+  const isFull = () => start() === 0 && end() === count() - 1;
 
   const zoom = (dir: 1 | -1) => {
-    const s = start()
-    const e = end()
-    const win = e - s
-    const step = Math.max(1, Math.round(win * 0.15))
+    const s = start();
+    const e = end();
+    const win = e - s;
+    const step = Math.max(1, Math.round(win * 0.15));
     if (dir === 1) {
       // zoom in — shrink the window toward its center
-      if (win < 2) return
-      const mid = (s + e) / 2
-      setStart(Math.min(s + step, Math.floor(mid)))
-      setEnd(Math.max(e - step, Math.ceil(mid)))
+      if (win < 2) return;
+      const mid = (s + e) / 2;
+      setStart(Math.min(s + step, Math.floor(mid)));
+      setEnd(Math.max(e - step, Math.ceil(mid)));
     } else {
-      setStart(Math.max(0, s - step))
-      setEnd(Math.min(count() - 1, e + step))
+      setStart(Math.max(0, s - step));
+      setEnd(Math.min(count() - 1, e + step));
     }
-  }
+  };
 
   const pan = (dir: 1 | -1) => {
-    const win = end() - start()
+    const win = end() - start();
     if (dir === -1) {
-      const ns = Math.max(0, start() - Math.max(1, Math.round(win * 0.5)))
-      setStart(ns)
-      setEnd(ns + win)
+      const ns = Math.max(0, start() - Math.max(1, Math.round(win * 0.5)));
+      setStart(ns);
+      setEnd(ns + win);
     } else {
-      const ne = Math.min(count() - 1, end() + Math.max(1, Math.round(win * 0.5)))
-      setEnd(ne)
-      setStart(ne - win)
+      const ne = Math.min(
+        count() - 1,
+        end() + Math.max(1, Math.round(win * 0.5)),
+      );
+      setEnd(ne);
+      setStart(ne - win);
     }
-  }
+  };
 
-  const signed = (n: number) => (n > 0 ? `+${n}` : String(n))
+  const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 
   // Old recharts tooltip parity: name, score, impact, confidence, age.
   const tooltipText = (bar: Bar) =>
@@ -143,7 +146,7 @@ export default function EvaluationsChart(props: {
       formatDuration(bar.modified),
     ]
       .filter((line) => line !== null)
-      .join("\n")
+      .join('\n');
 
   return (
     <Show
@@ -176,8 +179,8 @@ export default function EvaluationsChart(props: {
           <Show when={count() > 1}>
             <ZoomControls
               onReset={() => {
-                setStart(0)
-                setEnd(count() - 1)
+                setStart(0);
+                setEnd(count() - 1);
               }}
               onZoomIn={() => zoom(1)}
               onZoomOut={() => zoom(-1)}
@@ -216,7 +219,7 @@ export default function EvaluationsChart(props: {
                               class="w-full max-w-5 rounded-t-sm"
                               style={{
                                 height: `${heightOf(bar.percent)}%`,
-                                "background-color": bar.color,
+                                'background-color': bar.color,
                               }}
                             />
                           </Show>
@@ -231,7 +234,7 @@ export default function EvaluationsChart(props: {
                               class="w-full max-w-5 rounded-b-sm"
                               style={{
                                 height: `${heightOf(bar.percent)}%`,
-                                "background-color": bar.color,
+                                'background-color': bar.color,
                               }}
                             />
                           </Show>
@@ -258,5 +261,5 @@ export default function EvaluationsChart(props: {
         </div>
       </Show>
     </Show>
-  )
+  );
 }

@@ -1,12 +1,12 @@
-"use client"
+'use client';
 
-import { LevelBadge } from "./level-badge"
-import type { VerificationLevel } from "./types"
+import { LevelBadge } from './level-badge';
+import type { VerificationLevel } from './types';
 
 interface SuccessStepProps {
-  appName: string
-  level: VerificationLevel
-  onContinue: () => void
+  appName: string;
+  level: VerificationLevel;
+  onContinue: () => void;
 }
 
 export function SuccessStep({ appName, level, onContinue }: SuccessStepProps) {
@@ -58,5 +58,5 @@ export function SuccessStep({ appName, level, onContinue }: SuccessStepProps) {
         This verification can be used across multiple apps
       </p>
     </div>
-  )
+  );
 }

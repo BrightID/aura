@@ -1,15 +1,15 @@
-import { css, html, LitElement } from "lit"
-import { customElement } from "lit/decorators.js"
-import "./components/theme-provider"
-import "./composables/card-section"
-import "./composables/dialog-section"
-import "./composables/grids-section"
-import "./composables/popovers-section"
-import "./composables/tabs-section"
-import "./composables/tooltips-section"
-import "./index"
+import { css, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import './components/theme-provider';
+import './composables/card-section';
+import './composables/dialog-section';
+import './composables/grids-section';
+import './composables/popovers-section';
+import './composables/tabs-section';
+import './composables/tooltips-section';
+import './index';
 
-@customElement("my-element")
+@customElement('my-element')
 export class MyElement extends LitElement {
   render() {
     return html`
@@ -35,14 +35,14 @@ export class MyElement extends LitElement {
       </a-container>
 
       <a-toaster></a-toaster>
-    `
+    `;
   }
 
-  static styles = css``
+  static styles = css``;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "my-element": MyElement
+    'my-element': MyElement;
   }
 }

@@ -43,10 +43,12 @@ The build uses `rolldown-vite` (a faster Vite fork) — the `overrides` field in
 ### Package exports
 
 The package exports source directly (not `dist/`) for workspace consumers:
+
 ```json
 ".":  "./src/index.ts"
 "./*": "./src/*"
 ```
+
 `dist/` is only produced for publishing.
 
 ### React wrappers

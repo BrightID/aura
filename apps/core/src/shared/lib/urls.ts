@@ -1,14 +1,29 @@
-import { IS_PRODUCTION } from "./env";
+import { IS_PRODUCTION } from './env';
 import {
   DEFAULT_AURA_NODE_URL,
   DEFAULT_AURA_TEST_NODE_URL,
   RECOVERY_PROXY_PATH,
-} from "./url-defaults";
+} from './url-defaults';
 
 const env = import.meta.env;
 
 // Vite `base` is `/core/` in both dev and prod (host origin or standalone).
-const BASE_PATH = env.BASE_URL.replace(/\/$/, "") || "/core";
+// The Solid router is mounted with this as its `base`, so
+// `useLocation().pathname` is the full browser path *including* the base
+// (`/core/home/player`) — route checks must strip it first.
+const BASE_PATH = env.BASE_URL.replace(/\/$/, '') || '/core';
+
+/**
+ * Strip the router base from a full browser path so route-level checks
+ * (`/home`, `/settings`, …) see app paths. The inverse of what `<A href>`
+ * does when it resolves a link against the base.
+ */
+export function toRouterPath(path: string): string {
+  if (BASE_PATH && (path === BASE_PATH || path.startsWith(`${BASE_PATH}/`))) {
+    return path.slice(BASE_PATH.length) || '/';
+  }
+  return path;
+}
 
 // aura-node sends `Access-Control-Allow-Origin: *`, so the browser can call
 // it directly — no proxy needed. Override per-env via Vite env vars.

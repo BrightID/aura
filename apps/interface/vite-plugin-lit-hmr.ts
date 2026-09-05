@@ -1,63 +1,63 @@
-import type { Plugin, HtmlTagDescriptor } from "vite"
-import { createRequire } from "node:module"
+import type { Plugin, HtmlTagDescriptor } from 'vite';
+import { createRequire } from 'node:module';
 
-const require = createRequire(import.meta.url)
+const require = createRequire(import.meta.url);
 
 export function litHMRPlugin(): Plugin {
-  let config: any
+  let config: any;
 
   return {
-    name: "custom-element-hmr",
+    name: 'custom-element-hmr',
     configResolved(resolvedConfig) {
       // store the resolved config
-      config = resolvedConfig
+      config = resolvedConfig;
     },
     transform: (code, id, opt) => {
       if (
         !opt?.ssr &&
-        config.command === "serve" &&
-        !id.includes("node_modules") &&
-        (code.includes("customElements.define") ||
-          code.includes("customElement("))
+        config.command === 'serve' &&
+        !id.includes('node_modules') &&
+        (code.includes('customElements.define') ||
+          code.includes('customElement('))
       ) {
-        const lines = code.split("\n")
+        const lines = code.split('\n');
         const indexOfSourceMap = lines.findIndex((line) =>
-          line.includes("//# sourceMappingURL")
-        )
-        const spicyString = `if (import.meta.hot) {import.meta.hot.accept((...asdf) => {console.log(asdf)});}`
+          line.includes('//# sourceMappingURL'),
+        );
+        const spicyString = `if (import.meta.hot) {import.meta.hot.accept((...asdf) => {console.log(asdf)});}`;
 
         if (indexOfSourceMap === -1) {
-          lines.push(spicyString)
+          lines.push(spicyString);
         } else {
-          lines.splice(indexOfSourceMap, 0, spicyString)
+          lines.splice(indexOfSourceMap, 0, spicyString);
         }
 
-        code = lines.join("\n")
+        code = lines.join('\n');
       }
 
-      return code
+      return code;
     },
     transformIndexHtml: (html) => {
-      if (config.command === "serve") {
+      if (config.command === 'serve') {
         const result: HtmlTagDescriptor[] = [
           {
-            tag: "script",
-            injectTo: "head-prepend",
+            tag: 'script',
+            injectTo: 'head-prepend',
             attrs: {
-              type: "module",
+              type: 'module',
               // src: require.resolve('@lit-labs/hmr'),
-              src: "/lit-hmr.ts"
-            }
-          }
-        ]
+              src: '/lit-hmr.ts',
+            },
+          },
+        ];
 
-        return result
+        return result;
       }
 
-      return html
+      return html;
     },
     handleHotUpdate: ({ modules }) => {
-      return modules
-    }
-  }
+      return modules;
+    },
+  };
 }

@@ -7,15 +7,15 @@ export function scrollReveal(el: HTMLElement) {
     (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          el.classList.add("reveal-visible")
-          el.classList.remove("reveal-hidden")
-          observer.unobserve(el)
+          el.classList.add('reveal-visible');
+          el.classList.remove('reveal-hidden');
+          observer.unobserve(el);
         }
       }
     },
     { threshold: 0.15 },
-  )
+  );
 
-  el.classList.add("reveal-hidden")
-  observer.observe(el)
+  el.classList.add('reveal-hidden');
+  observer.observe(el);
 }

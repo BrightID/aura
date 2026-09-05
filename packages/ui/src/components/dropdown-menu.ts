@@ -1,6 +1,10 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement, property, queryAssignedElements } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import {
+  customElement,
+  property,
+  queryAssignedElements,
+} from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 /**
  * `a-dropdown-menu` — a click-triggered menu. Mirrors `a-popover`'s
@@ -13,20 +17,24 @@ import { classMap } from 'lit/directives/class-map.js'
  */
 @customElement('a-dropdown-menu')
 export class DropdownMenuElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) declare open: boolean
-  @property({ reflect: true }) declare side: 'top' | 'right' | 'bottom' | 'left'
-  @property({ reflect: true }) declare align: 'start' | 'center' | 'end'
-  @property({ type: Number }) declare sideOffset: number
+  @property({ type: Boolean, reflect: true }) declare open: boolean;
+  @property({ reflect: true }) declare side:
+    | 'top'
+    | 'right'
+    | 'bottom'
+    | 'left';
+  @property({ reflect: true }) declare align: 'start' | 'center' | 'end';
+  @property({ type: Number }) declare sideOffset: number;
 
   @queryAssignedElements({ slot: 'trigger' })
-  private declare triggerElements: HTMLElement[]
+  declare private triggerElements: HTMLElement[];
 
   constructor() {
-    super()
-    this.open = false
-    this.side = 'bottom'
-    this.align = 'start'
-    this.sideOffset = 4
+    super();
+    this.open = false;
+    this.side = 'bottom';
+    this.align = 'start';
+    this.sideOffset = 4;
   }
 
   static styles: CSSResultGroup = css`
@@ -144,125 +152,125 @@ export class DropdownMenuElement extends LitElement {
       left: 50%;
       transform: translateX(var(--align-transform, 0%));
     }
-  `
+  `;
 
   connectedCallback() {
-    super.connectedCallback()
-    DropdownMenuElement._register(this)
-    this.addEventListener('select', this._onItemSelect as EventListener)
+    super.connectedCallback();
+    DropdownMenuElement._register(this);
+    this.addEventListener('select', this._onItemSelect as EventListener);
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-    DropdownMenuElement._unregister(this)
-    this.removeEventListener('select', this._onItemSelect as EventListener)
+    super.disconnectedCallback();
+    DropdownMenuElement._unregister(this);
+    this.removeEventListener('select', this._onItemSelect as EventListener);
   }
 
-  private static _instances = new Set<DropdownMenuElement>()
-  private static _listenersAttached = false
+  private static _instances = new Set<DropdownMenuElement>();
+  private static _listenersAttached = false;
 
   private static _onDocClick = (e: MouseEvent) => {
-    DropdownMenuElement._instances.forEach((p) => p._handleOutsideClick(e))
-  }
+    DropdownMenuElement._instances.forEach((p) => p._handleOutsideClick(e));
+  };
   private static _onDocKey = (e: KeyboardEvent) => {
-    DropdownMenuElement._instances.forEach((p) => p._handleKey(e))
-  }
+    DropdownMenuElement._instances.forEach((p) => p._handleKey(e));
+  };
 
   private static _register(p: DropdownMenuElement) {
-    DropdownMenuElement._instances.add(p)
+    DropdownMenuElement._instances.add(p);
     if (!DropdownMenuElement._listenersAttached) {
-      document.addEventListener('click', DropdownMenuElement._onDocClick)
-      document.addEventListener('keydown', DropdownMenuElement._onDocKey)
-      DropdownMenuElement._listenersAttached = true
+      document.addEventListener('click', DropdownMenuElement._onDocClick);
+      document.addEventListener('keydown', DropdownMenuElement._onDocKey);
+      DropdownMenuElement._listenersAttached = true;
     }
   }
 
   private static _unregister(p: DropdownMenuElement) {
-    DropdownMenuElement._instances.delete(p)
+    DropdownMenuElement._instances.delete(p);
     if (
       DropdownMenuElement._instances.size === 0 &&
       DropdownMenuElement._listenersAttached
     ) {
-      document.removeEventListener('click', DropdownMenuElement._onDocClick)
-      document.removeEventListener('keydown', DropdownMenuElement._onDocKey)
-      DropdownMenuElement._listenersAttached = false
+      document.removeEventListener('click', DropdownMenuElement._onDocClick);
+      document.removeEventListener('keydown', DropdownMenuElement._onDocKey);
+      DropdownMenuElement._listenersAttached = false;
     }
   }
 
-  private _internalChange = false
+  private _internalChange = false;
 
   private _setOpenInternal(next: boolean) {
-    if (this.open === next) return
-    this._internalChange = true
-    this.open = next
+    if (this.open === next) return;
+    this._internalChange = true;
+    this.open = next;
   }
 
   private _handleTriggerClick = (e: Event) => {
-    e.stopPropagation()
-    this._setOpenInternal(!this.open)
-  }
+    e.stopPropagation();
+    this._setOpenInternal(!this.open);
+  };
 
   private _handleOutsideClick = (e: MouseEvent) => {
-    if (!this.open) return
-    const target = e.target as Node | null
-    if (!target) return
-    if (this.contains(target)) return
-    this._setOpenInternal(false)
-  }
+    if (!this.open) return;
+    const target = e.target as Node | null;
+    if (!target) return;
+    if (this.contains(target)) return;
+    this._setOpenInternal(false);
+  };
 
   private _handleKey = (e: KeyboardEvent) => {
-    if (!this.open) return
+    if (!this.open) return;
     if (e.key === 'Escape') {
-      this._setOpenInternal(false)
-      e.preventDefault()
-      return
+      this._setOpenInternal(false);
+      e.preventDefault();
+      return;
     }
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault()
-      this._moveFocus(e.key === 'ArrowDown' ? 1 : -1)
+      e.preventDefault();
+      this._moveFocus(e.key === 'ArrowDown' ? 1 : -1);
     }
-  }
+  };
 
   private _items(): DropdownItemElement[] {
-    return Array.from(
-      this.querySelectorAll('a-dropdown-item'),
-    ).filter((el) => !(el as DropdownItemElement).disabled) as DropdownItemElement[]
+    return Array.from(this.querySelectorAll('a-dropdown-item')).filter(
+      (el) => !(el as DropdownItemElement).disabled,
+    ) as DropdownItemElement[];
   }
 
   private _moveFocus(dir: 1 | -1) {
-    const items = this._items()
-    if (items.length === 0) return
-    const active = document.activeElement
-    let idx = items.findIndex((el) => el === active)
-    if (idx < 0) idx = dir === 1 ? -1 : 0
-    idx = (idx + dir + items.length) % items.length
-    items[idx]?.focus()
+    const items = this._items();
+    if (items.length === 0) return;
+    const active = document.activeElement;
+    let idx = items.findIndex((el) => el === active);
+    if (idx < 0) idx = dir === 1 ? -1 : 0;
+    idx = (idx + dir + items.length) % items.length;
+    items[idx]?.focus();
   }
 
   private _onItemSelect = () => {
-    this._setOpenInternal(false)
-  }
+    this._setOpenInternal(false);
+  };
 
   private _attachTriggerListeners() {
     this.triggerElements.forEach((el) => {
-      el.addEventListener('click', this._handleTriggerClick)
-    })
+      el.addEventListener('click', this._handleTriggerClick);
+    });
   }
 
   firstUpdated() {
-    this._attachTriggerListeners()
+    this._attachTriggerListeners();
   }
 
   updated(changedProperties: Map<string, unknown>) {
     if (changedProperties.has('open') && this._internalChange) {
-      this._internalChange = false
+      this._internalChange = false;
       this.dispatchEvent(
         new CustomEvent('open-change', {
           detail: { open: this.open },
           bubbles: true,
           composed: true,
         }),
-      )
+      );
     }
   }
 
@@ -270,27 +278,29 @@ export class DropdownMenuElement extends LitElement {
     const contentClasses = classMap({
       content: true,
       'animate-in': this.open,
-    })
+    });
 
     return html`
       <div class="trigger">
         <slot name="trigger"></slot>
       </div>
 
-      ${this.open
-        ? html`
-            <div
-              class=${contentClasses}
-              role="menu"
-              data-side=${this.side}
-              data-state=${this.open ? 'open' : 'closed'}
-              style="--side-offset: ${this.sideOffset}px;"
-            >
-              <slot name="content"></slot>
-            </div>
-          `
-        : ''}
-    `
+      ${
+        this.open
+          ? html`
+              <div
+                class=${contentClasses}
+                role="menu"
+                data-side=${this.side}
+                data-state=${this.open ? 'open' : 'closed'}
+                style="--side-offset: ${this.sideOffset}px;"
+              >
+                <slot name="content"></slot>
+              </div>
+            `
+          : ''
+      }
+    `;
   }
 }
 
@@ -300,13 +310,13 @@ export class DropdownMenuElement extends LitElement {
  */
 @customElement('a-dropdown-item')
 export class DropdownItemElement extends LitElement {
-  @property({ type: Boolean, reflect: true }) declare disabled: boolean
-  @property({ reflect: true }) declare variant: 'default' | 'destructive'
+  @property({ type: Boolean, reflect: true }) declare disabled: boolean;
+  @property({ reflect: true }) declare variant: 'default' | 'destructive';
 
   constructor() {
-    super()
-    this.disabled = false
-    this.variant = 'default'
+    super();
+    this.disabled = false;
+    this.variant = 'default';
   }
 
   static styles: CSSResultGroup = css`
@@ -330,7 +340,9 @@ export class DropdownItemElement extends LitElement {
       cursor: pointer;
       text-align: left;
       user-select: none;
-      transition: background-color 0.12s ease, color 0.12s ease;
+      transition:
+        background-color 0.12s ease,
+        color 0.12s ease;
       outline: none;
     }
 
@@ -361,25 +373,25 @@ export class DropdownItemElement extends LitElement {
       height: 1rem;
       flex: none;
     }
-  `
+  `;
 
   private _onClick = (e: Event) => {
     if (this.disabled) {
-      e.stopPropagation()
-      return
+      e.stopPropagation();
+      return;
     }
     this.dispatchEvent(
       new CustomEvent('select', { bubbles: true, composed: true }),
-    )
-  }
+    );
+  };
 
   private _onKeyDown = (e: KeyboardEvent) => {
-    if (this.disabled) return
+    if (this.disabled) return;
     if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      this._onClick(e)
+      e.preventDefault();
+      this._onClick(e);
     }
-  }
+  };
 
   render() {
     return html`
@@ -394,7 +406,7 @@ export class DropdownItemElement extends LitElement {
         <slot name="icon"></slot>
         <span class="label"><slot></slot></span>
       </div>
-    `
+    `;
   }
 }
 
@@ -411,10 +423,10 @@ export class DropdownLabelElement extends LitElement {
       font-weight: 600;
       color: var(--muted-foreground);
     }
-  `
+  `;
 
   render() {
-    return html`<div class="label"><slot></slot></div>`
+    return html`<div class="label"><slot></slot></div>`;
   }
 }
 
@@ -430,18 +442,18 @@ export class DropdownSeparatorElement extends LitElement {
       margin: 0.25rem -0.25rem;
       background: var(--border);
     }
-  `
+  `;
 
   render() {
-    return html`<div class="separator" role="separator"></div>`
+    return html`<div class="separator" role="separator"></div>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'a-dropdown-menu': DropdownMenuElement
-    'a-dropdown-item': DropdownItemElement
-    'a-dropdown-label': DropdownLabelElement
-    'a-dropdown-separator': DropdownSeparatorElement
+    'a-dropdown-menu': DropdownMenuElement;
+    'a-dropdown-item': DropdownItemElement;
+    'a-dropdown-label': DropdownLabelElement;
+    'a-dropdown-separator': DropdownSeparatorElement;
   }
 }

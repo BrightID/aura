@@ -1,13 +1,13 @@
-import '@/components/project-verification'
-import '@aura/ui/components/dialog'
-import { SignalWatcher } from '@lit-labs/signals'
-import { css, CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import '@/components/project-verification';
+import '@aura/ui/components/dialog';
+import { SignalWatcher } from '@lit-labs/signals';
+import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 
 @customElement('verification-project')
 export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
-  @state() private isModalOpen = false
-  protected iframeElement: null | HTMLIFrameElement = null
+  @state() private isModalOpen = false;
+  protected iframeElement: null | HTMLIFrameElement = null;
 
   static styles?: CSSResultGroup | undefined = css`
     .container {
@@ -33,23 +33,23 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
     .margin-top {
       margin-top: 24px;
     }
-  `
+  `;
 
   override connectedCallback(): void {
-    super.connectedCallback()
-    window.addEventListener('message', this.onWindowMessage)
+    super.connectedCallback();
+    window.addEventListener('message', this.onWindowMessage);
   }
 
   override disconnectedCallback(): void {
-    window.removeEventListener('message', this.onWindowMessage)
+    window.removeEventListener('message', this.onWindowMessage);
   }
 
   onIframeLoad() {
-    this.iframeElement = this.renderRoot.querySelector('#iframe')
+    this.iframeElement = this.renderRoot.querySelector('#iframe');
   }
 
   private openModal() {
-    this.isModalOpen = true
+    this.isModalOpen = true;
   }
 
   // private closeModal() {
@@ -57,20 +57,20 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
   // }
 
   protected onWindowMessage(e: MessageEvent<any>) {
-    const message = e.data
+    const message = e.data;
     try {
-      const data = JSON.parse(message)
-      if (data.app !== 'aura-get-verified') return
+      const data = JSON.parse(message);
+      if (data.app !== 'aura-get-verified') return;
       switch (data.type) {
         case 'app-ready':
-          this.dispatchEvent(new CustomEvent('on-ready'))
-          return
+          this.dispatchEvent(new CustomEvent('on-ready'));
+          return;
         case 'verification-success':
-          this.dispatchEvent(new CustomEvent('on-verification-success'))
-          return
+          this.dispatchEvent(new CustomEvent('on-verification-success'));
+          return;
       }
     } catch {
-      return
+      return;
     }
   }
 
@@ -82,7 +82,7 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
         <!--<a-dialog
           .open=${this.isModalOpen}
           @open-change=${(e: CustomEvent<{ open: boolean }>) => {
-          this.isModalOpen = e.detail.open
+          this.isModalOpen = e.detail.open;
         }}
         >
           <button slot="trigger" @click=${this.openModal}>Get Verified</button>-->
@@ -98,6 +98,6 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
         <!--</div>
         </a-dialog>-->
       </div>
-    `
+    `;
   }
 }

@@ -1,18 +1,18 @@
-import { For } from "solid-js"
-import { useRequireSession } from "@/hooks/use-require-session"
+import { For } from 'solid-js';
+import { useRequireSession } from '@/hooks/use-require-session';
 
 // Straight port of the old page's hardcoded stats — there is no domain-stats
 // endpoint yet (same as the old app; wire real counts when one exists).
 const STATS: { label: string; value: string; icon: string }[] = [
-  { label: "Subjects", value: "1203", icon: "users" },
-  { label: "Players", value: "247", icon: "user-check" },
-  { label: "Trainers", value: "11", icon: "graduation-cap" },
-  { label: "Managers", value: "3", icon: "shield" },
-]
+  { label: 'Subjects', value: '1203', icon: 'users' },
+  { label: 'Players', value: '247', icon: 'user-check' },
+  { label: 'Trainers', value: '11', icon: 'graduation-cap' },
+  { label: 'Managers', value: '3', icon: 'shield' },
+];
 
 /** /domain-overview — static domain info card + member counts. */
 export default function DomainOverviewPage() {
-  useRequireSession()
+  useRequireSession();
 
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
@@ -60,5 +60,5 @@ export default function DomainOverviewPage() {
         </For>
       </div>
     </div>
-  )
+  );
 }

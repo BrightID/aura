@@ -1,5 +1,5 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
+import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 export default function Home(): ReactNode {
   return (
@@ -13,8 +13,8 @@ export default function Home(): ReactNode {
           Aura UI
         </h1>
         <p className="max-w-md text-base leading-relaxed text-muted-foreground">
-          A framework-agnostic component kit built on web components. Explore every component with a
-          live, themeable playground.
+          A framework-agnostic component kit built on web components. Explore
+          every component with a live, themeable playground.
         </p>
       </div>
 

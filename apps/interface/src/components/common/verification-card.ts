@@ -1,26 +1,26 @@
-import checkboxGreenIcon from '@/assets/icons/checkbox-green.svg'
-import { css, html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import checkboxGreenIcon from '@/assets/icons/checkbox-green.svg';
+import { css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 @customElement('verification-card')
 export class VerificationCard extends LitElement {
   @property({})
-  name = 'UBI Raffle Verification'
+  name = 'UBI Raffle Verification';
 
   @property({})
-  status = 'In Progress'
+  status = 'In Progress';
 
   @property({ type: Number })
-  levelRequirement = 4
+  levelRequirement = 4;
 
   @property({ type: Number })
-  stepsCompleted = 2
+  stepsCompleted = 2;
 
   @property({ type: Number })
-  totalSteps = 4
+  totalSteps = 4;
 
   @property({ type: Number })
-  projectId = -1
+  projectId = -1;
 
   static styles = css`
     .card-link {
@@ -88,10 +88,10 @@ export class VerificationCard extends LitElement {
       width: 100%;
       display: block;
     }
-  `
+  `;
 
   render() {
-    const isCompleted = this.stepsCompleted === this.totalSteps
+    const isCompleted = this.stepsCompleted === this.totalSteps;
     return html`
       <a href="/interface/projects/${this.projectId}" class="card-link">
         <a-card>
@@ -102,38 +102,60 @@ export class VerificationCard extends LitElement {
               rounded
               variant="${isCompleted ? 'secondary' : 'accent'}"
               style="${isCompleted ? 'color: var(--aura-success)' : ''}"
-            >${this.status}</a-badge>
+              >${this.status}</a-badge
+            >
           </div>
 
           <div class="level-requirement">
-            <a-text variant="small" style="color: var(--accent)">Requires Level:</a-text>
-            <a-text variant="small"><strong>${this.levelRequirement}</strong></a-text>
+            <a-text variant="small" style="color: var(--accent)"
+              >Requires Level:</a-text
+            >
+            <a-text variant="small"
+              ><strong>${this.levelRequirement}</strong></a-text
+            >
           </div>
 
-          ${!isCompleted ? html`
-            <div class="progress-info">
-              <a-text variant="small">Progress</a-text>
-              <a-text variant="small">${this.stepsCompleted}/${this.totalSteps} completed</a-text>
-            </div>
-          ` : ''}
-
-          ${isCompleted
-            ? html`
-                <div class="verified">
-                  <img src="${checkboxGreenIcon}" class="status-icon" alt="verified" />
-                  <a-text variant="small" style="color: var(--aura-success)">Verified</a-text>
-                </div>
-              `
-            : html`
-                <div class="progress-bar">
-                  <div class="progress" style="width: ${(this.stepsCompleted / this.totalSteps) * 100}%;"></div>
-                </div>
-                <a-button size="sm" style="width: 100%">
-                  ${this.stepsCompleted === 0 ? 'Start Now!' : 'Continue'}
-                </a-button>
-              `}
+          ${
+            !isCompleted
+              ? html`
+                  <div class="progress-info">
+                    <a-text variant="small">Progress</a-text>
+                    <a-text variant="small"
+                      >${this.stepsCompleted}/${this.totalSteps}
+                      completed</a-text
+                    >
+                  </div>
+                `
+              : ''
+          }
+          ${
+            isCompleted
+              ? html`
+                  <div class="verified">
+                    <img
+                      src="${checkboxGreenIcon}"
+                      class="status-icon"
+                      alt="verified"
+                    />
+                    <a-text variant="small" style="color: var(--aura-success)"
+                      >Verified</a-text
+                    >
+                  </div>
+                `
+              : html`
+                  <div class="progress-bar">
+                    <div
+                      class="progress"
+                      style="width: ${(this.stepsCompleted / this.totalSteps) * 100}%;"
+                    ></div>
+                  </div>
+                  <a-button size="sm" style="width: 100%">
+                    ${this.stepsCompleted === 0 ? 'Start Now!' : 'Continue'}
+                  </a-button>
+                `
+          }
         </a-card>
       </a>
-    `
+    `;
   }
 }

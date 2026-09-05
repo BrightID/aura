@@ -1,13 +1,13 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-alert")
+@customElement('a-alert')
 export class AlertElement extends LitElement {
-  @property({ reflect: true }) declare variant: "default" | "destructive"
+  @property({ reflect: true }) declare variant: 'default' | 'destructive';
 
   constructor() {
-    super()
-    this.variant = "default"
+    super();
+    this.variant = 'default';
   }
 
   static styles: CSSResultGroup = css`
@@ -39,7 +39,7 @@ export class AlertElement extends LitElement {
       column-gap: 0.75rem;
     }
 
-    :host([variant="destructive"]) .alert {
+    :host([variant='destructive']) .alert {
       color: var(--destructive);
       border-color: color-mix(in oklch, var(--destructive) 40%, var(--border));
     }
@@ -53,7 +53,7 @@ export class AlertElement extends LitElement {
       height: 1rem;
     }
 
-    ::slotted([slot="icon"]) {
+    ::slotted([slot='icon']) {
       width: 1rem;
       height: 1rem;
       color: currentColor;
@@ -75,14 +75,14 @@ export class AlertElement extends LitElement {
       color: var(--muted-foreground);
     }
 
-    :host([variant="destructive"]) .body {
+    :host([variant='destructive']) .body {
       color: color-mix(in oklch, var(--destructive) 90%, transparent);
     }
-  `
+  `;
 
   private _onIconSlotChange(e: Event) {
-    const slot = e.target as HTMLSlotElement
-    this.toggleAttribute("has-icon", slot.assignedElements().length > 0)
+    const slot = e.target as HTMLSlotElement;
+    this.toggleAttribute('has-icon', slot.assignedElements().length > 0);
   }
 
   protected render() {
@@ -94,12 +94,12 @@ export class AlertElement extends LitElement {
         <div class="title"><slot name="title"></slot></div>
         <div class="body"><slot></slot></div>
       </div>
-    `
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-alert": AlertElement
+    'a-alert': AlertElement;
   }
 }

@@ -1,117 +1,120 @@
-import { css, type CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
-import './level-badge'
-import { widgetBase } from './shared-styles'
+import { css, type CSSResultGroup, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import './level-badge';
+import { widgetBase } from './shared-styles';
 
 @customElement('verification-success')
 export class VerificationSuccessElement extends LitElement {
-  @property() appName = ''
-  @property({ type: Number }) level = 1
-  @property({ type: Boolean }) loading = false
+  @property() appName = '';
+  @property({ type: Number }) level = 1;
+  @property({ type: Boolean }) loading = false;
 
-  static styles: CSSResultGroup = [widgetBase, css`
-    :host {
-      display: block;
-      font-size: inherit;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.25em;
-      padding: 0.5em 0;
-      text-align: center;
-    }
-
-    /* Animated ring */
-    .success-ring {
-      position: relative;
-      width: 5em;
-      height: 5em;
-    }
-    .ring-pulse {
-      position: absolute;
-      inset: 0;
-      border-radius: 9999px;
-      background: rgba(74, 222, 128, 0.2);
-      animation: pulse 1.5s ease-out infinite;
-    }
-    @keyframes pulse {
-      0% {
-        transform: scale(0.9);
-        opacity: 1;
+  static styles: CSSResultGroup = [
+    widgetBase,
+    css`
+      :host {
+        display: block;
+        font-size: inherit;
       }
-      100% {
-        transform: scale(1.4);
-        opacity: 0;
+
+      .stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.25em;
+        padding: 0.5em 0;
+        text-align: center;
       }
-    }
-    .ring-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      border-radius: 9999px;
-      background: rgba(74, 222, 128, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .ring-inner iconify-icon {
-      width: 2.5em;
-      height: 2.5em;
-      color: var(--aura-success);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
 
-    /* Message */
-    .message-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5em;
-    }
-    .title {
-      margin: 0;
-      font-size: 1.25em;
-      font-weight: 600;
-      color: var(--foreground);
-    }
-    .subtitle {
-      margin: 0;
-      font-size: 0.9375em;
-      color: var(--muted-foreground);
-    }
+      /* Animated ring */
+      .success-ring {
+        position: relative;
+        width: 5em;
+        height: 5em;
+      }
+      .ring-pulse {
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        background: rgba(74, 222, 128, 0.2);
+        animation: pulse 1.5s ease-out infinite;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(0.9);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1.4);
+          opacity: 0;
+        }
+      }
+      .ring-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 9999px;
+        background: rgba(74, 222, 128, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ring-inner iconify-icon {
+        width: 2.5em;
+        height: 2.5em;
+        color: var(--aura-success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    /* Level card */
-    .level-card {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5em;
-      padding: 1em 1.5em;
-      background: var(--secondary);
-      border-radius: var(--radius, 0.75rem);
-    }
-    .level-label {
-      font-size: 0.6875em;
-      text-transform: uppercase;
-      letter-spacing: 0.075em;
-      color: var(--muted-foreground);
-      font-weight: 500;
-    }
+      /* Message */
+      .message-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+      }
+      .title {
+        margin: 0;
+        font-size: 1.25em;
+        font-weight: 600;
+        color: var(--foreground);
+      }
+      .subtitle {
+        margin: 0;
+        font-size: 0.9375em;
+        color: var(--muted-foreground);
+      }
 
-    a-button {
-      width: 100%;
-    }
+      /* Level card */
+      .level-card {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5em;
+        padding: 1em 1.5em;
+        background: var(--secondary);
+        border-radius: var(--radius, 0.75rem);
+      }
+      .level-label {
+        font-size: 0.6875em;
+        text-transform: uppercase;
+        letter-spacing: 0.075em;
+        color: var(--muted-foreground);
+        font-weight: 500;
+      }
 
-    .footnote {
-      margin: 0;
-      font-size: 0.75em;
-      color: var(--muted-foreground);
-    }
-  `]
+      a-button {
+        width: 100%;
+      }
+
+      .footnote {
+        margin: 0;
+        font-size: 0.75em;
+        color: var(--muted-foreground);
+      }
+    `,
+  ];
 
   protected render() {
     return html`
@@ -130,7 +133,10 @@ export class VerificationSuccessElement extends LitElement {
 
         <div class="level-card">
           <span class="level-label">Your Level</span>
-          <verification-level-badge .level=${this.level} size="lg"></verification-level-badge>
+          <verification-level-badge
+            .level=${this.level}
+            size="lg"
+          ></verification-level-badge>
         </div>
 
         <a-button
@@ -141,12 +147,16 @@ export class VerificationSuccessElement extends LitElement {
           ${this.loading ? 'Generating signature…' : html`Continue to ${this.appName}`}
         </a-button>
 
-        <p class="footnote">This verification can be used across multiple apps</p>
+        <p class="footnote">
+          This verification can be used across multiple apps
+        </p>
       </div>
-    `
+    `;
   }
 
   private _emit(event: string) {
-    this.dispatchEvent(new CustomEvent(event, { bubbles: true, composed: true }))
+    this.dispatchEvent(
+      new CustomEvent(event, { bubbles: true, composed: true }),
+    );
   }
 }

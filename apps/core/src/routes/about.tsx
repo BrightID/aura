@@ -1,4 +1,4 @@
-import FadeIn from "@/components/motions/fade-in"
+import FadeIn from '@/components/motions/fade-in';
 
 // `about.tsx` => `/about`.
 function About() {
@@ -27,7 +27,7 @@ function About() {
         </span>
       </footer>
     </div>
-  )
+  );
 }
 
-export default About
+export default About;

@@ -1,10 +1,14 @@
 {
   "name": "@aura/domain",
   "version": "0.1.0",
-  "type": "module",
   "description": "Framework-agnostic Aura/BrightID domain logic: crypto, recovery channels, scoring, verifications and shared types",
   "license": "MIT",
-  "files": ["dist", "src", "package.json"],
+  "files": [
+    "dist",
+    "src",
+    "package.json"
+  ],
+  "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",

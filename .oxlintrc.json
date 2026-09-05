@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "react/no-children-prop": "error",
+    "react/jsx-key": "error",
+    "react/exhaustive-deps": "warn",
+    "react/jsx-no-comment-textnodes": "error"
+  },
+  "ignorePatterns": []
+}

@@ -1,9 +1,9 @@
-import { makePersisted } from "@solid-primitives/storage"
-import { createStore } from "solid-js/store"
+import { makePersisted } from '@solid-primitives/storage';
+import { createStore } from 'solid-js/store';
 
 export interface OnboardingState {
-  onboardingShown: boolean
-  getStartedShown: boolean
+  onboardingShown: boolean;
+  getStartedShown: boolean;
 }
 
 const [onboardingStore, setOnboardingStore] = makePersisted(
@@ -11,6 +11,6 @@ const [onboardingStore, setOnboardingStore] = makePersisted(
     onboardingShown: false,
     getStartedShown: false,
   }),
-)
+);
 
-export { onboardingStore, setOnboardingStore }
+export { onboardingStore, setOnboardingStore };

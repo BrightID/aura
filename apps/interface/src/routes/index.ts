@@ -1,42 +1,42 @@
-import appleIcon from '@/assets/icons/apple.svg'
-import brightIDIcon from '@/assets/icons/brightid.svg'
-import EmailIcon from '@/assets/icons/email.svg'
-import externalLinkIcon from '@/assets/icons/external-link.svg'
-import googleIcon from '@/assets/icons/google.svg'
-import spinnerIcon from '@/assets/icons/spinner.svg'
-import WalletIcon from '@/assets/icons/wallet.svg'
-import { auth } from '@/lib/firebase'
-import { pushRouter } from '@/router'
-import { inputText, isLoginLoading } from '@/states/login'
+import appleIcon from '@/assets/icons/apple.svg';
+import brightIDIcon from '@/assets/icons/brightid.svg';
+import EmailIcon from '@/assets/icons/email.svg';
+import externalLinkIcon from '@/assets/icons/external-link.svg';
+import googleIcon from '@/assets/icons/google.svg';
+import spinnerIcon from '@/assets/icons/spinner.svg';
+import WalletIcon from '@/assets/icons/wallet.svg';
+import { auth } from '@/lib/firebase';
+import { pushRouter } from '@/router';
+import { inputText, isLoginLoading } from '@/states/login';
 import {
   userBrightId,
   userEmail,
   userFirstName,
   userLastName,
   userPhoneNumber,
-  userProfilePicture
-} from '@/states/user'
-import { clientAPI } from '@/utils/apis'
-import { wagmiConfig } from '@/utils/wallet'
-import { SignalWatcher } from '@lit-labs/signals'
-import { Connector, signMessage } from '@wagmi/core'
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { css, html, LitElement, type CSSResultGroup } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
-import { map } from 'lit/directives/map.js'
-import { Address } from 'viem'
+  userProfilePicture,
+} from '@/states/user';
+import { clientAPI } from '@/utils/apis';
+import { wagmiConfig } from '@/utils/wallet';
+import { SignalWatcher } from '@lit-labs/signals';
+import { Connector, signMessage } from '@wagmi/core';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { map } from 'lit/directives/map.js';
+import { Address } from 'viem';
 
 const generateUUID = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
+    return crypto.randomUUID();
   }
 
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
-}
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 const appleSignInOptions = {
   clientID: 'org.brightid.get-verified',
@@ -46,55 +46,56 @@ const appleSignInOptions = {
   redirectUri: `${window.location.origin}/interface/sign-in-with-apple`,
   state: generateUUID(),
   responseMode: 'form_post',
-  scope: 'name email'
-} as const
+  scope: 'name email',
+} as const;
 
-declare const AppleID: any
+declare const AppleID: any;
 
 export const signingMessage =
-  'Account Responsibility Notice\nYou are using Aura verified. By signing this message, you confirm ownership of your account. You are responsible for protecting your account and private keys. Keep them secure and do not share them with anyone.'
+  'Account Responsibility Notice\nYou are using Aura verified. By signing this message, you confirm ownership of your account. You are responsible for protecting your account and private keys. Keep them secure and do not share them with anyone.';
 
 interface AuthMethod {
-  id: string
-  name: string
-  icon: string
-  setupTime: string
-  security: number
-  description: string
-  color: string
-  callback?: CallableFunction
+  id: string;
+  name: string;
+  icon: string;
+  setupTime: string;
+  security: number;
+  description: string;
+  color: string;
+  callback?: CallableFunction;
 }
 
 @customElement('home-page')
 export class LoginPage extends SignalWatcher(LitElement) {
   @property({
-    type: Boolean
+    type: Boolean,
   })
-  withoutTitle: boolean = false
+  withoutTitle: boolean = false;
 
   constructor() {
-    super()
+    super();
     try {
       AppleID.auth.init({
         clientId: appleSignInOptions.clientID,
         scope: appleSignInOptions.scope,
         redirectURI: appleSignInOptions.redirectUri,
         state: appleSignInOptions.state,
-        usePopup: true
-      })
+        usePopup: true,
+      });
     } catch (e) {
-      console.warn('Error in setting up apple auth init', e)
+      console.warn('Error in setting up apple auth init', e);
     }
 
     if (userBrightId.get()) {
-      pushRouter('/home')
+      pushRouter('/home');
     }
   }
 
   static styles?: CSSResultGroup = css`
     :host {
       display: block;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family:
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     .space-y-3 {
@@ -480,127 +481,132 @@ export class LoginPage extends SignalWatcher(LitElement) {
     .orange {
       color: #f97316;
     }
-  `
+  `;
 
   private onInputChange(e: Event) {
-    const target = e.target as HTMLInputElement
+    const target = e.target as HTMLInputElement;
 
-    inputText.set(target.value)
+    inputText.set(target.value);
   }
 
   private async createBrightId(email: string) {
     const res = await clientAPI.POST('/login', {
       body: {
         email,
-        integration: 'email'
-      }
-    })
+        integration: 'email',
+      },
+    });
 
     if (res.response.status === 200 && res.data) {
-      userEmail.set(email)
+      userEmail.set(email);
 
-      const { id } = res.data
+      const { id } = res.data;
 
-      userBrightId.set(id)
-      return id
+      userBrightId.set(id);
+      return id;
     }
 
-    throw new Error('Failed to create BrightID' + res.error)
+    throw new Error('Failed to create BrightID' + res.error);
   }
 
   private async onSubmit() {
-    isLoginLoading.set(true)
-    const email = inputText.get()
+    isLoginLoading.set(true);
+    const email = inputText.get();
     try {
-      const res = await this.createBrightId(email)
+      const res = await this.createBrightId(email);
 
       if (res && !this.withoutTitle) {
-        pushRouter('/home')
+        pushRouter('/home');
       }
     } catch (e) {
-      console.error(e)
+      console.error(e);
     } finally {
-      isLoginLoading.set(false)
+      isLoginLoading.set(false);
     }
   }
 
   private async signInWithGoogle() {
-    isLoginLoading.set(true)
+    isLoginLoading.set(true);
     try {
-      const provider = new GoogleAuthProvider()
-      const res = await signInWithPopup(auth, provider)
+      const provider = new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, provider);
 
       if (!res.user) {
-        isLoginLoading.set(false)
-        return
+        isLoginLoading.set(false);
+        return;
       }
 
-      userEmail.set(res.user.email!)
+      userEmail.set(res.user.email!);
 
-      const id = await this.createBrightId(userEmail.get())
+      const id = await this.createBrightId(userEmail.get());
 
-      const [firstName, lastName] = res.user.displayName?.split(' ') ?? []
+      const [firstName, lastName] = res.user.displayName?.split(' ') ?? [];
 
-      userFirstName.set(firstName ?? 'Unknown')
-      userLastName.set(lastName ?? '')
-      userProfilePicture.set(res.user.photoURL ?? '')
-      userPhoneNumber.set(res.user.phoneNumber ?? '')
+      userFirstName.set(firstName ?? 'Unknown');
+      userLastName.set(lastName ?? '');
+      userProfilePicture.set(res.user.photoURL ?? '');
+      userPhoneNumber.set(res.user.phoneNumber ?? '');
 
-      if (!this.withoutTitle) pushRouter('/home')
+      if (!this.withoutTitle) pushRouter('/home');
     } catch (error) {
-      console.error('Error signing in with Google:', error)
-      isLoginLoading.set(false)
+      console.error('Error signing in with Google:', error);
+      isLoginLoading.set(false);
     }
   }
 
   private async signInWithBrightID() {
     if (!this.withoutTitle) {
-      pushRouter('/brightid')
-      return
+      pushRouter('/brightid');
+      return;
     }
 
-    this.dispatchEvent(new CustomEvent('onBrightLogin', { bubbles: true, composed: true }))
+    this.dispatchEvent(
+      new CustomEvent('onBrightLogin', { bubbles: true, composed: true }),
+    );
   }
 
   private async signInWithApple() {
-    isLoginLoading.set(true)
+    isLoginLoading.set(true);
     try {
-      const data = await AppleID.auth.signIn()
+      const data = await AppleID.auth.signIn();
 
       if (!data.authorization) {
-        throw new Error('Authorization data is missing')
+        throw new Error('Authorization data is missing');
       }
 
-      const email = data.authorization.user?.email
-      const firstName = data.authorization.user?.name?.firstName
-      const lastName = data.authorization.user?.name?.lastName
+      const email = data.authorization.user?.email;
+      const firstName = data.authorization.user?.name?.firstName;
+      const lastName = data.authorization.user?.name?.lastName;
 
       if (!email) {
-        throw new Error('Email is required for registration')
+        throw new Error('Email is required for registration');
       }
 
-      userEmail.set(email)
-      const id = await this.createBrightId(email)
+      userEmail.set(email);
+      const id = await this.createBrightId(email);
 
-      userBrightId.set(id)
-      if (firstName) userFirstName.set(firstName)
-      if (lastName) userLastName.set(lastName)
-      userProfilePicture.set('')
-      userPhoneNumber.set('')
+      userBrightId.set(id);
+      if (firstName) userFirstName.set(firstName);
+      if (lastName) userLastName.set(lastName);
+      userProfilePicture.set('');
+      userPhoneNumber.set('');
 
-      pushRouter('/home')
+      pushRouter('/home');
     } catch (error) {
-      console.error('Error signing in with Apple:', error)
+      console.error('Error signing in with Apple:', error);
       if (error instanceof Error) {
-        console.error('Error details:', error.message)
+        console.error('Error details:', error.message);
       }
     } finally {
-      isLoginLoading.set(false)
+      isLoginLoading.set(false);
     }
   }
 
-  private async requestEthereumSignature(address: Address, connector: Connector) {
-    const now = new Date()
+  private async requestEthereumSignature(
+    address: Address,
+    connector: Connector,
+  ) {
+    const now = new Date();
 
     const formattedDate = now.toLocaleString('en-US', {
       year: 'numeric',
@@ -610,50 +616,50 @@ export class LoginPage extends SignalWatcher(LitElement) {
       minute: 'numeric',
       second: 'numeric',
       hour12: true,
-      timeZone: 'UTC'
-    })
+      timeZone: 'UTC',
+    });
 
-    const message = `Wallet: ${address}\nDate: ${formattedDate}\nConfirmation: ${signingMessage}`
+    const message = `Wallet: ${address}\nDate: ${formattedDate}\nConfirmation: ${signingMessage}`;
 
     const hashResult = await signMessage(wagmiConfig, {
       message,
       account: address,
-      connector
-    })
+      connector,
+    });
 
     const res = await clientAPI.POST('/login-with-ethereum', {
       body: {
         hashed: hashResult,
-        message
-      }
-    })
+        message,
+      },
+    });
 
-    if (!res.data) return
+    if (!res.data) return;
 
-    const data = res.data as { id: string }
+    const data = res.data as { id: string };
 
-    userBrightId.set(data.id)
+    userBrightId.set(data.id);
   }
 
   private async signInWithEthereum() {
-    isLoginLoading.set(true)
+    isLoginLoading.set(true);
 
     try {
-      const connector = wagmiConfig.connectors[0]
+      const connector = wagmiConfig.connectors[0];
 
       const res = await connector?.connect({
-        chainId: 1
-      })
+        chainId: 1,
+      });
 
-      if (!res?.accounts[0]) return
+      if (!res?.accounts[0]) return;
 
-      await this.requestEthereumSignature(res.accounts[0], connector!)
+      await this.requestEthereumSignature(res.accounts[0], connector!);
 
-      pushRouter('/complete-profile')
+      pushRouter('/complete-profile');
     } catch (e) {
-      console.log('Error connecting to wallet:', e)
+      console.log('Error connecting to wallet:', e);
     } finally {
-      isLoginLoading.set(false)
+      isLoginLoading.set(false);
     }
   }
 
@@ -666,7 +672,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
       security: 2,
       description: 'Sign in with your Google account',
       color: 'bg-red-50 text-red-700 border-red-200',
-      callback: this.signInWithGoogle.bind(this)
+      callback: this.signInWithGoogle.bind(this),
     },
     {
       id: 'apple',
@@ -676,7 +682,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
       security: 3,
       description: 'Sign in with Apple ID',
       color: 'bg-gray-50 text-gray-700 border-gray-200',
-      callback: this.signInWithApple.bind(this)
+      callback: this.signInWithApple.bind(this),
     },
     {
       id: 'ethereum',
@@ -686,7 +692,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
       security: 4,
       description: 'Connect your crypto wallet',
       color: 'bg-blue-50 text-blue-700 border-blue-200',
-      callback: () => this.signInWithEthereum()
+      callback: () => this.signInWithEthereum(),
     },
     {
       id: 'brightid',
@@ -696,93 +702,123 @@ export class LoginPage extends SignalWatcher(LitElement) {
       security: 10,
       description: 'Decentralized identity verification',
       color: 'bg-orange-50 text-orange-700 border-orange-200',
-      callback: this.signInWithBrightID
-    }
-  ]
+      callback: this.signInWithBrightID,
+    },
+  ];
 
   render() {
     if (this.withoutTitle) {
       return html` <div class="">
-        ${isLoginLoading.get()
-          ? html`
-              <div class="loading-wrapper">
-                <div>
-                  <h2>Signing Up</h2>
-                  <img src="${spinnerIcon}" alt="spinner" />
+        ${
+          isLoginLoading.get()
+            ? html`
+                <div class="loading-wrapper">
+                  <div>
+                    <h2>Signing Up</h2>
+                    <img src="${spinnerIcon}" alt="spinner" />
+                  </div>
                 </div>
-              </div>
-            `
-          : html`
-              <h2 class="form-title">Sign In</h2>
-              <p class="form-desc">Use one of these integrations to login</p>
-              <a-input
-                .value="${inputText.get()}"
-                @input=${this.onInputChange}
-                type="email"
-                placeholder="Enter your email"
-              >
-                <img slot="icon" width="25" height="25" src="${EmailIcon}" alt="email" />
-              </a-input>
-
-              <div class="btn-wrapper">
-                <a-button
-                  size="lg"
-                  style="width: 100%"
-                  @click=${this.onSubmit}
-                  .disabled=${isLoginLoading.get()}
+              `
+            : html`
+                <h2 class="form-title">Sign In</h2>
+                <p class="form-desc">Use one of these integrations to login</p>
+                <a-input
+                  .value="${inputText.get()}"
+                  @input=${this.onInputChange}
+                  type="email"
+                  placeholder="Enter your email"
                 >
-                  Sign in with Email
-                </a-button>
-                <div class="btn-info">
-                  <a-badge size="xs" variant="outline" class="security-3" style="opacity: 0.5">
-                    <span>🛡️</span><span>3/10</span>
-                  </a-badge>
-                  <a-badge size="xs" variant="outline">
-                    <span>🕒</span><span>Setup: +1m</span>
-                  </a-badge>
+                  <img
+                    slot="icon"
+                    width="25"
+                    height="25"
+                    src="${EmailIcon}"
+                    alt="email"
+                  />
+                </a-input>
+
+                <div class="btn-wrapper">
+                  <a-button
+                    size="lg"
+                    style="width: 100%"
+                    @click=${this.onSubmit}
+                    .disabled=${isLoginLoading.get()}
+                  >
+                    Sign in with Email
+                  </a-button>
+                  <div class="btn-info">
+                    <a-badge
+                      size="xs"
+                      variant="outline"
+                      class="security-3"
+                      style="opacity: 0.5"
+                    >
+                      <span>🛡️</span><span>3/10</span>
+                    </a-badge>
+                    <a-badge size="xs" variant="outline">
+                      <span>🕒</span><span>Setup: +1m</span>
+                    </a-badge>
+                  </div>
                 </div>
-              </div>
 
-              <div class="mini-divider">Or</div>
+                <div class="mini-divider">Or</div>
 
-              <div class="mini-integrations">
-                <div class="mini-integration-wrapper">
-                  ${map(
-                    this.authMethods,
-                    (method) => html`
-                      <div class="space-y-2">
-                        <a-button
-                          variant="ghost"
-                          size="sm"
-                          class="mini-button"
-                          @click=${() => method.callback?.()}
-                        >
-                          <img width="20" height="20" src="${method.icon}" alt="${method.name}" />
-                        </a-button>
-                        <div class="badge-container mini">
-                          <a-badge size="xs" variant="outline" class="security-${method.security}">
-                            <span>🛡️</span>
-                            <span>${method.security}/10</span>
-                          </a-badge>
+                <div class="mini-integrations">
+                  <div class="mini-integration-wrapper">
+                    ${map(
+                      this.authMethods,
+                      (method) => html`
+                        <div class="space-y-2">
+                          <a-button
+                            variant="ghost"
+                            size="sm"
+                            class="mini-button"
+                            @click=${() => method.callback?.()}
+                          >
+                            <img
+                              width="20"
+                              height="20"
+                              src="${method.icon}"
+                              alt="${method.name}"
+                            />
+                          </a-button>
+                          <div class="badge-container mini">
+                            <a-badge
+                              size="xs"
+                              variant="outline"
+                              class="security-${method.security}"
+                            >
+                              <span>🛡️</span>
+                              <span>${method.security}/10</span>
+                            </a-badge>
+                          </div>
                         </div>
-                      </div>
-                    `
-                  )}
+                      `,
+                    )}
+                  </div>
                 </div>
-              </div>
-            `}
-      </div>`
+              `
+        }
+      </div>`;
     }
 
     return html`
       <div class="wrapper">
-        <img src="${import.meta.env.BASE_URL}aura2.png" class="logo" alt="Aura" />
+        <img
+          src="${import.meta.env.BASE_URL}aura2.png"
+          class="logo"
+          alt="Aura"
+        />
 
         <div class="container">
           <h1 class="title">Aura Verified</h1>
           <p class="info-text">Decentralized verification platform</p>
 
-          <a href="https://brightid.gitbook.io/aura" target="_blank" class="desc-btn">
+          <a
+            href="https://brightid.gitbook.io/aura"
+            target="_blank"
+            class="desc-btn"
+          >
             <span>What is Aura?</span>
             <img src=${externalLinkIcon} alt="Aura" />
           </a>
@@ -790,16 +826,22 @@ export class LoginPage extends SignalWatcher(LitElement) {
           <a-card class="form-container">
             <div class="lamp-light"></div>
 
-            ${isLoginLoading.get()
-              ? html`
-                  <div class="loading-wrapper">
-                    <div>
-                      <h2>Signing Up</h2>
-                      <img width="25" height="25" src="${spinnerIcon}" alt="spinner" />
+            ${
+              isLoginLoading.get()
+                ? html`
+                    <div class="loading-wrapper">
+                      <div>
+                        <h2>Signing Up</h2>
+                        <img
+                          width="25"
+                          height="25"
+                          src="${spinnerIcon}"
+                          alt="spinner"
+                        />
+                      </div>
                     </div>
-                  </div>
-                `
-              : html`
+                  `
+                : html`
               <h2 class="form-title">Sign In</h2>
               <p class="form-desc">Use one of these integrations to login</p>
               <a-input
@@ -844,10 +886,17 @@ export class LoginPage extends SignalWatcher(LitElement) {
                         @click=${() => method.callback?.()}
                       >
                         <div class="flex-container">
-                          <img width="20" height="20" src="${method.icon}" alt="${method.name}" />
+                          <img
+                            width="20"
+                            height="20"
+                            src="${method.icon}"
+                            alt="${method.name}"
+                          />
                           <div class="flex-1">
                             <div class="font-medium">${method.name}</div>
-                            <div class="text-xs text-muted-foreground">${method.description}</div>
+                            <div class="text-xs text-muted-foreground">
+                              ${method.description}
+                            </div>
                           </div>
                         </div>
                       </a-button>
@@ -857,19 +906,24 @@ export class LoginPage extends SignalWatcher(LitElement) {
                           <span>🕒</span>
                           <span>Setup time: + ${method.setupTime}</span>
                         </a-badge>
-                        <a-badge size="xs" variant="outline" class="security-${method.security}">
+                        <a-badge
+                          size="xs"
+                          variant="outline"
+                          class="security-${method.security}"
+                        >
                           <span>🛡️</span>
                           <span>Security: ${method.security}/10</span>
                         </a-badge>
                       </div>
                     </div>
-                  `
+                  `,
                 )}
               </div>
 
               <p class="form-footer">By Signing in you will agree to our privacy policy</p>
             </div>
-            `}
+            `
+            }
           </a-card>
 
           <div class="bottom-bar">
@@ -894,10 +948,12 @@ export class LoginPage extends SignalWatcher(LitElement) {
 
               <span class="brand-name">Bright ID</span>
             </div>
-            <a href="/interface/privacy-policy" class="privacy">Privacy Policy</a>
+            <a href="/interface/privacy-policy" class="privacy"
+              >Privacy Policy</a
+            >
           </div>
         </div>
       </div>
-    `
+    `;
   }
 }

@@ -40,5 +40,10 @@
       "@aura/widgets/*": ["../../packages/widgets/src/*.ts"]
     }
   },
-  "include": ["src", "vite-env.d.ts", "drizzle.config.ts", "../../packages/widgets/src"]
+  "include": [
+    "src",
+    "vite-env.d.ts",
+    "drizzle.config.ts",
+    "../../packages/widgets/src"
+  ]
 }

@@ -1,5 +1,5 @@
-import { css, html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import { css, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 @customElement('verifier-card-skeleton')
 export class VerifierCardSkeleton extends LitElement {
@@ -90,7 +90,7 @@ export class VerifierCardSkeleton extends LitElement {
       margin-left: auto;
       width: 117.975px;
     }
-  `
+  `;
 
   render() {
     return html`
@@ -111,6 +111,6 @@ export class VerifierCardSkeleton extends LitElement {
           <div class="skeleton note-skeleton"></div>
         </section>
       </div>
-    `
+    `;
   }
 }

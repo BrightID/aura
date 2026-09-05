@@ -1,15 +1,22 @@
-import { sql } from 'drizzle-orm'
-import { boolean, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm';
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 export const usersTable = pgTable('users', {
   id: varchar({ length: 43 }).notNull().primaryKey(),
   createdAt: timestamp().defaultNow(),
-  integrations: varchar({ length: 255 }).notNull().array().default([])
-})
+  integrations: varchar({ length: 255 }).notNull().array().default([]),
+});
 
 export const auraPlayersSocialTable = pgTable('socialRecords', {
-  hash: varchar({ length: 300 }).primaryKey()
-})
+  hash: varchar({ length: 300 }).primaryKey(),
+});
 
 export const projectsTable = pgTable('projects', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -22,5 +29,5 @@ export const projectsTable = pgTable('projects', {
   isActive: boolean().notNull().default(true),
   image: varchar({ length: 1000 }),
   landingMarkdown: text(),
-  creatorId: varchar({ length: 43 }).references(() => usersTable.id)
-})
+  creatorId: varchar({ length: 43 }).references(() => usersTable.id),
+});

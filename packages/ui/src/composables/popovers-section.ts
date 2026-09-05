@@ -1,5 +1,5 @@
-import { html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import { html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 @customElement('popovers-section')
 export class PopoversSectionElement extends LitElement {
@@ -8,7 +8,10 @@ export class PopoversSectionElement extends LitElement {
       <a-head level="3"> Popovers Section </a-head>
 
       <a-popover side="bottom" align="center" side-offset="6">
-        <button slot="trigger" class="px-4 py-2 bg-primary text-primary-foreground rounded">
+        <button
+          slot="trigger"
+          class="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
           Open Popover
         </button>
 
@@ -16,9 +19,12 @@ export class PopoversSectionElement extends LitElement {
           <div class="space-y-3">
             <h4 class="font-medium">Popover Title</h4>
             <p class="text-sm text-muted-foreground">
-              This is a popover content area. You can put anything here — text, forms, images...
+              This is a popover content area. You can put anything here — text,
+              forms, images...
             </p>
-            <button class="text-sm text-primary hover:underline">Learn more →</button>
+            <button class="text-sm text-primary hover:underline">
+              Learn more →
+            </button>
           </div>
         </div>
       </a-popover>
@@ -41,14 +47,20 @@ export class PopoversSectionElement extends LitElement {
             </div>
           </div>
 
-          <p class="text-sm">The React Framework – created and maintained by @vercel.</p>
+          <p class="text-sm">
+            The React Framework – created and maintained by @vercel.
+          </p>
 
           <div class="flex gap-6 mt-4 text-sm text-muted-foreground">
-            <div><span class="font-medium text-foreground">12k</span> Followers</div>
-            <div><span class="font-medium text-foreground">289</span> Following</div>
+            <div>
+              <span class="font-medium text-foreground">12k</span> Followers
+            </div>
+            <div>
+              <span class="font-medium text-foreground">289</span> Following
+            </div>
           </div>
         </a-hover-card-content>
       </a-hover-card>
-    `
+    `;
   }
 }

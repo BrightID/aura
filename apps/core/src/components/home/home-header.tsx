@@ -1,17 +1,17 @@
-import { A } from "@solidjs/router"
-import { For, Show } from "solid-js"
-import GlobalSearch from "@/components/search/global-search"
-import NotificationBell from "@/components/shared/notification-bell"
-import { useLevelupProgress } from "@/hooks/use-levelup-progress"
-import { useViewMode } from "@/hooks/use-view-mode"
-import { roleColor, roleIcon } from "@/shared/lib/role-style"
+import { A } from '@solidjs/router';
+import { For, Show } from 'solid-js';
+import GlobalSearch from '@/components/search/global-search';
+import NotificationBell from '@/components/shared/notification-bell';
+import { useLevelupProgress } from '@/hooks/use-levelup-progress';
+import { useViewMode } from '@/hooks/use-view-mode';
+import { roleColor, roleIcon } from '@/shared/lib/role-style';
 import {
   viewModeToSlug,
   viewModeToString,
   viewModeToViewAs,
-} from "@aura/domain/view-mode"
-import { PreferredView } from "@aura/domain/types/dashboard"
-import { EvaluationCategory } from "@aura/domain/types/evaluations"
+} from '@aura/domain/view-mode';
+import { PreferredView } from '@aura/domain/types/dashboard';
+import { EvaluationCategory } from '@aura/domain/types/evaluations';
 
 /** Views in the switcher, paired with the category that gates each one. */
 const VIEWS: { view: PreferredView; gate: EvaluationCategory | null }[] = [
@@ -21,7 +21,7 @@ const VIEWS: { view: PreferredView; gate: EvaluationCategory | null }[] = [
     view: PreferredView.MANAGER_EVALUATING_TRAINER,
     gate: EvaluationCategory.MANAGER,
   },
-]
+];
 
 /**
  * Home header with role-view switcher — each view is its own route
@@ -29,20 +29,22 @@ const VIEWS: { view: PreferredView; gate: EvaluationCategory | null }[] = [
  * "Level Up" tab gating in `home/[view]/_layout.tsx`.
  */
 export default function HomeHeader() {
-  const vm = useViewMode()
-  const trainerProgress = useLevelupProgress(() => EvaluationCategory.TRAINER)
-  const managerProgress = useLevelupProgress(() => EvaluationCategory.MANAGER)
+  const vm = useViewMode();
+  const trainerProgress = useLevelupProgress(() => EvaluationCategory.TRAINER);
+  const managerProgress = useLevelupProgress(() => EvaluationCategory.MANAGER);
 
   const isUnlocked = (gate: EvaluationCategory | null) => {
-    if (gate === EvaluationCategory.TRAINER) return trainerProgress().isUnlocked
-    if (gate === EvaluationCategory.MANAGER) return managerProgress().isUnlocked
-    return true
-  }
+    if (gate === EvaluationCategory.TRAINER)
+      return trainerProgress().isUnlocked;
+    if (gate === EvaluationCategory.MANAGER)
+      return managerProgress().isUnlocked;
+    return true;
+  };
 
   const lockMessage = (gate: EvaluationCategory | null) =>
     gate === EvaluationCategory.MANAGER
-      ? "Reach the required standing as a Trainer to unlock the Manager view."
-      : "Reach the required standing as a Player to unlock the Trainer view."
+      ? 'Reach the required standing as a Trainer to unlock the Manager view.'
+      : 'Reach the required standing as a Player to unlock the Trainer view.';
 
   return (
     <header class="mb-4 flex flex-col gap-3">
@@ -64,8 +66,8 @@ export default function HomeHeader() {
       <div class="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
         <For each={VIEWS}>
           {({ view, gate }) => {
-            const label = viewModeToString[view]
-            const selected = () => vm.currentViewMode() === view
+            const label = viewModeToString[view];
+            const selected = () => vm.currentViewMode() === view;
             return (
               <Show
                 when={isUnlocked(gate)}
@@ -81,7 +83,10 @@ export default function HomeHeader() {
                     >
                       <a-icon name="lock" />
                     </a-button>
-                    <div slot="content" class="flex w-72 max-w-full flex-col gap-2">
+                    <div
+                      slot="content"
+                      class="flex w-72 max-w-full flex-col gap-2"
+                    >
                       <p class="font-medium text-foreground">{label} locked</p>
                       <a-text size="sm" class="text-muted-foreground">
                         {lockMessage(gate)}
@@ -110,10 +115,10 @@ export default function HomeHeader() {
                   </a-button>
                 </A>
               </Show>
-            )
+            );
           }}
         </For>
       </div>
     </header>
-  )
+  );
 }

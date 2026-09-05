@@ -1,8 +1,9 @@
-import { A, useLocation } from "@solidjs/router"
-import { Show } from "solid-js"
-import GlobalSearch from "@/components/search/global-search"
-import NotificationBell from "@/components/shared/notification-bell"
-import { authStore } from "@/store/auth"
+import { A, useLocation } from '@solidjs/router';
+import { Show } from 'solid-js';
+import GlobalSearch from '@/components/search/global-search';
+import NotificationBell from '@/components/shared/notification-bell';
+import { toRouterPath } from '@/shared/lib/urls';
+import { authStore } from '@/store/auth';
 
 /**
  * Persistent app header, ported from the old `DefaultHeader`: home link on the
@@ -11,31 +12,34 @@ import { authStore } from "@/store/auth"
  * (`/`, `/login`, `/onboarding`) and home, which has its own richer header.
  */
 export default function AppHeader() {
-  const location = useLocation()
+  const location = useLocation();
+  // `pathname` includes the router base (`/core/...`) — strip it so the
+  // route checks below compare app paths.
+  const path = () => toRouterPath(location.pathname);
 
   const hidden = () => {
-    const path = location.pathname
+    const p = path();
     return (
-      path === "/" ||
-      path.startsWith("/login") ||
-      path.startsWith("/onboarding") ||
-      path.startsWith("/home")
-    )
-  }
+      p === '/' ||
+      p.startsWith('/login') ||
+      p.startsWith('/onboarding') ||
+      p.startsWith('/home')
+    );
+  };
 
   // Derive a page heading from the route so subpages regain the old header
   // title (the old `DefaultHeader` always showed one).
   const title = () => {
-    const path = location.pathname
-    if (path.startsWith("/subject")) return "Profile"
-    if (path.startsWith("/settings")) return "Settings"
-    if (path.startsWith("/notifications")) return "Notifications"
-    if (path.startsWith("/role-management")) return "Roles"
-    if (path.startsWith("/contact-info")) return "Contact info"
-    if (path.startsWith("/dashboard")) return "Dashboard"
-    if (path.startsWith("/domain-overview")) return "Domain"
-    return ""
-  }
+    const p = path();
+    if (p.startsWith('/subject')) return 'Profile';
+    if (p.startsWith('/settings')) return 'Settings';
+    if (p.startsWith('/notifications')) return 'Notifications';
+    if (p.startsWith('/role-management')) return 'Roles';
+    if (p.startsWith('/contact-info')) return 'Contact info';
+    if (p.startsWith('/dashboard')) return 'Dashboard';
+    if (p.startsWith('/domain-overview')) return 'Domain';
+    return '';
+  };
 
   return (
     <Show when={!hidden() && authStore.user?.brightId}>
@@ -63,5 +67,5 @@ export default function AppHeader() {
         </div>
       </header>
     </Show>
-  )
+  );
 }

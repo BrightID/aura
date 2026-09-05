@@ -1,7 +1,7 @@
-import LogoutButton from "@/components/settings/logout-button"
-import SettingCard from "@/components/settings/setting-card"
-import ThemeToggle from "@/components/settings/theme-toggle"
-import VersionCard from "@/components/settings/version-card"
+import LogoutButton from '@/components/settings/logout-button';
+import SettingCard from '@/components/settings/setting-card';
+import ThemeToggle from '@/components/settings/theme-toggle';
+import VersionCard from '@/components/settings/version-card';
 
 /**
  * /settings — ported from the React app, same card order.
@@ -17,7 +17,11 @@ export default function SettingsPage() {
       <a-head class="text-2xl">Settings</a-head>
 
       <section class="flex w-full flex-col gap-4">
-        <SettingCard icon="contact" label="Your Contact info" href="/contact-info" />
+        <SettingCard
+          icon="contact"
+          label="Your Contact info"
+          href="/contact-info"
+        />
         <SettingCard
           icon="shield"
           label="Role Management"
@@ -54,5 +58,5 @@ export default function SettingsPage() {
         <LogoutButton />
       </section>
     </div>
-  )
+  );
 }

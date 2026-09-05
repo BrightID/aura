@@ -1,11 +1,11 @@
-import externalLinkIcon from '@/assets/icons/external-link.svg'
-import { css, CSSResultGroup, html, LitElement } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import externalLinkIcon from '@/assets/icons/external-link.svg';
+import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 @customElement('hero-section')
 export class HeroSectionElement extends LitElement {
   @property({ type: String })
-  title = 'Aura Verified'
+  title = 'Aura Verified';
 
   static styles?: CSSResultGroup = css`
     .container {
@@ -56,18 +56,26 @@ export class HeroSectionElement extends LitElement {
     .desc-btn span {
       margin-right: 0.5rem;
     }
-  `
+  `;
   protected render() {
-    return html` <img src="${import.meta.env.BASE_URL}aura2.png" class="logo" alt="Aura" />
+    return html` <img
+        src="${import.meta.env.BASE_URL}aura2.png"
+        class="logo"
+        alt="Aura"
+      />
 
       <div class="container">
         <h1 class="title">${this.title}</h1>
         <p class="info-text">Decentralized verification platform</p>
 
-        <a href="https://brightid.gitbook.io/aura" target="_blank" class="desc-btn">
+        <a
+          href="https://brightid.gitbook.io/aura"
+          target="_blank"
+          class="desc-btn"
+        >
           <span>What is Aura?</span>
           <img src=${externalLinkIcon} alt="Aura" />
         </a>
-      </div>`
+      </div>`;
   }
 }

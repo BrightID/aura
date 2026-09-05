@@ -1,12 +1,12 @@
-import { createSignal, For, Show } from "solid-js"
-import { scrollReveal } from "$lib/scroll-reveal"
-import { steps } from "$lib/data"
+import { createSignal, For } from 'solid-js';
+import { scrollReveal } from '$lib/scroll-reveal';
+import { steps } from '$lib/data';
 
 export default function HowItWorks() {
-  const [activeStep, setActiveStep] = createSignal(0)
+  const [activeStep, setActiveStep] = createSignal(0);
 
-  const currentStep = () => steps[activeStep()]
-  const isExternal = () => currentStep().href.startsWith("http")
+  const currentStep = () => steps[activeStep()];
+  const isExternal = () => currentStep().href.startsWith('http');
 
   return (
     <section
@@ -26,8 +26,8 @@ export default function HowItWorks() {
             From Stranger to Verified in Five Steps
           </h2>
           <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-            No forms, no ID scans. Just people you know, confirming what they already
-            know.
+            No forms, no ID scans. Just people you know, confirming what they
+            already know.
           </p>
         </div>
 
@@ -39,8 +39,8 @@ export default function HowItWorks() {
                   type="button"
                   class={`w-full text-left p-6 rounded-2xl border transition-all duration-300 ${
                     activeStep() === i()
-                      ? "bg-primary/10 border-primary"
-                      : "bg-card border-border hover:border-cyan-300/30"
+                      ? 'bg-primary/10 border-primary'
+                      : 'bg-card border-border hover:border-cyan-300/30'
                   }`}
                   onClick={() => setActiveStep(i())}
                 >
@@ -48,8 +48,8 @@ export default function HowItWorks() {
                     <div
                       class={`flex items-center justify-center w-12 h-12 rounded-full font-display font-bold text-lg transition-colors ${
                         activeStep() === i()
-                          ? "bg-primary text-primary-foreground shadow-[0_0_24px_rgba(34,211,238,0.4)]"
-                          : "bg-secondary text-foreground"
+                          ? 'bg-primary text-primary-foreground shadow-[0_0_24px_rgba(34,211,238,0.4)]'
+                          : 'bg-secondary text-foreground'
                       }`}
                     >
                       {i() + 1}
@@ -58,12 +58,16 @@ export default function HowItWorks() {
                       <h3 class="font-display text-lg font-semibold text-foreground">
                         {step.title}
                       </h3>
-                      <p class="text-sm text-muted-foreground mt-1">{step.body}</p>
+                      <p class="text-sm text-muted-foreground mt-1">
+                        {step.body}
+                      </p>
                     </div>
                     <a-icon
                       name={step.icon}
                       class={`text-xl transition-colors ${
-                        activeStep() === i() ? "text-primary" : "text-muted-foreground"
+                        activeStep() === i()
+                          ? 'text-primary'
+                          : 'text-muted-foreground'
                       }`}
                     />
                   </div>
@@ -78,11 +82,14 @@ export default function HowItWorks() {
                 <div class="absolute top-1/4 left-1/4 w-40 h-40 rounded-full bg-cyan-400/15 blur-3xl animate-float" />
                 <div
                   class="absolute bottom-1/4 right-1/4 w-40 h-40 rounded-full bg-fuchsia-400/15 blur-3xl animate-float"
-                  style={{ "animation-delay": "-3s" }}
+                  style={{ 'animation-delay': '-3s' }}
                 />
                 <div class="relative z-10">
                   <div class="w-24 h-24 rounded-full bg-cyan-400/15 border border-cyan-300/30 flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(34,211,238,0.35)]">
-                    <a-icon name={currentStep().icon} class="text-4xl text-cyan-300" />
+                    <a-icon
+                      name={currentStep().icon}
+                      class="text-4xl text-cyan-300"
+                    />
                   </div>
                   <h3 class="font-display text-2xl font-bold text-foreground mb-4">
                     {currentStep().title}
@@ -92,8 +99,8 @@ export default function HowItWorks() {
                   </p>
                   <a
                     href={currentStep().href}
-                    target={isExternal() ? "_blank" : undefined}
-                    rel={isExternal() ? "noopener noreferrer" : undefined}
+                    target={isExternal() ? '_blank' : undefined}
+                    rel={isExternal() ? 'noopener noreferrer' : undefined}
                     class="inline-flex items-center gap-2 text-sm font-medium text-cyan-300 hover:text-cyan-200 transition-colors mt-6"
                   >
                     {currentStep().linkLabel}
@@ -106,5 +113,5 @@ export default function HowItWorks() {
         </div>
       </div>
     </section>
-  )
+  );
 }

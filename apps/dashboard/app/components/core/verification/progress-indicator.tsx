@@ -1,21 +1,24 @@
-import { cn } from "@/lib/utils"
-import type { VerificationLevel, UserVerificationStatus } from "./types"
+import { cn } from '@/lib/utils';
+import type { VerificationLevel, UserVerificationStatus } from './types';
 
 interface ProgressIndicatorProps {
-  status: UserVerificationStatus
-  requiredLevel: VerificationLevel
+  status: UserVerificationStatus;
+  requiredLevel: VerificationLevel;
 }
 
 export function ProgressIndicator({
   status,
   requiredLevel,
 }: ProgressIndicatorProps) {
-  const progress = Math.min((status.currentLevel / requiredLevel) * 100, 100)
-  const scoreProgress = Math.min((status.score / status.scoreNeeded) * 100, 100)
+  const progress = Math.min((status.currentLevel / requiredLevel) * 100, 100);
+  const scoreProgress = Math.min(
+    (status.score / status.scoreNeeded) * 100,
+    100,
+  );
   const evalProgress = Math.min(
     (status.evaluationsReceived / status.evaluationsNeeded) * 100,
-    100
-  )
+    100,
+  );
 
   return (
     <div className="space-y-4">
@@ -30,8 +33,8 @@ export function ProgressIndicator({
         <div className="h-2 bg-secondary rounded-full overflow-hidden">
           <div
             className={cn(
-              "h-full rounded-full transition-all duration-500 ease-out",
-              progress >= 100 ? "bg-aura-success" : "bg-primary"
+              'h-full rounded-full transition-all duration-500 ease-out',
+              progress >= 100 ? 'bg-aura-success' : 'bg-primary',
             )}
             style={{ width: `${progress}%` }}
           />
@@ -109,5 +112,5 @@ export function ProgressIndicator({
         </div>
       </div>
     </div>
-  )
+  );
 }

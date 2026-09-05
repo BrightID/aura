@@ -1,67 +1,67 @@
-import { useState } from "react"
-import { LevelBadge } from "./level-badge"
-import type { AuraPlayer } from "./types"
+import { useState } from 'react';
+import { LevelBadge } from './level-badge';
+import type { AuraPlayer } from './types';
 
 interface FindPlayersStepProps {
-  userId?: string
-  onBack: () => void
-  onSelectPlayer: (playerId: string) => void
+  userId?: string;
+  onBack: () => void;
+  onSelectPlayer: (playerId: string) => void;
 }
 
 // Mock data for demo - will be resolved from contact book in production
 const mockPlayers: AuraPlayer[] = [
   {
-    id: "aura_1",
-    name: "Alex Chen",
+    id: 'aura_1',
+    name: 'Alex Chen',
     level: 3,
     isOnline: true,
     mutualConnections: 5,
   },
   {
-    id: "aura_2",
-    name: "Jordan Lee",
+    id: 'aura_2',
+    name: 'Jordan Lee',
     level: 2,
     isOnline: true,
     mutualConnections: 3,
   },
   {
-    id: "aura_3",
-    name: "Sam Rivera",
+    id: 'aura_3',
+    name: 'Sam Rivera',
     level: 2,
     isOnline: false,
     mutualConnections: 2,
   },
   {
-    id: "aura_4",
-    name: "Taylor Kim",
+    id: 'aura_4',
+    name: 'Taylor Kim',
     level: 1,
     isOnline: true,
     mutualConnections: 1,
   },
   {
-    id: "aura_5",
-    name: "Morgan Wu",
+    id: 'aura_5',
+    name: 'Morgan Wu',
     level: 3,
     isOnline: false,
     mutualConnections: 4,
   },
-]
+];
 
 export function FindPlayersStep({
   userId,
   onBack,
   onSelectPlayer,
 }: FindPlayersStepProps) {
-  const [showQR, setShowQR] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
+  const [showQR, setShowQR] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPlayers = mockPlayers.filter((p) =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-    `aura://connect/${userId || "new-user"}`
-  )}&bgcolor=1a1a2e&color=4ade80`
+    `aura://connect/${userId || 'new-user'}`,
+  )}&bgcolor=1a1a2e&color=4ade80`;
 
   return (
     <div className="space-y-4">
@@ -120,7 +120,7 @@ export function FindPlayersStep({
             </div>
           </div>
           <svg
-            className={`w-5 h-5 text-muted-foreground transition-transform ${showQR ? "rotate-180" : ""}`}
+            className={`w-5 h-5 text-muted-foreground transition-transform ${showQR ? 'rotate-180' : ''}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -138,7 +138,7 @@ export function FindPlayersStep({
           <div className="mt-3 p-4 bg-card rounded-xl border border-border flex flex-col items-center gap-3">
             <div className="p-3 bg-[#1a1a2e] rounded-xl">
               <img
-                src={qrCodeUrl || "/placeholder.svg"}
+                src={qrCodeUrl || '/placeholder.svg'}
                 alt="Your Aura QR Code"
                 className="w-[180px] h-[180px] rounded-lg"
               />
@@ -189,9 +189,9 @@ export function FindPlayersStep({
               <div className="relative">
                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
                   {player.name
-                    .split(" ")
+                    .split(' ')
                     .map((n) => n[0])
-                    .join("")}
+                    .join('')}
                 </div>
                 {player.isOnline && (
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-aura-success rounded-full border-2 border-card" />
@@ -252,5 +252,5 @@ export function FindPlayersStep({
         Scan QR Code
       </a-button>
     </div>
-  )
+  );
 }

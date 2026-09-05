@@ -1,6 +1,6 @@
-import { A } from "@solidjs/router"
-import { Show } from "solid-js"
-import { unreadCount } from "@/store/notifications"
+import { A } from '@solidjs/router';
+import { Show } from 'solid-js';
+import { unreadCount } from '@/store/notifications';
 
 /** Bell link to `/notifications` with the unread-count badge. */
 export default function NotificationBell() {
@@ -15,5 +15,5 @@ export default function NotificationBell() {
         </span>
       </Show>
     </A>
-  )
+  );
 }

@@ -1,20 +1,20 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-card")
+@customElement('a-card')
 export class CardElement extends LitElement {
   /** Glass is the design default; use `variant="default"` for a solid card. */
   @property({ reflect: true })
-  declare variant: "default" | "glass"
+  declare variant: 'default' | 'glass';
 
   /** Clickable card: pointer cursor, hover lift, press feedback. */
   @property({ type: Boolean, reflect: true })
-  declare interactive: boolean
+  declare interactive: boolean;
 
   constructor() {
-    super()
-    this.variant = "glass"
-    this.interactive = false
+    super();
+    this.variant = 'glass';
+    this.interactive = false;
   }
 
   static styles: CSSResultGroup = css`
@@ -38,7 +38,7 @@ export class CardElement extends LitElement {
       --card-border: color-mix(in oklch, var(--border) 60%, transparent);
     }
 
-    :host([variant="glass"]) {
+    :host([variant='glass']) {
       --blur: 2px;
       background: linear-gradient(
         135deg,
@@ -53,7 +53,7 @@ export class CardElement extends LitElement {
         0 12px 40px oklch(0 0 0 / 0.12);
     }
 
-    :host([variant="glass"]):hover {
+    :host([variant='glass']):hover {
       box-shadow:
         0 2px 4px oklch(0 0 0 / 0.06),
         0 16px 50px oklch(0 0 0 / 0.18);
@@ -70,11 +70,11 @@ export class CardElement extends LitElement {
       -webkit-tap-highlight-color: transparent;
     }
 
-    :host([interactive][variant="default"]:hover) {
+    :host([interactive][variant='default']:hover) {
       background: color-mix(in oklch, var(--foreground) 6%, var(--card));
     }
 
-    :host([interactive][variant="glass"]:hover) {
+    :host([interactive][variant='glass']:hover) {
       background: linear-gradient(
         135deg,
         color-mix(in oklch, var(--card) 28%, transparent) 0%,
@@ -90,15 +90,15 @@ export class CardElement extends LitElement {
       outline: 2px solid var(--ring);
       outline-offset: 2px;
     }
-  `
+  `;
 
   render() {
-    return html`<slot></slot>`
+    return html`<slot></slot>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-card": CardElement
+    'a-card': CardElement;
   }
 }

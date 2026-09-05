@@ -1,4 +1,4 @@
-import { scrollReveal } from "$lib/scroll-reveal"
+import { scrollReveal } from '$lib/scroll-reveal';
 
 export default function Hero() {
   return (
@@ -29,17 +29,24 @@ export default function Hero() {
         </h1>
 
         <p class="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
-          Aura verifies real, unique people through the community that already knows
-          them — no ID uploads, no biometric scans, no central database to breach. Get
-          verified once, then carry that proof anywhere Aura is accepted.
+          Aura verifies real, unique people through the community that already
+          knows them — no ID uploads, no biometric scans, no central database to
+          breach. Get verified once, then carry that proof anywhere Aura is
+          accepted.
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-20">
           <a href="/interface/login" class="inline-flex">
-            <a-button size="lg" class="group min-w-[13rem] shadow-[0_0_32px_oklch(80%_0.12_195_/_0.28)]">
+            <a-button
+              size="lg"
+              class="group min-w-[13rem] shadow-[0_0_32px_oklch(80%_0.12_195_/_0.28)]"
+            >
               <span class="inline-flex items-center gap-2">
                 Get Verified
-                <a-icon name="arrow-right" class="text-lg transition-transform group-hover:translate-x-1" />
+                <a-icon
+                  name="arrow-right"
+                  class="text-lg transition-transform group-hover:translate-x-1"
+                />
               </span>
             </a-button>
           </a>
@@ -99,5 +106,5 @@ export default function Hero() {
         </div>
       </div>
     </section>
-  )
+  );
 }

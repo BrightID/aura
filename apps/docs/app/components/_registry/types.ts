@@ -1,4 +1,4 @@
-export type ControlType = "enum" | "boolean" | "string" | "number";
+export type ControlType = 'enum' | 'boolean' | 'string' | 'number';
 
 export interface PropSpec {
   /** Attribute name on the custom element, e.g. "variant". */
@@ -35,5 +35,5 @@ export interface ComponentDoc {
    * When rendering the live preview, wrap the element so it is visible.
    * "center" (default) centers it; "block" gives a full-width block.
    */
-  frame?: "center" | "block";
+  frame?: 'center' | 'block';
 }

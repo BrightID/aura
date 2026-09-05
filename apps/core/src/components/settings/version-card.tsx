@@ -1,5 +1,5 @@
-import { Show } from "solid-js"
-import { needRefresh, updateApp } from "@/shared/lib/pwa"
+import { Show } from 'solid-js';
+import { needRefresh, updateApp } from '@/shared/lib/pwa';
 
 /**
  * App version card. When the service worker has a new build waiting (see
@@ -27,5 +27,5 @@ export default function VersionCard() {
         </a-button>
       </Show>
     </a-card>
-  )
+  );
 }

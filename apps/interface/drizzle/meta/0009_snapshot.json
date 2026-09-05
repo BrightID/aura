@@ -145,12 +145,8 @@
           "name": "projects_creatorId_users_id_fk",
           "tableFrom": "projects",
           "tableTo": "users",
-          "columnsFrom": [
-            "creatorId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["creatorId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -158,12 +154,8 @@
           "name": "projects_selectedPlanId_plans_id_fk",
           "tableFrom": "projects",
           "tableTo": "plans",
-          "columnsFrom": [
-            "selectedPlanId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["selectedPlanId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

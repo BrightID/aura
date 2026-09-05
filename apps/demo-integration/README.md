@@ -54,18 +54,22 @@ cp .env.example .env
 The whole contract is: embed the iframe and listen for `message`.
 
 ```js
-const iframe = document.createElement('iframe')
-iframe.src = 'https://aura-get-verified.vercel.app/embed/projects/9'
-document.body.append(iframe)
+const iframe = document.createElement('iframe');
+iframe.src = 'https://aura-get-verified.vercel.app/embed/projects/9';
+document.body.append(iframe);
 
 window.addEventListener('message', (e) => {
-  if (e.origin !== 'https://aura-get-verified.vercel.app') return
-  let msg
-  try { msg = JSON.parse(e.data) } catch { return }
-  if (msg.app !== 'aura-get-verified') return
+  if (e.origin !== 'https://aura-get-verified.vercel.app') return;
+  let msg;
+  try {
+    msg = JSON.parse(e.data);
+  } catch {
+    return;
+  }
+  if (msg.app !== 'aura-get-verified') return;
   if (msg.type === 'verification-success') {
-    const { brightId, signature, auraLevel, auraScore } = msg.data
+    const { brightId, signature, auraLevel, auraScore } = msg.data;
     // verify `signature` server-side, then grant access
   }
-})
+});
 ```

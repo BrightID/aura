@@ -1,6 +1,6 @@
-import { createEffect, createSignal, For, type JSX, onCleanup } from "solid-js"
+import { createEffect, createSignal, For, type JSX, onCleanup } from 'solid-js';
 
-const DEFAULT_PAGE_SIZE = 20
+const DEFAULT_PAGE_SIZE = 20;
 
 /**
  * `<For>`-based incremental list (the old `InfiniteScrollLocal`, Solid-native):
@@ -10,47 +10,47 @@ const DEFAULT_PAGE_SIZE = 20
  * once. Reconciliation is by item reference, like Solid's `<For>`.
  */
 export default function IncrementalList<T>(props: {
-  items: T[]
-  children: (item: T, index: () => number) => JSX.Element
+  items: T[];
+  children: (item: T, index: () => number) => JSX.Element;
   /** Rows revealed per batch (default 20). */
-  pageSize?: number
+  pageSize?: number;
   /** Class for the wrapping container (e.g. `flex flex-col gap-3`). */
-  class?: string
+  class?: string;
 }) {
-  const pageSize = () => props.pageSize ?? DEFAULT_PAGE_SIZE
-  const [limit, setLimit] = createSignal(pageSize())
-  const [sentinel, setSentinel] = createSignal<HTMLElement>()
+  const pageSize = () => props.pageSize ?? DEFAULT_PAGE_SIZE;
+  const [limit, setLimit] = createSignal(pageSize());
+  const [sentinel, setSentinel] = createSignal<HTMLElement>();
 
   // Collapse the window back to one page when the list itself changes
   // (filter / sort / navigation), so we don't keep a stale large limit.
   createEffect(() => {
-    props.items
-    setLimit(pageSize())
-  })
+    props.items;
+    setLimit(pageSize());
+  });
 
-  const visible = () => props.items.slice(0, limit())
-  const hasMore = () => limit() < props.items.length
+  const visible = () => props.items.slice(0, limit());
+  const hasMore = () => limit() < props.items.length;
 
   // Re-observe whenever the window grows: IntersectionObserver fires once on
   // observe, so reconnecting after each batch keeps filling until the sentinel
   // leaves the viewport (handles tall screens / small pages without scrolling).
   createEffect(() => {
-    const el = sentinel()
-    limit()
-    if (!el || !hasMore()) return
+    const el = sentinel();
+    limit();
+    if (!el || !hasMore()) return;
     const observer = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) {
-        setLimit((n) => Math.min(n + pageSize(), props.items.length))
+        setLimit((n) => Math.min(n + pageSize(), props.items.length));
       }
-    })
-    observer.observe(el)
-    onCleanup(() => observer.disconnect())
-  })
+    });
+    observer.observe(el);
+    onCleanup(() => observer.disconnect());
+  });
 
   return (
     <div class={props.class}>
       <For each={visible()}>{props.children}</For>
       <div ref={setSentinel} class="h-px w-full" aria-hidden="true" />
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-export function AuraLogo({ className = "w-6 h-6" }: { className?: string }) {
+export function AuraLogo({ className = 'w-6 h-6' }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 32 32"
@@ -25,5 +25,5 @@ export function AuraLogo({ className = "w-6 h-6" }: { className?: string }) {
       <circle cx="16" cy="16" r="6" fill="#ffd700" />
       <circle cx="16" cy="16" r="3" fill="#ff8c00" />
     </svg>
-  )
+  );
 }

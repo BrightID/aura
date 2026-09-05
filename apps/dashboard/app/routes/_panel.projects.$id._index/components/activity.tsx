@@ -2,9 +2,9 @@ import {
   format,
   formatDistanceToNow,
   formatDistanceToNowStrict,
-} from "date-fns"
-import { Clock, Activity, Calendar } from "lucide-react"
-import type { Project } from "~/types/projects"
+} from 'date-fns';
+import { Clock, Activity, Calendar } from 'lucide-react';
+import type { Project } from '~/types/projects';
 
 export default function ProjectActivity({ project }: { project: Project }) {
   return (
@@ -27,7 +27,7 @@ export default function ProjectActivity({ project }: { project: Project }) {
                 <p className="text-sm text-muted-foreground">
                   {format(
                     new Date(project.createdAt),
-                    "MMMM d, yyyy 'at' h:mm a"
+                    "MMMM d, yyyy 'at' h:mm a",
                   )}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -50,7 +50,7 @@ export default function ProjectActivity({ project }: { project: Project }) {
                     <p className="text-sm text-muted-foreground">
                       {format(
                         new Date(project.updatedAt),
-                        "MMMM d, yyyy 'at' h:mm a"
+                        "MMMM d, yyyy 'at' h:mm a",
                       )}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -73,7 +73,7 @@ export default function ProjectActivity({ project }: { project: Project }) {
                   <div className="flex-1">
                     <p className="font-medium">Deadline</p>
                     <p className="text-sm text-muted-foreground">
-                      {format(new Date(project.deadline), "MMMM d, yyyy")}
+                      {format(new Date(project.deadline), 'MMMM d, yyyy')}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {formatDistanceToNow(new Date(project.deadline), {
@@ -88,5 +88,5 @@ export default function ProjectActivity({ project }: { project: Project }) {
         </div>
       </a-card>
     </div>
-  )
+  );
 }

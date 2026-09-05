@@ -1,95 +1,98 @@
-import { LitElement, html } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import './styles.css'
+import { LitElement, html } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import './styles.css';
 
-import { createRouter } from '@/app-routes'
+import { createRouter } from '@/app-routes';
 
-import 'iconify-icon'
-import '@aura/ui'
+import 'iconify-icon';
+import '@aura/ui';
 
-import './components/ui/layout.ts'
+import './components/ui/layout.ts';
 
-import { fetchNewNotifications } from './lib/notifications'
+import { fetchNewNotifications } from './lib/notifications';
 import {
   userBrightId,
   userEmail,
   userFirstName,
   userLastName,
-  userProfilePicture
-} from './states/user'
+  userProfilePicture,
+} from './states/user';
 
 function onInjectLogin(
   brightId: string,
   email: string | null,
   firstName: string | undefined,
   lastName: string | undefined,
-  profilePicture: string | null
+  profilePicture: string | null,
 ) {
-  userBrightId.set(brightId)
-  if (email) userEmail.set(email)
+  userBrightId.set(brightId);
+  if (email) userEmail.set(email);
 
-  if (firstName) userFirstName.set(firstName)
+  if (firstName) userFirstName.set(firstName);
 
-  if (lastName) userLastName.set(lastName)
+  if (lastName) userLastName.set(lastName);
 
-  if (profilePicture) userProfilePicture.set(profilePicture)
+  if (profilePicture) userProfilePicture.set(profilePicture);
 }
 
 @customElement('my-app')
 export class AuraAppElement extends LitElement {
-  interval: ReturnType<typeof setInterval> | undefined
+  interval: ReturnType<typeof setInterval> | undefined;
 
-  private router = createRouter(this)
+  private router = createRouter(this);
 
   constructor() {
-    super()
+    super();
   }
 
   connectedCallback(): void {
-    super.connectedCallback()
+    super.connectedCallback();
 
-    window.parent.postMessage(JSON.stringify({ type: 'app-ready', app: 'aura-get-verified' }), '*')
+    window.parent.postMessage(
+      JSON.stringify({ type: 'app-ready', app: 'aura-get-verified' }),
+      '*',
+    );
 
     window.addEventListener('message', (event) => {
-      if (!event.origin || event.origin !== window.location.origin) return
+      if (!event.origin || event.origin !== window.location.origin) return;
 
       try {
-        const data = JSON.parse(event.data)
+        const data = JSON.parse(event.data);
 
-        if (data.type !== 'signin-sync') return
+        if (data.type !== 'signin-sync') return;
 
-        const loginData = data.data
+        const loginData = data.data;
 
         onInjectLogin(
           loginData.brightId,
           loginData.email,
           loginData.firstName,
           loginData.lastName,
-          loginData.picture
-        )
+          loginData.picture,
+        );
       } catch {}
-    })
-    const brightId = userBrightId.get()
+    });
+    const brightId = userBrightId.get();
 
-    if (!brightId) return
+    if (!brightId) return;
 
-    fetchNewNotifications(brightId)
+    fetchNewNotifications(brightId);
 
     this.interval = setInterval(
       () => {
-        if (brightId) fetchNewNotifications(brightId)
+        if (brightId) fetchNewNotifications(brightId);
       },
-      5 * 60 * 1000
-    )
+      5 * 60 * 1000,
+    );
   }
 
   disconnectedCallback(): void {
     if (this.interval) {
-      clearInterval(this.interval)
+      clearInterval(this.interval);
     }
   }
 
   render() {
-    return html`<a-theme-provider> ${this.router.outlet()} </a-theme-provider>`
+    return html`<a-theme-provider> ${this.router.outlet()} </a-theme-provider>`;
   }
 }

@@ -1,20 +1,20 @@
-import { VercelRequest, VercelResponse } from '@vercel/node'
-import { eq } from 'drizzle-orm'
-import { getAuth } from 'firebase-admin/auth'
-import withCors from '../lib/cors.js'
-import { db } from '../lib/db.js'
-import setupFirebaseApp from '../lib/firebase.js'
-import { brightIdAppsTable, projectsTable } from '../lib/schema.js'
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { eq } from 'drizzle-orm';
+import { getAuth } from 'firebase-admin/auth';
+import withCors from '../lib/cors.js';
+import { db } from '../lib/db.js';
+import setupFirebaseApp from '../lib/firebase.js';
+import { brightIdAppsTable, projectsTable } from '../lib/schema.js';
 
-setupFirebaseApp()
+setupFirebaseApp();
 
 async function handler(req: VercelRequest, res: VercelResponse) {
-  const token = req.headers['authorization']?.split('Bearer ')[1]
+  const token = req.headers['authorization']?.split('Bearer ')[1];
 
-  if (!token) return res.status(401).json({ error: 'Unauthorized' })
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
-    const { uid } = await getAuth().verifyIdToken(token)
+    const { uid } = await getAuth().verifyIdToken(token);
 
     const projects = await db
       .select({
@@ -41,26 +41,30 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           soulboundMessage: brightIdAppsTable.soulboundMessage,
           usingBlindSig: brightIdAppsTable.usingBlindSig,
           verifications: brightIdAppsTable.verifications,
-          verificationExpiration: brightIdAppsTable.verificationExpirationLength,
+          verificationExpiration:
+            brightIdAppsTable.verificationExpirationLength,
           nodeUrl: brightIdAppsTable.nodeUrl,
           context: brightIdAppsTable.context,
           description: brightIdAppsTable.description,
           links: brightIdAppsTable.links,
           images: brightIdAppsTable.images,
           callbackUrl: brightIdAppsTable.callbackUrl,
-          joined: brightIdAppsTable.joined
-        }
+          joined: brightIdAppsTable.joined,
+        },
       })
       .from(projectsTable)
       .where(eq(projectsTable.creatorId, uid))
-      .leftJoin(brightIdAppsTable, eq(projectsTable.brightIdAppId, brightIdAppsTable.key))
-      .orderBy(projectsTable.createdAt)
+      .leftJoin(
+        brightIdAppsTable,
+        eq(projectsTable.brightIdAppId, brightIdAppsTable.key),
+      )
+      .orderBy(projectsTable.createdAt);
 
-    return res.send({ projects })
+    return res.send({ projects });
   } catch (error) {
-    console.log(error)
-    return res.status(401).send({ error: 'Invalid token' })
+    console.log(error);
+    return res.status(401).send({ error: 'Invalid token' });
   }
 }
 
-export default withCors(handler)
+export default withCors(handler);

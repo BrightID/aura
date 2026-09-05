@@ -1,29 +1,29 @@
-import { cn } from "@/lib/utils"
-import { useCallback, useEffect, useState } from "react"
-import { ConnectStep } from "./connect"
-import { FindPlayersStep } from "./find-players"
-import { HowItWorks } from "./how-it-works"
-import { IntroStep } from "./intro-step"
-import { ProgressStep } from "./progress-step"
-import { SuccessStep } from "./success-step"
+import { cn } from '@/lib/utils';
+import { useCallback, useEffect, useState } from 'react';
+import { ConnectStep } from './connect';
+import { FindPlayersStep } from './find-players';
+import { HowItWorks } from './how-it-works';
+import { IntroStep } from './intro-step';
+import { ProgressStep } from './progress-step';
+import { SuccessStep } from './success-step';
 import type {
   AuraFrameConfig,
   FrameStep,
   FrameTheme,
   UserVerificationStatus,
-} from "./types"
+} from './types';
 
 const themeStyles: Record<FrameTheme, string> = {
-  dark: "",
-  light: "aura-theme-light",
-  emerald: "aura-theme-emerald",
-  ocean: "aura-theme-ocean",
-  sunset: "aura-theme-sunset",
-}
+  dark: '',
+  light: 'aura-theme-light',
+  emerald: 'aura-theme-emerald',
+  ocean: 'aura-theme-ocean',
+  sunset: 'aura-theme-sunset',
+};
 
 interface ExtendedAuraFrameConfig extends AuraFrameConfig {
-  externalUserStatus?: UserVerificationStatus
-  onUserStatusChange?: (status: UserVerificationStatus) => void
+  externalUserStatus?: UserVerificationStatus;
+  onUserStatusChange?: (status: UserVerificationStatus) => void;
 }
 
 export function AuraVerificationFrame({
@@ -31,15 +31,15 @@ export function AuraVerificationFrame({
   appDescription,
   appLogo,
   requiredLevel,
-  theme = "dark",
+  theme = 'dark',
   testMode = false,
   onVerified,
   onClose,
   externalUserStatus,
   onUserStatusChange,
 }: ExtendedAuraFrameConfig) {
-  const [step, setStep] = useState<FrameStep>("intro")
-  const [previousStep, setPreviousStep] = useState<FrameStep>("intro")
+  const [step, setStep] = useState<FrameStep>('intro');
+  const [previousStep, setPreviousStep] = useState<FrameStep>('intro');
   const [internalUserStatus, setInternalUserStatus] =
     useState<UserVerificationStatus>({
       isConnected: false,
@@ -48,34 +48,34 @@ export function AuraVerificationFrame({
       evaluationsNeeded: 3,
       score: 0,
       scoreNeeded: 100,
-    })
+    });
 
-  const userStatus = externalUserStatus || internalUserStatus
+  const userStatus = externalUserStatus || internalUserStatus;
   const setUserStatus = (status: UserVerificationStatus) => {
-    setInternalUserStatus(status)
-    onUserStatusChange?.(status)
-  }
+    setInternalUserStatus(status);
+    onUserStatusChange?.(status);
+  };
 
   const goToStep = useCallback(
     (newStep: FrameStep) => {
-      setPreviousStep(step)
-      setStep(newStep)
+      setPreviousStep(step);
+      setStep(newStep);
     },
     [step],
-  )
+  );
 
   const handleConnect = useCallback(
     (status: UserVerificationStatus) => {
-      setUserStatus(status)
+      setUserStatus(status);
       if (status.currentLevel >= requiredLevel) {
-        goToStep("success")
-        onVerified?.(status.userId!, status.currentLevel as 1 | 2 | 3)
+        goToStep('success');
+        onVerified?.(status.userId!, status.currentLevel as 1 | 2 | 3);
       } else {
-        goToStep("progress")
+        goToStep('progress');
       }
     },
     [requiredLevel, onVerified, goToStep],
-  )
+  );
 
   const handleDisconnect = useCallback(() => {
     setUserStatus({
@@ -85,36 +85,36 @@ export function AuraVerificationFrame({
       evaluationsNeeded: 3,
       score: 0,
       scoreNeeded: 100,
-    })
-    goToStep("connect")
-  }, [goToStep])
+    });
+    goToStep('connect');
+  }, [goToStep]);
 
   const handleStartVerification = useCallback(() => {
     window.open(
-      "https://brightid.gitbook.io/aura/getting-started/get-brightid",
-      "_blank",
-    )
-  }, [])
+      'https://brightid.gitbook.io/aura/getting-started/get-brightid',
+      '_blank',
+    );
+  }, []);
 
   const handleContinue = useCallback(() => {
-    onVerified?.(userStatus.userId!, userStatus.currentLevel as 1 | 2 | 3)
-    onClose?.()
-  }, [userStatus, onVerified, onClose])
+    onVerified?.(userStatus.userId!, userStatus.currentLevel as 1 | 2 | 3);
+    onClose?.();
+  }, [userStatus, onVerified, onClose]);
 
   useEffect(() => {
-    if (externalUserStatus?.isConnected && step !== "find-players") {
+    if (externalUserStatus?.isConnected && step !== 'find-players') {
       if (externalUserStatus.currentLevel >= requiredLevel) {
-        setStep("success")
+        setStep('success');
       } else {
-        setStep("progress")
+        setStep('progress');
       }
     }
-  }, [externalUserStatus, requiredLevel, step])
+  }, [externalUserStatus, requiredLevel, step]);
 
   return (
     <div
       className={cn(
-        "w-full max-w-95 bg-card rounded-2xl shadow-2xl shadow-black/20 overflow-hidden border border-border relative",
+        'w-full max-w-95 bg-card rounded-2xl shadow-2xl shadow-black/20 overflow-hidden border border-border relative',
         themeStyles[theme],
       )}
     >
@@ -127,40 +127,40 @@ export function AuraVerificationFrame({
       {/* Content */}
       <div
         className={cn(
-          "p-5 transition-all duration-300",
-          step === "how-it-works" && "bg-card",
+          'p-5 transition-all duration-300',
+          step === 'how-it-works' && 'bg-card',
         )}
       >
-        {step === "intro" && (
+        {step === 'intro' && (
           <IntroStep
             appName={appName}
             appDescription={appDescription}
             appLogo={appLogo}
             requiredLevel={requiredLevel}
-            onContinue={() => goToStep("connect")}
-            onHowItWorks={() => goToStep("how-it-works")}
+            onContinue={() => goToStep('connect')}
+            onHowItWorks={() => goToStep('how-it-works')}
           />
         )}
 
-        {step === "connect" && (
+        {step === 'connect' && (
           <ConnectStep
             onConnect={handleConnect}
-            onHowItWorks={() => goToStep("how-it-works")}
+            onHowItWorks={() => goToStep('how-it-works')}
           />
         )}
 
-        {step === "progress" && (
+        {step === 'progress' && (
           <ProgressStep
             status={userStatus}
             requiredLevel={requiredLevel}
             appName={appName}
             onStartVerification={handleStartVerification}
             onDisconnect={handleDisconnect}
-            onFindPlayers={() => goToStep("find-players")}
+            onFindPlayers={() => goToStep('find-players')}
           />
         )}
 
-        {step === "success" && (
+        {step === 'success' && (
           <SuccessStep
             appName={appName}
             level={userStatus.currentLevel as 1 | 2 | 3}
@@ -168,16 +168,16 @@ export function AuraVerificationFrame({
           />
         )}
 
-        {step === "how-it-works" && (
+        {step === 'how-it-works' && (
           <HowItWorks onBack={() => setStep(previousStep)} />
         )}
 
-        {step === "find-players" && (
+        {step === 'find-players' && (
           <FindPlayersStep
             userId={userStatus.userId}
-            onBack={() => goToStep("progress")}
+            onBack={() => goToStep('progress')}
             onSelectPlayer={(playerId) => {
-              console.log("Selected player:", playerId)
+              console.log('Selected player:', playerId);
               // In production, this would open a connection/evaluation flow
             }}
           />
@@ -212,5 +212,5 @@ export function AuraVerificationFrame({
         </div>
       </div>
     </div>
-  )
+  );
 }

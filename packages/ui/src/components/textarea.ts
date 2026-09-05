@@ -1,28 +1,28 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
-import { live } from "lit/directives/live.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 
-@customElement("a-textarea")
+@customElement('a-textarea')
 export class TextareaElement extends LitElement {
-  @property() declare label?: string
-  @property() declare name: string
-  @property() declare placeholder: string
-  @property({ type: Number }) declare rows: number
+  @property() declare label?: string;
+  @property() declare name: string;
+  @property() declare placeholder: string;
+  @property({ type: Number }) declare rows: number;
 
-  @property({ reflect: true }) declare value: string
-  @property({ type: Boolean }) declare disabled: boolean
+  @property({ reflect: true }) declare value: string;
+  @property({ type: Boolean }) declare disabled: boolean;
 
   private readonly _textareaId = `a-textarea-${Math.random()
     .toString(36)
-    .slice(2, 9)}`
+    .slice(2, 9)}`;
 
   constructor() {
-    super()
-    this.name = "textarea"
-    this.placeholder = ""
-    this.rows = 3
-    this.value = ""
-    this.disabled = false
+    super();
+    this.name = 'textarea';
+    this.placeholder = '';
+    this.rows = 3;
+    this.value = '';
+    this.disabled = false;
   }
 
   static styles: CSSResultGroup = css`
@@ -90,13 +90,15 @@ export class TextareaElement extends LitElement {
       background: color-mix(in oklch, var(--background) 90%, transparent);
       border-color: color-mix(in oklch, var(--border) 60%, transparent);
     }
-  `
+  `;
 
   render() {
     return html`
-      ${this.label
-        ? html`<label for=${this._textareaId}>${this.label}</label>`
-        : ""}
+      ${
+        this.label
+          ? html`<label for=${this._textareaId}>${this.label}</label>`
+          : ''
+      }
 
       <textarea
         id=${this._textareaId}
@@ -108,26 +110,26 @@ export class TextareaElement extends LitElement {
         ?disabled=${this.disabled}
         name=${this.name}
       ></textarea>
-    `
+    `;
   }
 
   private onInputChange(e: Event) {
-    e.stopPropagation()
-    const target = e.target as HTMLTextAreaElement
-    this.value = target.value
+    e.stopPropagation();
+    const target = e.target as HTMLTextAreaElement;
+    this.value = target.value;
 
     this.dispatchEvent(
-      new CustomEvent("change", {
+      new CustomEvent('change', {
         detail: target.value,
         bubbles: false,
         composed: false,
       }),
-    )
+    );
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-textarea": TextareaElement
+    'a-textarea': TextareaElement;
   }
 }

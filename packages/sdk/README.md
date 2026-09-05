@@ -41,24 +41,24 @@ npm i aura-get-verified --save
 - React
 
 ```tsx
-import { AuraReactIFrameVerification } from 'aura-get-verified/react'
+import { AuraReactIFrameVerification } from 'aura-get-verified/react';
 
 function VerificationFunction() {
   const onFrameReady = () => {
-    console.log('Iframe verification is ready')
-  }
+    console.log('Iframe verification is ready');
+  };
 
   const onUserVerified = ({
     _s,
-    _r
+    _r,
   }: {
-    timestamp: number
-    _v: number
-    _r: number
-    _s: number
+    timestamp: number;
+    _v: number;
+    _r: number;
+    _s: number;
   }) => {
-    console.log('user is verified')
-  }
+    console.log('user is verified');
+  };
   return (
     <AuraReactIFrameVerification
       onReady={onFrameReady}
@@ -66,16 +66,16 @@ function VerificationFunction() {
       height={550}
       projectId={4}
     ></AuraReactIFrameVerification>
-  )
+  );
 }
 ```
 
 - Vue / Angular / Lit
 
 ```tsx
-import 'aura-get-verified'
+import 'aura-get-verified';
 
-import { html } from 'lit'
+import { html } from 'lit';
 
 // render this tag inside your html template
 
@@ -84,7 +84,7 @@ html`<iframe-project-verification
   verificationSuccess="{onUserVerified}"
   height="{550}"
   projectId="{4}"
-></iframe-project-verification>`
+></iframe-project-verification>`;
 ```
 
 For getting a project id contact us on the [discord channel](https://discord.gg/kjjE5epB)

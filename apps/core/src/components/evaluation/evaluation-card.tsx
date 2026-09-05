@@ -1,21 +1,21 @@
-import { Show } from "solid-js"
-import ImpactStrip from "@/components/charts/impact-strip"
-import Avatar from "@/components/home/avatar"
-import LevelScore from "@/components/shared/level-score"
-import { formatDuration } from "@/shared/lib/time"
-import type { InboundEvaluation } from "@/hooks/use-subject-inbound-evaluations"
-import { confidenceLabel } from "@aura/domain/labels"
+import { Show } from 'solid-js';
+import ImpactStrip from '@/components/charts/impact-strip';
+import Avatar from '@/components/home/avatar';
+import LevelScore from '@/components/shared/level-score';
+import { formatDuration } from '@/shared/lib/time';
+import type { InboundEvaluation } from '@/hooks/use-subject-inbound-evaluations';
+import { confidenceLabel } from '@aura/domain/labels';
 
 /**
  * Inbound-evaluation row: evaluator (photo, name, level), signed rating chip
  * with confidence, impact share and age.
  */
 export default function EvaluationCard(props: {
-  evaluation: InboundEvaluation
-  onClick?: (evaluatorId: string) => void
+  evaluation: InboundEvaluation;
+  onClick?: (evaluatorId: string) => void;
 }) {
-  const e = () => props.evaluation
-  const positive = () => e().rating > 0
+  const e = () => props.evaluation;
+  const positive = () => e().rating > 0;
 
   return (
     <a-card
@@ -40,12 +40,12 @@ export default function EvaluationCard(props: {
           data-testid={`evaluation-card-${e().evaluatorId}-rating`}
           class={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold ${
             positive()
-              ? "bg-aura-success/15 text-aura-success"
-              : "bg-destructive/15 text-destructive"
+              ? 'bg-aura-success/15 text-aura-success'
+              : 'bg-destructive/15 text-destructive'
           }`}
         >
-          <a-icon name={positive() ? "thumbs-up" : "thumbs-down"} />
-          {(positive() ? "+" : "") + e().rating}
+          <a-icon name={positive() ? 'thumbs-up' : 'thumbs-down'} />
+          {(positive() ? '+' : '') + e().rating}
           <span class="font-medium">{confidenceLabel(e().confidence)}</span>
         </span>
         <Show when={e().impactPercent !== null}>
@@ -61,5 +61,5 @@ export default function EvaluationCard(props: {
         />
       </div>
     </a-card>
-  )
+  );
 }

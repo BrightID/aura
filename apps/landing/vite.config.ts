@@ -1,46 +1,46 @@
-import path from "path"
-import tailwindcss from "@tailwindcss/vite"
-import solid from "vite-plugin-solid"
-import { defineConfig } from "vite"
+import path from 'path';
+import tailwindcss from '@tailwindcss/vite';
+import solid from 'vite-plugin-solid';
+import { defineConfig } from 'vite';
 
-const PORT = 5176
+const PORT = 5176;
 
 export default defineConfig({
-  appType: "spa",
-  publicDir: "static",
+  appType: 'spa',
+  publicDir: 'static',
   plugins: [tailwindcss(), solid()],
   resolve: {
     alias: {
-      $lib: path.resolve("src/lib"),
+      $lib: path.resolve('src/lib'),
     },
   },
   build: {
-    target: "esnext",
+    target: 'esnext',
   },
   server: {
     port: PORT,
     origin: `http://localhost:${PORT}`,
     cors: true,
     host: true,
-    allowedHosts: ["localhost", ".localhost"],
+    allowedHosts: ['localhost', '.localhost'],
     // Only recovery.brightid.org needs a dev proxy (it sends no CORS
     // headers). aura-node and the get-verified API are CORS-open and are
     // called directly. /docs forwards to the docs app's local dev server.
     proxy: {
-      "/core/brightid": {
-        target: "https://recovery.brightid.org",
+      '/core/brightid': {
+        target: 'https://recovery.brightid.org',
         changeOrigin: true,
         secure: true,
-        rewrite: (p) => p.replace(/^\/core\/brightid/, ""),
+        rewrite: (p) => p.replace(/^\/core\/brightid/, ''),
       },
-      "/brightid": {
-        target: "https://recovery.brightid.org",
+      '/brightid': {
+        target: 'https://recovery.brightid.org',
         changeOrigin: true,
         secure: true,
-        rewrite: (p) => p.replace(/^\/brightid/, ""),
+        rewrite: (p) => p.replace(/^\/brightid/, ''),
       },
-      "/docs": {
-        target: "http://localhost:3001",
+      '/docs': {
+        target: 'http://localhost:3001',
         changeOrigin: true,
         ws: true,
       },
@@ -72,4 +72,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

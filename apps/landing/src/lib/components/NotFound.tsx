@@ -2,7 +2,9 @@ export default function NotFound() {
   return (
     <main class="min-h-screen flex items-center justify-center py-28">
       <div class="text-center px-4">
-        <h1 class="font-display text-6xl font-bold text-foreground mb-4">404</h1>
+        <h1 class="font-display text-6xl font-bold text-foreground mb-4">
+          404
+        </h1>
         <p class="text-xl text-muted-foreground mb-8">
           This page doesn't exist yet.
         </p>
@@ -11,5 +13,5 @@ export default function NotFound() {
         </a>
       </div>
     </main>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { cert, initializeApp } from 'firebase-admin/app'
+import { cert, initializeApp } from 'firebase-admin/app';
 
 export default function setupFirebaseApp() {
   const serviceAccount = {
@@ -10,14 +10,14 @@ export default function setupFirebaseApp() {
     authUri: process.env.FIREBASE_AUTH_URI,
     tokenUri: process.env.FIREBASE_TOKEN_URI,
     authProviderX509CertUrl: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-    clientX509CertUrl: process.env.FIREBASE_CLIENT_X509_CERT_URL
-  }
+    clientX509CertUrl: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+  };
 
   try {
     initializeApp({
-      credential: cert(serviceAccount)
-    })
+      credential: cert(serviceAccount),
+    });
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 }

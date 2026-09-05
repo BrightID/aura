@@ -1,6 +1,6 @@
-import '@/components/ui/markdown'
-import { css, CSSResultGroup, html, LitElement } from 'lit'
-import { customElement } from 'lit/decorators.js'
+import '@/components/ui/markdown';
+import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 export const content = `
 
@@ -44,7 +44,7 @@ We may update this Privacy Policy to reflect changes in our practices or legal r
 If you have questions about this Privacy Policy, contact us at [Discord Channel](https://discord.gg/pcWy6NqM).
 
 
-`
+`;
 
 @customElement('privacy-policy')
 export class PrivacyPolicyElement extends LitElement {
@@ -64,7 +64,7 @@ export class PrivacyPolicyElement extends LitElement {
       color: #bfb3f8;
       font-weight: bold;
     }
-  `
+  `;
   protected render() {
     return html`
       <div class="container">
@@ -72,6 +72,6 @@ export class PrivacyPolicyElement extends LitElement {
 
         <c-markdown markdown="${content}"></c-markdown>
       </div>
-    `
+    `;
   }
 }

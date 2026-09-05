@@ -1,13 +1,13 @@
-import { type CSSResultGroup, LitElement, css, html } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
-import '../components/dialog'
+import { type CSSResultGroup, LitElement, css, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import '../components/dialog';
 
 @customElement('dialog-section')
 export class DialogSection extends LitElement {
-  static styles?: CSSResultGroup = css``
+  static styles?: CSSResultGroup = css``;
 
   @state()
-  isOpen = false
+  isOpen = false;
 
   protected render() {
     return html`
@@ -22,9 +22,11 @@ export class DialogSection extends LitElement {
         <div slot="content">
           <a-head>Hello</a-head>
           <a-text>Content goes here</a-text>
-          <a-button variant="secondary" @click=${() => (this.isOpen = false)}> Close </a-button>
+          <a-button variant="secondary" @click=${() => (this.isOpen = false)}>
+            Close
+          </a-button>
         </div>
       </a-dialog>
-    `
+    `;
   }
 }

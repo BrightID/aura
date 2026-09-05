@@ -1,6 +1,6 @@
-import { format } from "date-fns"
-import { ImageIcon, Calendar, CreditCard, FileText, Hash } from "lucide-react"
-import type { Project } from "~/types/projects"
+import { format } from 'date-fns';
+import { ImageIcon, Calendar, CreditCard, FileText, Hash } from 'lucide-react';
+import type { Project } from '~/types/projects';
 
 export default function OverviewSection({ project }: { project: Project }) {
   return (
@@ -11,10 +11,10 @@ export default function OverviewSection({ project }: { project: Project }) {
           <div className="mt-4">
             <div className="flex items-center gap-2">
               <div
-                className={`h-2 w-2 rounded-full ${project.isActive ? "bg-green-500" : "bg-muted-foreground"}`}
+                className={`h-2 w-2 rounded-full ${project.isActive ? 'bg-green-500' : 'bg-muted-foreground'}`}
               />
               <span className="text-2xl font-semibold">
-                {project.isActive ? "Active" : "Inactive"}
+                {project.isActive ? 'Active' : 'Inactive'}
               </span>
             </div>
           </div>
@@ -39,7 +39,7 @@ export default function OverviewSection({ project }: { project: Project }) {
             <span className="text-2xl font-semibold">
               {project.requirementLevel !== null
                 ? `Level ${project.requirementLevel}`
-                : "Not set"}
+                : 'Not set'}
             </span>
           </div>
         </a-card>
@@ -88,7 +88,7 @@ export default function OverviewSection({ project }: { project: Project }) {
                   Deadline
                 </p>
                 <p className="text-sm">
-                  {format(new Date(project.deadline), "MMMM d, yyyy")}
+                  {format(new Date(project.deadline), 'MMMM d, yyyy')}
                 </p>
               </div>
             )}
@@ -123,5 +123,5 @@ export default function OverviewSection({ project }: { project: Project }) {
         </div>
       </a-card>
     </div>
-  )
+  );
 }

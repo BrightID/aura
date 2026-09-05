@@ -1,18 +1,18 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-@customElement("a-radio-group")
+@customElement('a-radio-group')
 export class RadioGroupElement extends LitElement {
-  @property({ reflect: true }) declare value: string
-  @property() declare name: string
-  @property({ type: Boolean, reflect: true }) declare disabled: boolean
+  @property({ reflect: true }) declare value: string;
+  @property() declare name: string;
+  @property({ type: Boolean, reflect: true }) declare disabled: boolean;
 
   constructor() {
-    super()
-    this.value = ""
-    this.name = "radio-group"
-    this.disabled = false
-    this.addEventListener("radio-select", this._onRadioSelect as EventListener)
+    super();
+    this.value = '';
+    this.name = 'radio-group';
+    this.disabled = false;
+    this.addEventListener('radio-select', this._onRadioSelect as EventListener);
   }
 
   static styles: CSSResultGroup = css`
@@ -20,57 +20,57 @@ export class RadioGroupElement extends LitElement {
       display: grid;
       gap: 0.75rem;
     }
-  `
+  `;
 
   render() {
-    return html`<slot @slotchange=${this._sync}></slot>`
+    return html`<slot @slotchange=${this._sync}></slot>`;
   }
 
   override updated(changed: Map<string, unknown>) {
-    if (changed.has("value") || changed.has("disabled")) this._sync()
+    if (changed.has('value') || changed.has('disabled')) this._sync();
   }
 
   private _sync = () => {
     for (const radio of this._radios()) {
-      radio.checked = radio.value === this.value
-      radio.groupDisabled = this.disabled
+      radio.checked = radio.value === this.value;
+      radio.groupDisabled = this.disabled;
     }
-  }
+  };
 
   private _radios(): RadioElement[] {
-    return Array.from(this.querySelectorAll("a-radio")) as RadioElement[]
+    return Array.from(this.querySelectorAll('a-radio')) as RadioElement[];
   }
 
   private _onRadioSelect = (e: CustomEvent<string>) => {
-    e.stopPropagation()
-    if (this.disabled) return
-    this.value = e.detail
-    this._sync()
+    e.stopPropagation();
+    if (this.disabled) return;
+    this.value = e.detail;
+    this._sync();
     this.dispatchEvent(
-      new CustomEvent("change", {
+      new CustomEvent('change', {
         detail: this.value,
         bubbles: false,
         composed: false,
       }),
-    )
-  }
+    );
+  };
 }
 
-@customElement("a-radio")
+@customElement('a-radio')
 export class RadioElement extends LitElement {
-  @property() declare value: string
-  @property({ type: Boolean, reflect: true }) declare checked: boolean
-  @property({ type: Boolean, reflect: true }) declare disabled: boolean
+  @property() declare value: string;
+  @property({ type: Boolean, reflect: true }) declare checked: boolean;
+  @property({ type: Boolean, reflect: true }) declare disabled: boolean;
 
   /** Set by the parent group; disables the radio when the group is disabled. */
-  @property({ type: Boolean, attribute: false }) declare groupDisabled: boolean
+  @property({ type: Boolean, attribute: false }) declare groupDisabled: boolean;
 
   constructor() {
-    super()
-    this.value = ""
-    this.checked = false
-    this.disabled = false
-    this.groupDisabled = false
+    super();
+    this.value = '';
+    this.checked = false;
+    this.disabled = false;
+    this.groupDisabled = false;
   }
 
   static styles: CSSResultGroup = css`
@@ -95,7 +95,7 @@ export class RadioElement extends LitElement {
       transition: border-color 0.15s ease;
     }
 
-    button[aria-checked="true"] {
+    button[aria-checked='true'] {
       border-color: var(--primary);
     }
 
@@ -119,7 +119,7 @@ export class RadioElement extends LitElement {
       transition: transform 0.12s ease;
     }
 
-    button[aria-checked="true"] .dot {
+    button[aria-checked='true'] .dot {
       transform: scale(1);
     }
 
@@ -129,10 +129,10 @@ export class RadioElement extends LitElement {
       cursor: pointer;
       user-select: none;
     }
-  `
+  `;
 
   render() {
-    const disabled = this.disabled || this.groupDisabled
+    const disabled = this.disabled || this.groupDisabled;
     return html`
       <button
         type="button"
@@ -144,24 +144,24 @@ export class RadioElement extends LitElement {
         <span class="dot"></span>
       </button>
       <label @click=${this._select}><slot></slot></label>
-    `
+    `;
   }
 
   private _select() {
-    if (this.disabled || this.groupDisabled) return
+    if (this.disabled || this.groupDisabled) return;
     this.dispatchEvent(
-      new CustomEvent("radio-select", {
+      new CustomEvent('radio-select', {
         detail: this.value,
         bubbles: true,
         composed: true,
       }),
-    )
+    );
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-radio-group": RadioGroupElement
-    "a-radio": RadioElement
+    'a-radio-group': RadioGroupElement;
+    'a-radio': RadioElement;
   }
 }

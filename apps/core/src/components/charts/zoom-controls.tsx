@@ -5,15 +5,15 @@
  * the full range (reset).
  */
 export default function ZoomControls(props: {
-  onReset: () => void
-  onZoomIn: () => void
-  onZoomOut: () => void
-  onPanLeft: () => void
-  onPanRight: () => void
-  disabledZoomIn: boolean
-  disabledZoomOut: boolean
-  disabledPanLeft: boolean
-  disabledPanRight: boolean
+  onReset: () => void;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+  onPanLeft: () => void;
+  onPanRight: () => void;
+  disabledZoomIn: boolean;
+  disabledZoomOut: boolean;
+  disabledPanLeft: boolean;
+  disabledPanRight: boolean;
 }) {
   return (
     <div class="flex justify-end gap-0.5">
@@ -63,5 +63,5 @@ export default function ZoomControls(props: {
         <a-icon name="arrow-right" label="Pan right" />
       </a-button>
     </div>
-  )
+  );
 }

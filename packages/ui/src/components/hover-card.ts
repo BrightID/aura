@@ -1,22 +1,26 @@
-import { type CSSResultGroup, css, html, LitElement } from "lit"
-import { customElement, property, state } from "lit/decorators.js"
+import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
-@customElement("a-hover-card")
+@customElement('a-hover-card')
 export class HoverCardElement extends LitElement {
-  @property({ type: Number }) declare openDelay: number // ms
-  @property({ type: Number }) declare closeDelay: number // ms
-  @property({ reflect: true }) declare side: "top" | "bottom" | "left" | "right"
+  @property({ type: Number }) declare openDelay: number; // ms
+  @property({ type: Number }) declare closeDelay: number; // ms
+  @property({ reflect: true }) declare side:
+    | 'top'
+    | 'bottom'
+    | 'left'
+    | 'right';
 
-  @state() private declare _open: boolean
-  private _openTimer?: number
-  private _closeTimer?: number
+  @state() declare private _open: boolean;
+  private _openTimer?: number;
+  private _closeTimer?: number;
 
   constructor() {
-    super()
-    this.openDelay = 100
-    this.closeDelay = 200
-    this.side = "bottom"
-    this._open = false
+    super();
+    this.openDelay = 100;
+    this.closeDelay = 200;
+    this.side = 'bottom';
+    this._open = false;
   }
 
   static styles: CSSResultGroup = css`
@@ -38,7 +42,7 @@ export class HoverCardElement extends LitElement {
       will-change: opacity, transform;
     }
 
-    .content-wrapper[data-state="open"] {
+    .content-wrapper[data-state='open'] {
       opacity: 1;
       pointer-events: auto;
       transform: translateX(-50%) translateY(0) scale(1);
@@ -58,65 +62,65 @@ export class HoverCardElement extends LitElement {
     }
 
     /* Positioning – top/bottom center horizontally */
-    :host([side="top"]) .content-wrapper {
+    :host([side='top']) .content-wrapper {
       bottom: 100%;
       top: auto;
       left: 50%;
       margin-bottom: 0.5rem;
     }
-    :host([side="bottom"]) .content-wrapper {
+    :host([side='bottom']) .content-wrapper {
       top: 100%;
       left: 50%;
       margin-top: 0.25rem;
     }
 
     /* Left/right: center vertically, reset horizontal centering */
-    :host([side="left"]) .content-wrapper {
+    :host([side='left']) .content-wrapper {
       right: 100%;
       left: auto;
       top: 50%;
       margin-right: 0.5rem;
       transform: translateX(4px) translateY(-50%) scale(0.95);
     }
-    :host([side="left"]) .content-wrapper[data-state="open"] {
+    :host([side='left']) .content-wrapper[data-state='open'] {
       transform: translateX(0) translateY(-50%) scale(1);
     }
 
-    :host([side="right"]) .content-wrapper {
+    :host([side='right']) .content-wrapper {
       left: 100%;
       top: 50%;
       margin-left: 0.5rem;
       transform: translateX(-4px) translateY(-50%) scale(0.95);
     }
-    :host([side="right"]) .content-wrapper[data-state="open"] {
+    :host([side='right']) .content-wrapper[data-state='open'] {
       transform: translateX(0) translateY(-50%) scale(1);
     }
-  `
+  `;
 
   connectedCallback() {
-    super.connectedCallback()
-    this.addEventListener("mouseleave", this._handleMouseLeave)
+    super.connectedCallback();
+    this.addEventListener('mouseleave', this._handleMouseLeave);
   }
 
   private _handleMouseEnter() {
-    clearTimeout(this._closeTimer)
+    clearTimeout(this._closeTimer);
     this._openTimer = window.setTimeout(() => {
-      this._open = true
-    }, this.openDelay)
+      this._open = true;
+    }, this.openDelay);
   }
 
   private _handleMouseLeave() {
-    clearTimeout(this._openTimer)
+    clearTimeout(this._openTimer);
     this._closeTimer = window.setTimeout(() => {
-      this._open = false
-    }, this.closeDelay)
+      this._open = false;
+    }, this.closeDelay);
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback()
-    clearTimeout(this._openTimer)
-    clearTimeout(this._closeTimer)
-    this.removeEventListener("mouseleave", this._handleMouseLeave)
+    super.disconnectedCallback();
+    clearTimeout(this._openTimer);
+    clearTimeout(this._closeTimer);
+    this.removeEventListener('mouseleave', this._handleMouseLeave);
   }
 
   render() {
@@ -130,30 +134,30 @@ export class HoverCardElement extends LitElement {
         <slot name="trigger"></slot>
       </div>
 
-      <div class="content-wrapper" data-state=${this._open ? "open" : "closed"}>
+      <div class="content-wrapper" data-state=${this._open ? 'open' : 'closed'}>
         <div class="content">
           <slot name="content"></slot>
         </div>
       </div>
-    `
+    `;
   }
 }
 
-@customElement("a-hover-card-trigger")
+@customElement('a-hover-card-trigger')
 export class HoverCardTriggerElement extends LitElement {
   static styles = css`
     :host {
       display: inline-block;
       cursor: pointer;
     }
-  `
+  `;
 
   render() {
-    return html`<slot></slot>`
+    return html`<slot></slot>`;
   }
 }
 
-@customElement("a-hover-card-content")
+@customElement('a-hover-card-content')
 export class HoverCardContentElement extends LitElement {
   static styles = css`
     :host {
@@ -162,17 +166,17 @@ export class HoverCardContentElement extends LitElement {
       font-size: 0.875rem;
       line-height: 1.25rem;
     }
-  `
+  `;
 
   render() {
-    return html`<slot></slot>`
+    return html`<slot></slot>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-hover-card": HoverCardElement
-    "a-hover-card-trigger": HoverCardTriggerElement
-    "a-hover-card-content": HoverCardContentElement
+    'a-hover-card': HoverCardElement;
+    'a-hover-card-trigger': HoverCardTriggerElement;
+    'a-hover-card-content': HoverCardContentElement;
   }
 }

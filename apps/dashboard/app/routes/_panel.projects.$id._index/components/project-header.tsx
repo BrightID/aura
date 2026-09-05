@@ -4,12 +4,12 @@ import {
   ExternalLink,
   Settings,
   AppWindowIcon,
-} from "lucide-react"
-import { useNavigate } from "react-router"
-import type { Project } from "~/types/projects"
+} from 'lucide-react';
+import { useNavigate } from 'react-router';
+import type { Project } from '~/types/projects';
 
 export function ProjectHeader({ project }: { project: Project }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <header className="border-b bg-card">
@@ -18,7 +18,7 @@ export function ProjectHeader({ project }: { project: Project }) {
           variant="ghost"
           size="sm"
           className="mb-4 -ml-2"
-          onClick={() => navigate("/projects")}
+          onClick={() => navigate('/projects')}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Projects
@@ -45,12 +45,12 @@ export function ProjectHeader({ project }: { project: Project }) {
                 <h1 className="text-2xl font-semibold tracking-tight">
                   {project.name}
                 </h1>
-                <a-badge variant={project.isActive ? "default" : "secondary"}>
-                  {project.isActive ? "Active" : "Inactive"}
+                <a-badge variant={project.isActive ? 'default' : 'secondary'}>
+                  {project.isActive ? 'Active' : 'Inactive'}
                 </a-badge>
               </div>
               <p className="text-muted-foreground mt-1">
-                {project.description || "No description"}
+                {project.description || 'No description'}
               </p>
               {project.websiteUrl && (
                 <a
@@ -80,7 +80,11 @@ export function ProjectHeader({ project }: { project: Project }) {
               </a>
             )}
             {project.websiteUrl && (
-              <a href={project.websiteUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={project.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <a-button variant="outline">
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Website
@@ -95,5 +99,5 @@ export function ProjectHeader({ project }: { project: Project }) {
         </div>
       </div>
     </header>
-  )
+  );
 }

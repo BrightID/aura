@@ -1,56 +1,56 @@
-import { useNavigate, useSearchParams } from "@solidjs/router"
-import { createMemo, For, Show } from "solid-js"
-import FadeIn from "@/components/motions/fade-in"
-import { useRequireSession } from "@/hooks/use-require-session"
-import { setOnboardingStore } from "@/store/onboarding"
+import { useNavigate, useSearchParams } from '@solidjs/router';
+import { createMemo, For, Show } from 'solid-js';
+import FadeIn from '@/components/motions/fade-in';
+import { useRequireSession } from '@/hooks/use-require-session';
+import { setOnboardingStore } from '@/store/onboarding';
 
 /** Copy ported from the old app's playerOnboarding translations. */
 const STEPS: { title: string; description: string }[] = [
   {
-    title: "Find a Subject",
+    title: 'Find a Subject',
     description:
-      "Find your friends and family in your BrightID connections to help verify them",
+      'Find your friends and family in your BrightID connections to help verify them',
   },
   {
-    title: "Gather Information",
+    title: 'Gather Information',
     description:
-      "Gather information to help you to make an accurate evaluation — see who has connected to the subject in BrightID and how other Aura players have evaluated them",
+      'Gather information to help you to make an accurate evaluation — see who has connected to the subject in BrightID and how other Aura players have evaluated them',
   },
   {
-    title: "Evaluate the Subject",
+    title: 'Evaluate the Subject',
     description:
-      "Once you have enough information, tell other players what you think about the subject and how confident you are about your answer",
+      'Once you have enough information, tell other players what you think about the subject and how confident you are about your answer',
   },
   {
-    title: "Level up",
+    title: 'Level up',
     description:
       "To be effective at helping others get verified, you'll need to reach higher levels. Reach level 1+ by playing well and finding trainers to evaluate your play.",
   },
-]
+];
 
 /**
  * /onboarding — 4-step tutorial. Step lives in the URL (?step=1..4); the old
  * Swiper carousel is replaced by simple step navigation (no new deps).
  */
 export default function OnboardingPage() {
-  useRequireSession()
-  const navigate = useNavigate()
-  const [params, setParams] = useSearchParams()
+  useRequireSession();
+  const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
 
   const step = createMemo(() => {
-    const n = Number(params.step)
-    return Number.isInteger(n) && n >= 1 && n <= STEPS.length ? n : 1
-  })
-  const current = () => STEPS[step() - 1]
-  const isLast = () => step() === STEPS.length
+    const n = Number(params.step);
+    return Number.isInteger(n) && n >= 1 && n <= STEPS.length ? n : 1;
+  });
+  const current = () => STEPS[step() - 1];
+  const isLast = () => step() === STEPS.length;
 
-  const goTo = (n: number) => setParams({ step: String(n) })
+  const goTo = (n: number) => setParams({ step: String(n) });
 
   const next = () => {
-    if (!isLast()) return goTo(step() + 1)
-    setOnboardingStore("onboardingShown", true)
-    navigate("/home")
-  }
+    if (!isLast()) return goTo(step() + 1);
+    setOnboardingStore('onboardingShown', true);
+    navigate('/home');
+  };
 
   return (
     <div
@@ -81,8 +81,8 @@ export default function OnboardingPage() {
                 onClick={() => goTo(i() + 1)}
                 class={`h-2.5 cursor-pointer rounded-full transition-all ${
                   step() === i() + 1
-                    ? "bg-primary w-10"
-                    : "bg-muted-foreground/40 w-2.5"
+                    ? 'bg-primary w-10'
+                    : 'bg-muted-foreground/40 w-2.5'
                 }`}
               />
             )}
@@ -91,7 +91,7 @@ export default function OnboardingPage() {
 
         <a-button
           size="lg"
-          data-testid={isLast() ? "onboarding-finish" : "onboarding-next"}
+          data-testid={isLast() ? 'onboarding-finish' : 'onboarding-next'}
           onClick={next}
         >
           <Show when={isLast()} fallback="Next">
@@ -107,5 +107,5 @@ export default function OnboardingPage() {
         </span>
       </footer>
     </div>
-  )
+  );
 }

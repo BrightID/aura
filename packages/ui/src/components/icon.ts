@@ -1,10 +1,10 @@
-import { LitElement, css, html, type CSSResultGroup } from "lit"
-import { customElement, property } from "lit/decorators.js"
+import { LitElement, css, html, type CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 const defaultIconResolver = (name: string): string =>
-  `https://unpkg.com/lucide-static@latest/icons/${name}.svg`
+  `https://unpkg.com/lucide-static@latest/icons/${name}.svg`;
 
-@customElement("a-icon")
+@customElement('a-icon')
 export class IconElement extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
@@ -23,76 +23,76 @@ export class IconElement extends LitElement {
       mask: var(--icon-url) no-repeat center / contain;
     }
 
-    :host([size="sm"]) {
+    :host([size='sm']) {
       font-size: 1rem;
     }
-    :host([size="md"]) {
+    :host([size='md']) {
       font-size: 1.5rem;
     }
-    :host([size="lg"]) {
+    :host([size='lg']) {
       font-size: 2rem;
     }
-  `
+  `;
 
-  @property({ reflect: true }) declare name?: string
-  @property() declare src?: string
-  @property() declare label: string
+  @property({ reflect: true }) declare name?: string;
+  @property() declare src?: string;
+  @property() declare label: string;
 
-  @property({ reflect: true }) declare library: string
-  @property({ reflect: true }) declare size: "sm" | "md" | "lg" | ""
+  @property({ reflect: true }) declare library: string;
+  @property({ reflect: true }) declare size: 'sm' | 'md' | 'lg' | '';
 
   constructor() {
-    super()
-    this.label = ""
-    this.library = "default"
-    this.size = ""
+    super();
+    this.label = '';
+    this.library = 'default';
+    this.size = '';
   }
 
   private get effectiveSrc(): string | null {
-    if (this.src) return this.src
-    if (this.name) return defaultIconResolver(this.name)
-    return null
+    if (this.src) return this.src;
+    if (this.name) return defaultIconResolver(this.name);
+    return null;
   }
 
   connectedCallback() {
-    super.connectedCallback()
-    this.updateAccessibility()
+    super.connectedCallback();
+    this.updateAccessibility();
   }
 
   updated(changedProperties: Map<PropertyKey, unknown>) {
     if (
-      changedProperties.has("label") ||
-      changedProperties.has("name") ||
-      changedProperties.has("src")
+      changedProperties.has('label') ||
+      changedProperties.has('name') ||
+      changedProperties.has('src')
     ) {
-      this.updateAccessibility()
+      this.updateAccessibility();
     }
   }
 
   private updateAccessibility() {
     if (this.label?.trim()) {
-      this.setAttribute("role", "img")
-      this.setAttribute("aria-label", this.label)
-      this.removeAttribute("aria-hidden")
+      this.setAttribute('role', 'img');
+      this.setAttribute('aria-label', this.label);
+      this.removeAttribute('aria-hidden');
     } else {
-      this.removeAttribute("role")
-      this.removeAttribute("aria-label")
-      this.setAttribute("aria-hidden", "true")
+      this.removeAttribute('role');
+      this.removeAttribute('aria-label');
+      this.setAttribute('aria-hidden', 'true');
     }
   }
 
   render() {
-    const url = this.effectiveSrc
-    if (!url) return html`<span aria-hidden="true"></span>`
+    const url = this.effectiveSrc;
+    if (!url) return html`<span aria-hidden="true"></span>`;
     return html`<span
       class="mask"
       style=${`--icon-url: url("${url}")`}
-    ></span>`
+    ></span>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "a-icon": IconElement
+    'a-icon': IconElement;
   }
 }

@@ -31,7 +31,7 @@ export class GridElement extends LitElement {
   @property({ type: String, attribute: 'card-aspect' })
   declare cardAspect: string;
 
-  @state() private declare _hasSlottedContent: boolean;
+  @state() declare private _hasSlottedContent: boolean;
 
   constructor() {
     super();
@@ -77,16 +77,18 @@ export class GridElement extends LitElement {
     .card {
       background: var(--card-bg, var(--card));
       border-radius: var(--radius, 0.75rem);
-      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
       overflow: hidden;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
       display: flex;
       flex-direction: column;
     }
 
     .card:hover {
       transform: translateY(-4px);
-      box-shadow: var(--shadow-md, 0 10px 25px -5px rgba(0,0,0,0.1));
+      box-shadow: var(--shadow-md, 0 10px 25px -5px rgba(0, 0, 0, 0.1));
     }
 
     .card-image {
@@ -135,12 +137,18 @@ export class GridElement extends LitElement {
   `;
 
   updated(changedProperties: Map<string | number | symbol, unknown>) {
-    if (changedProperties.has('colsLg')) this.style.setProperty('--cols-lg', String(this.colsLg));
-    if (changedProperties.has('colsMd')) this.style.setProperty('--cols-md', String(this.colsMd));
-    if (changedProperties.has('colsSm')) this.style.setProperty('--cols-sm', String(this.colsSm));
-    if (changedProperties.has('colsXs')) this.style.setProperty('--cols-xs', String(this.colsXs));
-    if (changedProperties.has('gap')) this.style.setProperty('--grid-gap', this.gap);
-    if (changedProperties.has('cardAspect')) this.style.setProperty('--card-aspect', this.cardAspect);
+    if (changedProperties.has('colsLg'))
+      this.style.setProperty('--cols-lg', String(this.colsLg));
+    if (changedProperties.has('colsMd'))
+      this.style.setProperty('--cols-md', String(this.colsMd));
+    if (changedProperties.has('colsSm'))
+      this.style.setProperty('--cols-sm', String(this.colsSm));
+    if (changedProperties.has('colsXs'))
+      this.style.setProperty('--cols-xs', String(this.colsXs));
+    if (changedProperties.has('gap'))
+      this.style.setProperty('--grid-gap', this.gap);
+    if (changedProperties.has('cardAspect'))
+      this.style.setProperty('--card-aspect', this.cardAspect);
   }
 
   private _onDefaultSlotChange(e: Event) {
@@ -159,31 +167,41 @@ export class GridElement extends LitElement {
 
       <!-- Always in DOM so slotchange fires even when grid is hidden -->
       <div class="grid" part="grid" ?hidden=${showEmpty}>
-        ${hasItems
-          ? this.items.map(item => this._renderItem(item))
-          : html`<slot @slotchange=${this._onDefaultSlotChange}></slot>`}
+        ${
+          hasItems
+            ? this.items.map((item) => this._renderItem(item))
+            : html`<slot @slotchange=${this._onDefaultSlotChange}></slot>`
+        }
       </div>
 
-      ${showEmpty
-        ? html`
-            <div class="empty-state" part="empty">
-              <slot name="empty">No items to display</slot>
-            </div>
-          `
-        : ''}
+      ${
+        showEmpty
+          ? html`
+              <div class="empty-state" part="empty">
+                <slot name="empty">No items to display</slot>
+              </div>
+            `
+          : ''
+      }
     `;
   }
 
   private _renderItem(item: GridItem) {
     return html`
       <div class="card" part="item">
-        ${item.image
-          ? html`
-              <div class="card-image">
-                <img src=${item.image} alt=${item.title || 'card image'} loading="lazy" />
-              </div>
-            `
-          : ''}
+        ${
+          item.image
+            ? html`
+                <div class="card-image">
+                  <img
+                    src=${item.image}
+                    alt=${item.title || 'card image'}
+                    loading="lazy"
+                  />
+                </div>
+              `
+            : ''
+        }
         <div class="card-content">
           ${item.title ? html`<h3 class="card-title">${item.title}</h3>` : ''}
           ${item.subtitle ? html`<p class="card-subtitle">${item.subtitle}</p>` : ''}

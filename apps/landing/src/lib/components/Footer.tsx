@@ -11,8 +11,9 @@ export default function Footer() {
               </span>
             </a>
             <p class="text-sm text-muted-foreground leading-relaxed">
-              An open, decentralized protocol for proving you're a real, unique human
-              — without giving up your privacy. Part of the BrightID ecosystem.
+              An open, decentralized protocol for proving you're a real, unique
+              human — without giving up your privacy. Part of the BrightID
+              ecosystem.
             </p>
           </div>
 
@@ -160,5 +161,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
