@@ -19,8 +19,10 @@ for (const [name, from] of remotes) {
   const to = resolve(dist, name);
   rmSync(to, { recursive: true, force: true });
   cpSync(from, to, { recursive: true });
-  // Host SPA owns these URLs — remotes are loaded via remoteEntry.js.
-  rmSync(resolve(to, 'index.html'), { force: true });
+  // Host SPA owns these URLs. Each remote folder is a real static directory,
+  // so a hard refresh of /dashboard/ 404s unless it has an index.html.
+  // Serve the landing shell; remotes still load via remoteEntry.js.
+  cpSync(resolve(dist, 'index.html'), resolve(to, 'index.html'));
 }
 
 console.log('Copied Module Federation remotes into landing dist');

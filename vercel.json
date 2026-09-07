@@ -10,14 +10,7 @@
       "functions": {
         "api/*.ts": { "maxDuration": 30 },
         "api/**/*.ts": { "maxDuration": 30 }
-      },
-      "rewrites": [
-        {
-          "source": "/interface/api/:path(.*)?",
-          "destination": "/api/:path"
-        },
-        { "source": "/(.*)", "destination": "/index.html" }
-      ]
+      }
     },
     "docs": {
       "root": "apps/docs",
