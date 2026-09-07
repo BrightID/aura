@@ -34,8 +34,9 @@ export default defineConfig({
     port: PORT,
     origin: `http://localhost:${PORT}`,
     cors: true,
-    // No external proxies: aura-node is CORS-open (direct browser calls) and
-    // the API under dev runs on the interface's own server at :3000.
+    // No external proxies: aura-node is CORS-open (direct browser calls).
+    // API lives on the landing host (`/api`); in isolation, set
+    // VITE_SOME_AURA_API_URL.
   },
   preview: {
     port: PORT,

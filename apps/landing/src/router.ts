@@ -15,9 +15,10 @@ function remoteFor(pathname: string) {
   );
 }
 
-/** Same-origin app paths. `/docs` is a different Vercel service — leave it alone. */
+/** Same-origin app paths. `/docs` is a different service; `/api` is functions on web. */
 function isClientPath(pathname: string) {
   if (pathname === '/docs' || pathname.startsWith('/docs/')) return false;
+  if (pathname === '/api' || pathname.startsWith('/api/')) return false;
   return true;
 }
 

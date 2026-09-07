@@ -24,8 +24,9 @@ export default defineConfig({
     host: true,
     allowedHosts: ['localhost', '.localhost'],
     // Only recovery.brightid.org needs a dev proxy (it sends no CORS
-    // headers). aura-node and the get-verified API are CORS-open and are
-    // called directly. /docs forwards to the docs app's local dev server.
+    // headers). aura-node is CORS-open and is called directly. /docs
+    // forwards to the docs app. /api is served by `vercel dev` at the
+    // repo root (landing/api serverless functions).
     proxy: {
       '/core/brightid': {
         target: 'https://recovery.brightid.org',

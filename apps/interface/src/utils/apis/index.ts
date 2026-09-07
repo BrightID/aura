@@ -6,9 +6,8 @@ import type { BrightID } from '@/types/brightid';
 import type { Project } from '@/types/projects';
 
 export const clientAPI = createClient<paths>({
-  baseUrl: import.meta.env.PROD
-    ? '/interface/api'
-    : 'http://localhost:3000/api',
+  // Same-origin on the landing host. Override for a standalone API.
+  baseUrl: import.meta.env.VITE_SOME_AURA_API_URL ?? '/api',
 });
 
 // aura-node is CORS-open → call it directly.
@@ -55,8 +54,8 @@ export interface VerifyProjectResult {
 }
 
 /**
- * Calls the interface app's verify endpoint to generate a verification
- * signature for a verified user. Returns the signature payload on success.
+ * Calls the verify endpoint to generate a verification signature for a
+ * verified user. Returns the signature payload on success.
  */
 export const verifyProject = async (
   projectId: number,
