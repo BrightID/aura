@@ -17,8 +17,7 @@ export const auraNodeAPI = createClient({
 
 export const auraGetVerifiedAPI = createClient({
   baseUrl:
-    import.meta.env.VITE_SOME_AURA_BACKEND_URL ??
-    'https://aura-get-verified.vercel.app',
+    import.meta.env.VITE_SOME_AURA_BACKEND_URL ?? 'https://aura.brightid.org',
 });
 
 export const queryClient = new QueryClient();

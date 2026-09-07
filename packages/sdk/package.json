@@ -7,7 +7,7 @@
     "brightid",
     "get-verified"
   ],
-  "homepage": "https://aura-get-verified.vercel.app/home",
+  "homepage": "https://aura.brightid.org/interface",
   "bugs": "https://github.com/BrightID/aura-verified/issues",
   "license": "MIT",
   "repository": {

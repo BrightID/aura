@@ -14,7 +14,7 @@ interface VerificationSignature {
 }
 
 interface AuraMessage {
-  app: 'aura-get-verified';
+  app: 'aura';
   type: 'app-ready' | 'verification-success';
   data?: {
     brightId?: string;
@@ -98,7 +98,7 @@ export function App() {
       } catch {
         return;
       }
-      if (parsed.app !== 'aura-get-verified') return;
+      if (parsed.app !== 'aura') return;
 
       setLog((prev) =>
         [
@@ -259,7 +259,7 @@ export function App() {
             <div className="empty">
               <span className="glyph">📡</span>
               <p>
-                No <code>aura-get-verified</code> messages yet.
+                No <code>aura</code> messages yet.
               </p>
             </div>
           ) : (

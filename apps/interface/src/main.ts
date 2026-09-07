@@ -49,7 +49,7 @@ export class AuraAppElement extends LitElement {
     super.connectedCallback();
 
     window.parent.postMessage(
-      JSON.stringify({ type: 'app-ready', app: 'aura-get-verified' }),
+      JSON.stringify({ type: 'app-ready', app: 'aura' }),
       '*',
     );
 

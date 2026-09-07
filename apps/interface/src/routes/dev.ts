@@ -60,7 +60,7 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
     const message = e.data;
     try {
       const data = JSON.parse(message);
-      if (data.app !== 'aura-get-verified') return;
+      if (data.app !== 'aura') return;
       switch (data.type) {
         case 'app-ready':
           this.dispatchEvent(new CustomEvent('on-ready'));

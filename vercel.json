@@ -45,6 +45,10 @@
     { "source": "/docs/(.*)", "destination": { "service": "docs" } },
     { "source": "/docs", "destination": { "service": "docs" } },
     {
+      "source": "/brightid/(.*)",
+      "destination": "https://aura-node.brightid.org/brightid/$1"
+    },
+    {
       "source": "/core/brightid/(.*)",
       "destination": "https://recovery.brightid.org/$1"
     },

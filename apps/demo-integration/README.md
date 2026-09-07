@@ -17,7 +17,7 @@ rather than same-origin code.
 
    ```json
    {
-     "app": "aura-get-verified",
+     "app": "aura",
      "type": "verification-success",
      "data": {
        "brightId": "…",
@@ -45,8 +45,8 @@ cp .env.example .env
 ```
 
 - `VITE_AURA_EMBED_BASE_URL` — origin serving `/embed/projects/:id`
-  (default `https://aura-get-verified.vercel.app`; use `http://localhost:5173`
-  to test against a local `apps/interface`).
+  (default `https://aura.brightid.org/interface`; use
+  `http://localhost:5176/interface` to test against the landing host).
 - `VITE_AURA_PROJECT_ID` — project to verify against (default `9`).
 
 ## Integrating in your own app
@@ -55,18 +55,18 @@ The whole contract is: embed the iframe and listen for `message`.
 
 ```js
 const iframe = document.createElement('iframe');
-iframe.src = 'https://aura-get-verified.vercel.app/embed/projects/9';
+iframe.src = 'https://aura.brightid.org/interface/embed/projects/9';
 document.body.append(iframe);
 
 window.addEventListener('message', (e) => {
-  if (e.origin !== 'https://aura-get-verified.vercel.app') return;
+  if (e.origin !== 'https://aura.brightid.org') return;
   let msg;
   try {
     msg = JSON.parse(e.data);
   } catch {
     return;
   }
-  if (msg.app !== 'aura-get-verified') return;
+  if (msg.app !== 'aura') return;
   if (msg.type === 'verification-success') {
     const { brightId, signature, auraLevel, auraScore } = msg.data;
     // verify `signature` server-side, then grant access

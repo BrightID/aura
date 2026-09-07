@@ -148,7 +148,7 @@ export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
     super.connectedCallback();
 
     window.parent.postMessage(
-      JSON.stringify({ type: 'app-ready', app: 'aura-get-verified' }),
+      JSON.stringify({ type: 'app-ready', app: 'aura' }),
       '*',
     );
 
@@ -195,7 +195,7 @@ export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
 
   protected onUserVerified() {
     window.parent.postMessage(
-      '{"type": "verification-success", "app": "aura-get-verified"}',
+      '{"type": "verification-success", "app": "aura"}',
       '*',
     );
   }

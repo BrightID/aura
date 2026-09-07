@@ -165,7 +165,7 @@ export class ProjectVerificationElement extends SignalWatcher(LitElement) {
     try {
       const data = JSON.parse(message);
 
-      if (data.app !== 'aura-get-verified') return;
+      if (data.app !== 'aura') return;
 
       switch (data.type) {
         case 'app-ready':
@@ -237,7 +237,7 @@ export class ProjectVerificationElement extends SignalWatcher(LitElement) {
 
   protected onUserVerified() {
     window.parent.postMessage(
-      '{"type": "verification-success", "app": "aura-get-verified"}',
+      '{"type": "verification-success", "app": "aura"}',
       '*',
     );
   }

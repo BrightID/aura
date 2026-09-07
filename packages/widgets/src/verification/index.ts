@@ -252,7 +252,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
       try {
         const result = await verifyProject(this.projectId, {
           userId: brightId,
-          client: focusedProject.get()?.name ?? 'aura-get-verified',
+          client: focusedProject.get()?.name ?? 'aura',
           auraScore: data?.auraScore,
           auraLevel: data?.auraLevel,
         });
@@ -267,7 +267,7 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
     window.parent.postMessage(
       JSON.stringify({
         type: 'verification-success',
-        app: 'aura-get-verified',
+        app: 'aura',
         data: {
           brightId,
           signature,

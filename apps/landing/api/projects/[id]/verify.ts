@@ -84,7 +84,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     let apiRes: Response;
     try {
       apiRes = await fetch(
-        `${process.env['VITE_SOME_AURA_BACKEND_URL']}/brightid/v6/verifications/${project.brightIdAppId}/${body.userId}?signed=nacl`,
+        `${process.env['VITE_SOME_AURA_BACKEND_URL'] ?? 'https://aura-node.brightid.org'}/brightid/v6/verifications/${project.brightIdAppId}/${body.userId}?signed=nacl`,
         { signal: AbortSignal.timeout(10_000) },
       );
     } catch (err) {
