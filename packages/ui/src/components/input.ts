@@ -159,6 +159,7 @@ export class InputElement extends LitElement {
             .trim()}
           .value=${live(this.value)}
           @input=${this.onInputChange}
+          @keydown=${this.onKeyDown}
           @change=${(e: Event) => e.stopPropagation()}
           .type=${this.type}
           placeholder=${this.placeholder}
@@ -194,6 +195,15 @@ export class InputElement extends LitElement {
         composed: false,
       }),
     );
+  }
+
+  /** Inner input is in shadow DOM, so Enter cannot implicit-submit the host form. */
+  private onKeyDown(e: KeyboardEvent) {
+    if (e.key !== 'Enter' || e.isComposing || this.disabled) return;
+    const form = this.closest('form');
+    if (!form) return;
+    e.preventDefault();
+    form.requestSubmit();
   }
 }
 

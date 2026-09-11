@@ -17,6 +17,11 @@ export type ButtonColors =
 
 @customElement('a-button')
 export class ButtonElement extends LitElement {
+  /** Participate in ancestor `<form>` so `type="submit"|"reset"` work from shadow DOM. */
+  static readonly formAssociated = true;
+
+  private readonly internals = this.attachInternals();
+
   @property({ reflect: true })
   declare variant: ButtonVariant;
 
@@ -50,7 +55,29 @@ export class ButtonElement extends LitElement {
     this.type = 'button';
     this.disabled = false;
     this.selected = false;
+    this.addEventListener('click', this.handleClick);
   }
+
+  /**
+   * Inner `<button>` lives in shadow DOM, so the browser will not submit/reset
+   * an ancestor form on its own. Drive the associated form from the host click.
+   * Defer so later click handlers (e.g. React `onClick`) can `preventDefault`.
+   */
+  private handleClick = (event: Event) => {
+    if (this.disabled) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+    if (this.type !== 'submit' && this.type !== 'reset') return;
+
+    const form = this.internals.form;
+    queueMicrotask(() => {
+      if (event.defaultPrevented || this.disabled) return;
+      if (this.type === 'submit') form?.requestSubmit();
+      else form?.reset();
+    });
+  };
 
   static styles = css`
     :host {
@@ -271,7 +298,7 @@ export class ButtonElement extends LitElement {
   protected render() {
     return html`
       <button
-        type=${this.type}
+        type="button"
         .class=${this.class}
         ?disabled=${this.disabled}
         part="button"

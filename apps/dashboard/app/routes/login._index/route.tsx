@@ -71,8 +71,14 @@ function LoginScreen() {
   const [user] = useAuthState(auth);
   const navigate = useNavigate();
 
-  const loginForm = useForm<FormData>({ resolver: zodResolver(formSchema) });
-  const signupForm = useForm<FormData>({ resolver: zodResolver(formSchema) });
+  const loginForm = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: '', password: '' },
+  });
+  const signupForm = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: '', password: '' },
+  });
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: FormData) =>
       signInWithEmailAndPassword(auth, data.email, data.password),
