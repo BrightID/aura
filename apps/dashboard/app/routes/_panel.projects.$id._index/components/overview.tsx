@@ -99,7 +99,7 @@ export default function OverviewSection({
           <div
             key={stat.label}
             className={cn(
-              'flex flex-col gap-2 p-4',
+              'flex flex-col gap-2 p-5',
               i % 2 === 1 && 'border-l',
               i >= 2 && 'border-t lg:border-t-0',
               i === 2 && 'lg:border-l',

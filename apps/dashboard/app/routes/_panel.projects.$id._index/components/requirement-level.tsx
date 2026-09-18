@@ -134,7 +134,7 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
 
   return (
     <a-card className="overflow-hidden">
-      <div className="flex flex-col gap-1.5 p-6">
+      <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Shield className="h-6 w-6 text-primary" />
@@ -160,7 +160,7 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
         </div>
       </div>
 
-      <div className="p-6 pt-0">
+      <div className="mt-6">
         <a-radio-group
           ref={radioGroupRef}
           value={selectedLevel}

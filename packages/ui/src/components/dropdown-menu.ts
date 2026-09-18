@@ -44,10 +44,11 @@ export class DropdownMenuElement extends LitElement {
     }
 
     .content {
-      position: absolute;
-      z-index: 50;
+      position: fixed;
+      z-index: 80;
       min-width: 10rem;
       max-width: 20rem;
+      margin: 0;
       background: var(--popover, oklch(98% 0 0));
       color: var(--popover-foreground, oklch(20% 0 0));
       border: 1px solid var(--border);
@@ -58,7 +59,6 @@ export class DropdownMenuElement extends LitElement {
         0 2px 4px -2px rgb(0 0 0 / 0.1);
       outline: none;
       pointer-events: auto;
-      transform-origin: var(--transform-origin, 50% 0%);
     }
 
     @keyframes fade-in {
@@ -69,102 +69,11 @@ export class DropdownMenuElement extends LitElement {
         opacity: 1;
       }
     }
-    @keyframes zoom-in-95 {
-      from {
-        transform: scale(0.95);
-      }
-      to {
-        transform: scale(1);
-      }
-    }
-    @keyframes slide-in-from-top-2 {
-      from {
-        transform: translateY(-0.5rem);
-      }
-      to {
-        transform: translateY(0);
-      }
-    }
-    @keyframes slide-in-from-bottom-2 {
-      from {
-        transform: translateY(0.5rem);
-      }
-      to {
-        transform: translateY(0);
-      }
-    }
 
     .animate-in {
-      animation:
-        fade-in 0.12s ease-out forwards,
-        zoom-in-95 0.12s ease-out forwards;
-    }
-    [data-side='bottom'].animate-in {
-      animation:
-        fade-in 0.12s ease-out forwards,
-        zoom-in-95 0.12s ease-out forwards,
-        slide-in-from-top-2 0.12s ease-out forwards;
-    }
-    [data-side='top'].animate-in {
-      animation:
-        fade-in 0.12s ease-out forwards,
-        zoom-in-95 0.12s ease-out forwards,
-        slide-in-from-bottom-2 0.12s ease-out forwards;
-    }
-
-    :host([side='bottom']) .content {
-      top: 100%;
-      margin-top: var(--side-offset, 0.25rem);
-    }
-    :host([side='top']) .content {
-      bottom: 100%;
-      margin-bottom: var(--side-offset, 0.25rem);
-    }
-    :host([side='right']) .content {
-      left: 100%;
-      margin-left: var(--side-offset, 0.25rem);
-      top: 0;
-    }
-    :host([side='left']) .content {
-      right: 100%;
-      margin-right: var(--side-offset, 0.25rem);
-      top: 0;
-    }
-
-    :host([align='start']) .content {
-      --align-transform: 0%;
-    }
-    :host([align='center']) .content {
-      --align-transform: -50%;
-    }
-    :host([align='end']) .content {
-      --align-transform: -100%;
-    }
-
-    :host([side='bottom']) .content,
-    :host([side='top']) .content {
-      left: 0;
-    }
-    :host([side='bottom'][align='center']) .content,
-    :host([side='top'][align='center']) .content,
-    :host([side='bottom'][align='end']) .content,
-    :host([side='top'][align='end']) .content {
-      left: 50%;
-      transform: translateX(var(--align-transform, 0%));
+      animation: fade-in 0.12s ease-out forwards;
     }
   `;
-
-  connectedCallback() {
-    super.connectedCallback();
-    DropdownMenuElement._register(this);
-    this.addEventListener('select', this._onItemSelect as EventListener);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    DropdownMenuElement._unregister(this);
-    this.removeEventListener('select', this._onItemSelect as EventListener);
-  }
 
   private static _instances = new Set<DropdownMenuElement>();
   private static _listenersAttached = false;
@@ -212,9 +121,7 @@ export class DropdownMenuElement extends LitElement {
 
   private _handleOutsideClick = (e: MouseEvent) => {
     if (!this.open) return;
-    const target = e.target as Node | null;
-    if (!target) return;
-    if (this.contains(target)) return;
+    if (e.composedPath().includes(this)) return;
     this._setOpenInternal(false);
   };
 
@@ -251,26 +158,148 @@ export class DropdownMenuElement extends LitElement {
     this._setOpenInternal(false);
   };
 
+  private _boundTriggers = new Set<HTMLElement>();
+
   private _attachTriggerListeners() {
     this.triggerElements.forEach((el) => {
+      if (this._boundTriggers.has(el)) return;
       el.addEventListener('click', this._handleTriggerClick);
+      this._boundTriggers.add(el);
     });
   }
 
   firstUpdated() {
     this._attachTriggerListeners();
+    const triggerSlot = this.renderRoot.querySelector(
+      'slot[name="trigger"]',
+    ) as HTMLSlotElement | null;
+    triggerSlot?.addEventListener('slotchange', () => {
+      this._attachTriggerListeners();
+    });
+  }
+
+  private _onReposition = () => {
+    if (this.open) this._place();
+  };
+
+  connectedCallback() {
+    super.connectedCallback();
+    DropdownMenuElement._register(this);
+    this.addEventListener('select', this._onItemSelect as EventListener);
+    window.addEventListener('resize', this._onReposition);
+    window.addEventListener('scroll', this._onReposition, true);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    DropdownMenuElement._unregister(this);
+    this.removeEventListener('select', this._onItemSelect as EventListener);
+    window.removeEventListener('resize', this._onReposition);
+    window.removeEventListener('scroll', this._onReposition, true);
+  }
+
+  private _place() {
+    const trigger = this.triggerElements[0];
+    const content = this.renderRoot.querySelector(
+      '.content',
+    ) as HTMLElement | null;
+    if (!trigger || !content) return;
+
+    const gap = this.sideOffset ?? 4;
+    const pad = 8;
+    const tr = trigger.getBoundingClientRect();
+    const cw = content.offsetWidth;
+    const ch = content.offsetHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const along = (
+      align: 'start' | 'center' | 'end',
+      start: number,
+      size: number,
+      cSize: number,
+    ) => {
+      if (align === 'end') return start + size - cSize;
+      if (align === 'center') return start + size / 2 - cSize / 2;
+      return start;
+    };
+
+    let side = this.side;
+    const align = this.align;
+
+    const fits = (s: typeof side) => {
+      switch (s) {
+        case 'right':
+          return tr.right + gap + cw <= vw - pad;
+        case 'left':
+          return tr.left - gap - cw >= pad;
+        case 'bottom':
+          return tr.bottom + gap + ch <= vh - pad;
+        case 'top':
+          return tr.top - gap - ch >= pad;
+      }
+    };
+
+    const opposite = {
+      right: 'left',
+      left: 'right',
+      bottom: 'top',
+      top: 'bottom',
+    } as const;
+    if (!fits(side) && fits(opposite[side])) side = opposite[side];
+
+    let left = 0;
+    let top = 0;
+    switch (side) {
+      case 'right':
+        left = tr.right + gap;
+        top = along(align, tr.top, tr.height, ch);
+        break;
+      case 'left':
+        left = tr.left - gap - cw;
+        top = along(align, tr.top, tr.height, ch);
+        break;
+      case 'bottom':
+        top = tr.bottom + gap;
+        left = along(align, tr.left, tr.width, cw);
+        break;
+      case 'top':
+        top = tr.top - gap - ch;
+        left = along(align, tr.left, tr.width, cw);
+        break;
+    }
+
+    left = Math.min(Math.max(left, pad), Math.max(pad, vw - pad - cw));
+    top = Math.min(Math.max(top, pad), Math.max(pad, vh - pad - ch));
+
+    // `position: fixed` inside another `fixed` ancestor is CB-relative.
+    // Measure where (0,0) lands, then offset to the viewport target.
+    content.style.top = '0px';
+    content.style.left = '0px';
+    const origin = content.getBoundingClientRect();
+    content.style.left = `${left - origin.left}px`;
+    content.style.top = `${top - origin.top}px`;
+    content.dataset.side = side;
   }
 
   updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has('open') && this._internalChange) {
-      this._internalChange = false;
-      this.dispatchEvent(
-        new CustomEvent('open-change', {
-          detail: { open: this.open },
-          bubbles: true,
-          composed: true,
-        }),
-      );
+    if (changedProperties.has('open')) {
+      if (this.open) {
+        requestAnimationFrame(() => {
+          this._place();
+          requestAnimationFrame(() => this._place());
+        });
+      }
+      if (this._internalChange) {
+        this._internalChange = false;
+        this.dispatchEvent(
+          new CustomEvent('open-change', {
+            detail: { open: this.open },
+            bubbles: true,
+            composed: true,
+          }),
+        );
+      }
     }
   }
 

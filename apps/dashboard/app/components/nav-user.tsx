@@ -27,9 +27,10 @@ export function NavUser({ user }: { user: User | null | undefined }) {
     <SidebarMenu>
       <SidebarMenuItem>
         <a-dropdown-menu
-          side={isMobile ? 'bottom' : 'right'}
+          className="w-full"
+          side={isMobile ? 'top' : 'right'}
           align="end"
-          sideOffset={4}
+          sideOffset={8}
         >
           <SidebarMenuButton
             slot="trigger"

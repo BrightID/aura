@@ -38,16 +38,32 @@ export class TabsElement extends LitElement {
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
+    :host([compact]) {
+      --tab-active-fg: var(--primary);
+    }
+
     :host([compact]) .tab-list {
-      width: fit-content;
-      max-width: 100%;
-      flex-wrap: nowrap;
+      width: 100%;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      border-bottom: 1px solid var(--border);
+      gap: 0.25rem;
       overflow-x: auto;
       scrollbar-width: none;
     }
 
     :host([compact]) .tab-list::-webkit-scrollbar {
       display: none;
+    }
+
+    :host([compact]) .indicator {
+      top: auto;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 0;
     }
 
     slot {
@@ -255,7 +271,7 @@ export class TabElement extends LitElement {
     }
 
     :host([active]) button {
-      color: var(--primary-foreground, white);
+      color: var(--tab-active-fg, var(--primary-foreground, white));
       font-weight: 600;
     }
 

@@ -25,6 +25,12 @@
   --chart-4: oklch(0.66 0.16 305);
   --chart-5: oklch(0.66 0.18 30);
   --radius: 0.625rem;
+  --xs: 0.5rem;
+  --sm: 0.75rem;
+  --md: 1rem;
+  --lg: 1.25rem;
+  --xl: 1.5rem;
+  --xl2: 2rem;
 
   --aura-success: oklch(0.7 0.15 154);
   --aura-warning: oklch(0.78 0.15 76);

@@ -75,7 +75,7 @@ export function SettingsTab({ project }: { project: Project }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <a-card>
-          <div className="flex flex-col gap-1.5 p-6">
+          <div className="flex flex-col gap-1.5">
             <a-head level="3" className="text-lg font-semibold">
               General Settings
             </a-head>
@@ -83,7 +83,7 @@ export function SettingsTab({ project }: { project: Project }) {
               Configure your project settings
             </p>
           </div>
-          <div className="space-y-4 p-6 pt-0">
+          <div className="mt-6 space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -154,7 +154,7 @@ export function SettingsTab({ project }: { project: Project }) {
         </a-card>
 
         <a-card>
-          <div className="flex flex-col gap-1.5 p-6">
+          <div className="flex flex-col gap-1.5">
             <a-head level="3" className="text-lg font-semibold">
               Branding
             </a-head>
@@ -162,7 +162,7 @@ export function SettingsTab({ project }: { project: Project }) {
               Customize your project appearance
             </p>
           </div>
-          <div className="space-y-6 p-6 pt-0">
+          <div className="mt-6 space-y-6">
             <FormField
               control={form.control}
               name="logoUrl"
@@ -228,7 +228,7 @@ export function SettingsTab({ project }: { project: Project }) {
         </a-card>
 
         <a-card>
-          <div className="flex flex-col gap-1.5 p-6">
+          <div className="flex flex-col gap-1.5">
             <a-head level="3" className="text-lg font-semibold">
               Integration
             </a-head>
@@ -236,7 +236,7 @@ export function SettingsTab({ project }: { project: Project }) {
               BrightID integration settings
             </p>
           </div>
-          <div className="p-6 pt-0">
+          <div className="mt-6">
             <FormField
               control={form.control}
               name="brightIdAppId"

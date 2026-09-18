@@ -7,7 +7,7 @@ export default function ProjectUsage({ project }: { project: Project }) {
   return (
     <div className="space-y-6">
       <a-card>
-        <div className="flex flex-col gap-1.5 p-6">
+        <div className="flex flex-col gap-1.5">
           <a-head level="3" className="text-lg font-semibold">
             Token Usage
           </a-head>
@@ -15,7 +15,7 @@ export default function ProjectUsage({ project }: { project: Project }) {
             Monitor your token consumption and remaining allocation
           </p>
         </div>
-        <div className="space-y-6 p-6 pt-0">
+        <div className="mt-6 space-y-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">

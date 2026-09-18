@@ -23,7 +23,7 @@ export class CardElement extends LitElement {
       background: var(--card-bg, var(--card));
       border: 1px solid var(--card-border, var(--border));
       border-radius: var(--radius);
-      padding: var(--lg);
+      /* Padding lives on .body — Tailwind preflight sets padding:0 on the host. */
       transition:
         background 0.2s ease,
         border-color 0.2s ease,
@@ -31,6 +31,10 @@ export class CardElement extends LitElement {
       box-shadow:
         0 1px 2px oklch(0 0 0 / 0.06),
         0 8px 30px oklch(0 0 0 / 0.08);
+    }
+
+    .body {
+      padding: var(--lg, 1.25rem);
     }
 
     :host {
@@ -93,7 +97,7 @@ export class CardElement extends LitElement {
   `;
 
   render() {
-    return html`<slot></slot>`;
+    return html`<div class="body"><slot></slot></div>`;
   }
 }
 
