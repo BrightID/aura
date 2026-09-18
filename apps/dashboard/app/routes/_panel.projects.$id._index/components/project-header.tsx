@@ -3,99 +3,120 @@ import {
   Globe,
   ExternalLink,
   Settings,
-  AppWindowIcon,
+  AppWindow,
 } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import type { Project } from '~/types/projects';
+import { Button } from '~/components/ui/button';
+import { cn } from '~/lib/utils';
 
-export function ProjectHeader({ project }: { project: Project }) {
-  const navigate = useNavigate();
+function hostname(url: string) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url.replace(/^https?:\/\//, '');
+  }
+}
 
+export function ProjectHeader({
+  project,
+  onOpenSettings,
+}: {
+  project: Project;
+  onOpenSettings: () => void;
+}) {
   return (
-    <header className="border-b bg-card">
-      <div className="max-w-6xl mx-auto px-6 py-4">
-        <a-button
-          variant="ghost"
-          size="sm"
-          className="mb-4 -ml-2"
-          onClick={() => navigate('/projects')}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Projects
-        </a-button>
+    <header className="flex flex-col gap-4">
+      <Link
+        to="/projects"
+        className="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Projects
+      </Link>
 
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            {project.logoUrl ? (
-              <img
-                src={project.logoUrl}
-                alt={project.name}
-                className="h-16 w-16 rounded-xl object-cover border"
-              />
-            ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-foreground/10 to-foreground/5 border">
-                <span className="text-2xl font-semibold text-foreground/70">
-                  {project.name[0].toUpperCase()}
-                </span>
-              </div>
-            )}
-
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-semibold tracking-tight">
-                  {project.name}
-                </h1>
-                <a-badge variant={project.isActive ? 'default' : 'secondary'}>
-                  {project.isActive ? 'Active' : 'Inactive'}
-                </a-badge>
-              </div>
-              <p className="text-muted-foreground mt-1">
-                {project.description || 'No description'}
-              </p>
-              {project.websiteUrl && (
-                <a
-                  href={project.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary hover:underline flex items-center gap-1 mt-1"
-                >
-                  <Globe className="h-3 w-3" />
-                  {project.websiteUrl}
-                </a>
-              )}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          {project.logoUrl ? (
+            <img
+              src={project.logoUrl}
+              alt=""
+              className="size-12 shrink-0 rounded-lg border object-cover"
+            />
+          ) : (
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-lg border bg-muted text-lg font-semibold text-muted-foreground">
+              {project.name[0].toUpperCase()}
             </div>
-          </div>
+          )}
 
-          <div className="flex items-center gap-2">
-            {project.websiteUrl && (
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="truncate text-xl font-semibold tracking-tight">
+                {project.name}
+              </h1>
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium',
+                  project.isActive
+                    ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                    : 'border-border bg-muted text-muted-foreground',
+                )}
+              >
+                <span
+                  className={cn(
+                    'size-1.5 rounded-full',
+                    project.isActive ? 'bg-emerald-400' : 'bg-muted-foreground',
+                  )}
+                />
+                {project.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+            {project.description ? (
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                {project.description}
+              </p>
+            ) : null}
+            {project.websiteUrl ? (
               <a
-                href={`/interface/projects/${project.id}`}
+                href={project.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
               >
-                <a-button variant="outline">
-                  <AppWindowIcon className="mr-2 h-4 w-4" />
-                  Your page
-                </a-button>
+                <Globe className="size-3.5" />
+                {hostname(project.websiteUrl)}
               </a>
-            )}
-            {project.websiteUrl && (
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Button variant="default" size="sm" asChild>
+            <a
+              href={`/interface/projects/${project.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <AppWindow className="size-4" />
+              Your page
+            </a>
+          </Button>
+          {project.websiteUrl ? (
+            <Button variant="outline" size="sm" asChild>
               <a
                 href={project.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <a-button variant="outline">
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Website
-                </a-button>
+                <ExternalLink className="size-4" />
+                Website
               </a>
-            )}
-            <a-button variant="outline">
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </a-button>
-          </div>
+            </Button>
+          ) : null}
+          <Button variant="ghost" size="sm" onClick={onOpenSettings}>
+            <Settings className="size-4" />
+            Settings
+          </Button>
         </div>
       </div>
     </header>

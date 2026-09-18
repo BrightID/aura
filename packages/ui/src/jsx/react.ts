@@ -177,6 +177,7 @@ declare module 'react' {
       // Events: listen to 'change' (CustomEvent<{value:string}>) via ref
       'a-tabs': CEProps<TabsElement> & {
         value?: string;
+        compact?: boolean;
       };
       'a-tab': CEProps<TabElement> & {
         value?: string;

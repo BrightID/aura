@@ -113,6 +113,7 @@ declare module 'solid-js' {
       // Events: listen to 'change' (CustomEvent<{value:string}>) via ref
       'a-tabs': CEProps<TabsElement> & {
         value?: string;
+        compact?: boolean;
         onChange?: (event: TypedCustomEvent<TabsElement>) => void;
       };
       'a-tab': CEProps<TabElement> & {

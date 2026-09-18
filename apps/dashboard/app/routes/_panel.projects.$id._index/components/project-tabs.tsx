@@ -1,8 +1,9 @@
+import { useRef } from 'react';
 import {
   BarChart3,
   CreditCard,
   Settings,
-  SunDimIcon,
+  ShieldCheck,
   View,
 } from 'lucide-react';
 import OverviewSection from './overview';
@@ -13,10 +14,24 @@ import { SettingsTab } from './settings';
 import { BrightIdSettingsForm } from './brightid-settings';
 import type { Project } from '~/types/projects';
 import PreviewTab from './preview-tab';
+import { useAuraEvent } from '~/lib/aura';
 
-export function ProjectTabs({ project }: { project: Project }) {
+export function ProjectTabs({
+  project,
+  tab,
+  onTabChange,
+}: {
+  project: Project;
+  tab: string;
+  onTabChange: (tab: string) => void;
+}) {
+  const tabsRef = useRef<HTMLElement>(null);
+  useAuraEvent<{ value: string }>(tabsRef, 'change', (d) =>
+    onTabChange(d.value),
+  );
+
   return (
-    <a-tabs value="overview" className="space-y-6">
+    <a-tabs ref={tabsRef} value={tab} compact className="space-y-6">
       <a-tab value="overview" className="flex items-center gap-2">
         <BarChart3 className="h-4 w-4" /> Overview
       </a-tab>
@@ -27,14 +42,14 @@ export function ProjectTabs({ project }: { project: Project }) {
         <Settings className="h-4 w-4" /> General
       </a-tab>
       <a-tab value="brightid" className="flex items-center gap-2">
-        <SunDimIcon className="h-5 w-5" /> Verification
+        <ShieldCheck className="h-4 w-4" /> Verification
       </a-tab>
       <a-tab value="preview" className="flex items-center gap-2">
         <View className="h-4 w-4" /> Preview
       </a-tab>
 
       <a-tab-panel slot="panel" value="overview">
-        <OverviewSection project={project} />
+        <OverviewSection project={project} onOpenTab={onTabChange} />
       </a-tab-panel>
       <a-tab-panel slot="panel" value="billing">
         <div className="space-y-6">

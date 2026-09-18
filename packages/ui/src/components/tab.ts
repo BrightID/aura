@@ -10,12 +10,17 @@ export class TabsElement extends LitElement {
   @property({ type: String, reflect: true })
   declare value: string;
 
+  /** Hug tab labels instead of stretching each tab across the full track. */
+  @property({ type: Boolean, reflect: true })
+  declare compact: boolean;
+
   @queryAssignedElements({ selector: 'a-tab' })
   declare private tabs: HTMLElement[];
 
   constructor() {
     super();
     this.value = '';
+    this.compact = false;
   }
 
   static styles = css`
@@ -31,6 +36,18 @@ export class TabsElement extends LitElement {
       background: var(--tab-bg, var(--muted, #1e1e2a));
       backdrop-filter: blur(12px);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    :host([compact]) .tab-list {
+      width: fit-content;
+      max-width: 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    :host([compact]) .tab-list::-webkit-scrollbar {
+      display: none;
     }
 
     slot {
@@ -57,6 +74,10 @@ export class TabsElement extends LitElement {
       z-index: 1;
       flex: 1 1 0;
       min-width: 0;
+    }
+
+    :host([compact]) ::slotted(a-tab) {
+      flex: 0 0 auto;
     }
   `;
 
