@@ -2,6 +2,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { eq } from 'drizzle-orm';
 import { verifyMessage } from 'viem';
 import { db } from './lib/db.js';
+import { ensureSchema } from './lib/ensure-schema.js';
 import { usersTable } from './lib/schema.js';
 
 const regex = /^Wallet:\s*(.+)\nDate:\s*(.+)\nConfirmation:\s*([\s\S]*)$/m;
@@ -14,6 +15,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).send('Method not allowed');
     return;
   }
+
+  await ensureSchema();
 
   const { message, hashed } = req.body;
 

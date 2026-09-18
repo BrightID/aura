@@ -1,4 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { ensureSchema } from './ensure-schema.js';
+import { sendInternalError } from './http-error.js';
 
 export default function withCors(next: CallableFunction) {
   return async (req: VercelRequest, res: VercelResponse) => {
@@ -18,11 +20,11 @@ export default function withCors(next: CallableFunction) {
     }
 
     try {
-      const result = await next(req, res);
-
-      return result;
+      await ensureSchema();
+      return await next(req, res);
     } catch (e) {
       console.error('Error resolving the response', e);
+      if (!res.headersSent) sendInternalError(res, e);
     }
   };
 }

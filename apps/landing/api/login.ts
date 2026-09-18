@@ -2,6 +2,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import * as crypto from 'crypto';
 import { eq } from 'drizzle-orm';
 import { db } from './lib/db.js';
+import { ensureSchema } from './lib/ensure-schema.js';
 import { usersTable } from './lib/schema.js';
 
 const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -23,6 +24,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).send('Method not allowed');
     return;
   }
+
+  await ensureSchema();
 
   const { email, integration } = req.body;
 
