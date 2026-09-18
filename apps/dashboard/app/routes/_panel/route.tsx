@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type CSSProperties } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { AppSidebar } from '~/components/app-sidebar';
@@ -26,17 +26,18 @@ export default function PanelLayout() {
 
   return (
     <SidebarProvider
+      className="h-svh overflow-hidden"
       style={
         {
           '--sidebar-width': 'calc(var(--spacing) * 72)',
           '--header-height': 'calc(var(--spacing) * 12)',
-        } as React.CSSProperties
+        } as CSSProperties
       }
     >
       <AppSidebar variant="inset" />
-      <SidebarInset className="overflow-hidden max-w-screen">
+      <SidebarInset className="min-h-0 min-w-0 overflow-hidden">
         <SiteHeader />
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col overflow-auto">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <Outlet />
           </div>
