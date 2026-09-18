@@ -1,16 +1,15 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { and, eq, sql } from 'drizzle-orm';
-import { getAuth } from 'firebase-admin/auth';
+import { requireUid } from '../../lib/auth.js';
 import withCors from '../../lib/cors.js';
 import { db } from '../../lib/db.js';
 import { projectsTable, verificationsTable } from '../../lib/schema.js';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
-  const token = req.headers['authorization']?.split('Bearer ')[1];
-  if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  const uid = await requireUid(req, res);
+  if (!uid) return;
 
   try {
-    const { uid } = await getAuth().verifyIdToken(token);
     const projectId = Number(req.query.id);
 
     const [project] = await db

@@ -1,23 +1,18 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { desc, eq } from 'drizzle-orm';
-import { getAuth } from 'firebase-admin/auth';
+import { requireUid } from '../lib/auth.js';
 import withCors from '../lib/cors.js';
 import { db } from '../lib/db.js';
-import setupFirebaseApp from '../lib/firebase.js';
 import { paymentsTable, projectsTable } from '../lib/schema.js';
-
-setupFirebaseApp();
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET')
     return res.status(405).json({ error: 'Method not allowed' });
 
-  const token = req.headers['authorization']?.split('Bearer ')[1];
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  const uid = await requireUid(req, res);
+  if (!uid) return;
 
   try {
-    const { uid } = await getAuth().verifyIdToken(token);
-
     const payments = await db
       .select({
         id: paymentsTable.id,

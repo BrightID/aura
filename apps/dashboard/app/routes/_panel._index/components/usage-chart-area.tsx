@@ -8,6 +8,7 @@ import {
 import { useIsMobile } from '~/hooks/use-mobile';
 import { useAuraEvent } from '~/lib/aura';
 import { API_BASE_URL } from '~/constants';
+import { getAuthHeaders } from '~/utils/apis';
 import * as React from 'react';
 
 const chartConfig = {
@@ -16,9 +17,7 @@ const chartConfig = {
 
 async function fetchUsage(projectId: string) {
   const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/usage`, {
-    headers: {
-      authorization: `Bearer ${await (await import('firebase/auth')).getAuth().currentUser?.getIdToken()}`,
-    },
+    headers: await getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed');
   const json = await res.json();
@@ -36,6 +35,7 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
   const { data: chartData = [] } = useQuery({
     queryKey: ['project-usage', projectId],
     queryFn: () => fetchUsage(projectId),
+    enabled: Boolean(projectId),
   });
 
   const filteredData = chartData.filter((item) => {

@@ -1,21 +1,15 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { eq } from 'drizzle-orm';
-import { getAuth } from 'firebase-admin/auth';
+import { requireUid } from '../lib/auth.js';
 import withCors from '../lib/cors.js';
 import { db } from '../lib/db.js';
-import setupFirebaseApp from '../lib/firebase.js';
 import { brightIdAppsTable, projectsTable } from '../lib/schema.js';
 
-setupFirebaseApp();
-
 async function handler(req: VercelRequest, res: VercelResponse) {
-  const token = req.headers['authorization']?.split('Bearer ')[1];
-
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  const uid = await requireUid(req, res);
+  if (!uid) return;
 
   try {
-    const { uid } = await getAuth().verifyIdToken(token);
-
     const projects = await db
       .select({
         id: projectsTable.id,
@@ -62,8 +56,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.send({ projects });
   } catch (error) {
-    console.log(error);
-    return res.status(401).send({ error: 'Invalid token' });
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 

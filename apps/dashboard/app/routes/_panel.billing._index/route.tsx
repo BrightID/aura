@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { getAuth } from 'firebase/auth';
 import { format } from 'date-fns';
 import { Link } from 'react-router';
 import {
@@ -34,7 +33,7 @@ import {
 } from '@/components/ui/table';
 
 import { API_BASE_URL } from '~/constants';
-import { getUserProjects } from '~/utils/apis';
+import { getAuthHeaders, getUserProjects } from '~/utils/apis';
 import { plans } from '~/constants/subscriptions';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -63,9 +62,8 @@ interface Payment {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 async function fetchPaymentHistory(): Promise<Payment[]> {
-  const token = await getAuth().currentUser?.getIdToken();
   const res = await fetch(`${API_BASE_URL}/api/payments/history`, {
-    headers: { authorization: `Bearer ${token}` },
+    headers: await getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed to fetch payment history');
   const json = await res.json();

@@ -1,12 +1,29 @@
-import { Outlet } from 'react-router';
+import { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { AppSidebar } from '~/components/app-sidebar';
 import { SiteHeader } from '~/components/site-header';
 import { SidebarProvider, SidebarInset } from '~/components/ui/sidebar';
-import { RequireAuth } from '../_components/require-auth';
+import { auth } from '~/lib/firebase';
 
 import './styles.css';
 
 export default function PanelLayout() {
+  const [user, loading] = useAuthState(auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) navigate('/login');
+  }, [loading, user, navigate]);
+
+  if (loading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <a-skeleton className="h-8 w-40" />
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider
       style={
@@ -25,7 +42,6 @@ export default function PanelLayout() {
           </div>
         </div>
       </SidebarInset>
-      <RequireAuth />
     </SidebarProvider>
   );
 }
