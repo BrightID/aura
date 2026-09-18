@@ -3,6 +3,7 @@ import { desc, eq } from 'drizzle-orm';
 import { requireUid } from '../lib/auth.js';
 import withCors from '../lib/cors.js';
 import { db } from '../lib/db.js';
+import { sendInternalError } from '../lib/http-error.js';
 import { paymentsTable, projectsTable } from '../lib/schema.js';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
@@ -34,8 +35,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.json({ payments });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return sendInternalError(res, error);
   }
 }
 

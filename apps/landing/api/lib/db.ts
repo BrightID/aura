@@ -1,4 +1,8 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
-// export const db = drizzle(import.meta.env.DATABASE_URL!)
-export const db = drizzle(process.env.DATABASE_URL!);
+const url = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+if (!url) throw new Error('DATABASE_URL is not set');
+
+export const db = drizzle(neon(url));
+
