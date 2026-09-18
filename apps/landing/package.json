@@ -8,7 +8,8 @@
     "build": "vite build && bun scripts/copy-remotes.js",
     "preview": "vite preview",
     "check-types": "tsc --noEmit && tsc --noEmit -p api",
-    "drizzle": "drizzle-kit"
+    "drizzle": "drizzle-kit",
+    "ensure-db": "bun scripts/ensure-db.ts"
   },
   "dependencies": {
     "@aura/ui": "workspace:*",

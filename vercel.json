@@ -5,7 +5,7 @@
       "root": "apps/landing",
       "framework": "vite",
       "installCommand": "cd ../.. && bun install",
-      "buildCommand": "cd ../.. && bunx turbo run build --filter=@aura/landing",
+      "buildCommand": "cd ../.. && bunx turbo run build --filter=@aura/landing && bun run --cwd apps/landing ensure-db",
       "outputDirectory": "dist",
       "functions": {
         "api/*.ts": { "maxDuration": 30 },
