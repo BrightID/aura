@@ -58,7 +58,13 @@ export default defineConfig(({ mode }) => {
       allowedHosts: ['localhost', '.localhost'],
       proxy: {
         // recovery.brightid.org sends no CORS headers → keep a same-origin
-        // proxy for dev. aura-node is CORS-open and is called directly.
+        // proxy for dev. aura-node /profile/upload rejects Cache-Control,
+        // so production builds POST to this same-origin path.
+        '/profile/upload': {
+          target: 'https://aura-node.brightid.org',
+          changeOrigin: true,
+          secure: true,
+        },
         [`/core${RECOVERY_PROXY_PATH}`]: {
           target: env.VITE_RECOVERY_URL ?? DEFAULT_RECOVERY_URL,
           changeOrigin: true,
@@ -76,6 +82,13 @@ export default defineConfig(({ mode }) => {
     preview: {
       port: PORT,
       cors: true,
+      proxy: {
+        '/profile/upload': {
+          target: 'https://aura-node.brightid.org',
+          changeOrigin: true,
+          secure: true,
+        },
+      },
     },
   };
 });

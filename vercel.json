@@ -42,6 +42,10 @@
       "destination": "https://aura-node.brightid.org/brightid/$1"
     },
     {
+      "source": "/profile/upload/(.*)",
+      "destination": "https://aura-node.brightid.org/profile/upload/$1"
+    },
+    {
       "source": "/core/brightid/(.*)",
       "destination": "https://recovery.brightid.org/$1"
     },

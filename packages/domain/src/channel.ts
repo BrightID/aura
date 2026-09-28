@@ -1,4 +1,17 @@
-const NO_CACHE = { 'Cache-Control': 'no-cache' };
+// aura-node preflight rejects Cache-Control. Landing rewrites this path
+// to the node (vercel.json + vite proxy). QR still embeds the real URL.
+const AURA_NODE_PROFILE = 'https://aura-node.brightid.org/profile';
+
+function uploadUrl(channelUrl: string, channelId: string): string {
+  const base = channelUrl.replace(/\/$/, '');
+  if (base === AURA_NODE_PROFILE) return `/profile/upload/${channelId}`;
+  return `${base}/upload/${channelId}`;
+}
+
+function readUrl(channelUrl: string, path: string): string {
+  const base = channelUrl.replace(/\/$/, '');
+  return `${base}/${path}?_=${Date.now()}`;
+}
 
 async function errorFrom(res: Response): Promise<string> {
   try {
@@ -29,9 +42,9 @@ export async function uploadToChannel({
     uuid: dataId,
     requestedTtl: requestedTtl ? Math.floor(requestedTtl / 1000) : undefined,
   });
-  const res = await fetch(`${channelUrl}/upload/${channelId}`, {
+  const res = await fetch(uploadUrl(channelUrl, channelId), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...NO_CACHE },
+    headers: { 'Content-Type': 'application/json' },
     body,
   });
   if (!res.ok) throw new Error(await errorFrom(res));
@@ -41,9 +54,7 @@ export async function listChannel({
   channelUrl,
   channelId,
 }: ChannelTarget): Promise<string[]> {
-  const res = await fetch(`${channelUrl}/list/${channelId}`, {
-    headers: NO_CACHE,
-  });
+  const res = await fetch(readUrl(channelUrl, `list/${channelId}`));
   if (!res.ok) throw new Error(await errorFrom(res));
   const json = (await res.json()) as { profileIds?: string[] };
   if (!json?.profileIds) {
@@ -63,9 +74,9 @@ export async function downloadFromChannel({
   dataId: string;
   deleteAfterDownload?: boolean;
 }): Promise<string> {
-  const res = await fetch(`${channelUrl}/download/${channelId}/${dataId}`, {
-    headers: NO_CACHE,
-  });
+  const res = await fetch(
+    readUrl(channelUrl, `download/${channelId}/${dataId}`),
+  );
   if (!res.ok) throw new Error(await errorFrom(res));
   const json = (await res.json()) as { data?: string };
   if (deleteAfterDownload) {
