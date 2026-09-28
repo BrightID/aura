@@ -7,7 +7,7 @@ import VersionCard from '@/components/settings/version-card';
  * /settings — ported from the React app, same card order.
  *
  * Not ported: the decorative three.js sphere (would pull three+gsap+glsl into
- * the bundle) and the PWA service-worker update flow in the version card.
+ * the bundle).
  * Contact info / Role Management / Onboarding link to their source paths —
  * those routes are still to be migrated.
  */

@@ -3,6 +3,12 @@ import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { subscribe, type ToastData, type ToastVariant, toast } from './toast';
 
+/** Action buttons must receive the click. Capturing the row steals it. */
+function isButtonTarget(event: Event): boolean {
+  const target = event.target;
+  return target instanceof Element && Boolean(target.closest('button'));
+}
+
 @customElement('a-toaster')
 export class ToasterElement extends LitElement {
   @state() private toasts: ToastData[] = [];
@@ -234,12 +240,17 @@ export class ToasterElement extends LitElement {
               class="toast ${t.visible ? 'visible' : 'exit'} ${
                 t.variant || 'default'
               }"
-              @pointerdown=${(e: PointerEvent) =>
-                this.handleSwipeStart(e, t.id)}
+              @pointerdown=${(e: PointerEvent) => {
+                if (isButtonTarget(e)) return;
+                this.handleSwipeStart(e, t.id);
+              }}
               @pointermove=${(e: PointerEvent) => this.handleSwipeMove(e)}
               @pointerup=${(e: PointerEvent) => this.handleSwipeEnd(e, t.id)}
               @pointercancel=${() => this.resetSwipe()}
-              @click=${() => toast.dismiss(t.id)}
+              @click=${(e: Event) => {
+                if (isButtonTarget(e)) return;
+                toast.dismiss(t.id);
+              }}
             >
               <div class="content">
                 ${

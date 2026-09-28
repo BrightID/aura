@@ -14,6 +14,8 @@ export interface ToastOptions {
   variant?: ToastVariant;
   description?: string;
   action?: { label: string; onClick: () => void };
+  /** Fired once when the toast is dismissed (not when the same id is replaced). */
+  onDismiss?: () => void;
 }
 
 export interface ToastData extends ToastOptions {
@@ -25,6 +27,7 @@ export interface ToastData extends ToastOptions {
 
 const toasts: ToastData[] = [];
 const listeners: ((toasts: ToastData[]) => void)[] = [];
+const closing = new WeakSet<ToastData>();
 
 function emit() {
   listeners.forEach((cb) => cb([...toasts]));
@@ -37,6 +40,27 @@ export function toast(
   const id = options.id ?? crypto.randomUUID?.() ?? Date.now().toString(36);
   const duration =
     options.duration ?? (options.variant === 'loading' ? Infinity : 4000);
+
+  const existingIdx = options.id
+    ? toasts.findIndex((item) => item.id === options.id)
+    : -1;
+  if (existingIdx !== -1 && !closing.has(toasts[existingIdx])) {
+    const existing = toasts[existingIdx];
+    existing.message = message;
+    existing.createdAt = Date.now();
+    existing.duration = duration;
+    existing.variant = options.variant;
+    existing.description = options.description;
+    existing.action = options.action;
+    existing.onDismiss = options.onDismiss;
+    existing.visible = false;
+    emit();
+    requestAnimationFrame(() => {
+      existing.visible = true;
+      emit();
+    });
+    return existing.id;
+  }
 
   const t: ToastData = {
     id,
@@ -78,17 +102,18 @@ toast.loading = (msg: string, opts?: Omit<ToastOptions, 'variant'>) =>
   toast(msg, { ...opts, variant: 'loading' });
 
 toast.dismiss = (id: string) => {
-  const t = toasts.find((t) => t.id === id);
-  if (t) {
-    t.visible = false;
+  const t = toasts.find((item) => item.id === id);
+  if (!t || closing.has(t)) return;
+  closing.add(t);
+  t.visible = false;
+  emit();
+  t.onDismiss?.();
+  // Wait for exit animation before removing from array
+  setTimeout(() => {
+    const idx = toasts.findIndex((item) => item.id === id);
+    if (idx !== -1) toasts.splice(idx, 1);
     emit();
-    // Wait for exit animation before removing from array
-    setTimeout(() => {
-      const idx = toasts.findIndex((t) => t.id === id);
-      if (idx !== -1) toasts.splice(idx, 1);
-      emit();
-    }, 300); // Matches exit animation duration
-  }
+  }, 300); // Matches exit animation duration
 };
 
 toast.promise = async <T>(
