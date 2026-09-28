@@ -1,9 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { and, eq, sql } from 'drizzle-orm';
-import { requireUid } from '../../lib/auth.js';
-import withCors from '../../lib/cors.js';
-import { db } from '../../lib/db.js';
-import { projectsTable, verificationsTable } from '../../lib/schema.js';
+import { requireUid } from './lib/auth.js';
+import withCors from './lib/cors.js';
+import { db } from './lib/db.js';
+import { projectsTable, verificationsTable } from './lib/schema.js';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   const uid = await requireUid(req, res);

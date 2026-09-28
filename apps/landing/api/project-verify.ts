@@ -1,9 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import withCors from '../../lib/cors.js';
-import { db } from '../../lib/db.js';
-import { projectsTable, verificationsTable } from '../../lib/schema.js';
+import withCors from './lib/cors.js';
+import { db } from './lib/db.js';
+import { projectsTable, verificationsTable } from './lib/schema.js';
 
 const verifySchema = z.object({
   client: z.string().min(1).max(100),

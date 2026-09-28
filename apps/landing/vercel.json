@@ -18,6 +18,18 @@
       "destination": "/api/operations"
     },
     {
+      "source": "/api/projects/:id/verify",
+      "destination": "/api/project-verify?id=:id"
+    },
+    {
+      "source": "/api/projects/:id/usage",
+      "destination": "/api/project-usage?id=:id"
+    },
+    {
+      "source": "/api/payments/status/:orderId",
+      "destination": "/api/payment-status?orderId=:orderId"
+    },
+    {
       "source": "/interface/api/:path(.*)?",
       "destination": "/api/:path"
     },
