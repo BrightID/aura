@@ -49,8 +49,8 @@ export default defineConfig({
             'hash',
           );
           return opHash
-            ? `/operations/${encodeURIComponent(opHash)}`
-            : '/operations';
+            ? `/brightid/v6/operations/${encodeURIComponent(opHash)}`
+            : '/brightid/v6/operations';
         },
       },
       '/core/brightid': {
@@ -96,8 +96,8 @@ export default defineConfig({
             'hash',
           );
           return opHash
-            ? `/operations/${encodeURIComponent(opHash)}`
-            : '/operations';
+            ? `/brightid/v6/operations/${encodeURIComponent(opHash)}`
+            : '/brightid/v6/operations';
         },
       },
     },

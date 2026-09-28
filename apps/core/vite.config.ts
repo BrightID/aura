@@ -80,8 +80,8 @@ export default defineConfig(({ mode }) => {
               'hash',
             );
             return opHash
-              ? `/operations/${encodeURIComponent(opHash)}`
-              : '/operations';
+              ? `/brightid/v6/operations/${encodeURIComponent(opHash)}`
+              : '/brightid/v6/operations';
           },
         },
         [`/core${RECOVERY_PROXY_PATH}`]: {
@@ -122,8 +122,8 @@ export default defineConfig(({ mode }) => {
               'hash',
             );
             return opHash
-              ? `/operations/${encodeURIComponent(opHash)}`
-              : '/operations';
+              ? `/brightid/v6/operations/${encodeURIComponent(opHash)}`
+              : '/brightid/v6/operations';
           },
         },
       },

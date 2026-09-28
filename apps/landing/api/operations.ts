@@ -1,9 +1,10 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
-const NODE_OPERATIONS = 'https://aura-node.brightid.org/operations';
+const NODE_OPERATIONS =
+  'https://aura-node.brightid.org/brightid/v6/operations';
 
-// Flat file on purpose. Dynamic /operations/:hash falls through to index.html.
-// POST /operations and GET /operations?hash= both land here.
+// Flat file on purpose. Dynamic routes fall through to index.html.
+// Upstream is /brightid/v6/operations. Bare /operations is an nginx 404.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const raw = req.query['hash'];
   const opHash = Array.isArray(raw) ? raw[0] : raw;

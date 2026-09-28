@@ -23,7 +23,10 @@ function operationsUrl(nodeUrl: string, opHash?: string): string {
       ? `/api/operations?hash=${encodeURIComponent(opHash)}`
       : '/api/operations';
   }
-  return opHash ? `${base}/operations/${opHash}` : `${base}/operations`;
+  const path = opHash
+    ? `/brightid/v6/operations/${opHash}`
+    : '/brightid/v6/operations';
+  return `${base}${path}`;
 }
 
 export interface SignedEvaluateOp {
