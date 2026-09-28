@@ -254,7 +254,7 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
         width: this.withoutTitle ? 300 : 350,
         content: link,
         logo: {
-          src: '/images/brightid-qrcode-logo.svg',
+          src: '/interface/images/brightid-qrcode-logo.svg',
           bgColor: '#333',
           borderWidth: 5,
         },
