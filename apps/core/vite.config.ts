@@ -60,16 +60,16 @@ export default defineConfig(({ mode }) => {
         // recovery.brightid.org sends no CORS headers → keep a same-origin
         // proxy for dev. aura-node /profile/upload rejects Cache-Control,
         // so production builds POST to the landing API path.
-        '/api/profile/upload': {
+        '/api/profile-upload': {
           target: 'https://aura-node.brightid.org',
           changeOrigin: true,
           secure: true,
-          rewrite: (p) => p.replace(/^\/api/, ''),
-        },
-        '/profile/upload': {
-          target: 'https://aura-node.brightid.org',
-          changeOrigin: true,
-          secure: true,
+          rewrite: (p) => {
+            const id = new URLSearchParams(p.split('?')[1] ?? '').get(
+              'channelId',
+            );
+            return `/profile/upload/${encodeURIComponent(id ?? '')}`;
+          },
         },
         [`/core${RECOVERY_PROXY_PATH}`]: {
           target: env.VITE_RECOVERY_URL ?? DEFAULT_RECOVERY_URL,
@@ -89,16 +89,16 @@ export default defineConfig(({ mode }) => {
       port: PORT,
       cors: true,
       proxy: {
-        '/api/profile/upload': {
+        '/api/profile-upload': {
           target: 'https://aura-node.brightid.org',
           changeOrigin: true,
           secure: true,
-          rewrite: (p) => p.replace(/^\/api/, ''),
-        },
-        '/profile/upload': {
-          target: 'https://aura-node.brightid.org',
-          changeOrigin: true,
-          secure: true,
+          rewrite: (p) => {
+            const id = new URLSearchParams(p.split('?')[1] ?? '').get(
+              'channelId',
+            );
+            return `/profile/upload/${encodeURIComponent(id ?? '')}`;
+          },
         },
       },
     },

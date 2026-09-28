@@ -2,8 +2,8 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 
 const NODE_UPLOAD = 'https://aura-node.brightid.org/profile/upload';
 
-// Same-origin proxy. Top-level external rewrites are ignored under
-// Vercel Services, so POST /profile/upload was served as index.html (405).
+// Flat file on purpose. This project serves api/*.ts and nested static
+// files, but dynamic [param] routes fall through to index.html (405 on POST).
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');

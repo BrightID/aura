@@ -2,8 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/api/profile/upload/:channelId",
+      "destination": "/api/profile-upload?channelId=:channelId"
+    },
+    {
       "source": "/profile/upload/:channelId",
-      "destination": "/api/profile/upload/:channelId"
+      "destination": "/api/profile-upload?channelId=:channelId"
     },
     {
       "source": "/interface/api/:path(.*)?",

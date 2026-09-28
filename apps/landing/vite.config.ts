@@ -29,16 +29,16 @@ export default defineConfig({
     // /docs forwards to the docs app. Other /api routes are served by
     // `vercel dev` at the repo root (landing/api serverless functions).
     proxy: {
-      '/api/profile/upload': {
+      '/api/profile-upload': {
         target: 'https://aura-node.brightid.org',
         changeOrigin: true,
         secure: true,
-        rewrite: (p) => p.replace(/^\/api/, ''),
-      },
-      '/profile/upload': {
-        target: 'https://aura-node.brightid.org',
-        changeOrigin: true,
-        secure: true,
+        rewrite: (p) => {
+          const id = new URLSearchParams(p.split('?')[1] ?? '').get(
+            'channelId',
+          );
+          return `/profile/upload/${encodeURIComponent(id ?? '')}`;
+        },
       },
       '/core/brightid': {
         target: 'https://recovery.brightid.org',
@@ -63,16 +63,16 @@ export default defineConfig({
     port: PORT,
     cors: true,
     proxy: {
-      '/api/profile/upload': {
+      '/api/profile-upload': {
         target: 'https://aura-node.brightid.org',
         changeOrigin: true,
         secure: true,
-        rewrite: (p) => p.replace(/^\/api/, ''),
-      },
-      '/profile/upload': {
-        target: 'https://aura-node.brightid.org',
-        changeOrigin: true,
-        secure: true,
+        rewrite: (p) => {
+          const id = new URLSearchParams(p.split('?')[1] ?? '').get(
+            'channelId',
+          );
+          return `/profile/upload/${encodeURIComponent(id ?? '')}`;
+        },
       },
     },
   },
