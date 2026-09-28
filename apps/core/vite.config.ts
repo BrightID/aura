@@ -59,7 +59,13 @@ export default defineConfig(({ mode }) => {
       proxy: {
         // recovery.brightid.org sends no CORS headers → keep a same-origin
         // proxy for dev. aura-node /profile/upload rejects Cache-Control,
-        // so production builds POST to this same-origin path.
+        // so production builds POST to the landing API path.
+        '/api/profile/upload': {
+          target: 'https://aura-node.brightid.org',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (p) => p.replace(/^\/api/, ''),
+        },
         '/profile/upload': {
           target: 'https://aura-node.brightid.org',
           changeOrigin: true,
@@ -83,6 +89,12 @@ export default defineConfig(({ mode }) => {
       port: PORT,
       cors: true,
       proxy: {
+        '/api/profile/upload': {
+          target: 'https://aura-node.brightid.org',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (p) => p.replace(/^\/api/, ''),
+        },
         '/profile/upload': {
           target: 'https://aura-node.brightid.org',
           changeOrigin: true,

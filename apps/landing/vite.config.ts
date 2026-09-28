@@ -25,10 +25,16 @@ export default defineConfig({
     allowedHosts: ['localhost', '.localhost'],
     // recovery.brightid.org sends no CORS headers. aura-node
     // /profile/upload rejects the Cache-Control preflight, so that
-    // POST goes same-origin and this proxy forwards it. /docs
-    // forwards to the docs app. /api is served by `vercel dev` at the
-    // repo root (landing/api serverless functions).
+    // POST goes to the landing API path and this proxy forwards it.
+    // /docs forwards to the docs app. Other /api routes are served by
+    // `vercel dev` at the repo root (landing/api serverless functions).
     proxy: {
+      '/api/profile/upload': {
+        target: 'https://aura-node.brightid.org',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (p) => p.replace(/^\/api/, ''),
+      },
       '/profile/upload': {
         target: 'https://aura-node.brightid.org',
         changeOrigin: true,
@@ -57,6 +63,12 @@ export default defineConfig({
     port: PORT,
     cors: true,
     proxy: {
+      '/api/profile/upload': {
+        target: 'https://aura-node.brightid.org',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (p) => p.replace(/^\/api/, ''),
+      },
       '/profile/upload': {
         target: 'https://aura-node.brightid.org',
         changeOrigin: true,

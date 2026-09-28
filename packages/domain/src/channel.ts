@@ -1,10 +1,10 @@
-// aura-node preflight rejects Cache-Control. Landing rewrites this path
-// to the node (vercel.json + vite proxy). QR still embeds the real URL.
+// aura-node preflight rejects Cache-Control. Landing API function proxies
+// the POST. QR still embeds the real node URL.
 const AURA_NODE_PROFILE = 'https://aura-node.brightid.org/profile';
 
 function uploadUrl(channelUrl: string, channelId: string): string {
   const base = channelUrl.replace(/\/$/, '');
-  if (base === AURA_NODE_PROFILE) return `/profile/upload/${channelId}`;
+  if (base === AURA_NODE_PROFILE) return `/api/profile/upload/${channelId}`;
   return `${base}/upload/${channelId}`;
 }
 
