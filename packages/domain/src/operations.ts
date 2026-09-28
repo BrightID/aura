@@ -11,6 +11,21 @@ import type {
 
 const OP_VERSION = 6;
 
+// nginx on aura-node answers OPTIONS /operations with 405 and no
+// Allow-Headers, so the browser POST never leaves the page. Same-origin
+// flat route; other nodes stay direct.
+const AURA_NODE = 'https://aura-node.brightid.org';
+
+function operationsUrl(nodeUrl: string, opHash?: string): string {
+  const base = nodeUrl.replace(/\/$/, '');
+  if (base === AURA_NODE) {
+    return opHash
+      ? `/api/operations?hash=${encodeURIComponent(opHash)}`
+      : '/api/operations';
+  }
+  return opHash ? `${base}/operations/${opHash}` : `${base}/operations`;
+}
+
 export interface SignedEvaluateOp {
   name: 'Evaluate';
   evaluator: string;
@@ -67,7 +82,7 @@ export async function submitEvaluateOperation(
   const { op, message } = buildEvaluateOperation(params);
 
   const res = await postJson<{ data: { hash: string } }>(
-    `${nodeUrl}/operations`,
+    operationsUrl(nodeUrl),
     op,
     signal,
   );
@@ -105,7 +120,7 @@ export async function fetchOperationState(
   signal?: AbortSignal,
 ): Promise<OperationState> {
   const res = await getJson<{ data?: { state?: string } }>(
-    `${nodeUrl}/operations/${hash}`,
+    operationsUrl(nodeUrl, hash),
     signal,
   );
   const nodeState = res.data?.state ?? '';

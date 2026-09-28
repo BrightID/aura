@@ -10,6 +10,14 @@
       "destination": "/api/profile-upload?channelId=:channelId"
     },
     {
+      "source": "/operations/:hash",
+      "destination": "/api/operations?hash=:hash"
+    },
+    {
+      "source": "/operations",
+      "destination": "/api/operations"
+    },
+    {
       "source": "/interface/api/:path(.*)?",
       "destination": "/api/:path"
     },

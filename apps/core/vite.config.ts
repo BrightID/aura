@@ -71,6 +71,19 @@ export default defineConfig(({ mode }) => {
             return `/profile/upload/${encodeURIComponent(id ?? '')}`;
           },
         },
+        '/api/operations': {
+          target: 'https://aura-node.brightid.org',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (p) => {
+            const opHash = new URLSearchParams(p.split('?')[1] ?? '').get(
+              'hash',
+            );
+            return opHash
+              ? `/operations/${encodeURIComponent(opHash)}`
+              : '/operations';
+          },
+        },
         [`/core${RECOVERY_PROXY_PATH}`]: {
           target: env.VITE_RECOVERY_URL ?? DEFAULT_RECOVERY_URL,
           changeOrigin: true,
@@ -98,6 +111,19 @@ export default defineConfig(({ mode }) => {
               'channelId',
             );
             return `/profile/upload/${encodeURIComponent(id ?? '')}`;
+          },
+        },
+        '/api/operations': {
+          target: 'https://aura-node.brightid.org',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (p) => {
+            const opHash = new URLSearchParams(p.split('?')[1] ?? '').get(
+              'hash',
+            );
+            return opHash
+              ? `/operations/${encodeURIComponent(opHash)}`
+              : '/operations';
           },
         },
       },
