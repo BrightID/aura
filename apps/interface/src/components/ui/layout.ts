@@ -5,76 +5,44 @@ import './footer.ts';
 
 @customElement('app-layout')
 export class AppLayout extends LitElement {
-  private particlePositions = Array.from({ length: 50 }, () => ({
-    width: Math.random() * 2 + 1 + 'px',
-    height: Math.random() * 2 + 1 + 'px',
-    top: Math.random() * 100 + '%',
-    left: Math.random() * 100 + '%',
-  }));
-
   @property({
     type: Boolean,
   })
   isEmbeded = false;
 
   static styles = css`
-    .layout-wrapper {
-      background-color: var(--background);
+    :host {
+      display: block;
+      color: var(--foreground);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
-    .layout {
-      text-align: center;
-      min-height: 100vh;
 
+    .layout-wrapper {
+      min-height: 100dvh;
+      background: var(--background);
+    }
+
+    .layout,
+    .embed-layout {
+      box-sizing: border-box;
+      text-align: center;
       position: relative;
       margin: 0 auto;
-      max-width: 400px;
-      padding-bottom: 50px;
+      width: 100%;
+      max-width: 640px;
+      padding: 32px 20px calc(104px + env(safe-area-inset-bottom, 0px));
     }
 
     .embed-layout {
-      text-align: center;
-      position: relative;
-      margin: 0 auto;
       max-width: 400px;
-      padding-bottom: 10px;
+      padding: 10px;
     }
 
-    .lamp-bg {
-      position: sticky;
-      top: -8px;
-      width: 1px;
-      right: 20px;
-      height: 1px;
-      margin-left: auto;
-      border-radius: 100000px;
-      box-shadow: 8px 20px 203px 166px rgba(253, 224, 255, 0.3);
-      transform: rotate3d(0, 1, 1, 63deg);
-    }
-
-    .bg-lines {
-      position: fixed;
-      top: 40px;
-      height: 300px;
-      width: 400px;
-      background: url('/images/bg-linear-dashes.svg');
-      pointer-events: none;
-    }
-
-    .stars {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .star {
-      position: absolute;
-      border-radius: 10000px;
-      background: white;
-      opacity: 0.2;
-    }
-
-    main {
-      padding: 40px 0;
+    @media (min-width: 640px) {
+      .layout {
+        padding: 56px 32px 120px;
+      }
     }
   `;
 
@@ -87,19 +55,6 @@ export class AppLayout extends LitElement {
     return html`
       <div class="layout-wrapper">
         <div class="layout">
-          <div class="lamp-bg"></div>
-          <div class="bg-lines"></div>
-
-          <div class="stars">
-            ${this.particlePositions.map(
-              (particle, key) =>
-                html` <div
-                  class="star"
-                  style="width: ${particle.width}; height: ${particle.height}; top: ${particle.top}; left: ${particle.left};"
-                ></div>`,
-            )}
-          </div>
-
           <main>
             <slot></slot>
           </main>

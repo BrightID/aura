@@ -18,8 +18,8 @@ export class HeroSectionElement extends LitElement {
     }
 
     .logo {
-      width: 10rem;
-      height: 10rem;
+      width: 5rem;
+      height: 5rem;
       position: relative;
       z-index: 12;
     }
@@ -28,12 +28,12 @@ export class HeroSectionElement extends LitElement {
       margin: 0;
       font-size: 2rem;
       font-weight: 700;
-      color: #ffffff;
+      color: var(--foreground);
     }
 
     .info-text {
       margin: 1rem 0 1.5rem;
-      color: #9ca3af;
+      color: var(--muted-foreground);
       font-size: 0.875rem;
       text-align: center;
     }
@@ -44,13 +44,13 @@ export class HeroSectionElement extends LitElement {
       background: transparent;
       border: none;
       font-weight: 600;
-      color: #60a5fa;
+      color: var(--primary);
       cursor: pointer;
       transition: color 0.2s ease;
     }
 
     .desc-btn:hover {
-      color: #3b82f6;
+      color: var(--foreground);
     }
 
     .desc-btn span {
@@ -66,7 +66,7 @@ export class HeroSectionElement extends LitElement {
 
       <div class="container">
         <h1 class="title">${this.title}</h1>
-        <p class="info-text">Decentralized verification platform</p>
+        <p class="info-text">One identity. A world of trusted connections.</p>
 
         <a
           href="https://brightid.gitbook.io/aura"

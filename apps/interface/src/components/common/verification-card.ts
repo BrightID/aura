@@ -27,20 +27,29 @@ export class VerificationCard extends LitElement {
       color: inherit;
       text-decoration: none;
       display: block;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .card-link:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 4px;
+      border-radius: var(--radius);
     }
 
     .card-title {
       margin: 0;
       font-size: 16px;
       font-weight: 600;
+      overflow-wrap: anywhere;
     }
 
     .level-requirement {
@@ -94,7 +103,7 @@ export class VerificationCard extends LitElement {
     const isCompleted = this.stepsCompleted === this.totalSteps;
     return html`
       <a href="/interface/projects/${this.projectId}" class="card-link">
-        <a-card>
+        <a-card variant="default" interactive>
           <div class="card-header">
             <span class="card-title">${this.name}</span>
             <a-badge
@@ -150,7 +159,7 @@ export class VerificationCard extends LitElement {
                     ></div>
                   </div>
                   <a-button size="sm" style="width: 100%">
-                    ${this.stepsCompleted === 0 ? 'Start Now!' : 'Continue'}
+                    ${this.stepsCompleted === 0 ? 'Start verification' : 'Continue'}
                   </a-button>
                 `
           }

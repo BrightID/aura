@@ -47,9 +47,14 @@ export default function HomeHeader() {
       : 'Reach the required standing as a Player to unlock the Trainer view.';
 
   return (
-    <header class="mb-4 flex flex-col gap-3">
+    <header class="mb-6 flex flex-col gap-5">
       <div class="flex items-center justify-between gap-2">
-        <a-head class="text-2xl">Home</a-head>
+        <div>
+          <p class="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Aura / Core
+          </p>
+          <a-head class="text-2xl">Your community</a-head>
+        </div>
         <div class="flex items-center gap-2">
           <GlobalSearch />
           <NotificationBell />
@@ -77,11 +82,12 @@ export default function HomeHeader() {
                       slot="trigger"
                       size="sm"
                       variant="glass"
-                      class="cursor-help opacity-40"
+                      class="cursor-help"
                       title={`${label} (locked)`}
                       aria-label={`${label} (locked)`}
                     >
                       <a-icon name="lock" />
+                      <span>{label}</span>
                     </a-button>
                     <div
                       slot="content"
@@ -107,11 +113,7 @@ export default function HomeHeader() {
                       name={roleIcon[viewModeToViewAs[view]]}
                       style={{ color: roleColor[viewModeToViewAs[view]] }}
                     />
-                    {/* Only the active role shows its label — keeps the
-                        switcher compact yet always says where you are. */}
-                    <Show when={selected()}>
-                      <span>{label}</span>
-                    </Show>
+                    <span>{label}</span>
                   </a-button>
                 </A>
               </Show>

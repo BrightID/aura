@@ -22,11 +22,14 @@ export default function ProfileHeaderCard(props: { subjectId: string }) {
   );
 
   return (
-    <a-card variant="glass" class="relative p-4">
+    <a-card variant="default" class="relative">
       <div class="flex flex-1 gap-3">
         <Avatar name={name()} subjectId={props.subjectId} class="h-16 w-16" />
-        <div class="flex flex-1 flex-col gap-1">
-          <p data-testid="profile-name" class="font-medium text-foreground">
+        <div class="flex min-w-0 flex-1 flex-col gap-2">
+          <p
+            data-testid="profile-name"
+            class="break-words text-lg font-semibold text-foreground"
+          >
             {name()}
           </p>
           <LevelScore

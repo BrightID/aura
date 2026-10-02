@@ -5,10 +5,15 @@ import { css, html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 const menuItems = [
-  { icon: 'lucide:house', href: '/home' },
-  { icon: 'lucide:activity', href: '/activities' },
-  { icon: 'lucide:bell', href: '/notifications', small: true },
-  { icon: 'lucide:share-2', href: '/share' },
+  { icon: 'lucide:house', href: '/home', label: 'Home' },
+  { icon: 'lucide:activity', href: '/activities', label: 'Activity' },
+  {
+    icon: 'lucide:bell',
+    href: '/notifications',
+    label: 'Notifications',
+    small: true,
+  },
+  { icon: 'lucide:share-2', href: '/share', label: 'Share' },
 ];
 
 @customElement('app-footer')
@@ -52,13 +57,9 @@ export class AppFooter extends SignalWatcher(LitElement) {
       align-items: center;
       padding: 6px 0;
       padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-      background: linear-gradient(
-        to bottom,
-        rgba(46, 51, 90, 0.35),
-        rgba(28, 27, 51, 0.6) 100%
-      );
+      background: color-mix(in oklch, var(--background) 94%, transparent);
       backdrop-filter: blur(24px);
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      border-top: 1px solid var(--border);
     }
 
     /* ── Larger screens: floating pill ── */
@@ -67,7 +68,7 @@ export class AppFooter extends SignalWatcher(LitElement) {
         bottom: 22px;
         left: 50%;
         right: auto;
-        width: 380px;
+        width: 420px;
         transform: translateX(-50%);
         border-radius: 22px;
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -105,7 +106,7 @@ export class AppFooter extends SignalWatcher(LitElement) {
     }
 
     .nav-item.active .icon-wrap {
-      background: rgba(160, 150, 220, 0.15);
+      background: color-mix(in oklch, var(--primary) 14%, transparent);
     }
 
     /* ── Icon ── */
@@ -113,12 +114,12 @@ export class AppFooter extends SignalWatcher(LitElement) {
       width: 24px;
       height: 24px;
       font-size: 24px;
-      color: rgba(150, 150, 180, 0.55);
+      color: var(--muted-foreground);
       transition: color 200ms ease;
     }
 
     .nav-item.active iconify-icon {
-      color: rgba(195, 185, 255, 0.9);
+      color: var(--primary);
     }
 
     .small-icon {
@@ -127,22 +128,20 @@ export class AppFooter extends SignalWatcher(LitElement) {
       font-size: 20px !important;
     }
 
-    /* ── Active dot ── */
-    .dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: rgba(195, 185, 255, 0.75);
-      opacity: 0;
-      transform: scale(0);
-      transition:
-        opacity 200ms ease,
-        transform 200ms ease;
+    .nav-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted-foreground);
     }
 
-    .nav-item.active .dot {
-      opacity: 1;
-      transform: scale(1);
+    .active .nav-label {
+      color: var(--primary);
+    }
+
+    .nav-item:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: 12px;
     }
   `;
 
@@ -163,7 +162,7 @@ export class AppFooter extends SignalWatcher(LitElement) {
                   class="${item.small ? 'small-icon' : ''}"
                 ></iconify-icon>
               </div>
-              <div class="dot"></div>
+              <span class="nav-label">${item.label}</span>
             </a>
           `,
         )}

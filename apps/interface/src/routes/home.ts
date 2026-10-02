@@ -49,11 +49,29 @@ export class HomeElement extends SignalWatcher(LitElement) {
       margin-bottom: 24px;
     }
 
-    .profile-card-bg {
-      position: absolute;
-      inset: 3px;
-      border-radius: 24px;
-      z-index: -10;
+    .page-heading {
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .eyebrow {
+      color: var(--muted-foreground);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+    h1 {
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+    .profile-card-wrapper {
+      margin-bottom: 32px;
+    }
+    .section-description {
+      color: var(--muted-foreground);
+      margin: 8px 0 20px;
+      font-size: 14px;
     }
   `;
 
@@ -67,7 +85,7 @@ export class HomeElement extends SignalWatcher(LitElement) {
 
   connectedCallback(): void {
     super.connectedCallback();
-    const fetchData = queryClient
+    queryClient
       .ensureQueryData({
         queryKey: ['projects'],
         queryFn: getProjects,
@@ -87,6 +105,10 @@ export class HomeElement extends SignalWatcher(LitElement) {
   protected render() {
     const trackP = trackedProject.get();
     return html` <div class="body">
+      <header class="page-heading">
+        <p class="eyebrow">Aura / Verified</p>
+        <h1>Your verification</h1>
+      </header>
       <div class="profile-card-wrapper">
         <profile-card
           .firstName=${userFirstName.get()}
@@ -94,18 +116,13 @@ export class HomeElement extends SignalWatcher(LitElement) {
           .email=${userEmail.get()}
           .image=${userProfilePicture.get() || createBlockiesImage(userBrightId.get())}
         ></profile-card>
-
-        <profile-card
-          .firstName=${userFirstName.get()}
-          .lastName=${userLastName.get()}
-          .email=${userEmail.get()}
-          .image=${userProfilePicture.get()}
-          class="profile-card-bg"
-        ></profile-card>
       </div>
 
       <div class="apps-section">
-        <a-head level="2">Apps needing verification</a-head>
+        <a-head level="2">Your apps</a-head>
+        <p class="section-description">
+          Choose an app to view requirements and continue your verification.
+        </p>
 
         ${
           isLoading.get()

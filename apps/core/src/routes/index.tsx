@@ -12,7 +12,9 @@ const Splash = () => {
       when={dbHealthy() !== false}
       fallback={
         <div class="flex h-[calc(100vh-80px)] flex-col px-5 pt-16">
-          <a-head class="mb-3 text-5xl">Aura</a-head>
+          <a-head class="mb-5 text-5xl font-semibold tracking-tight">
+            Aura
+          </a-head>
           <a-text size="lg" class="text-destructive">
             IndexedDB is blocked. Please enable IndexedDB to use Aura.
           </a-text>
@@ -27,38 +29,42 @@ const Splash = () => {
         </div>
       }
     >
-      <div class="flex flex-col h-[calc(100vh-80px)]">
-        <section class="content pl-5 pr-12">
+      <div class="flex min-h-dvh flex-col px-6 py-8 sm:px-10 sm:py-12">
+        <section class="content pt-8 sm:pt-16">
           <FadeIn delay={0.1}>
-            <a-head data-testid="login-title" class="mb-3 text-5xl">
+            <a-head
+              data-testid="login-title"
+              class="mb-5 text-5xl font-semibold tracking-tight"
+            >
               Aura
             </a-head>
           </FadeIn>
           <FadeIn delay={0.15}>
-            <a-text size="xl" class="mb-9 font-black">
-              Welcome Aura player
+            <a-text size="xl" class="mb-4 font-semibold">
+              Trust starts with you.
             </a-text>
           </FadeIn>
           <FadeIn delay={0.2}>
             <a-text size="lg" class="font-medium">
-              Level up to help your friends and family get Aura verified
+              Build your reputation. Help your friends and family get Aura
+              verified.
             </a-text>
           </FadeIn>
         </section>
 
         <img
           src={`${import.meta.env.BASE_URL}global/logo.png`}
-          class="mx-auto mt-20"
+          class="mx-auto my-12 rounded-3xl"
           width={150}
           height={150}
           alt="aura players"
         />
 
-        <section class="mb-24 mt-auto text-center">
+        <section class="mt-auto mb-8 text-center">
           <Scale delay={0.6}>
             <A href="/login">
               <a-button class="w-full" size="lg">
-                Get Started
+                Get started
               </a-button>
             </A>
           </Scale>

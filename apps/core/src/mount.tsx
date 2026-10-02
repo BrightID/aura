@@ -5,7 +5,7 @@ import { render } from 'solid-js/web';
 import Providers from '@/providers';
 import { appRoutes } from '@/router';
 
-const ROOT_CLASS = ['max-w-md', 'mx-auto', 'mt-10'] as const;
+const ROOT_CLASS = ['w-full', 'mx-auto'] as const;
 const BODY_CLASS = [
   'h-screen',
   'overflow-y-auto',

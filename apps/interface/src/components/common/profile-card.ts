@@ -18,14 +18,14 @@ export class ProfileCard extends SignalWatcher(LitElement) {
       display: flex;
       align-items: center;
       text-align: left;
-      gap: 24px;
+      gap: 16px;
       margin-bottom: 16px;
     }
 
     .profile-picture {
       width: 64px;
       height: 64px;
-      border-radius: 6px;
+      border-radius: 16px;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -39,6 +39,7 @@ export class ProfileCard extends SignalWatcher(LitElement) {
     .profile-info {
       flex: 1 1 auto;
       min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .profile-stats {
@@ -112,7 +113,7 @@ export class ProfileCard extends SignalWatcher(LitElement) {
 
   protected render() {
     return html`
-      <a-card variant="glass">
+      <a-card variant="default">
         <div class="profile-header">
           <div class="profile-picture">
             <img
