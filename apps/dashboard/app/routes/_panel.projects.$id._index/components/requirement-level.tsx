@@ -10,12 +10,20 @@ import { cn } from '~/lib/utils';
 import type { Project } from '~/types/projects';
 import { formatScore } from '~/utils/numbers';
 
+// One line on purpose. brightid-apps splits this string on newlines, and each
+// line is one expr-eval expression. Aura level lives at
+// domains[name=BrightID].categories[name=subject].level, which expr-eval
+// cannot reach through Aura.subject.level.
+function subjectLevelScript(level: number) {
+  return `isSubject(c) = c.name == "subject"; isBrightID(d) = d.name == "BrightID"; bright = (Aura and Aura.domains) ? filter(isBrightID, Aura.domains) : []; cats = (length(bright) > 0 and bright[0].categories) ? bright[0].categories : []; subj = (length(cats) > 0) ? filter(isSubject, cats) : []; length(subj) > 0 and subj[0].level >= ${level}`;
+}
+
 export const LEVEL_SCRIPTS: Record<number, string> = {
   0: '', // no gating: any / unverified user passes
-  1: 'Aura.subject.level >= 1',
-  2: 'Aura.subject.level >= 2',
-  3: 'Aura.subject.level >= 3',
-  4: 'Aura.subject.level >= 4',
+  1: subjectLevelScript(1),
+  2: subjectLevelScript(2),
+  3: subjectLevelScript(3),
+  4: subjectLevelScript(4),
 };
 
 const levelPalette: Record<

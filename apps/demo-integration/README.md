@@ -21,12 +21,16 @@ rather than same-origin code.
      "type": "verification-success",
      "data": {
        "brightId": "…",
-       "signature": { "r": "…", "s": "…", "v": 27 },
+       "signature": "<base64 nacl detached signature>",
+       "publicKey": "<base64 node public key>",
+       "verificationHash": "<sha256 of the verification expression>",
        "auraLevel": 2,
        "auraScore": 1234
      }
    }
    ```
+
+   `signature` is a string. This endpoint does not return an Ethereum `{ r, s, v }` signature. BrightIDs are longer than 32 bytes, so the node signs with nacl.
 
 4. This page listens for that message (validating `e.origin`), then renders the
    `brightId`, `signature`, level, score, and a raw message log.
@@ -68,8 +72,12 @@ window.addEventListener('message', (e) => {
   }
   if (msg.app !== 'aura') return;
   if (msg.type === 'verification-success') {
-    const { brightId, signature, auraLevel, auraScore } = msg.data;
-    // verify `signature` server-side, then grant access
+    const { brightId, signature, publicKey, verificationHash, auraLevel, auraScore } = msg.data;
+    // signature is a base64 nacl detached sig, not { r, s, v }.
+    // The node message is `${appKey},${brightId},${verificationHash}`
+    // (no timestamp; includeHash defaults to true). Check verificationHash
+    // equals sha256 of the expression you expect, then:
+    // nacl.sign.detached.verify(messageBytes, sigBytes, publicKeyBytes)
   }
 });
 ```

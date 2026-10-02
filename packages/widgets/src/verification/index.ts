@@ -11,11 +11,7 @@ import { focusedProject } from '@/lib/projects';
 import { projects } from '@/states/projects';
 import { userBrightId } from '@/states/user';
 import type { Project } from '@/types/projects';
-import {
-  getProjects,
-  verifyProject,
-  type VerificationSignature,
-} from '@/utils/apis';
+import { getProjects, verifyProject } from '@/utils/apis';
 import { EvaluationCategory } from '@/utils/aura';
 import { getLevelupProgress } from '@/utils/score';
 import { getSubjectVerifications } from '@/utils/subject';
@@ -243,7 +239,9 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   private async _handleContinue() {
     const brightId = userBrightId.get();
     const data = this.verificationData;
-    let signature: VerificationSignature | undefined;
+    let signature: string | undefined;
+    let publicKey: string | undefined;
+    let verificationHash: string | null | undefined;
 
     // Only verified users reach the success step, so generate the signature
     // from the API before handing control back to the embedding app.
@@ -257,6 +255,8 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
           auraLevel: data?.auraLevel,
         });
         signature = result?.signature;
+        publicKey = result?.publicKey;
+        verificationHash = result?.verificationHash;
       } catch (err) {
         console.error('Failed to generate verification signature', err);
       } finally {
@@ -271,6 +271,8 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
         data: {
           brightId,
           signature,
+          publicKey,
+          verificationHash,
           auraLevel: data?.auraLevel,
           auraScore: data?.auraScore,
         },

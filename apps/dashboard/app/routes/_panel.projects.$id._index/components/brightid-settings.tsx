@@ -132,7 +132,7 @@ export function BrightIdSettingsForm({
         idsAsHex: false,
         soulbound: false,
         usingBlindSig: false,
-        nodeUrl: 'https://node.brightid.org',
+        nodeUrl: 'https://aura-node.brightid.org',
         description: '',
         context: '',
         soulboundMessage: '',
@@ -382,7 +382,7 @@ export function BrightIdSettingsForm({
               <AuraInput
                 name={field.name}
                 value={field.value ?? ''}
-                placeholder="https://node.brightid.org"
+                placeholder="https://aura-node.brightid.org"
                 onBlur={field.onBlur}
                 onValueChange={field.onChange}
               />

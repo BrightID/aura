@@ -36,19 +36,18 @@ export const getProjects = async () => {
   return (res.data! ?? []) as Project[];
 };
 
-export interface VerificationSignature {
-  r: string;
-  s: string;
-  v: number;
-}
-
 export interface VerifyProjectResult {
   userId: string;
   projectId: number;
   client: string;
-  signature: VerificationSignature;
-  auraScore?: number;
-  auraLevel?: number;
+  /** Base64 nacl detached signature from the Aura node. */
+  signature: string;
+  /** Base64 nacl public key of the node that signed `signature`. */
+  publicKey: string;
+  /** sha256 of the verification expression included in the signed message. */
+  verificationHash?: string | null;
+  auraScore?: number | null;
+  auraLevel?: number | null;
   verifiedAt: string;
 }
 

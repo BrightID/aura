@@ -7,18 +7,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
  *
  * The embed posts a JSON *string*, so the parent must `JSON.parse(e.data)`.
  */
-interface VerificationSignature {
-  r: string;
-  s: string;
-  v: number;
-}
-
 interface AuraMessage {
   app: 'aura';
   type: 'app-ready' | 'verification-success';
   data?: {
     brightId?: string;
-    signature?: VerificationSignature;
+    /** Base64 nacl detached signature. Not an Ethereum { r, s, v }. */
+    signature?: string;
+    publicKey?: string;
+    verificationHash?: string | null;
     auraLevel?: number;
     auraScore?: number;
   };
@@ -230,15 +227,26 @@ export function App() {
                   <dd>
                     {result.signature ? (
                       <>
-                        <pre className="sig mono">
-                          {JSON.stringify(result.signature, null, 2)}
-                        </pre>
-                        <CopyButton value={JSON.stringify(result.signature)} />
+                        <pre className="sig mono">{result.signature}</pre>
+                        <CopyButton value={result.signature} />
                       </>
                     ) : (
                       <span className="muted">
                         no signature (unverified / API failed)
                       </span>
+                    )}
+                  </dd>
+                </div>
+                <div className="row">
+                  <dt>Public key</dt>
+                  <dd>
+                    {result.publicKey ? (
+                      <>
+                        <span className="val mono">{result.publicKey}</span>
+                        <CopyButton value={result.publicKey} />
+                      </>
+                    ) : (
+                      <span className="muted">—</span>
                     )}
                   </dd>
                 </div>
