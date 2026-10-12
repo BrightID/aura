@@ -16,7 +16,6 @@ const connectionsQueryOptions = (id: string, direction: Direction) =>
         `${NODE_API_BASE}/brightid/v6/users/${id}/connections/${direction}?withVerifications=true`,
         signal,
       ).then((r) => r.data.connections),
-    staleTime: 30_000,
     enabled: !!id,
   });
 
@@ -34,7 +33,6 @@ export const brightIdProfileQueryOptions = (id: string) =>
         `${NODE_API_BASE}/brightid/v6/users/${id}/profile`,
         signal,
       ).then((r) => r.data),
-    staleTime: 60_000,
     enabled: !!id,
   });
 

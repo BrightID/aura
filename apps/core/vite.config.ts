@@ -7,7 +7,6 @@ import {
   DEFAULT_RECOVERY_URL,
   RECOVERY_PROXY_PATH,
 } from './src/shared/lib/url-defaults';
-import { auraPWA } from './sw-plugin';
 import { injectRemoteCss } from '../vite-inject-remote-css';
 
 const stripPrefix = (prefix: string) => (path: string) =>
@@ -20,12 +19,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: '/core/',
-    plugins: [
-      tailwindcss(),
-      solid(),
-      auraPWA(pkg.version),
-      injectRemoteCss('/core/'),
-    ],
+    plugins: [tailwindcss(), solid(), injectRemoteCss('/core/')],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },

@@ -14,7 +14,7 @@ export default function LogoutButton() {
         logout();
         resetRecovery();
         // wipe cached node/backup data so nothing of the session lingers
-        void clearQueryCache();
+        clearQueryCache();
         navigate('/login', { replace: true });
       }}
     >

@@ -9,7 +9,6 @@ export const encryptedUserDataQueryOptions = (key: string) =>
     queryKey: ['encrypted-user-data', key],
     queryFn: ({ signal }) =>
       getText(`${RECOVERY_API_BASE}/backups/${key}/data`, signal),
-    staleTime: 5_000_000,
     enabled: !!key,
   });
 
@@ -28,7 +27,6 @@ export const profileDataQueryOptions = (brightId: string, password: string) => {
       return JSON.parse(decryptData(text, password)) as BrightIdBackup;
     },
     retry: 0,
-    staleTime: 5_000_000,
     enabled: !!brightId && !!password,
   });
 };
@@ -49,7 +47,6 @@ export const profilePhotoQueryOptions = (
       return decryptData(text, password);
     },
     retry: 0,
-    staleTime: 5_000_000,
     enabled: !!key && !!brightId && !!password,
   });
 
