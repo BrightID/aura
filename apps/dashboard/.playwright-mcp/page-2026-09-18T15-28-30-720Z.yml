@@ -1,0 +1,23 @@
+- generic [ref=e337]:
+  - generic:
+    - generic [ref=e338]:
+      - generic [ref=e339]: Welcome
+      - paragraph [ref=e340]: Sign in or create an account
+    - generic [ref=e341]:
+      - tablist [ref=e342]:
+        - generic:
+          - tab "Sign In" [selected] [ref=e345] [cursor=pointer]
+          - tab "Sign Up" [ref=e347] [cursor=pointer]
+      - tabpanel [ref=e350]:
+        - generic [ref=e351]:
+          - generic [ref=e352]:
+            - generic [ref=e353]: Email
+            - textbox "you@example.com" [ref=e357]
+          - generic [ref=e358]:
+            - generic [ref=e359]: Password
+            - textbox "••••••••" [ref=e363]
+          - button "Sign In" [ref=e365] [cursor=pointer]
+    - generic [ref=e366]: Or continue with
+    - generic [ref=e369]:
+      - button "Google" [ref=e371] [cursor=pointer]
+      - button "Apple" [ref=e375] [cursor=pointer]

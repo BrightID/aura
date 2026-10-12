@@ -10,12 +10,18 @@ import { cn } from '~/lib/utils';
 import type { Project } from '~/types/projects';
 import { formatScore } from '~/utils/numbers';
 
-// One line on purpose. brightid-apps splits this string on newlines, and each
-// line is one expr-eval expression. Aura level lives at
-// domains[name=BrightID].categories[name=subject].level, which expr-eval
-// cannot reach through Aura.subject.level.
+// One line on purpose. brightid-apps splits this string on newlines, and the
+// node evaluates each line as its own expr-eval expression. Shape matches the
+// node evaluator: key verifications by name, filter Aura.domains, then compare
+// BrightID subject level. Last assignment is the boolean result.
 function subjectLevelScript(level: number) {
-  return `isSubject(c) = c.name == "subject"; isBrightID(d) = d.name == "BrightID"; bright = (Aura and Aura.domains) ? filter(isBrightID, Aura.domains) : []; cats = (length(bright) > 0 and bright[0].categories) ? bright[0].categories : []; subj = (length(cats) > 0) ? filter(isSubject, cats) : []; length(subj) > 0 and subj[0].level >= ${level}`;
+  return (
+    'domainFilter(d) = d.name == "BrightID"; ' +
+    'categoryFilter(c) = c.name == "subject"; ' +
+    'domains = filter(domainFilter, Aura.domains); ' +
+    'categories = filter(categoryFilter, domains[0].categories); ' +
+    `verified = categories[0].level >= ${level};`
+  );
 }
 
 export const LEVEL_SCRIPTS: Record<number, string> = {
@@ -182,6 +188,7 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
             return (
               <label
                 key={level}
+                onClick={() => setSelectedLevel(level.toString())}
                 className={cn(
                   'flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-all',
                   isSelected

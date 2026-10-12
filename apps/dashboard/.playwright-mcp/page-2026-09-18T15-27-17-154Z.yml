@@ -1,0 +1,74 @@
+- generic [ref=e148]:
+  - generic [ref=e151]:
+    - list [ref=e153]:
+      - listitem [ref=e154]:
+        - link "aura Aura Dashboard" [ref=e155] [cursor=pointer]:
+          - /url: /dashboard
+          - img "aura" [ref=e156]
+          - generic [ref=e157]: Aura Dashboard
+    - generic [ref=e158]:
+      - generic [ref=e160]:
+        - list [ref=e161]:
+          - listitem [ref=e162]:
+            - link "Quick Create" [ref=e163] [cursor=pointer]:
+              - /url: /dashboard/projects/new
+        - list [ref=e167]:
+          - listitem [ref=e168]:
+            - link "Dashboard" [ref=e169] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=e175]:
+            - link "Projects" [ref=e176] [cursor=pointer]:
+              - /url: /dashboard/projects
+          - listitem [ref=e180]:
+            - link "Analytics" [ref=e181] [cursor=pointer]:
+              - /url: /dashboard/analytics
+          - listitem [ref=e187]:
+            - link "Pricing" [ref=e188] [cursor=pointer]:
+              - /url: /dashboard/pricing
+      - list [ref=e195]:
+        - listitem [ref=e196]:
+          - link "Account" [ref=e197] [cursor=pointer]:
+            - /url: /dashboard/account
+        - listitem [ref=e202]:
+          - link "Billing" [ref=e203] [cursor=pointer]:
+            - /url: /dashboard/billing
+        - listitem [ref=e207]:
+          - link "Notifications" [ref=e208] [cursor=pointer]:
+            - /url: /dashboard/notifications
+      - list [ref=e215]:
+        - listitem [ref=e216]:
+          - link "Get Help" [ref=e217] [cursor=pointer]:
+            - /url: https://discord.gg/pcWy6NqM
+  - main [ref=e223]:
+    - generic [ref=e225]:
+      - button "Toggle Sidebar" [ref=e227] [cursor=pointer]
+      - heading "Projects" [level=1] [ref=e231]
+      - generic [ref=e232]:
+        - link "Documentation" [ref=e233] [cursor=pointer]:
+          - /url: https://brightid.gitbook.io/aura/
+        - link "GitHub" [ref=e234] [cursor=pointer]:
+          - /url: https://github.com/BrightID/aura-verified
+        - button "Toggle theme" [ref=e235] [cursor=pointer]
+        - button "Logout" [ref=e236] [cursor=pointer]
+    - generic [ref=e239]:
+      - generic [ref=e240]:
+        - generic [ref=e241]:
+          - generic [ref=e242]:
+            - heading "Projects" [level=1] [ref=e243]
+            - paragraph [ref=e244]: Manage and monitor your projects
+          - link [ref=e245] [cursor=pointer]:
+            - /url: /dashboard/projects/new
+            - button "New Project" [ref=e247]
+        - generic [ref=e249]:
+          - textbox "Search projects..." [ref=e256]
+          - combobox [ref=e259] [cursor=pointer]:
+            - option "Status"
+            - option "All Status" [selected]
+            - option "Active"
+            - option "Inactive"
+          - generic [ref=e260]:
+            - button [ref=e262] [cursor=pointer]
+            - button [ref=e269] [cursor=pointer]
+      - generic [ref=e272]:
+        - paragraph [ref=e333]: Failed to load projects
+        - paragraph [ref=e334]: Please try again later

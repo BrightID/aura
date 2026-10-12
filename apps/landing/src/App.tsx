@@ -1,4 +1,5 @@
-import { onMount, Show } from 'solid-js';
+import { Show } from 'solid-js';
+import './app.css';
 import Header from '$lib/components/Header';
 import Footer from '$lib/components/Footer';
 import Home from '$lib/components/Home';
@@ -8,25 +9,15 @@ import { remotes } from './remotes';
 import { path } from './router';
 
 function Landing(props: { path: string }) {
-  onMount(async () => {
-    await import('./app.css');
-    document.documentElement.classList.add('dark');
-    document.body.classList.add(
-      'antialiased',
-      'min-h-screen',
-      'bg-background',
-      'text-foreground',
-      'overflow-x-hidden',
-    );
-    await import('@aura/ui');
-  });
-
   return (
-    <>
+    <div class="landing-site">
+      <a class="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <Header />
       {props.path === '/' ? <Home /> : <NotFound />}
       <Footer />
-    </>
+    </div>
   );
 }
 

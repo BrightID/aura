@@ -1,0 +1,148 @@
+- generic [ref=f3e3]:
+  - generic [ref=f3e6]:
+    - list [ref=f3e8]:
+      - listitem [ref=f3e9]:
+        - link "aura Aura Dashboard" [ref=f3e10] [cursor=pointer]:
+          - /url: /dashboard
+          - img "aura" [ref=f3e11]
+          - generic [ref=f3e12]: Aura Dashboard
+    - generic [ref=f3e13]:
+      - generic [ref=f3e15]:
+        - list [ref=f3e16]:
+          - listitem [ref=f3e17]:
+            - link "Quick Create" [ref=f3e18] [cursor=pointer]:
+              - /url: /dashboard/projects/new
+        - list [ref=f3e22]:
+          - listitem [ref=f3e23]:
+            - link "Dashboard" [ref=f3e24] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f3e30]:
+            - link "Projects" [ref=f3e31] [cursor=pointer]:
+              - /url: /dashboard/projects
+          - listitem [ref=f3e35]:
+            - link "Analytics" [ref=f3e36] [cursor=pointer]:
+              - /url: /dashboard/analytics
+          - listitem [ref=f3e42]:
+            - link "Pricing" [ref=f3e43] [cursor=pointer]:
+              - /url: /dashboard/pricing
+      - list [ref=f3e50]:
+        - listitem [ref=f3e51]:
+          - link "Account" [ref=f3e52] [cursor=pointer]:
+            - /url: /dashboard/account
+        - listitem [ref=f3e57]:
+          - link "Billing" [ref=f3e58] [cursor=pointer]:
+            - /url: /dashboard/billing
+        - listitem [ref=f3e62]:
+          - link "Notifications" [ref=f3e63] [cursor=pointer]:
+            - /url: /dashboard/notifications
+      - list [ref=f3e70]:
+        - listitem [ref=f3e71]:
+          - link "Get Help" [ref=f3e72] [cursor=pointer]:
+            - /url: https://discord.gg/pcWy6NqM
+  - main [ref=f3e78]:
+    - generic [ref=f3e80]:
+      - button "Toggle Sidebar" [ref=f3e82] [cursor=pointer]
+      - heading "Projects" [level=1] [ref=f3e86]
+      - generic [ref=f3e87]:
+        - link "Documentation" [ref=f3e88] [cursor=pointer]:
+          - /url: https://brightid.gitbook.io/aura/
+        - link "GitHub" [ref=f3e89] [cursor=pointer]:
+          - /url: https://github.com/BrightID/aura-verified
+        - button "Toggle theme" [ref=f3e90] [cursor=pointer]
+        - button "Logout" [ref=f3e91] [cursor=pointer]
+    - generic [ref=f3e94]:
+      - generic [ref=f3e95]:
+        - link "Projects" [ref=f3e96] [cursor=pointer]:
+          - /url: /dashboard/projects
+        - generic [ref=f3e99]:
+          - generic [ref=f3e100]:
+            - generic [ref=f3e101]: U
+            - generic [ref=f3e102]:
+              - generic [ref=f3e103]:
+                - heading "Unitap App" [level=1] [ref=f3e104]
+                - generic [ref=f3e105]: Active
+              - paragraph [ref=f3e107]: This is the unitap app
+              - link "unitap.app" [ref=f3e108] [cursor=pointer]:
+                - /url: https://unitap.app
+          - generic [ref=f3e112]:
+            - link "Your page" [ref=f3e113] [cursor=pointer]:
+              - /url: /interface/projects/preview
+            - link "Website" [ref=f3e114] [cursor=pointer]:
+              - /url: https://unitap.app
+            - button "Settings" [ref=f3e115] [cursor=pointer]
+      - generic [ref=f3e116]:
+        - tablist [ref=f3e117]:
+          - generic:
+            - tab "Overview" [ref=f3e120] [cursor=pointer]
+            - tab "Billing" [ref=f3e124] [cursor=pointer]
+            - tab "General" [ref=f3e128] [cursor=pointer]
+            - tab "Verification" [selected] [ref=f3e133] [cursor=pointer]
+            - tab "Preview" [ref=f3e138] [cursor=pointer]
+        - tabpanel [ref=f3e319]:
+          - generic [ref=f3e320]:
+            - generic [ref=f3e321]:
+              - generic:
+                - generic [ref=f3e322]:
+                  - heading "Basic Information" [level=3] [ref=f3e323]
+                  - paragraph [ref=f3e324]: Core identifiers for your BrightID app
+                - generic [ref=f3e325]:
+                  - generic [ref=f3e326]:
+                    - generic [ref=f3e327]: Key *
+                    - textbox "my-unique-app" [ref=f3e331]
+                    - paragraph [ref=f3e332]: Unique identifier for the app (cannot be changed later)
+                  - generic [ref=f3e333]:
+                    - generic [ref=f3e334]: Name *
+                    - textbox "My Awesome App" [ref=f3e338]
+                    - paragraph [ref=f3e339]: Friendly name shown to BrightID users
+            - generic [ref=f3e340]:
+              - generic:
+                - heading "App Mode & Features" [level=3] [ref=f3e342]
+                - generic [ref=f3e343]:
+                  - generic [ref=f3e344]:
+                    - generic [ref=f3e345]:
+                      - generic [ref=f3e346]: Testing Mode
+                      - paragraph [ref=f3e348]: Uses test network and doesn't affect mainnet scores
+                    - switch [ref=f3e350] [cursor=pointer]
+                  - generic [ref=f3e352]:
+                    - generic [ref=f3e353]:
+                      - generic [ref=f3e354]: IDs as Hex
+                      - paragraph [ref=f3e356]: User IDs formatted as Ethereum addresses (0x...)
+                    - switch [ref=f3e358] [cursor=pointer]
+            - generic [ref=f3e360]:
+              - generic:
+                - heading "Verification Method" [level=3] [ref=f3e362]
+                - generic [ref=f3e363]:
+                  - generic [ref=f3e364]:
+                    - generic [ref=f3e365]:
+                      - generic [ref=f3e366]: Soulbound (v1.5)
+                      - paragraph [ref=f3e368]: Uses context-bound signatures with Ethereum address
+                    - switch [ref=f3e370] [cursor=pointer]
+                  - generic [ref=f3e372]:
+                    - generic [ref=f3e373]:
+                      - generic [ref=f3e374]: Blind Signatures (v1.6)
+                      - paragraph [ref=f3e376]: More private verification method
+                    - switch [ref=f3e378] [cursor=pointer]
+            - generic [ref=f3e380]:
+              - generic:
+                - heading "Verifications & Node" [level=3] [ref=f3e382]
+                - generic [ref=f3e383]:
+                  - generic [ref=f3e384]:
+                    - generic [ref=f3e385]: Verifications Script
+                    - textbox [ref=f3e388]
+                    - paragraph [ref=f3e389]: Aura script defining which verifications are accepted (one per line allowed)
+                  - generic [ref=f3e390]:
+                    - generic [ref=f3e391]: Verification Expiration (ms)
+                    - spinbutton "2592000000 (30 days)" [ref=f3e395]
+                    - paragraph [ref=f3e396]: How long verifications remain valid (0 = never expire)
+                  - generic [ref=f3e397]:
+                    - generic [ref=f3e398]: Preferred Node URL
+                    - textbox "https://node.brightid.org" [ref=f3e402]
+                    - paragraph [ref=f3e403]: Custom BrightID/Aura node (optional)
+            - generic [ref=f3e404]:
+              - generic:
+                - heading "Callback" [level=3] [ref=f3e406]
+                - generic [ref=f3e408]:
+                  - generic [ref=f3e409]: Callback URL
+                  - textbox "https://myapp.com/api/brightid-callback" [ref=f3e413]
+                  - paragraph [ref=f3e414]: Called when a user connects their BrightID
+            - button "Save BrightID Settings" [ref=f3e417] [cursor=pointer]

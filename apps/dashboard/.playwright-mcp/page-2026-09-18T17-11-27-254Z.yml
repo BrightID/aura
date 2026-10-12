@@ -1,0 +1,117 @@
+- generic [ref=f3e3]:
+  - generic [ref=f3e6]:
+    - list [ref=f3e8]:
+      - listitem [ref=f3e9]:
+        - link "aura Aura Dashboard" [ref=f3e10] [cursor=pointer]:
+          - /url: /dashboard
+          - img "aura" [ref=f3e11]
+          - generic [ref=f3e12]: Aura Dashboard
+    - generic [ref=f3e13]:
+      - generic [ref=f3e15]:
+        - list [ref=f3e16]:
+          - listitem [ref=f3e17]:
+            - link "Quick Create" [ref=f3e18] [cursor=pointer]:
+              - /url: /dashboard/projects/new
+        - list [ref=f3e22]:
+          - listitem [ref=f3e23]:
+            - link "Dashboard" [ref=f3e24] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f3e30]:
+            - link "Projects" [ref=f3e31] [cursor=pointer]:
+              - /url: /dashboard/projects
+          - listitem [ref=f3e35]:
+            - link "Analytics" [ref=f3e36] [cursor=pointer]:
+              - /url: /dashboard/analytics
+          - listitem [ref=f3e42]:
+            - link "Pricing" [ref=f3e43] [cursor=pointer]:
+              - /url: /dashboard/pricing
+      - list [ref=f3e50]:
+        - listitem [ref=f3e51]:
+          - link "Account" [ref=f3e52] [cursor=pointer]:
+            - /url: /dashboard/account
+        - listitem [ref=f3e57]:
+          - link "Billing" [ref=f3e58] [cursor=pointer]:
+            - /url: /dashboard/billing
+        - listitem [ref=f3e62]:
+          - link "Notifications" [ref=f3e63] [cursor=pointer]:
+            - /url: /dashboard/notifications
+      - list [ref=f3e70]:
+        - listitem [ref=f3e71]:
+          - link "Get Help" [ref=f3e72] [cursor=pointer]:
+            - /url: https://discord.gg/pcWy6NqM
+  - main [ref=f3e78]:
+    - generic [ref=f3e80]:
+      - button "Toggle Sidebar" [ref=f3e82] [cursor=pointer]
+      - heading "Projects" [level=1] [ref=f3e86]
+      - generic [ref=f3e87]:
+        - link "Documentation" [ref=f3e88] [cursor=pointer]:
+          - /url: https://brightid.gitbook.io/aura/
+        - link "GitHub" [ref=f3e89] [cursor=pointer]:
+          - /url: https://github.com/BrightID/aura-verified
+        - button "Toggle theme" [active] [ref=f3e90] [cursor=pointer]
+        - button "Logout" [ref=f3e91] [cursor=pointer]
+    - generic [ref=f3e94]:
+      - generic [ref=f3e95]:
+        - link "Projects" [ref=f3e96] [cursor=pointer]:
+          - /url: /dashboard/projects
+        - generic [ref=f3e99]:
+          - generic [ref=f3e100]:
+            - generic [ref=f3e101]: U
+            - generic [ref=f3e102]:
+              - generic [ref=f3e103]:
+                - heading "Unitap App" [level=1] [ref=f3e104]
+                - generic [ref=f3e105]: Active
+              - paragraph [ref=f3e107]: This is the unitap app
+              - link "unitap.app" [ref=f3e108] [cursor=pointer]:
+                - /url: https://unitap.app
+          - generic [ref=f3e112]:
+            - link "Your page" [ref=f3e113] [cursor=pointer]:
+              - /url: /interface/projects/preview
+            - link "Website" [ref=f3e114] [cursor=pointer]:
+              - /url: https://unitap.app
+            - button "Settings" [ref=f3e115] [cursor=pointer]
+      - generic [ref=f3e116]:
+        - tablist [ref=f3e117]:
+          - generic:
+            - tab "Overview" [selected] [ref=f3e120] [cursor=pointer]
+            - tab "Billing" [ref=f3e124] [cursor=pointer]
+            - tab "General" [ref=f3e128] [cursor=pointer]
+            - tab "Verification" [ref=f3e133] [cursor=pointer]
+            - tab "Preview" [ref=f3e138] [cursor=pointer]
+        - tabpanel [ref=f3e146]:
+          - generic [ref=f3e147]:
+            - generic [ref=f3e148]:
+              - generic [ref=f3e149]:
+                - paragraph [ref=f3e150]: Status
+                - paragraph [ref=f3e152]: Active
+                - paragraph [ref=f3e153]: Accepting verifications
+              - generic [ref=f3e154]:
+                - paragraph [ref=f3e155]: Remaining tokens
+                - paragraph [ref=f3e158]: 1,000
+                - paragraph [ref=f3e159]: This billing period
+              - generic [ref=f3e160]:
+                - paragraph [ref=f3e161]: Requirement
+                - paragraph [ref=f3e164]: Level 1
+                - paragraph [ref=f3e165]: Aura score
+              - generic [ref=f3e166]:
+                - paragraph [ref=f3e167]: Created
+                - paragraph [ref=f3e170]: Mar 12, 2025
+                - paragraph [ref=f3e171]: over 1 year ago
+            - generic [ref=f3e172]:
+              - generic:
+                - generic [ref=f3e173]:
+                  - heading "Project details" [level=3] [ref=f3e174]
+                  - paragraph [ref=f3e175]: Identifiers and links for this project
+                - generic [ref=f3e176]:
+                  - generic [ref=f3e177]:
+                    - term [ref=f3e178]: BrightID App ID
+                    - definition [ref=f3e182]:
+                      - button "Not connected — set up verification" [ref=f3e183] [cursor=pointer]
+                  - generic [ref=f3e184]:
+                    - term [ref=f3e185]: Website
+                    - definition [ref=f3e189]:
+                      - link "https://unitap.app" [ref=f3e190] [cursor=pointer]:
+                        - /url: https://unitap.app
+                  - generic [ref=f3e191]:
+                    - term [ref=f3e192]: Plan
+                    - definition [ref=f3e195]: Free

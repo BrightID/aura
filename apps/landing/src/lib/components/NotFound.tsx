@@ -1,17 +1,12 @@
 export default function NotFound() {
   return (
-    <main class="min-h-screen flex items-center justify-center py-28">
-      <div class="text-center px-4">
-        <h1 class="font-display text-6xl font-bold text-foreground mb-4">
-          404
-        </h1>
-        <p class="text-xl text-muted-foreground mb-8">
-          This page doesn't exist yet.
-        </p>
-        <a href="/">
-          <a-button size="lg">Back to Home</a-button>
-        </a>
-      </div>
+    <main id="main-content" class="not-found page-width">
+      <p class="eyebrow">404 / NOTHING HERE YET</p>
+      <h1>Lost your way?</h1>
+      <p>Let’s get you back to the people.</p>
+      <a class="action" href="/">
+        Back to Aura ↗
+      </a>
     </main>
   );
 }

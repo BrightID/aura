@@ -1,6 +1,5 @@
 import Hero from './Hero';
 import WhyAura from './WhyAura';
-import Comparison from './Comparison';
 import HowItWorks from './HowItWorks';
 import UseCases from './UseCases';
 import FAQ from './FAQ';
@@ -8,12 +7,11 @@ import CTA from './CTA';
 
 export default function Home() {
   return (
-    <main>
+    <main id="main-content">
       <Hero />
       <WhyAura />
-      <Comparison />
-      <HowItWorks />
       <UseCases />
+      <HowItWorks />
       <FAQ />
       <CTA />
     </main>

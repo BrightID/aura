@@ -1,0 +1,164 @@
+- generic [ref=f3e3]:
+  - generic [ref=f3e6]:
+    - list [ref=f3e8]:
+      - listitem [ref=f3e9]:
+        - link "aura Aura Dashboard" [ref=f3e10] [cursor=pointer]:
+          - /url: /dashboard
+          - img "aura" [ref=f3e11]
+          - generic [ref=f3e12]: Aura Dashboard
+    - generic [ref=f3e13]:
+      - generic [ref=f3e15]:
+        - list [ref=f3e16]:
+          - listitem [ref=f3e17]:
+            - link "Quick Create" [ref=f3e18] [cursor=pointer]:
+              - /url: /dashboard/projects/new
+        - list [ref=f3e22]:
+          - listitem [ref=f3e23]:
+            - link "Dashboard" [ref=f3e24] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f3e30]:
+            - link "Projects" [ref=f3e31] [cursor=pointer]:
+              - /url: /dashboard/projects
+          - listitem [ref=f3e35]:
+            - link "Analytics" [ref=f3e36] [cursor=pointer]:
+              - /url: /dashboard/analytics
+          - listitem [ref=f3e42]:
+            - link "Pricing" [ref=f3e43] [cursor=pointer]:
+              - /url: /dashboard/pricing
+      - list [ref=f3e50]:
+        - listitem [ref=f3e51]:
+          - link "Account" [ref=f3e52] [cursor=pointer]:
+            - /url: /dashboard/account
+        - listitem [ref=f3e57]:
+          - link "Billing" [ref=f3e58] [cursor=pointer]:
+            - /url: /dashboard/billing
+        - listitem [ref=f3e62]:
+          - link "Notifications" [ref=f3e63] [cursor=pointer]:
+            - /url: /dashboard/notifications
+      - list [ref=f3e70]:
+        - listitem [ref=f3e71]:
+          - link "Get Help" [ref=f3e72] [cursor=pointer]:
+            - /url: https://discord.gg/pcWy6NqM
+  - main [ref=f3e78]:
+    - generic [ref=f3e80]:
+      - button "Toggle Sidebar" [ref=f3e82] [cursor=pointer]
+      - heading "Projects" [level=1] [ref=f3e86]
+      - generic [ref=f3e87]:
+        - link "Documentation" [ref=f3e88] [cursor=pointer]:
+          - /url: https://brightid.gitbook.io/aura/
+        - link "GitHub" [ref=f3e89] [cursor=pointer]:
+          - /url: https://github.com/BrightID/aura-verified
+        - button "Toggle theme" [ref=f3e90] [cursor=pointer]
+        - button "Logout" [ref=f3e91] [cursor=pointer]
+    - generic [ref=f3e94]:
+      - generic [ref=f3e95]:
+        - link "Projects" [ref=f3e96] [cursor=pointer]:
+          - /url: /dashboard/projects
+        - generic [ref=f3e99]:
+          - generic [ref=f3e100]:
+            - generic [ref=f3e101]: U
+            - generic [ref=f3e102]:
+              - generic [ref=f3e103]:
+                - heading "Unitap App" [level=1] [ref=f3e104]
+                - generic [ref=f3e105]: Active
+              - paragraph [ref=f3e107]: This is the unitap app
+              - link "unitap.app" [ref=f3e108] [cursor=pointer]:
+                - /url: https://unitap.app
+          - generic [ref=f3e112]:
+            - link "Your page" [ref=f3e113] [cursor=pointer]:
+              - /url: /interface/projects/preview
+            - link "Website" [ref=f3e114] [cursor=pointer]:
+              - /url: https://unitap.app
+            - button "Settings" [active] [ref=f3e115] [cursor=pointer]
+      - generic [ref=f3e116]:
+        - tablist [ref=f3e117]:
+          - generic:
+            - tab "Overview" [ref=f3e120] [cursor=pointer]
+            - tab "Billing" [ref=f3e124] [cursor=pointer]
+            - tab "General" [selected] [ref=f3e128] [cursor=pointer]
+            - tab "Verification" [ref=f3e133] [cursor=pointer]
+            - tab "Preview" [ref=f3e138] [cursor=pointer]
+        - tabpanel [ref=f3e197]:
+          - generic [ref=f3e198]:
+            - generic [ref=f3e199]:
+              - generic:
+                - generic [ref=f3e201]:
+                  - generic [ref=f3e205]:
+                    - generic [ref=f3e206]: Verification Requirement Level
+                    - paragraph [ref=f3e207]: Minimum level users must achieve to pass
+                  - generic [ref=f3e208]:
+                    - button "Save" [disabled]
+                - generic [ref=f3e210]:
+                  - generic:
+                    - generic [ref=f3e212] [cursor=pointer]:
+                      - radio [ref=f3e214]
+                      - generic [ref=f3e215]:
+                        - paragraph [ref=f3e216]: Level 4 • 150M Score
+                        - paragraph [ref=f3e218]: 1 high+ confidence eval from 1 level 3+ evaluator OR 2 medium confidence evals from 2 level 3+ evaluators
+                    - generic [ref=f3e220] [cursor=pointer]:
+                      - radio [ref=f3e222]
+                      - generic [ref=f3e223]:
+                        - paragraph [ref=f3e224]: Level 3 • 10M Score
+                        - paragraph [ref=f3e226]: 1 high+ confidence eval from 1 level 2+ evaluator OR 2 medium confidence evals from 2 level 2+ evaluators
+                    - generic [ref=f3e228] [cursor=pointer]:
+                      - radio [ref=f3e230]
+                      - generic [ref=f3e231]:
+                        - paragraph [ref=f3e232]: Level 2 • 5M Score
+                        - paragraph [ref=f3e234]: 1 medium+ confidence eval from 1 level 1+ evaluator
+                    - generic [ref=f3e235] [cursor=pointer]:
+                      - generic [ref=f3e236]:
+                        - radio [checked] [ref=f3e238]
+                        - generic [ref=f3e240]:
+                          - paragraph [ref=f3e241]: Level 1 • 1M Score
+                          - paragraph [ref=f3e243]: 1 low+ confidence eval from 1 level 1+ evaluator
+                      - generic [ref=f3e244]: Current
+                    - generic [ref=f3e247] [cursor=pointer]:
+                      - radio [ref=f3e249]
+                      - generic [ref=f3e250]:
+                        - paragraph [ref=f3e251]: Level 0 • 0 Score
+                        - paragraph [ref=f3e253]: No minimum evaluation requirements
+            - generic [ref=f3e254]:
+              - generic [ref=f3e255]:
+                - generic:
+                  - generic [ref=f3e256]:
+                    - generic [ref=f3e257]: General Settings
+                    - paragraph [ref=f3e258]: Configure your project settings
+                  - generic [ref=f3e259]:
+                    - generic [ref=f3e260]:
+                      - generic [ref=f3e261]: Project Name
+                      - textbox [ref=f3e263]: Unitap App
+                    - generic [ref=f3e264]:
+                      - generic [ref=f3e265]: Description
+                      - textbox [ref=f3e267]: This is the unitap app
+                    - generic [ref=f3e268]:
+                      - generic [ref=f3e269]: Website URL
+                      - textbox "https://..." [ref=f3e271]: https://unitap.app
+                    - generic [ref=f3e272]:
+                      - generic [ref=f3e273]:
+                        - generic [ref=f3e274]: Project Status
+                        - paragraph [ref=f3e276]: Active
+                      - switch [checked] [ref=f3e277] [cursor=pointer]
+                      - checkbox [checked] [aria-hidden]
+              - generic [ref=f3e278]:
+                - generic:
+                  - generic [ref=f3e279]:
+                    - generic [ref=f3e280]: Branding
+                    - paragraph [ref=f3e281]: Customize your project appearance
+                  - generic [ref=f3e282]:
+                    - generic [ref=f3e283]:
+                      - generic [ref=f3e284]: Logo URL
+                      - textbox "https://example.com/logo.png" [ref=f3e292]
+                    - generic [ref=f3e293]:
+                      - generic [ref=f3e294]: Project Image URL
+                      - textbox "https://example.com/image.jpg" [ref=f3e302]
+              - generic [ref=f3e303]:
+                - generic:
+                  - generic [ref=f3e304]:
+                    - generic [ref=f3e305]: Integration
+                    - paragraph [ref=f3e306]: BrightID integration settings
+                  - generic [ref=f3e308]:
+                    - generic [ref=f3e309]: BrightID App ID
+                    - generic [ref=f3e311]:
+                      - textbox [ref=f3e312]
+                      - button "Copy" [ref=f3e314] [cursor=pointer]
+              - button "Save Changes" [ref=f3e317] [cursor=pointer]
