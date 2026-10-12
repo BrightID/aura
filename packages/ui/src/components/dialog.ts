@@ -3,14 +3,17 @@ import { customElement, property, state } from 'lit/decorators.js';
 
 @customElement('a-dialog')
 export class DialogElement extends LitElement {
-  @property({ type: Boolean }) declare open: boolean;
+  @property({ type: Boolean, reflect: true }) declare open: boolean;
+  @property() declare label: string;
 
   @state() declare private _animatingOut: boolean;
   private _hideTimer?: ReturnType<typeof setTimeout>;
+  private _previousFocus?: HTMLElement;
 
   constructor() {
     super();
     this.open = false;
+    this.label = 'Dialog';
     this._animatingOut = false;
   }
 
@@ -21,14 +24,41 @@ export class DialogElement extends LitElement {
     .wrapper {
       position: fixed;
       inset: 0;
-      background: #0003;
-      backdrop-filter: blur(4px);
-      display: grid;
-      place-items: center;
+      margin: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--foreground);
+      max-width: calc(100vw - 2rem);
+      max-height: calc(100dvh - 2rem);
+      overflow: visible;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.22s;
-      z-index: 100;
+    }
+    .wrapper::backdrop {
+      background: rgb(0 0 0 / 0.5);
+      backdrop-filter: blur(4px);
+    }
+    .close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: grid;
+      place-items: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 0;
+      border-radius: var(--radius, 12px);
+      background: var(--muted, #eee);
+      color: var(--foreground, #111);
+      font: inherit;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .close:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
     }
     .wrapper.visible {
       opacity: 1;
@@ -38,9 +68,12 @@ export class DialogElement extends LitElement {
       background: var(--background, white);
       border-radius: var(--radius, 12px);
       border: 1px solid var(--border, #ddd);
-      padding: var(--md, 24px);
-      max-width: 90vw;
-      max-height: 90vh;
+      box-sizing: border-box;
+      padding: 3.5rem 1.25rem 1.25rem;
+      max-width: calc(100vw - 2rem);
+      max-height: calc(100dvh - 2rem);
+      overflow-wrap: anywhere;
+      overscroll-behavior: contain;
       overflow: auto;
       transform: scale(0.8);
       opacity: 0;
@@ -56,14 +89,24 @@ export class DialogElement extends LitElement {
     return html`
       <slot name="trigger" @click=${this._onTriggerClick}></slot>
 
-      <div
+      <dialog
+        aria-label=${this.label}
+        @cancel=${this._onCancel}
         class="wrapper ${this.open ? 'visible' : ''}"
         @click=${this._onBackdropClick}
       >
-        <div class="content" role="dialog" aria-modal="true">
+        <div class="content" part="content">
           <slot name="content"></slot>
         </div>
-      </div>
+        <button
+          class="close"
+          type="button"
+          aria-label="Close dialog"
+          @click=${() => this.hide()}
+        >
+          ×
+        </button>
+      </dialog>
     `;
   }
 
@@ -113,6 +156,9 @@ export class DialogElement extends LitElement {
     this._hideTimer = setTimeout(() => {
       this._animatingOut = false;
       this._hideTimer = undefined;
+      this.shadowRoot?.querySelector('dialog')?.close();
+      if (this._previousFocus?.isConnected)
+        this._previousFocus.focus({ preventScroll: true });
 
       this.dispatchEvent(
         new CustomEvent('after-hide', { bubbles: true, composed: true }),
@@ -124,22 +170,31 @@ export class DialogElement extends LitElement {
     if (e.target === e.currentTarget) this.hide();
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener('keydown', this._onKeyDown);
+  protected updated() {
+    const dialog = this.shadowRoot?.querySelector('dialog');
+    if (!dialog) return;
+    if (this.open && !dialog.open && this.isConnected) {
+      let focused = document.activeElement;
+      while (focused?.shadowRoot?.activeElement)
+        focused = focused.shadowRoot.activeElement;
+      this._previousFocus =
+        focused instanceof HTMLElement ? focused : undefined;
+      dialog.showModal();
+    } else if (!this.open && !this._animatingOut && dialog.open) dialog.close();
   }
 
   disconnectedCallback() {
-    this.removeEventListener('keydown', this._onKeyDown);
+    clearTimeout(this._hideTimer);
+    this._hideTimer = undefined;
+    this._animatingOut = false;
+    this.shadowRoot?.querySelector('dialog')?.close();
     super.disconnectedCallback();
   }
 
-  private _onKeyDown = (e: KeyboardEvent) => {
-    if (this.open && e.key === 'Escape') {
-      e.preventDefault();
-      e.stopPropagation();
-      this.hide();
-    }
+  private _onCancel = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.hide();
   };
 }
 

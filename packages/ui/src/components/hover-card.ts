@@ -14,6 +14,7 @@ export class HoverCardElement extends LitElement {
   @state() declare private _open: boolean;
   private _openTimer?: number;
   private _closeTimer?: number;
+  private _resizeObserver = new ResizeObserver(() => this._position());
 
   constructor() {
     super();
@@ -30,22 +31,17 @@ export class HoverCardElement extends LitElement {
     }
 
     .content-wrapper {
-      position: absolute;
-      z-index: 50;
-      opacity: 0;
-      left: 50%;
-      transform: translateX(-50%) translateY(-4px) scale(0.95);
-      pointer-events: none;
-      transition:
-        opacity 0.15s ease,
-        transform 0.15s ease;
-      will-change: opacity, transform;
-    }
-
-    .content-wrapper[data-state='open'] {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(-50%) translateY(0) scale(1);
+      position: fixed;
+      inset: auto;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      width: max-content;
+      max-width: calc(100vw - 2rem);
+      max-height: calc(100dvh - 2rem);
+      overflow: auto;
+      overflow-wrap: anywhere;
     }
 
     .content {
@@ -60,50 +56,19 @@ export class HoverCardElement extends LitElement {
         0 2px 4px -2px rgb(0 0 0 / 0.1);
       overflow: hidden;
     }
-
-    /* Positioning – top/bottom center horizontally */
-    :host([side='top']) .content-wrapper {
-      bottom: 100%;
-      top: auto;
-      left: 50%;
-      margin-bottom: 0.5rem;
-    }
-    :host([side='bottom']) .content-wrapper {
-      top: 100%;
-      left: 50%;
-      margin-top: 0.25rem;
-    }
-
-    /* Left/right: center vertically, reset horizontal centering */
-    :host([side='left']) .content-wrapper {
-      right: 100%;
-      left: auto;
-      top: 50%;
-      margin-right: 0.5rem;
-      transform: translateX(4px) translateY(-50%) scale(0.95);
-    }
-    :host([side='left']) .content-wrapper[data-state='open'] {
-      transform: translateX(0) translateY(-50%) scale(1);
-    }
-
-    :host([side='right']) .content-wrapper {
-      left: 100%;
-      top: 50%;
-      margin-left: 0.5rem;
-      transform: translateX(-4px) translateY(-50%) scale(0.95);
-    }
-    :host([side='right']) .content-wrapper[data-state='open'] {
-      transform: translateX(0) translateY(-50%) scale(1);
-    }
   `;
 
   connectedCallback() {
     super.connectedCallback();
     this.addEventListener('mouseleave', this._handleMouseLeave);
+    this.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('resize', this._position);
+    window.addEventListener('scroll', this._position, true);
   }
 
   private _handleMouseEnter() {
     clearTimeout(this._closeTimer);
+    clearTimeout(this._openTimer);
     this._openTimer = window.setTimeout(() => {
       this._open = true;
     }, this.openDelay);
@@ -111,6 +76,7 @@ export class HoverCardElement extends LitElement {
 
   private _handleMouseLeave() {
     clearTimeout(this._openTimer);
+    if (this.contains(document.activeElement)) return;
     this._closeTimer = window.setTimeout(() => {
       this._open = false;
     }, this.closeDelay);
@@ -120,7 +86,66 @@ export class HoverCardElement extends LitElement {
     super.disconnectedCallback();
     clearTimeout(this._openTimer);
     clearTimeout(this._closeTimer);
+    this._resizeObserver.disconnect();
     this.removeEventListener('mouseleave', this._handleMouseLeave);
+    this.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('resize', this._position);
+    window.removeEventListener('scroll', this._position, true);
+    this.shadowRoot
+      ?.querySelector<HTMLElement>('.content-wrapper')
+      ?.hidePopover();
+  }
+
+  protected updated() {
+    const popup =
+      this.shadowRoot?.querySelector<HTMLElement>('.content-wrapper');
+    if (!popup || !this.isConnected) return;
+    this._resizeObserver.observe(popup);
+    if (this._open) {
+      if (!popup.matches(':popover-open')) popup.showPopover();
+      this._position();
+    } else if (popup.matches(':popover-open')) popup.hidePopover();
+  }
+
+  private _position = () => {
+    if (!this._open) return;
+    const popup =
+      this.shadowRoot?.querySelector<HTMLElement>('.content-wrapper');
+    if (!popup) return;
+    const trigger = this.getBoundingClientRect();
+    const width = popup.offsetWidth;
+    const height = popup.offsetHeight;
+    const gap = 8;
+    let left = trigger.left + (trigger.width - width) / 2;
+    let top = trigger.bottom + gap;
+    if (
+      this.side === 'top' ||
+      (this.side === 'bottom' && top + height > window.innerHeight - 16)
+    )
+      top = trigger.top - height - gap;
+    if (this.side === 'left' || this.side === 'right') {
+      left =
+        this.side === 'left' ? trigger.left - width - gap : trigger.right + gap;
+      top = trigger.top + (trigger.height - height) / 2;
+    }
+    popup.style.left = `${Math.max(16, Math.min(left, window.innerWidth - width - 16))}px`;
+    popup.style.top = `${Math.max(16, Math.min(top, window.innerHeight - height - 16))}px`;
+  };
+
+  private _onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || !this._open) return;
+    event.preventDefault();
+    event.stopPropagation();
+    clearTimeout(this._openTimer);
+    clearTimeout(this._closeTimer);
+    this._open = false;
+  };
+
+  private _onTriggerClick(event: Event) {
+    event.stopPropagation();
+    clearTimeout(this._openTimer);
+    clearTimeout(this._closeTimer);
+    this._open = !this._open;
   }
 
   render() {
@@ -130,11 +155,20 @@ export class HoverCardElement extends LitElement {
         @focusin=${this._handleMouseEnter}
         @focusout=${this._handleMouseLeave}
         @mouseenter=${this._handleMouseEnter}
+        @click=${this._onTriggerClick}
       >
         <slot name="trigger"></slot>
       </div>
 
-      <div class="content-wrapper" data-state=${this._open ? 'open' : 'closed'}>
+      <div
+        class="content-wrapper"
+        popover="manual"
+        @mouseenter=${this._handleMouseEnter}
+        @mouseleave=${this._handleMouseLeave}
+        @focusin=${this._handleMouseEnter}
+        @focusout=${this._handleMouseLeave}
+        @click=${(event: Event) => event.stopPropagation()}
+      >
         <div class="content">
           <slot name="content"></slot>
         </div>

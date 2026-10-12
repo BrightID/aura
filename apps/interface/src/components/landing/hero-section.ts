@@ -13,13 +13,13 @@ export class HeroSectionElement extends LitElement {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem 0;
+      padding: 1rem 0 0;
       flex: 1;
     }
 
     .logo {
-      width: 5rem;
-      height: 5rem;
+      width: 4rem;
+      height: 4rem;
       position: relative;
       z-index: 12;
     }
@@ -29,10 +29,11 @@ export class HeroSectionElement extends LitElement {
       font-size: 2rem;
       font-weight: 700;
       color: var(--foreground);
+      letter-spacing: -0.04em;
     }
 
     .info-text {
-      margin: 1rem 0 1.5rem;
+      margin: 12px 0;
       color: var(--muted-foreground);
       font-size: 0.875rem;
       text-align: center;
@@ -46,11 +47,17 @@ export class HeroSectionElement extends LitElement {
       font-weight: 600;
       color: var(--primary);
       cursor: pointer;
+      min-height: 44px;
       transition: color 0.2s ease;
     }
 
     .desc-btn:hover {
       color: var(--foreground);
+    }
+    .desc-btn:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 4px;
+      border-radius: 4px;
     }
 
     .desc-btn span {
@@ -71,10 +78,11 @@ export class HeroSectionElement extends LitElement {
         <a
           href="https://brightid.gitbook.io/aura"
           target="_blank"
+          rel="noreferrer"
           class="desc-btn"
         >
           <span>What is Aura?</span>
-          <img src=${externalLinkIcon} alt="Aura" />
+          <img src=${externalLinkIcon} alt="" />
         </a>
       </div>`;
   }

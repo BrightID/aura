@@ -186,14 +186,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div class="flex min-h-[calc(100vh-80px)] flex-col px-5.5 pt-20 pb-4">
+    <div class="flex min-h-dvh flex-col px-6 py-8 sm:px-10 sm:py-12">
       <Show
         when={!importing()}
         fallback={
-          <section
-            data-testid="login-download-state"
-            class="content mb-6 pl-5 pr-12"
-          >
+          <section data-testid="login-download-state" class="content mb-6">
             <a-head class="mb-6 text-5xl">Login</a-head>
             <a-text size="lg" class="font-medium">
               Downloading backup data...
@@ -201,7 +198,7 @@ export default function LoginPage() {
           </section>
         }
       >
-        <section class="content mb-6 pl-5 pr-12">
+        <section class="content mb-6">
           <FadeIn delay={0.1}>
             <a-head data-testid="recovery-title" class="mb-6 text-5xl">
               Login
@@ -216,7 +213,7 @@ export default function LoginPage() {
         </section>
 
         <a
-          class="mb-3 flex flex-col items-center gap-6 pl-8 pr-10"
+          class="mb-4 flex flex-col items-center gap-4 text-center"
           href={universalLink()}
           target="_blank"
           rel="noreferrer"
@@ -230,7 +227,7 @@ export default function LoginPage() {
                 width={QR_SIZE}
                 height={QR_SIZE}
                 alt="login qr code"
-                class="rounded-lg bg-white p-2"
+                class="h-auto max-w-full rounded-lg bg-white p-2"
               />
             </FadeIn>
           </Show>
@@ -250,7 +247,7 @@ export default function LoginPage() {
         </a>
 
         <FadeIn delay={0.3}>
-          <section class="actions mb-auto pb-16 text-center">
+          <section class="actions mb-auto pb-8 text-center">
             <span class="bg-muted flex w-full items-center justify-between gap-2 rounded-lg py-2 pl-3 pr-2.5">
               <a
                 href={universalLink()}
@@ -259,25 +256,31 @@ export default function LoginPage() {
                 data-testid={
                   universalLink() ? 'import-universal-link' : undefined
                 }
-                class="line-clamp-1 text-ellipsis text-left font-medium text-foreground underline"
+                class="min-w-0 flex-1 truncate text-left text-sm font-medium text-foreground underline"
               >
                 {universalLink()}
               </a>
-              <button type="button" onClick={copyLink} aria-label="Copy link">
+              <button
+                type="button"
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md hover:bg-foreground/10"
+                onClick={copyLink}
+                aria-label="Copy link"
+              >
                 <a-icon name="copy" />
               </button>
             </span>
 
-            <div class="mt-8 flex items-center justify-center gap-2">
+            <div class="mt-5 flex items-center justify-center gap-2">
               <hr class="h-px w-12" />
               <a-text>Or</a-text>
               <hr class="h-px w-12" />
             </div>
 
             <a-button
-              class="mt-6 w-full"
+              class="mt-4 w-full"
               size="lg"
               data-testid="passkey-sign-in"
+              disabled={passkeyBusy()}
               onClick={() => !passkeyBusy() && passkeySignIn.mutate()}
             >
               {passkeySignIn.isPending
@@ -287,7 +290,8 @@ export default function LoginPage() {
             <button
               type="button"
               data-testid="passkey-create"
-              class="text-muted-foreground mt-3 text-sm underline"
+              class="text-muted-foreground mt-3 min-h-10 text-sm underline disabled:opacity-50"
+              disabled={passkeyBusy()}
               onClick={() => !passkeyBusy() && passkeyCreate.mutate()}
             >
               {hasPasskeyCredential()

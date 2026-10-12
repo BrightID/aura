@@ -66,6 +66,9 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
 
     .qr-code {
       padding: 0;
+      display: block;
+      width: 100%;
+      height: auto;
     }
 
     .container {
@@ -73,12 +76,15 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
       border-radius: 20px;
       padding: 10px 0;
       background-color: white;
-      width: 375px;
+      width: 100%;
+      max-width: 375px;
+      box-sizing: border-box;
+      overflow: hidden;
       margin: auto;
     }
 
     .title {
-      margin: 40px;
+      margin: 24px 0;
     }
 
     .instructions {
@@ -326,7 +332,11 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
       <hero-section title="Login With BrightID"></hero-section>
 
       <div class="container">
-        <img class="qr-code" .src=${brightIDQrImage.get()} />
+        <img
+          class="qr-code"
+          .src=${brightIDQrImage.get()}
+          alt="Scan with BrightID to sign in"
+        />
       </div>
       <div class="instructions">
         <p>Steps to complete:</p>

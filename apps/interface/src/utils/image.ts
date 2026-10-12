@@ -57,7 +57,7 @@ export function drawImageCover(
 }
 
 export const createBlockiesImage = (seed: string) => {
-  return makeBlockie(seed);
+  return makeBlockie(seed || 'aura');
 };
 
 export async function renderImageCover(

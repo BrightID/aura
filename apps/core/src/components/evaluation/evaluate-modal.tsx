@@ -124,7 +124,11 @@ export default function EvaluateModal(props: {
   };
 
   return (
-    <a-dialog ref={dialog} on:after-hide={() => props.onClose()}>
+    <a-dialog
+      label="Evaluate account"
+      ref={dialog}
+      on:after-hide={() => props.onClose()}
+    >
       <div slot="content" class="flex w-80 max-w-full flex-col gap-5">
         <div class="flex flex-col gap-1">
           <a-text variant="muted">
@@ -210,7 +214,7 @@ export default function EvaluateModal(props: {
             </div>
           }
         >
-          <div class="flex gap-2">
+          <div class="flex flex-col gap-2 sm:flex-row">
             <a-button
               class="flex-1"
               data-testid="submit-evaluation"
@@ -226,13 +230,13 @@ export default function EvaluateModal(props: {
               data-testid="remove-evaluation"
               color="destructive"
               variant={onDelete() ? 'default' : 'outline'}
-              class={onDelete() ? 'flex-1' : ''}
+              class="flex-1"
               disabled={isPending()}
               onClick={remove}
             >
               <a-icon name="trash-2" />
-              <Show when={onDelete()}>
-                <span class="ml-1">Remove</span>
+              <Show when={onDelete()} fallback={<span>Remove evaluation</span>}>
+                <span>Confirm removal</span>
               </Show>
             </a-button>
           </div>

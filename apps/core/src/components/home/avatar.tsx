@@ -73,14 +73,19 @@ export default function Avatar(props: {
   return (
     <Show when={src() && !props.noHover} fallback={<Circle />}>
       <a-hover-card openDelay={100}>
-        <span slot="trigger" class="inline-block">
+        <button
+          slot="trigger"
+          type="button"
+          class="inline-block rounded-full"
+          aria-label={`Preview photo of ${props.name}`}
+        >
           <Circle />
-        </span>
-        <div slot="content" class="p-1">
+        </button>
+        <div slot="content" class="w-72 max-w-full p-1">
           <img
             src={src()}
             alt={props.name}
-            class="h-auto max-h-72 max-w-72 rounded-md object-cover"
+            class="h-auto w-full max-h-72 max-w-full rounded-md object-contain"
           />
           <p class="mt-1 text-center text-sm text-muted-foreground">
             {props.name}

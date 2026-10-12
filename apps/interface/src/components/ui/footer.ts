@@ -69,10 +69,11 @@ export class AppFooter extends SignalWatcher(LitElement) {
         left: 50%;
         right: auto;
         width: 420px;
+        max-width: calc(100vw - 48px);
+        box-sizing: border-box;
         transform: translateX(-50%);
         border-radius: 22px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid var(--border);
         padding: 8px 12px;
       }
     }

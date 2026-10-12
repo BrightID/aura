@@ -41,6 +41,12 @@ export class ProfileCard extends SignalWatcher(LitElement) {
       min-width: 0;
       overflow-wrap: anywhere;
     }
+    .profile-info a-head,
+    .profile-info a-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .profile-stats {
       display: flex;
@@ -48,6 +54,7 @@ export class ProfileCard extends SignalWatcher(LitElement) {
       gap: 12px;
       margin-top: 10px;
       flex-wrap: wrap;
+      text-align: left;
     }
 
     .progress-bar {
@@ -122,40 +129,39 @@ export class ProfileCard extends SignalWatcher(LitElement) {
             />
           </div>
           <div class="profile-info">
-            <a-head level="5" style="margin: 0; font-size: 1rem">
+            <a-head
+              level="5"
+              style="margin: 0; font-size: 1rem"
+              title=${this.firstName + ' ' + this.lastName}
+            >
               ${this.firstName + ' ' + this.lastName}
             </a-head>
-            <a-text variant="muted" style="margin-top: 2px; display: block"
+            <a-text
+              variant="muted"
+              style="margin-top: 2px; display: block"
+              title=${this.email}
               >${this.email}</a-text
             >
-
-            <div class="profile-stats">
-              <a-badge variant="secondary" size="sm"
-                >Level ${level.get()}</a-badge
-              >
-              <a-badge variant="secondary" size="sm"
-                >Score ${compactFormat(score.get())}</a-badge
-              >
-              <a-text variant="small" style="color: var(--muted-foreground)">
-                ${
-                  this.nextLevel
-                    ? html`Level ${level.get() + 1} at
-                      ${
-                        level.get() + 1 > subjectLevelPoints.length
-                          ? 'max-level'
-                          : compactFormat(this.nextLevelScore)
-                      }`
-                    : html`Max Level`
-                }
-              </a-text>
-            </div>
           </div>
         </div>
-
+        <div class="profile-stats">
+          <a-badge variant="secondary" size="sm">Level ${level.get()}</a-badge>
+          <a-badge variant="secondary" size="sm"
+            >Score ${compactFormat(score.get())}</a-badge
+          >
+          <a-text variant="small" style="color: var(--muted-foreground)">
+            ${
+              this.nextLevelScore > 0
+                ? html`Level ${this.nextLevel} at
+                  ${compactFormat(this.nextLevelScore)}`
+                : html`Max Level`
+            }
+          </a-text>
+        </div>
         <div class="progress-bar">
           <div
             class="progress"
-            style="width: ${(score.get() / this.nextLevelScore) * 100}%;"
+            style="width: ${Math.max(0, Math.min(100, this.nextLevelScore > 0 ? (score.get() / this.nextLevelScore) * 100 : 100))}%;"
           ></div>
         </div>
 

@@ -97,7 +97,7 @@ export class CardElement extends LitElement {
   `;
 
   render() {
-    return html`<div class="body"><slot></slot></div>`;
+    return html`<div class="body" part="body"><slot></slot></div>`;
   }
 }
 

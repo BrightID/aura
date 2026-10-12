@@ -46,7 +46,7 @@ export default function SubjectListControls(props: {
       </a-input>
 
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
-        <a-dialog ref={dialog}>
+        <a-dialog label="Filter and sort connections" ref={dialog}>
           <a-button slot="trigger" size="sm" variant="glass">
             <span class="flex items-center gap-1.5">
               <a-icon name="sliders-horizontal" />

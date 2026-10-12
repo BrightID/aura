@@ -63,7 +63,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <a-dialog ref={dialog}>
+        <a-dialog label="Select your view" ref={dialog}>
           <a-button slot="trigger" size="sm" variant="glass">
             Change
           </a-button>

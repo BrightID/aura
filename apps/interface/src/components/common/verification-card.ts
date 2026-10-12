@@ -93,9 +93,16 @@ export class VerificationCard extends LitElement {
       height: 30px;
     }
 
-    a-button {
-      width: 100%;
-      display: block;
+    .card-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-size: 14px;
+      font-weight: 500;
     }
   `;
 
@@ -158,9 +165,9 @@ export class VerificationCard extends LitElement {
                       style="width: ${(this.stepsCompleted / this.totalSteps) * 100}%;"
                     ></div>
                   </div>
-                  <a-button size="sm" style="width: 100%">
+                  <span class="card-action">
                     ${this.stepsCompleted === 0 ? 'Start verification' : 'Continue'}
-                  </a-button>
+                  </span>
                 `
           }
         </a-card>

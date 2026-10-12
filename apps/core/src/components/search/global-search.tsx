@@ -78,7 +78,7 @@ export default function GlobalSearch() {
         <a-icon name="search" />
       </a-button>
 
-      <a-dialog ref={dialog}>
+      <a-dialog label="Global search" ref={dialog}>
         <div slot="content" class="flex w-80 max-w-full flex-col gap-3">
           <div class="flex flex-col gap-1">
             <a-head class="text-lg" data-testid="global-search-modal-title">
@@ -89,7 +89,7 @@ export default function GlobalSearch() {
 
           <div class="flex items-center gap-2">
             <a-input
-              class="flex-1"
+              class="min-w-0 flex-1"
               type="text"
               autofocus
               data-testid="global-search-input"
@@ -121,7 +121,7 @@ export default function GlobalSearch() {
                       noHover
                       class="h-9 w-9 text-sm"
                     />
-                    <div class="min-w-0">
+                    <div class="min-w-0 flex-1">
                       <p class="truncate font-medium text-foreground">
                         {subject.name}
                       </p>

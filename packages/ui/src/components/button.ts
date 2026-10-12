@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 export type ButtonVariant =
@@ -36,6 +36,9 @@ export class ButtonElement extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   declare disabled: boolean;
+
+  @property({ attribute: 'aria-label', reflect: true })
+  declare ariaLabel: string | null;
 
   /**
    * Toggle/pill state: a selected button renders filled in its palette color
@@ -299,6 +302,7 @@ export class ButtonElement extends LitElement {
     return html`
       <button
         type="button"
+        aria-label=${this.ariaLabel ?? nothing}
         .class=${this.class}
         ?disabled=${this.disabled}
         part="button"

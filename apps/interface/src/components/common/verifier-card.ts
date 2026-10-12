@@ -36,7 +36,7 @@ export class VerifierCard extends LitElement {
       display: flex;
       align-items: flex-start;
       text-align: left;
-      gap: 16px;
+      gap: 12px;
       margin-bottom: 16px;
     }
 
@@ -57,11 +57,13 @@ export class VerifierCard extends LitElement {
     .verifier-info {
       flex: 1 1 auto;
       min-width: 0;
+      overflow-wrap: anywhere;
     }
-
-    .verifier-level {
-      margin-left: auto;
+    .verifier-info a-head,
+    .verifier-info a-text {
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .progress-bar {
@@ -83,23 +85,28 @@ export class VerifierCard extends LitElement {
       align-items: center;
       gap: 6px;
       margin-top: 10px;
+      flex-wrap: wrap;
+      text-align: left;
     }
 
     .evaluation-note {
-      font-size: 10px;
+      font-size: 12px;
       color: var(--muted-foreground);
     }
   `;
 
   protected render() {
     return html`
-      <a-card variant="glass">
+      <a-card variant="default">
         <div class="verifier-header">
           <div class="verifier-picture">
             <img src="${this.verifierPicture}" alt="verifier picture" />
           </div>
           <div class="verifier-info">
-            <a-head level="5" style="margin: 0; font-size: 0.9375rem"
+            <a-head
+              level="5"
+              style="margin: 0; font-size: 0.9375rem"
+              title=${this.verifierName}
               >${this.verifierName}</a-head
             >
             ${
@@ -107,23 +114,25 @@ export class VerifierCard extends LitElement {
                 ? html`<a-text
                     variant="muted"
                     style="display: block; margin-top: 2px"
+                    title=${this.verifierEmail}
                     >${this.verifierEmail}</a-text
                   >`
                 : ''
             }
           </div>
-          <div class="verifier-level">
-            <a-badge variant="secondary" size="xs"
-              >Level ${this.verifierLevel}</a-badge
-            >
-          </div>
         </div>
 
         <div class="progress-bar">
-          <div class="progress" style="width: ${this.progressPercent}%;"></div>
+          <div
+            class="progress"
+            style="width: ${Math.max(0, Math.min(100, this.progressPercent || 0))}%;"
+          ></div>
         </div>
 
         <div class="evaluation">
+          <a-badge variant="secondary" size="xs"
+            >Level ${this.verifierLevel}</a-badge
+          >
           <img
             width="14"
             height="14"

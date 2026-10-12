@@ -53,9 +53,9 @@ export default function HomeHeader() {
           <p class="text-xs font-medium uppercase tracking-widest text-muted-foreground">
             Aura / Core
           </p>
-          <a-head class="text-2xl">Your community</a-head>
+          <a-head class="text-xl sm:text-2xl">Your community</a-head>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex shrink-0 items-center gap-2">
           <GlobalSearch />
           <NotificationBell />
           <A href="/settings" data-testid="header-settings">
@@ -77,7 +77,7 @@ export default function HomeHeader() {
               <Show
                 when={isUnlocked(gate)}
                 fallback={
-                  <a-dialog class="shrink-0">
+                  <a-dialog label="Locked role" class="shrink-0">
                     <a-button
                       slot="trigger"
                       size="sm"

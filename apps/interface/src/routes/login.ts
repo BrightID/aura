@@ -58,6 +58,9 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
       gap: 12px;
     }
     .button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       width: 100%;
       min-height: 76px;
       padding: 16px;
@@ -76,6 +79,10 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
       background: var(--muted);
       border-color: var(--primary);
     }
+    .method-arrow {
+      color: var(--muted-foreground);
+      font-size: 20px;
+    }
     .button:focus-visible {
       outline: 2px solid var(--ring);
       outline-offset: 4px;
@@ -84,6 +91,12 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
       display: flex;
       align-items: center;
       gap: 16px;
+      flex: 1;
+      min-width: 0;
+    }
+    .flex-1 {
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
     .flex-container img {
       flex-shrink: 0;
@@ -174,9 +187,9 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
                     </div>
                   `
                 : html`
-                    <h2 class="form-title">Sign In</h2>
+                    <h2 class="form-title">Sign in to Aura</h2>
                     <p class="form-desc">
-                      Choose how you’d like to access your account.
+                      Use a passkey or connect BrightID to continue.
                     </p>
 
                     <div class="space-y-3">
@@ -193,7 +206,7 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
                                   width="20"
                                   height="20"
                                   src="${method.icon}"
-                                  alt="${method.name}"
+                                  alt=""
                                 />
                                 <div class="flex-1">
                                   <div class="font-medium">${method.name}</div>
@@ -202,6 +215,9 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
                                   </div>
                                 </div>
                               </div>
+                              <span class="method-arrow" aria-hidden="true"
+                                >→</span
+                              >
                             </button>
                           </div>
                         `,

@@ -128,6 +128,7 @@ declare module 'react' {
       // Events: listen to 'open-change' (CustomEvent<{open:boolean}>) via ref
       'a-dialog': CEProps<DialogElement> & {
         open?: boolean;
+        label?: string;
       };
 
       // ── Input ────────────────────────────────────────────────────────────

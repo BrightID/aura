@@ -23,7 +23,7 @@ export default function SettingCard(props: {
         <a-icon name={props.icon} />
       </Show>
       <Show when={props.label}>
-        <span class="text-xl font-medium">{props.label}</span>
+        <span class="text-base font-medium">{props.label}</span>
       </Show>
       {props.children}
     </a-card>

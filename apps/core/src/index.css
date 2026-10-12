@@ -231,6 +231,38 @@
 }
 
 @layer base {
+  body:has(a-dialog[open]) {
+    overflow: hidden;
+  }
+
+  a-card {
+    padding: var(--lg, 1.25rem);
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px oklch(0 0 0 / 0.04);
+  }
+
+  /* Carry host layout utilities through the card's shadow wrapper. */
+  a-card::part(body) {
+    display: inherit;
+    flex: 1;
+    min-width: 0;
+    flex-direction: inherit;
+    align-items: inherit;
+    justify-content: inherit;
+    gap: inherit;
+    padding: 0;
+  }
+
+  a-button::part(button) {
+    gap: 0.5rem;
+  }
+
+  a-button[size='icon-sm']::part(button) {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
   body {
     margin: 0;
     font-family: var(--font-sans);

@@ -20,6 +20,15 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/core/',
     plugins: [tailwindcss(), solid(), injectRemoteCss('/core/')],
+    optimizeDeps: {
+      esbuildOptions: {
+        tsconfigRaw: {
+          compilerOptions: {
+            experimentalDecorators: true,
+          },
+        },
+      },
+    },
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },

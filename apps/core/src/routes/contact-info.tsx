@@ -71,7 +71,7 @@ export default function ContactInfoPage() {
         </ListState>
       </div>
 
-      <a-dialog ref={dialog}>
+      <a-dialog label="Add contact information" ref={dialog}>
         <a-button slot="trigger" variant="glass" data-testid="contact-add">
           + Add contact info
         </a-button>

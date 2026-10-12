@@ -54,8 +54,8 @@ function RoleStats(props: {
         <ProgressBar percentage={progress()} class="w-full" />
       </Show>
 
-      <div class="flex items-center justify-between text-sm text-muted-foreground">
-        <span>
+      <div class="flex items-start justify-between gap-3 text-sm text-muted-foreground">
+        <span class="min-w-0 flex-1">
           Your evaluation:{' '}
           <Show when={my.rating() !== undefined} fallback="-">
             <span
@@ -72,6 +72,7 @@ function RoleStats(props: {
         <Show when={!isSelf()}>
           <a-button
             size="sm"
+            class="shrink-0"
             variant="glass"
             data-testid={`credibility-evaluate-${props.category}`}
             onClick={() => props.onEvaluate(props.category)}
@@ -131,16 +132,22 @@ export default function CredibilityDetails(props: {
     <>
       {/* State clears only after the leave animation completes, so the body
           never re-renders to its empty state mid-exit. */}
-      <a-dialog ref={dialog} on:after-hide={() => props.onClose()}>
+      <a-dialog
+        label="Credibility details"
+        ref={dialog}
+        on:after-hide={() => props.onClose()}
+      >
         <div slot="content" class="flex w-96 max-w-full flex-col gap-3">
           <div class="flex items-center gap-3">
             <Avatar name={name()} subjectId={id()} noHover class="h-10 w-10" />
-            <p class="font-medium text-foreground">{name()}</p>
+            <p class="min-w-0 break-words font-medium text-foreground">
+              {name()}
+            </p>
           </div>
 
           {/* keyed: remount the tabs (and reset the active one) per subject */}
           <Show when={props.subjectId()} keyed>
-            <a-tabs>
+            <a-tabs compact>
               <For each={authorizedRoles()}>
                 {(category) => (
                   <a-tab value={category}>

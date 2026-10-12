@@ -28,7 +28,7 @@ export default function ChartHelp() {
   );
 
   return (
-    <a-dialog>
+    <a-dialog label="Reading the impact chart">
       <button
         slot="trigger"
         type="button"

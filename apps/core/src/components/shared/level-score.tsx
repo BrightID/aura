@@ -22,7 +22,7 @@ export default function LevelScore(props: {
           data-testid={props.testid ? `${props.testid}-score` : undefined}
           class="font-medium text-foreground"
         >
-          <Show when={props.score} fallback="-">
+          <Show when={props.score !== null} fallback="-">
             {compactFormat(props.score!)}
           </Show>
         </span>

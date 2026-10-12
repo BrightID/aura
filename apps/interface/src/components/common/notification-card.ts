@@ -13,16 +13,19 @@ export class NotificationCard extends LitElement {
 
   static styles?: CSSResultGroup | undefined = css`
     .notification-card {
-      background: rgba(13, 2, 13, 0);
-      margin: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
       display: flex;
       gap: 12px;
-      align-items: center;
+      align-items: flex-start;
     }
 
     .profile-section {
-      width: 64px;
-      height: 64px;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
       background: url('../images/v134_1907.png');
       background-repeat: no-repeat;
       background-position: center center;
@@ -32,28 +35,35 @@ export class NotificationCard extends LitElement {
 
     .content {
       flex: 1 1 auto;
-      margin: 8px;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
     .title-section {
       display: flex;
       align-items: flex-end;
       align-self: stretch;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      text-align: left;
     }
 
     .timestamp {
-      color: rgba(209, 209, 235, 0.62);
+      color: var(--muted-foreground);
       text-align: right;
       text-overflow: ellipsis;
-      font-size: 15px;
+      font-size: 12px;
       font-style: normal;
       font-weight: 400;
       line-height: 135%; /* 20.25px */
       letter-spacing: -0.075px;
-      margin-left: auto;
     }
 
     .user-name {
-      color: #d7d7e4;
+      min-width: 0;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      color: var(--foreground);
       text-overflow: ellipsis;
       font-size: 17px;
       font-style: normal;
@@ -63,7 +73,7 @@ export class NotificationCard extends LitElement {
     }
 
     .notification-description {
-      color: rgba(209, 209, 235, 0.62);
+      color: var(--muted-foreground);
       text-overflow: ellipsis;
       font-size: 15px;
       font-style: normal;
@@ -87,7 +97,9 @@ export class NotificationCard extends LitElement {
         ></div>
         <div class="content">
           <div class="title-section">
-            <span class="user-name">${this.userName}</span>
+            <span class="user-name" title=${this.userName}
+              >${this.userName}</span
+            >
             <span class="timestamp">${this.timestamp}</span>
           </div>
           <div class="notification-description">

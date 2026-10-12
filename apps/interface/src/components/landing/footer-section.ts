@@ -6,11 +6,12 @@ import { customElement } from 'lit/decorators.js';
 export class FooterSectionElement extends LitElement {
   static styles?: CSSResultGroup = css`
     :host {
+      display: block;
       width: 100%;
     }
 
     .form-footer {
-      color: #9ca3af;
+      color: var(--muted-foreground);
       font-size: 0.75rem;
       text-align: center;
       margin-top: 1rem;
@@ -20,9 +21,11 @@ export class FooterSectionElement extends LitElement {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.5rem;
-      margin-top: 2rem;
-      gap: 2rem;
+      padding: 20px 0;
+      margin-top: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
     }
 
     .brand {
@@ -39,15 +42,18 @@ export class FooterSectionElement extends LitElement {
 
     .brand-name {
       font-weight: 700;
-      color: #ffffff;
+      color: var(--foreground);
       font-size: 1rem;
       margin-left: 0.5rem;
     }
 
     .privacy {
-      color: #60a5fa;
+      color: var(--muted-foreground);
       text-decoration: none;
       font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
     }
 
     .privacy:hover {

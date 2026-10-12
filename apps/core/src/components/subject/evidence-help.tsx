@@ -3,7 +3,7 @@ export default function EvidenceHelp() {
   return (
     <div class="flex items-center gap-2">
       <p class="text-lg font-bold text-foreground">Evidence</p>
-      <a-dialog>
+      <a-dialog label="Understanding evidence">
         <button
           slot="trigger"
           type="button"
