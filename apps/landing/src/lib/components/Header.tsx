@@ -15,9 +15,13 @@ export default function Header() {
       }}
     >
       <a class="wordmark" href="/" aria-label="Aura home">
-        <span class="brand-mark" aria-hidden="true">
-          ✳
-        </span>
+        <img
+          class="brand-mark"
+          src="/favicon.ico"
+          width="36"
+          height="36"
+          alt=""
+        />
         aura<span class="wordmark-dot">.</span>
       </a>
       <nav class="desktop-nav" aria-label="Main navigation">

@@ -110,8 +110,8 @@ body:has(.landing-site) {
   line-height: 1;
 }
 .landing-site .brand-mark {
-  font-size: 36px;
-  color: var(--signal);
+  width: 36px;
+  height: 36px;
   margin-right: 12px;
 }
 .landing-site .wordmark-dot {
@@ -600,7 +600,8 @@ body:has(.landing-site) {
     font-size: 30px;
   }
   .landing-site .brand-mark {
-    font-size: 30px;
+    width: 30px;
+    height: 30px;
   }
   .landing-site .desktop-nav,
   .landing-site .header-cta {
