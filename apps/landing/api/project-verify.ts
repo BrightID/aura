@@ -317,14 +317,13 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     try {
-      // neon-http has no interactive transaction. sql.transaction is one round trip.
-      await sql.transaction([
-        sql`INSERT INTO "verifications" ("userId", "projectId", "client", "signature", "auraScore", "auraLevel", "verifiedAt")
-            VALUES (${body.userId}, ${projectId}, ${body.client}, ${signature}, ${auraScore}, ${auraLevel}, ${verifiedAt.toISOString()})`,
-        sql`UPDATE "projects"
+      await sql.begin(async (tx) => {
+        await tx`INSERT INTO "verifications" ("userId", "projectId", "client", "signature", "auraScore", "auraLevel", "verifiedAt")
+            VALUES (${body.userId}, ${projectId}, ${body.client}, ${signature}, ${auraScore}, ${auraLevel}, ${verifiedAt.toISOString()})`;
+        await tx`UPDATE "projects"
             SET "remainingtokens" = COALESCE("remainingtokens", 0) - 1
-            WHERE "id" = ${projectId}`,
-      ]);
+            WHERE "id" = ${projectId}`;
+      });
     } catch (err) {
       // 23505 = unique_violation: concurrent request already verified this user+project
       if ((err as { code?: string })?.code === '23505') {

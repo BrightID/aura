@@ -15,11 +15,11 @@ export const usersTable = pgTable('users', {
   id: varchar({ length: 43 }).notNull().primaryKey(),
   createdAt: timestamp().defaultNow(),
   integrations: varchar({ length: 255 }).notNull().array().default([]),
-});
+}).enableRLS();
 
 export const auraPlayersSocialTable = pgTable('socialRecords', {
   hash: varchar({ length: 300 }).primaryKey(),
-});
+}).enableRLS();
 
 export const projectsTable = pgTable('projects', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -41,7 +41,7 @@ export const projectsTable = pgTable('projects', {
 
   createdAt: timestamp().defaultNow(),
   updatedAt: timestamp().default(sql`CURRENT_TIMESTAMP`),
-});
+}).enableRLS();
 
 export const verificationPlansTable = pgTable('plans', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -58,7 +58,7 @@ export const verificationPlansTable = pgTable('plans', {
   order: integer().default(0),
   createdAt: timestamp().defaultNow(),
   updatedAt: timestamp().default(sql`CURRENT_TIMESTAMP`),
-});
+}).enableRLS();
 
 export const upgradeRequest = pgTable('upgrade_requests', {
   projectId: integer().references(() => projectsTable.id, {
@@ -68,7 +68,7 @@ export const upgradeRequest = pgTable('upgrade_requests', {
   planId: integer().references(() => verificationPlansTable.id, {
     onDelete: 'cascade',
   }),
-});
+}).enableRLS();
 
 export const paymentsTable = pgTable('payments', {
   id: serial('id').primaryKey(),
@@ -84,7 +84,7 @@ export const paymentsTable = pgTable('payments', {
   status: varchar('status', { length: 30 }).default('pending'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-});
+}).enableRLS();
 
 export const verificationsTable = pgTable(
   'verifications',
@@ -106,7 +106,7 @@ export const verificationsTable = pgTable(
       table.projectId,
     ),
   ],
-);
+).enableRLS();
 
 export const brightIdAppsTable = pgTable('brightid_apps', {
   key: text('key').primaryKey(), // Unique key
@@ -126,4 +126,4 @@ export const brightIdAppsTable = pgTable('brightid_apps', {
   images: text('images'), // JSON string recommended
   callbackUrl: text('callback_url'),
   joined: timestamp('joined').notNull().defaultNow(),
-});
+}).enableRLS();

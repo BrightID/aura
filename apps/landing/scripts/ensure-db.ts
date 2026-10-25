@@ -3,7 +3,9 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import * as schema from '../api/lib/schema.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -11,13 +13,13 @@ function env(name: string) {
   return process.env[name]?.trim().replace(/^["']|["']$/g, '');
 }
 
-if (!env('DATABASE_URL') && !env('POSTGRES_URL')) {
+if (!env('DIRECT_URL') && !env('DATABASE_URL') && !env('POSTGRES_URL')) {
   const { config } = await import('dotenv');
   config({ path: resolve(root, '.env.local') });
   config({ path: resolve(root, '.env') });
 }
 
-const url = env('DATABASE_URL') || env('POSTGRES_URL');
+const url = env('DIRECT_URL') || env('DATABASE_URL') || env('POSTGRES_URL');
 if (!url) {
   console.error(
     'ensure-db: DATABASE_URL or POSTGRES_URL missing on this host. Set it on Vercel — local .env is not deployed.',
@@ -36,40 +38,49 @@ if (clientProject && adminProject && clientProject !== adminProject) {
 
 let host = '(unparsed)';
 try {
-  host = new URL(url.replace(/^postgres(?:ql)?:/, 'https:')).host;
+  host = new URL(url).host;
 } catch {
   /* keep fallback */
 }
 console.log('ensure-db: schema push →', host);
 
-const push = spawnSync('bunx', ['drizzle-kit', 'push', '--force'], {
+const push = spawnSync('bunx', ['--bun', 'drizzle-kit', 'push', '--force'], {
   cwd: root,
   stdio: 'inherit',
   env: { ...process.env, DATABASE_URL: url },
 });
 if (push.status !== 0) process.exit(push.status ?? 1);
 
-const sql = neon(url);
-await sql`CREATE SCHEMA IF NOT EXISTS drizzle`;
-await sql`CREATE TABLE IF NOT EXISTS drizzle.__drizzle_migrations (
-  id SERIAL PRIMARY KEY,
-  hash text NOT NULL,
-  created_at bigint
-)`;
-const existing =
-  await sql`SELECT created_at FROM drizzle.__drizzle_migrations`;
-if (existing.length === 0) {
-  const journal = JSON.parse(
-    readFileSync(resolve(root, 'drizzle/meta/_journal.json'), 'utf8'),
-  ) as { entries: { tag: string; when: number }[] };
-  for (const entry of journal.entries) {
-    const query = readFileSync(
-      resolve(root, `drizzle/${entry.tag}.sql`),
-    ).toString();
-    const hash = createHash('sha256').update(query).digest('hex');
-    await sql`INSERT INTO drizzle.__drizzle_migrations (hash, created_at) VALUES (${hash}, ${entry.when})`;
+const sql = postgres(url, { prepare: false, max: 1, ssl: 'require' });
+try {
+  // Drizzle Kit can exit successfully after a connection error.
+  const db = drizzle(sql);
+  for (const table of Object.values(schema)) {
+    await db.select().from(table).limit(0);
   }
-  console.log('ensure-db: baselined', journal.entries.length, 'migrations');
-} else {
-  console.log('ensure-db: journal already has', existing.length, 'rows');
+  await sql`CREATE SCHEMA IF NOT EXISTS drizzle`;
+  await sql`CREATE TABLE IF NOT EXISTS drizzle.__drizzle_migrations (
+    id SERIAL PRIMARY KEY,
+    hash text NOT NULL,
+    created_at bigint
+  )`;
+  const existing =
+    await sql`SELECT created_at FROM drizzle.__drizzle_migrations`;
+  if (existing.length === 0) {
+    const journal = JSON.parse(
+      readFileSync(resolve(root, 'drizzle/meta/_journal.json'), 'utf8'),
+    ) as { entries: { tag: string; when: number }[] };
+    for (const entry of journal.entries) {
+      const query = readFileSync(
+        resolve(root, `drizzle/${entry.tag}.sql`),
+      ).toString();
+      const hash = createHash('sha256').update(query).digest('hex');
+      await sql`INSERT INTO drizzle.__drizzle_migrations (hash, created_at) VALUES (${hash}, ${entry.when})`;
+    }
+    console.log('ensure-db: baselined', journal.entries.length, 'migrations');
+  } else {
+    console.log('ensure-db: journal already has', existing.length, 'rows');
+  }
+} finally {
+  await sql.end({ timeout: 5 });
 }

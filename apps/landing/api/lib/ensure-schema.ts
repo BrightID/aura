@@ -1,4 +1,6 @@
+import { getTableName } from 'drizzle-orm';
 import { sql } from './db.js';
+import * as schema from './schema.js';
 
 const statements = [
   `CREATE TABLE IF NOT EXISTS "users" (
@@ -99,9 +101,17 @@ const statements = [
 let pending: Promise<void> | null = null;
 
 async function apply() {
-  for (const statement of statements) {
-    await sql.query(statement);
-  }
+  await sql.begin(async (tx) => {
+    for (const statement of statements) {
+      await tx.unsafe(statement);
+    }
+    // The server connects as the database owner, which bypasses row-level security.
+    for (const table of Object.values(schema)) {
+      await tx.unsafe(
+        `ALTER TABLE "${getTableName(table)}" ENABLE ROW LEVEL SECURITY`,
+      );
+    }
+  });
 }
 
 export function ensureSchema() {

@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "@aura/ui": "workspace:*",
-    "@neondatabase/serverless": "^1.0.1",
     "@vercel/node": "^5.3.0",
     "drizzle-orm": "^0.44.2",
     "firebase-admin": "^13.6.0",
+    "postgres": "^3.4.9",
     "solid-js": "^1.9.5",
     "viem": "2.x",
     "zod": "^4.0.17"

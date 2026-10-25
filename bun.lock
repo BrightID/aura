@@ -92,6 +92,7 @@
         "lodash": "^4.17.21",
         "lucide-react": "^0.544.0",
         "next-themes": "^0.4.6",
+        "postgres": "^3.4.9",
         "react": "^19.1.0",
         "react-day-picker": "^9.11.1",
         "react-dom": "^19.1.0",
@@ -219,10 +220,10 @@
       "version": "0.0.0",
       "dependencies": {
         "@aura/ui": "workspace:*",
-        "@neondatabase/serverless": "^1.0.1",
         "@vercel/node": "^5.3.0",
         "drizzle-orm": "^0.44.2",
         "firebase-admin": "^13.6.0",
+        "postgres": "^3.4.9",
         "solid-js": "^1.9.5",
         "viem": "2.x",
         "zod": "^4.0.17",
@@ -3121,6 +3122,8 @@
     "postcss-load-config": ["postcss-load-config@6.0.1", "", { "dependencies": { "lilconfig": "^3.1.1" }, "peerDependencies": { "jiti": ">=1.21.0", "postcss": ">=8.0.9", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["jiti", "postcss", "tsx", "yaml"] }, "sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g=="],
 
     "postcss-value-parser": ["postcss-value-parser@4.2.0", "", {}, "sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ=="],
+
+    "postgres": ["postgres@3.4.9", "", {}, "sha512-GD3qdB0x1z9xgFI6cdRD6xu2Sp2WCOEoe3mtnyB5Ee0XrrL5Pe+e4CCnJrRMnL1zYtRDZmQQVbvOttLnKDLnaw=="],
 
     "postgres-array": ["postgres-array@2.0.0", "", {}, "sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA=="],
 
