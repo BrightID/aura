@@ -53,7 +53,7 @@ export function ParticlesBackground() {
         vy: baseVy,
         size: Math.random() * 2.5 + 1,
         opacity: Math.random() * 0.5 + 0.3,
-        hue: Math.random() * 60 + 220, // Blue to purple range
+        hue: 165 + Math.random() * 30,
       });
     }
 

@@ -10,6 +10,8 @@ import { customElement, property } from 'lit/decorators.js';
 
 const score = signal(0);
 const level = signal(0);
+const profileLoaded = signal(false);
+const profileError = signal(false);
 
 @customElement('profile-card')
 export class ProfileCard extends SignalWatcher(LitElement) {
@@ -41,8 +43,9 @@ export class ProfileCard extends SignalWatcher(LitElement) {
       min-width: 0;
       overflow-wrap: anywhere;
     }
-    .profile-info a-head,
-    .profile-info a-text {
+    .ellipsis {
+      display: block;
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -74,13 +77,13 @@ export class ProfileCard extends SignalWatcher(LitElement) {
   `;
 
   @property({})
-  firstName = 'User';
+  firstName = '';
 
   @property({})
-  lastName = 'User';
+  lastName = '';
 
   @property({})
-  email = 'user@email.com';
+  email = '';
 
   @property({})
   image = createBlockiesImage(userBrightId.get());
@@ -91,23 +94,41 @@ export class ProfileCard extends SignalWatcher(LitElement) {
     super();
 
     const brightId = userBrightId.get();
+    if (!brightId) {
+      profileLoaded.set(true);
+      return;
+    }
 
+    score.set(0);
+    level.set(0);
+    profileError.set(false);
+    profileLoaded.set(false);
     queryClient
       .ensureQueryData({
         queryKey: ['profile', brightId],
         queryFn: () => getBrightId(brightId),
       })
       .then((res) => {
-        if (res) {
-          const verification = getAuraVerification(
-            res.verifications,
-            EvaluationCategory.SUBJECT,
-          );
-          if (!verification) return;
-          score.set(verification.score);
-          level.set(verification.level);
-        }
+        if (!res) return;
+        const verification = getAuraVerification(
+          res.verifications,
+          EvaluationCategory.SUBJECT,
+        );
+        if (!verification) return;
+        score.set(verification.score);
+        level.set(verification.level);
+      })
+      .catch(() => {
+        profileError.set(true);
+      })
+      .finally(() => {
+        profileLoaded.set(true);
       });
+  }
+
+  private get displayName() {
+    const name = `${this.firstName} ${this.lastName}`.trim();
+    return name || 'No name yet';
   }
 
   private get nextLevel() {
@@ -132,38 +153,52 @@ export class ProfileCard extends SignalWatcher(LitElement) {
             <a-head
               level="5"
               style="margin: 0; font-size: 1rem"
-              title=${this.firstName + ' ' + this.lastName}
+              title=${this.displayName}
             >
-              ${this.firstName + ' ' + this.lastName}
+              <span class="ellipsis">${this.displayName}</span>
             </a-head>
-            <a-text
-              variant="muted"
-              style="margin-top: 2px; display: block"
-              title=${this.email}
-              >${this.email}</a-text
-            >
+            ${
+              this.email
+                ? html`<a-text
+                    variant="muted"
+                    style="margin-top: 2px; display: block"
+                    title=${this.email}
+                    ><span class="ellipsis">${this.email}</span></a-text
+                  >`
+                : ''
+            }
           </div>
         </div>
-        <div class="profile-stats">
-          <a-badge variant="secondary" size="sm">Level ${level.get()}</a-badge>
-          <a-badge variant="secondary" size="sm"
-            >Score ${compactFormat(score.get())}</a-badge
-          >
-          <a-text variant="small" style="color: var(--muted-foreground)">
-            ${
-              this.nextLevelScore > 0
-                ? html`Level ${this.nextLevel} at
-                  ${compactFormat(this.nextLevelScore)}`
-                : html`Max Level`
-            }
-          </a-text>
-        </div>
-        <div class="progress-bar">
-          <div
-            class="progress"
-            style="width: ${Math.max(0, Math.min(100, this.nextLevelScore > 0 ? (score.get() / this.nextLevelScore) * 100 : 100))}%;"
-          ></div>
-        </div>
+        ${
+          profileError.get()
+            ? html`<a-text variant="muted">Could not load your level.</a-text>`
+            : !profileLoaded.get()
+              ? html`<a-skeleton style="height: 2.5rem"></a-skeleton>`
+              : html`
+                  <div class="profile-stats">
+                    <a-badge variant="secondary" size="sm"
+                      >Level ${level.get()}</a-badge
+                    >
+                    <a-badge variant="secondary" size="sm"
+                      >Score ${compactFormat(score.get())}</a-badge
+                    >
+                    <a-text variant="small" style="color: var(--muted-foreground)">
+                      ${
+                        this.nextLevelScore > 0
+                          ? html`${compactFormat(this.nextLevelScore)} to Level
+                            ${this.nextLevel}`
+                          : html`Max level`
+                      }
+                    </a-text>
+                  </div>
+                  <div class="progress-bar">
+                    <div
+                      class="progress"
+                      style="width: ${Math.max(0, Math.min(100, this.nextLevelScore > 0 ? (score.get() / this.nextLevelScore) * 100 : 100))}%;"
+                    ></div>
+                  </div>
+                `
+        }
 
         <slot></slot>
       </a-card>

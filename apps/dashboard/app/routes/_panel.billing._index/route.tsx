@@ -84,7 +84,7 @@ function StatusBadge({ status }: { status: PaymentStatus | null }) {
   switch (status) {
     case 'completed':
       return (
-        <Badge className="bg-green-500/15 text-green-600 border-green-500/30 gap-1">
+        <Badge className="gap-1 border-success/30 bg-success/15 text-success">
           <CheckCircle className="h-3 w-3" />
           Paid
         </Badge>
@@ -94,7 +94,7 @@ function StatusBadge({ status }: { status: PaymentStatus | null }) {
     case 'waitingAuthorization':
     case 'inProgress':
       return (
-        <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/30 gap-1">
+        <Badge className="gap-1 border-warning/30 bg-warning/15 text-warning">
           <Clock className="h-3 w-3" />
           Processing
         </Badge>
@@ -114,10 +114,28 @@ function StatusBadge({ status }: { status: PaymentStatus | null }) {
 // ─── Section A — Current Subscription ────────────────────────────────────────
 
 function CurrentSubscriptionSection() {
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, isError } = useQuery({
     queryKey: ['user-projects'],
     queryFn: getUserProjects,
   });
+
+  if (isError) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-muted-foreground" />
+            <CardTitle>Current Subscriptions</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="py-6 text-center text-sm text-destructive">
+            Could not load subscriptions. Please try again.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -196,7 +214,7 @@ function CurrentSubscriptionSection() {
                     <Badge variant="secondary" className="text-xs">
                       {plan.name}
                     </Badge>
-                    <Badge className="text-xs bg-green-500/15 text-green-600 border-green-500/30">
+                    <Badge className="border-success/30 bg-success/15 text-xs text-success">
                       Active
                     </Badge>
                   </div>
@@ -282,12 +300,11 @@ function PaymentHistorySection() {
         <CardDescription>Your last 50 transactions</CardDescription>
       </CardHeader>
       <CardContent>
-        {isError && (
+        {isError ? (
           <p className="text-sm text-destructive text-center py-6">
             Failed to load payment history. Please try again.
           </p>
-        )}
-
+        ) : (
         <div className="rounded-lg border border-border/60 overflow-hidden">
           <Table>
             <TableHeader>
@@ -375,6 +392,7 @@ function PaymentHistorySection() {
             </TableBody>
           </Table>
         </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -383,7 +401,7 @@ function PaymentHistorySection() {
 // ─── Section C — Usage Summary ────────────────────────────────────────────────
 
 function UsageSummarySection() {
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, isError } = useQuery({
     queryKey: ['user-projects'],
     queryFn: getUserProjects,
   });
@@ -405,13 +423,19 @@ function UsageSummarySection() {
             <Skeleton key={i} className="h-20 w-full rounded-lg" />
           ))}
 
-        {!isLoading && (projects ?? []).length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-6">
-            No projects yet.
+        {isError && (
+          <p className="py-6 text-center text-sm text-destructive">
+            Could not load usage. Please try again.
           </p>
         )}
 
-        {!isLoading &&
+        {!isLoading && !isError && (projects ?? []).length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            No projects yet. Create one to see token usage.
+          </p>
+        )}
+
+        {!isLoading && !isError &&
           (projects ?? []).map((project) => {
             const plan = getPlanById(project.selectedPlanId ?? null);
             const Icon = plan.icon;

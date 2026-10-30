@@ -33,13 +33,6 @@ export class FooterSectionElement extends LitElement {
       align-items: center;
     }
 
-    .brand-icon {
-      margin-right: 0.5rem;
-      height: 2rem;
-      width: 2rem;
-      fill: #f97316;
-    }
-
     .brand-name {
       font-weight: 700;
       color: var(--foreground);

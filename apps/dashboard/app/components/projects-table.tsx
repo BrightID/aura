@@ -79,7 +79,7 @@ const columns: ColumnDef<Project>[] = [
     cell: ({ getValue }) => {
       const planId = getValue() as number | null;
       return planId === null ? (
-        <span className="text-green-600 font-medium">Free</span>
+        <span className="font-medium text-success">Free</span>
       ) : (
         `#${planId}`
       );
@@ -90,10 +90,10 @@ const columns: ColumnDef<Project>[] = [
     header: 'Status',
     cell: ({ getValue }) => (
       <span
-        className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
           getValue()
-            ? 'bg-green-100 text-green-800'
-            : 'bg-gray-100 text-gray-800'
+            ? 'bg-success/15 text-success'
+            : 'bg-muted text-muted-foreground'
         }`}
       >
         {getValue() ? 'Active' : 'Inactive'}
@@ -190,7 +190,9 @@ export function ProjectsTable({ data }: { data: Project[] }) {
                   colSpan={columns.length}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No projects found.
+                  {filter
+                    ? 'No projects match that search.'
+                    : 'No projects yet.'}
                 </TableCell>
               </TableRow>
             )}

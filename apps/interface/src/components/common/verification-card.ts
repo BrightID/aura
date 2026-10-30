@@ -107,7 +107,12 @@ export class VerificationCard extends LitElement {
   `;
 
   render() {
-    const isCompleted = this.stepsCompleted === this.totalSteps;
+    const isCompleted =
+      this.totalSteps > 0 && this.stepsCompleted >= this.totalSteps;
+    const progress =
+      this.totalSteps > 0
+        ? Math.max(0, Math.min(100, (this.stepsCompleted / this.totalSteps) * 100))
+        : 0;
     return html`
       <a href="/interface/projects/${this.projectId}" class="card-link">
         <a-card variant="default" interactive>
@@ -162,7 +167,7 @@ export class VerificationCard extends LitElement {
                   <div class="progress-bar">
                     <div
                       class="progress"
-                      style="width: ${(this.stepsCompleted / this.totalSteps) * 100}%;"
+                      style="width: ${progress}%;"
                     ></div>
                   </div>
                   <span class="card-action">

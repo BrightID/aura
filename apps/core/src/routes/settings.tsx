@@ -43,7 +43,7 @@ export default function SettingsPage() {
           external
         />
         <SettingCard
-          icon="twitter"
+          icon="bird"
           label="X (Twitter)"
           href="https://x.com/brightidproject"
           external

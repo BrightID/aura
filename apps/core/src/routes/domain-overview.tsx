@@ -19,16 +19,16 @@ export default function DomainOverviewPage() {
       <a-head class="text-2xl">Domain Overview</a-head>
 
       <a-card variant="glass" class="flex flex-col gap-4 p-4">
-        <div class="flex justify-between gap-4">
-          <div class="flex-1">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
             <p class="text-sm text-muted-foreground">Domain</p>
             <p class="font-bold text-foreground">BrightID</p>
           </div>
-          <div class="flex-1">
+          <div>
             <p class="text-sm text-muted-foreground">Creator</p>
             <p class="font-bold text-foreground">Sina.eth</p>
           </div>
-          <div class="flex-1">
+          <div>
             <p class="text-sm text-muted-foreground">Created at</p>
             <p class="font-bold text-foreground">23 May 03</p>
           </div>
@@ -54,7 +54,7 @@ export default function DomainOverviewPage() {
                 <a-icon name={stat.icon} />
                 <p class="font-bold text-foreground">{stat.value}</p>
               </div>
-              <p class="text-right text-lg text-foreground/80">{stat.label}</p>
+              <p class="text-right text-lg text-foreground">{stat.label}</p>
             </a-card>
           )}
         </For>

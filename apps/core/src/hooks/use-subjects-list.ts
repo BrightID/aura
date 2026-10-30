@@ -2,6 +2,7 @@ import { useSearchParams } from '@solidjs/router';
 import { createMemo, createSignal } from 'solid-js';
 import { useBackup } from '@/hooks/use-backup';
 import { useMyEvaluationData } from '@/hooks/use-my-evaluations';
+import { isNotFound } from '@aura/domain/http';
 import { EvaluationCategory } from '@aura/domain/types/evaluations';
 import type {
   BrightIdBackupConnection,
@@ -31,9 +32,11 @@ const LEVELS: ConnectionLevel[] = [
  */
 export function useSubjectsList() {
   const backup = useBackup();
-  const { myRatings, connections: nodeConnections } = useMyEvaluationData(
-    () => EvaluationCategory.SUBJECT,
-  );
+  const {
+    myRatings,
+    connections: nodeConnections,
+    query: ratingsQuery,
+  } = useMyEvaluationData(() => EvaluationCategory.SUBJECT);
 
   // Connections to evaluate come from the decrypted recovery backup when we
   // have one. Passkey sessions have no backup (no password to decrypt with),
@@ -124,7 +127,9 @@ export function useSubjectsList() {
 
   return {
     subjects,
-    loading: () => backup.isLoading || myRatings() === null,
+    loading: () => subjects() === null && !ratingsQuery.isError,
+    // A 404 means this person has no connections yet, so that response is not a failure.
+    failed: () => ratingsQuery.isError && !isNotFound(ratingsQuery.error),
     levelOptions: LEVELS,
     search,
     setSearch,

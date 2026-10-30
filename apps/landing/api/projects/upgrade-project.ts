@@ -2,6 +2,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { and, eq } from 'drizzle-orm';
 import { getAuth } from 'firebase-admin/auth';
 import { z } from 'zod';
+import { paymentSettled, planChargeAmount, planGrant } from '../lib/billing.js';
 import withCors from '../lib/cors.js';
 import { db } from '../lib/db.js';
 import setupFirebaseApp from '../lib/firebase.js';
@@ -21,6 +22,8 @@ const upgradeSchema = z.object({
 });
 
 async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') return res.status(405).end();
+
   const token = req.headers['authorization']?.split('Bearer ')[1];
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -37,7 +40,11 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         .where(eq(projectsTable.id, projectId))
         .limit(1),
       db
-        .select({ tokens: verificationPlansTable.tokens })
+        .select({
+          tokens: verificationPlansTable.tokens,
+          monthlyPrice: verificationPlansTable.monthlyPrice,
+          yearlyPrice: verificationPlansTable.yearlyPrice,
+        })
         .from(verificationPlansTable)
         .where(
           and(
@@ -47,7 +54,14 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         )
         .limit(1),
       db
-        .select({ status: paymentsTable.status, userId: paymentsTable.userId })
+        .select({
+          status: paymentsTable.status,
+          userId: paymentsTable.userId,
+          projectId: paymentsTable.projectId,
+          planId: paymentsTable.planId,
+          isYearly: paymentsTable.isYearly,
+          amount: paymentsTable.amount,
+        })
         .from(paymentsTable)
         .where(eq(paymentsTable.orderId, orderId))
         .limit(1),
@@ -58,23 +72,41 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     if (!plan[0]) return res.status(400).json({ error: 'Plan not found' });
     if (!payment[0] || payment[0].userId !== uid)
       return res.status(400).json({ error: 'Payment record not found' });
-    if (payment[0].status !== 'finished')
+
+    const row = payment[0];
+    const matches =
+      row.projectId === projectId &&
+      row.planId === planId &&
+      Boolean(row.isYearly) === isYearly;
+
+    if (!matches)
+      return res.status(400).json({ error: 'Payment does not match this plan' });
+
+    if (!paymentSettled(row.status))
       return res
         .status(402)
-        .json({ error: 'Payment not completed', status: payment[0].status });
+        .json({ error: 'Payment not completed', status: row.status });
 
-    const deadline = new Date();
-    deadline.setMonth(deadline.getMonth() + (isYearly ? 12 : 1));
+    if (row.status === 'finished') {
+      const price = planChargeAmount(plan[0], isYearly);
+      if (price == null || row.amount !== price)
+        return res
+          .status(400)
+          .json({ error: 'Payment amount does not match plan price' });
 
-    await db
-      .update(projectsTable)
-      .set({
-        selectedPlanId: planId,
-        remainingtokens: plan[0].tokens ?? 0,
-        deadline,
-        updatedAt: new Date(),
-      })
-      .where(eq(projectsTable.id, projectId));
+      const now = new Date();
+      await db.transaction(async (tx) => {
+        await tx
+          .update(projectsTable)
+          .set(planGrant(planId, plan[0].tokens ?? 0, isYearly))
+          .where(eq(projectsTable.id, projectId));
+        // Required. Without this status update, the payment would stay `finished`. The next POST of this route would grant that plan's full token count again.
+        await tx
+          .update(paymentsTable)
+          .set({ status: 'completed', updatedAt: now })
+          .where(eq(paymentsTable.orderId, orderId));
+      });
+    }
 
     return res.json({ success: true });
   } catch (error) {

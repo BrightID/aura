@@ -65,8 +65,8 @@ export default function EvaluationCard(props: {
               data-testid={`evaluation-card-${e().evaluatorId}-rating`}
               class={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-bold ${
                 positive()
-                  ? 'bg-aura-success/15 text-emerald-700 dark:text-aura-success'
-                  : 'bg-destructive/15 text-red-700 dark:text-red-400'
+                  ? 'bg-aura-success/15 text-aura-success'
+                  : 'bg-destructive/15 text-destructive'
               }`}
             >
               <a-icon name={positive() ? 'thumbs-up' : 'thumbs-down'} />

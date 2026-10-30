@@ -62,7 +62,7 @@ export default function OverviewSection({
         <span
           className={cn(
             'size-2 rounded-full',
-            project.isActive ? 'bg-emerald-400' : 'bg-muted-foreground',
+            project.isActive ? 'bg-success' : 'bg-muted-foreground',
           )}
         />
       ),
@@ -129,10 +129,12 @@ export default function OverviewSection({
                 <code className="truncate rounded bg-muted px-1.5 py-0.5 text-xs">
                   {project.brightIdAppId}
                 </code>
-                <button
+                <a-button
                   type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-7"
                   onClick={copyId}
-                  className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                   aria-label={copied ? 'Copied' : 'Copy App ID'}
                 >
                   {copied ? (
@@ -140,7 +142,7 @@ export default function OverviewSection({
                   ) : (
                     <Copy className="size-3.5" />
                   )}
-                </button>
+                </a-button>
               </span>
             ) : (
               <button

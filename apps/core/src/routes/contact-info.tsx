@@ -37,8 +37,8 @@ export default function ContactInfoPage() {
           description: 'Only a hash of it is stored.',
         });
       },
-      onError: (e: unknown) =>
-        setError(e instanceof Error ? e.message : String(e)),
+      onError: () =>
+        setError('Could not save this contact. Try again.'),
     });
   };
 
@@ -46,7 +46,7 @@ export default function ContactInfoPage() {
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
       <a-head class="text-2xl">Your Contact info</a-head>
 
-      <a-text size="sm" class="text-muted-foreground">
+      <a-text size="sm" class="text-muted-foreground" variant="muted">
         This is how your friends and family find you and ask for verification.
         Contacts are stored as hashes, so the values themselves stay private.
       </a-text>

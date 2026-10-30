@@ -27,11 +27,10 @@ export class GravatarProfile extends SignalWatcher(LitElement) {
     .container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      border-radius: 8px;
-      max-width: 300px;
-      margin: 16px auto;
+      align-items: flex-start;
+      padding: 0;
+      max-width: 100%;
+      margin: 0;
     }
     img {
       width: 100px;
@@ -42,10 +41,11 @@ export class GravatarProfile extends SignalWatcher(LitElement) {
     h2 {
       font-size: 1.5rem;
       margin: 0 0 8px;
-      color: white;
+      color: var(--foreground);
+      overflow-wrap: anywhere;
     }
     a {
-      color: #007bff;
+      color: var(--primary);
       text-decoration: none;
       font-size: 1rem;
     }
@@ -54,17 +54,16 @@ export class GravatarProfile extends SignalWatcher(LitElement) {
     }
     div:empty {
       font-size: 1rem;
-      color: #666;
+      color: var(--muted-foreground);
       text-align: center;
       padding: 16px;
     }
 
     .container-prompt {
       text-align: left;
-      font-size: small;
-      color: #d3d3d3;
-      line-height: 20px;
-      margin-bottom: 15px;
+      font-size: 14px;
+      color: var(--muted-foreground);
+      line-height: 1.5;
     }
   `;
 
@@ -104,11 +103,8 @@ export class GravatarProfile extends SignalWatcher(LitElement) {
     if (!response.get())
       return html`
         <div class="container-prompt">
-          Enter your gravatar email to provide some basic information to aura
-          players to get verified
-          <br />
-          Create a gravatar account
-          <a target="_blank" href="https://gravatar.com">Here.</a>
+          Add a Gravatar email so players can see a name and photo.
+          <a target="_blank" href="https://gravatar.com">Create a Gravatar account</a>
         </div>
       `;
 

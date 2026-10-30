@@ -57,10 +57,7 @@ export default function OnboardingPage() {
       data-testid="onboarding-guide"
       class="flex min-h-[calc(100vh-80px)] flex-col px-5.5 pt-14 pb-4"
     >
-      <section
-        class="content pl-5 pr-10"
-        data-testid={`onboarding-step-${step()}`}
-      >
+      <section class="content" data-testid={`onboarding-step-${step()}`}>
         <FadeIn delay={0.1}>
           <a-head class="mb-2 text-4xl">{current().title}</a-head>
         </FadeIn>
@@ -102,7 +99,7 @@ export default function OnboardingPage() {
 
       <footer class="text-muted-foreground flex justify-end text-sm">
         <span class="flex gap-1">
-          <a-text class="text-muted-foreground/70">Powered by:</a-text>
+          <a-text class="text-muted-foreground">Powered by:</a-text>
           <a-text class="font-light">BrightID</a-text>
         </span>
       </footer>

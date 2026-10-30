@@ -60,15 +60,20 @@ export class PrivacyPolicyElement extends LitElement {
     }
 
     a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .back {
+      display: inline-flex;
+      margin-bottom: 16px;
       text-decoration: none;
-      color: #bfb3f8;
-      font-weight: bold;
     }
   `;
   protected render() {
     return html`
       <div class="container">
-        <a href="/interface/login">Back</a>
+        <a class="back" href="/interface/login">Back</a>
 
         <c-markdown markdown="${content}"></c-markdown>
       </div>

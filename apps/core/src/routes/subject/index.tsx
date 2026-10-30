@@ -6,7 +6,16 @@ import { useRequireSession } from '@/hooks/use-require-session';
 export default function SubjectSelfPage() {
   const subjectId = useRequireSession();
   return (
-    <Show when={subjectId()}>
+    <Show
+      when={subjectId()}
+      fallback={
+        <div class="px-5 pt-6">
+          <a-text size="sm" variant="muted">
+            Sign in to view your profile.
+          </a-text>
+        </div>
+      }
+    >
       {(id) => <Navigate href={`/subject/${id()}`} />}
     </Show>
   );

@@ -157,7 +157,8 @@ export default function OnboardingForm() {
   }
 
   return (
-    <a-card className="shadow-xl w-xl mx-auto">
+    <div className="mx-auto w-full max-w-xl px-4 py-10">
+    <a-card className="shadow-xl">
       <div className="flex flex-col gap-1.5 p-6">
         <a-head level="3" className="font-semibold">
           Onboarding Form
@@ -249,6 +250,7 @@ export default function OnboardingForm() {
         </form>
       </div>
     </a-card>
+    </div>
   );
 }
 

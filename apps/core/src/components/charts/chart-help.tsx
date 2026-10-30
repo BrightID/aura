@@ -29,18 +29,18 @@ export default function ChartHelp() {
 
   return (
     <a-dialog label="Reading the impact chart">
-      <button
+      <a-button
         slot="trigger"
-        type="button"
+        size="icon-sm"
+        variant="glass"
         aria-label="How to read this chart"
         data-testid="chart-help"
-        class="text-muted-foreground"
       >
         <a-icon name="info" />
-      </button>
+      </a-button>
       <div slot="content" class="flex w-80 max-w-full flex-col gap-3">
         <p class="font-bold text-foreground">Reading the impact chart</p>
-        <a-text size="sm" class="text-muted-foreground">
+        <a-text size="sm" class="text-muted-foreground" variant="muted">
           Each bar is one evaluator; its height is that evaluation's share of
           the subject's total impact. Bars below the line are negative
           evaluations. Darker shades mean higher confidence.

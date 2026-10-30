@@ -76,7 +76,7 @@ const Splash = () => {
               <a-text class="">{__APP_VERSION__}</a-text>
             </span>
             <span class="flex gap-1">
-              <a-text class="text-muted-foreground/70">Powered by:</a-text>
+              <a-text class="text-muted-foreground">Powered by:</a-text>
               <a-text class="font-light">BrightID</a-text>
             </span>
           </footer>

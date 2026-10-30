@@ -64,14 +64,16 @@ export default function ProjectsList() {
 
         {/* Filters */}
         <div className="flex items-center gap-4 px-6 pb-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="flex-1 max-w-sm">
             <a-input
               ref={searchRef}
               placeholder="Search projects..."
               value={searchQuery}
-              className="pl-9"
-            />
+            >
+              <span slot="prefix">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </span>
+            </a-input>
           </div>
           <a-select
             ref={statusRef}

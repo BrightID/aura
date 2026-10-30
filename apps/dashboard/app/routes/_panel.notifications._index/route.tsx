@@ -100,43 +100,43 @@ const emailRows: NotificationRow<EmailKey>[] = [
     key: 'paymentSuccess',
     label: 'Payment confirmed',
     description: 'When a payment successfully processes',
-    icon: <CreditCard className="size-4 text-green-500" />,
+    icon: <CreditCard className="size-4 text-success" />,
   },
   {
     key: 'paymentFailed',
     label: 'Payment failed',
     description: 'When a payment fails or expires',
-    icon: <CreditCard className="size-4 text-red-500" />,
+    icon: <CreditCard className="size-4 text-destructive" />,
   },
   {
     key: 'planActivated',
     label: 'Subscription activated',
     description: 'When your plan is upgraded',
-    icon: <Zap className="size-4 text-yellow-500" />,
+    icon: <Zap className="size-4 text-warning" />,
   },
   {
     key: 'usageLow',
     label: 'Low token usage',
     description: "When you've used 90% of your tokens",
-    icon: <AlertTriangle className="size-4 text-amber-500" />,
+    icon: <AlertTriangle className="size-4 text-warning" />,
   },
   {
     key: 'usageExhausted',
     label: 'Tokens exhausted',
     description: "When you've run out of tokens",
-    icon: <AlertTriangle className="size-4 text-red-500" />,
+    icon: <AlertTriangle className="size-4 text-destructive" />,
   },
   {
     key: 'projectUpdates',
     label: 'Project updates',
     description: 'When project settings are changed',
-    icon: <MessageSquare className="size-4 text-blue-500" />,
+    icon: <MessageSquare className="size-4 text-info" />,
   },
   {
     key: 'securityAlerts',
     label: 'Security alerts',
     description: 'New sign-in from unknown device or password change',
-    icon: <Shield className="size-4 text-violet-500" />,
+    icon: <Shield className="size-4 text-primary" />,
   },
   {
     key: 'productUpdates',
@@ -153,10 +153,10 @@ const inAppRows: NotificationRow<InAppKey>[] = emailRows
 // ─── Event type styling ───────────────────────────────────────────────────────
 
 const eventIconMap: Record<EventType, React.ReactNode> = {
-  success: <CheckCircle2 className="size-4 text-green-500 mt-0.5 shrink-0" />,
-  error: <AlertTriangle className="size-4 text-red-500 mt-0.5 shrink-0" />,
-  warning: <AlertTriangle className="size-4 text-amber-500 mt-0.5 shrink-0" />,
-  info: <Info className="size-4 text-blue-500 mt-0.5 shrink-0" />,
+  success: <CheckCircle2 className="size-4 text-success mt-0.5 shrink-0" />,
+  error: <AlertTriangle className="size-4 text-destructive mt-0.5 shrink-0" />,
+  warning: <AlertTriangle className="size-4 text-warning mt-0.5 shrink-0" />,
+  info: <Info className="size-4 text-info mt-0.5 shrink-0" />,
 };
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────

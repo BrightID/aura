@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,14 +17,18 @@ import { ImageIcon } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { API_BASE_URL } from '~/constants';
-import _ from 'lodash';
 import { getAuth } from 'firebase/auth';
 import type { Project } from '~/types/projects';
+import { copyToClipboard } from '~/utils/clipboard';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
-  websiteUrl: z.string().url().optional().or(z.literal('')),
+  websiteUrl: z
+    .string()
+    .url('Enter a valid URL')
+    .optional()
+    .or(z.literal('')),
   isActive: z.boolean(),
   logoUrl: z.string().optional(),
   image: z.string().optional(),
@@ -33,6 +38,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function SettingsTab({ project }: { project: Project }) {
+  const [copied, setCopied] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,9 +57,23 @@ export function SettingsTab({ project }: { project: Project }) {
     mutationFn: async (data: FormValues) => {
       const token = await getAuth().currentUser?.getIdToken();
 
+      const blankToNull = (value: string | undefined) => {
+        const trimmed = value?.trim() ?? '';
+        return trimmed === '' ? null : trimmed;
+      };
+
       return axios.post(
         `${API_BASE_URL}/api/projects/update-project`,
-        _.merge(project, data),
+        {
+          id: project.id,
+          name: data.name,
+          description: data.description?.trim() || undefined,
+          websiteUrl: blankToNull(data.websiteUrl),
+          isActive: data.isActive,
+          logoUrl: blankToNull(data.logoUrl),
+          image: blankToNull(data.image),
+          brightIdAppId: data.brightIdAppId,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -246,8 +266,19 @@ export function SettingsTab({ project }: { project: Project }) {
                   <FormControl>
                     <div className="flex gap-2">
                       <Input readOnly {...field} className="font-mono" />
-                      <a-button type="button" variant="outline" size="sm">
-                        Copy
+                      <a-button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const id = form.getValues('brightIdAppId');
+                          if (!id) return;
+                          copyToClipboard(id);
+                          setCopied(true);
+                          window.setTimeout(() => setCopied(false), 1500);
+                        }}
+                      >
+                        {copied ? 'Copied' : 'Copy'}
                       </a-button>
                     </div>
                   </FormControl>

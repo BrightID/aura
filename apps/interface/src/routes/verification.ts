@@ -8,8 +8,15 @@ import { getSubjectVerifications } from '@/utils/subject';
 import { signal, SignalWatcher } from '@lit-labs/signals';
 import { css, html, LitElement, type CSSResultGroup } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { pushRouter } from '@/router';
 
 const focusedProject = signal(null as Project | null);
+
+type Requirement = {
+  reason: string;
+  status: 'passed' | 'incomplete';
+  level: number;
+};
 
 @customElement('verification-page')
 export class VerificationPage extends SignalWatcher(LitElement) {
@@ -18,214 +25,57 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
   @state() private auraLevel = 0;
   @state() private isLoading = true;
+  @state() private loadFailed = false;
 
   static styles?: CSSResultGroup = css`
     :host {
       display: block;
-      --background: #0d0d1b;
-      --surface: #161b22;
-      --border: #30363d;
-      --foreground: #f0f6fc;
-      --muted: #8b949e;
-      --accent: #1f6feb;
-      --success: #238636;
-      --warning: #9e6a03;
     }
 
-    .container {
-      min-height: 100vh;
-      color: var(--foreground);
-      font-family:
-        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
-        sans-serif;
-      padding: 32px 24px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      max-width: 600px;
-      margin: 0 auto;
+    .eyebrow {
+      color: var(--muted-foreground);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
     }
 
-    .header {
-      margin-bottom: 32px;
-      text-align: left;
-    }
-
-    .project-name {
-      font-size: 28px;
-      font-weight: 700;
-      margin: 0 0 8px 0;
-      line-height: 1.2;
-    }
-
-    .project-meta {
-      font-size: 14px;
-      color: var(--muted);
+    .meta {
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-top: 8px;
     }
 
-    .level-badge {
-      background: var(--border);
-      color: var(--foreground);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .requirements-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .requirements-list {
+    .stack {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .req-card {
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
+    .req {
       display: flex;
       align-items: flex-start;
+      justify-content: space-between;
       gap: 12px;
-      font-size: 14px;
-      transition: border-color 0.2s;
+      min-width: 0;
     }
 
-    .req-card.passed {
-      border-color: rgba(35, 134, 54, 0.4);
+    .req a-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
-    .status-indicator {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
+    .req a-badge {
       flex-shrink: 0;
-      margin-top: 1px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .status-indicator.passed {
-      background-color: var(--success);
-      box-shadow: 0 0 6px rgba(35, 134, 54, 0.4);
-    }
-
-    .status-indicator.passed::after {
-      content: '';
-      width: 4px;
-      height: 8px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg) translate(-1px, -1px);
-    }
-
-    .status-indicator.pending {
-      border: 2px solid var(--muted);
-      background-color: transparent;
-    }
-
-    .req-content {
-      flex: 1;
-      text-align: left;
-    }
-
-    .req-reason {
-      font-size: 13px;
-      font-weight: 400;
-      margin: 0 0 2px;
-      color: var(--foreground);
-    }
-
-    .req-status-text {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Success */
-    .success-container {
-      text-align: center;
-      padding: 32px 24px;
-      background: var(--surface);
-      border-radius: 12px;
-      border: 1px solid var(--success);
-    }
-
-    .success-title {
-      color: #7ee787;
-      font-size: 22px;
-      font-weight: 700;
-      margin: 0 0 10px;
-    }
-
-    /* Auth gate */
-    .auth-gate {
-      text-align: center;
-      padding: 32px 24px;
-      background: var(--surface);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .auth-gate p {
-      color: var(--muted);
-      font-size: 14px;
-      margin: 0 0 20px;
-      line-height: 1.5;
-    }
-
-    /* Actions */
     .actions {
-      margin-top: 32px;
-      display: flex;
-      justify-content: center;
+      margin-top: 8px;
     }
 
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 22px;
-      background-color: var(--accent);
-      color: white;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 14px;
-      transition: background-color 0.2s;
+    .actions a-button {
       width: 100%;
-      box-sizing: border-box;
-    }
-
-    .back-btn:hover {
-      background-color: #1158c7;
-    }
-
-    .back-btn.secondary {
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-    }
-
-    .back-btn.secondary:hover {
-      background-color: #1c2128;
-    }
-
-    .loading {
-      color: var(--muted);
-      text-align: center;
-      margin-top: 40px;
-      font-size: 14px;
     }
   `;
 
@@ -236,6 +86,7 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
   private async _load() {
     this.isLoading = true;
+    this.loadFailed = false;
     try {
       const [projectsRes, levelData, subjectData] = await Promise.all([
         queryClient.ensureQueryData({
@@ -262,6 +113,9 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
       if (levelData) levelUpProgress.set(levelData.requirements);
       if (subjectData) this.auraLevel = subjectData.auraLevel ?? 0;
+      if (!focusedProject.get()) this.loadFailed = true;
+    } catch {
+      this.loadFailed = true;
     } finally {
       this.isLoading = false;
     }
@@ -269,105 +123,132 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
   protected render() {
     const project = focusedProject.get();
-    const requirements = levelUpProgress.get();
-    const brightId = userBrightId.get();
 
-    if (this.isLoading || !project) {
-      return html`<div class="container">
-        <div class="loading">Loading project details…</div>
-      </div>`;
+    if (this.isLoading) {
+      return html`
+        <a-skeleton style="height: 2rem; width: 14rem"></a-skeleton>
+        <a-skeleton style="height: 6rem"></a-skeleton>
+        <a-skeleton style="height: 6rem"></a-skeleton>
+      `;
     }
 
-    // Fix: check auraLevel directly against the requirement, not a broken array length check
+    if (this.loadFailed || !project) {
+      return html`
+        <a-card variant="default">
+          <a-head level="2">Project unavailable</a-head>
+          <a-text variant="muted">
+            This project could not be loaded.
+          </a-text>
+          <div class="actions">
+            <a-button variant="outline" @click=${() => pushRouter('/home')}>
+              Back home
+            </a-button>
+          </div>
+        </a-card>
+      `;
+    }
+
+    const brightId = userBrightId.get();
     const isVerified = this.auraLevel >= project.requirementLevel;
-    const activeRequirements = requirements.filter(
-      (r) => r.level <= project.requirementLevel,
-    );
+    const activeRequirements = levelUpProgress
+      .get()
+      .filter((item) => item.level <= project.requirementLevel);
 
     return html`
-      <div class="container">
-        <div class="header">
-          <h1 class="project-name">${project.name}</h1>
-          <div class="project-meta">
-            <span>Required Verification:</span>
-            <span class="level-badge">Level ${project.requirementLevel}</span>
-          </div>
+      <header>
+        <p class="eyebrow">Aura / Verified</p>
+        <a-head level="1">${project.name}</a-head>
+        <div class="meta">
+          <a-text variant="small">Required level</a-text>
+          <a-badge variant="secondary" size="sm">
+            Level ${project.requirementLevel}
+          </a-badge>
         </div>
-
-        ${
-          !brightId
-            ? this._renderAuthGate()
-            : isVerified
-              ? this._renderSuccess(project)
-              : this._renderRequirements(activeRequirements)
-        }
-      </div>
+      </header>
+      ${
+        !brightId
+          ? this._renderAuthGate()
+          : isVerified
+            ? this._renderSuccess(project)
+            : this._renderRequirements(activeRequirements)
+      }
     `;
   }
 
   private _renderAuthGate() {
     return html`
-      <div class="auth-gate">
-        <p>Connect your identity to check your verification status.</p>
+      <a-card variant="default">
+        <a-text variant="muted">
+          Connect your identity to check your verification status.
+        </a-text>
         <div class="actions">
-          <a href="/interface/login" class="back-btn">Sign In</a>
+          <a-button @click=${() => pushRouter('/login')}>Sign in</a-button>
         </div>
-      </div>
+      </a-card>
     `;
   }
 
   private _renderSuccess(project: Project) {
     return html`
-      <div class="success-container">
-        <div class="success-title">Verification Complete</div>
-        <p
-          style="color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0 0 4px;"
-        >
-          You have met all the requirements to access
-          <strong>${project.name}</strong>.
-        </p>
+      <a-card variant="default">
+        <a-badge variant="default" size="sm">Verified</a-badge>
+        <a-head level="3">Verification complete</a-head>
+        <a-text variant="muted">
+          You have met the requirements to access ${project.name}.
+        </a-text>
         <div class="actions">
-          <a href="/interface/home" class="back-btn">Continue to App</a>
+          <a-button @click=${() => pushRouter('/home')}>Back home</a-button>
         </div>
-      </div>
+      </a-card>
     `;
   }
 
-  private _renderRequirements(
-    requirements: {
-      reason: string;
-      status: 'passed' | 'incomplete';
-      level: number;
-    }[],
-  ) {
+  private _renderRequirements(requirements: Requirement[]) {
+    const total = requirements.length;
+    const done = requirements.filter((item) => item.status === 'passed').length;
+    const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+    if (total === 0) {
+      return html`
+        <a-card variant="default">
+          <a-text variant="muted">No requirements listed for this project.</a-text>
+        </a-card>
+        <div class="actions">
+          <a-button variant="outline" @click=${() => pushRouter('/home')}>
+            Back home
+          </a-button>
+        </div>
+      `;
+    }
+
     return html`
       <div>
-        <div class="requirements-title">Pending Actions</div>
-
-        <div class="requirements-list">
-          ${requirements.map((req) => {
-            const passed = req.status === 'passed';
-            return html`
-              <div class="req-card ${passed ? 'passed' : ''}">
-                <div
-                  class="status-indicator ${passed ? 'passed' : 'pending'}"
-                ></div>
-                <div class="req-content">
-                  <p class="req-reason">${req.reason}</p>
-                  <div class="req-status-text">
-                    ${passed ? 'Requirement met' : 'Action required'}
-                  </div>
-                </div>
+        <a-text variant="small">Progress</a-text>
+        <a-text variant="muted">${done} of ${total} complete</a-text>
+        <a-progress .value=${percent}></a-progress>
+      </div>
+      <div class="stack">
+        ${requirements.map((req) => {
+          const passed = req.status === 'passed';
+          return html`
+            <a-card variant="default">
+              <div class="req">
+                <a-text>${req.reason}</a-text>
+                <a-badge
+                  variant=${passed ? 'default' : 'secondary'}
+                  size="sm"
+                >
+                  ${passed ? 'Met' : 'Needed'}
+                </a-badge>
               </div>
-            `;
-          })}
-        </div>
-
-        <div class="actions">
-          <a href="/interface/home" class="back-btn secondary">
-            Back to Overview
-          </a>
-        </div>
+            </a-card>
+          `;
+        })}
+      </div>
+      <div class="actions">
+        <a-button variant="outline" @click=${() => pushRouter('/home')}>
+          Back home
+        </a-button>
       </div>
     `;
   }

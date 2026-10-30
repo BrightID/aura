@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '@aura/ui/tokens.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -7,13 +8,6 @@
   --font-sans:
     'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-}
-
-html,
-body {
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
 }
 
 @theme inline {
@@ -36,6 +30,9 @@ body {
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-success: var(--aura-success);
+  --color-warning: var(--aura-warning);
+  --color-info: var(--aura-info);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -72,6 +69,9 @@ body {
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--aura-success);
+  --color-warning: var(--aura-warning);
+  --color-info: var(--aura-info);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

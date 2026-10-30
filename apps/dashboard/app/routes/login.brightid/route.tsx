@@ -73,31 +73,25 @@ export default function LoginWithBrightId() {
   }, [generateBrightIDLink, universalLink]);
 
   return (
-    <div className="max-w-2xl pt-20 mx-auto">
-      <section className="text-center mb-6 pl-5 pr-12">
-        <FadeIn delay={0.1}>
-          <p data-testid="recovery-title" className="mb-6 text-5xl font-black">
-            Login
-          </p>
-        </FadeIn>
-        <FadeIn delay={0.15}>
-          <p className="text-lg font-medium">
-            <span className="hidden md:block">
-              Scan to log in with brightid
-            </span>
-            <span className="block md:hidden">Tap to log in with brightid</span>
-          </p>
-        </FadeIn>
-      </section>
+    <div className="relative z-10 mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
+      <FadeIn delay={0.1} className="space-y-2">
+        <h1 data-testid="recovery-title" className="text-3xl font-bold tracking-tight">
+          Login
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          <span className="hidden md:inline">Scan to log in with BrightID</span>
+          <span className="md:hidden">Tap to log in with BrightID</span>
+        </p>
+      </FadeIn>
 
-      <Link
-        className="mb-3 flex flex-col items-center gap-6 pl-8 pr-10"
-        to={universalLink}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {universalLink && (
-          <FadeIn delay={0.2}>
+      {universalLink ? (
+        <FadeIn delay={0.2}>
+          <Link
+            to={universalLink}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex rounded-xl bg-white p-3"
+          >
             <QRCode
               value={universalLink}
               size={qrCodeSize}
@@ -110,48 +104,56 @@ export default function LoginWithBrightId() {
               logoHeight={qrCodeSize * 0.25}
               id="qr-code"
             />
-          </FadeIn>
-        )}
-
-        <FadeIn delay={0.25} className="flex items-center gap-2">
-          <hr className="h-[1px] w-12" />
-          <p className="">Or</p>
-          <hr className="h-[1px] w-12" />
+          </Link>
         </FadeIn>
-        <FadeIn delay={0.25}>
-          <p className="text-lg font-medium">
-            Open the Link below on your phone
-          </p>
-        </FadeIn>
-      </Link>
+      ) : (
+        <a-skeleton className="size-[270px] max-w-full rounded-xl" />
+      )}
 
-      <FadeIn delay={0.3} className="actions mb-auto pb-16 text-center">
-        <section className="actions mb-auto pb-16 text-center">
-          <span className="flex w-full items-center justify-between gap-2 rounded-lg bg-gray00 py-2 pl-3 pr-2.5">
-            <a
-              href={universalLink}
-              target="_blank"
-              data-testid={universalLink && 'import-universal-link'}
-              className="text-left w-sm whitespace-nowrap line-clamp-1 text-sm text-ellipsis font-medium text-white underline"
-              rel="noreferrer"
-            >
-              {universalLink}
-            </a>
-            <CopyIcon onClick={copyQr} />
-          </span>
-        </section>
+      <FadeIn delay={0.25} className="flex w-full items-center gap-3">
+        <span className="h-px flex-1 bg-border" />
+        <span className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Or
+        </span>
+        <span className="h-px flex-1 bg-border" />
       </FadeIn>
-      <FadeIn delay={0.35}>
-        <footer className="flex justify-between text-sm text-gray90">
+
+      <FadeIn delay={0.3} className="flex w-full flex-col gap-3">
+        <p className="text-sm text-muted-foreground">
+          Open this link on your phone
+        </p>
+        <div className="flex w-full items-center gap-2 rounded-lg border bg-muted/50 py-1.5 pl-3 pr-1.5">
+          <a
+            href={universalLink || undefined}
+            target="_blank"
+            data-testid={universalLink ? 'import-universal-link' : undefined}
+            className="min-w-0 flex-1 truncate text-left text-sm font-medium text-foreground underline"
+            rel="noreferrer"
+          >
+            {universalLink || 'Preparing link…'}
+          </a>
+          <a-button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Copy link"
+            disabled={!universalLink}
+            onClick={copyQr}
+          >
+            <CopyIcon className="size-4" />
+          </a-button>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={0.35} className="w-full">
+        <footer className="flex justify-between text-sm text-muted-foreground">
           <span className="flex gap-1">
-            <p className="font-light">Version</p>
-            <p data-testid="app-version" className="">
-              {APP_VERSION}
-            </p>
+            <p>Version</p>
+            <p data-testid="app-version">{APP_VERSION}</p>
           </span>
           <span className="flex gap-1">
-            <p className="text-gray50">Powered by:</p>
-            <p className="font-light">BrightID</p>
+            <p>Powered by</p>
+            <p>BrightID</p>
           </span>
         </footer>
       </FadeIn>

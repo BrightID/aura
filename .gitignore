@@ -109,3 +109,6 @@ apps/core-old/src/stores/settings.ts
 apps/core-old/src/stores/user.ts
 apps/core-old/src/styles/index.css
 .aider*
+
+# Local Grok MCP override (Aura Linear app user). Not for the shared repo.
+.grok/

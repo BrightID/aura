@@ -40,7 +40,7 @@ export default function ProfileNotFoundHint(props: {
             : 'This subject has no profile yet'}
         </p>
       </div>
-      <a-text size="sm" class="text-muted-foreground">
+      <a-text size="sm" class="text-muted-foreground" variant="muted">
         {props.self
           ? 'Your profile is created when another player evaluates you. ' +
             'Share your profile link with a connection and ask for your first evaluation.'

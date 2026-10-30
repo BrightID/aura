@@ -45,7 +45,7 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
       box-shadow: none;
       border: none;
       text-decoration: none;
-      color: #bfb3f8;
+      color: var(--primary);
       font-weight: bold;
       cursor: pointer;
     }
@@ -57,34 +57,27 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
     }
 
     ol {
-      margin-top: 40px;
+      margin: 8px 0 0;
+      padding-left: 1.25rem;
     }
 
     li {
-      margin: 12px;
+      margin: 8px 0;
+    }
+
+    li a {
+      overflow-wrap: anywhere;
     }
 
     .qr-code {
-      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .qr-code img {
       display: block;
-      width: 100%;
+      width: min(100%, 320px);
       height: auto;
-    }
-
-    .container {
-      position: relative;
-      border-radius: 20px;
-      padding: 10px 0;
-      background-color: white;
-      width: 100%;
-      max-width: 375px;
-      box-sizing: border-box;
-      overflow: hidden;
-      margin: auto;
-    }
-
-    .title {
-      margin: 24px 0;
     }
 
     .instructions {
@@ -329,26 +322,34 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
     return html`
       <a class="back" href="/interface/login">Back</a>
 
-      <hero-section title="Login With BrightID"></hero-section>
+      <hero-section title="Sign in with BrightID"></hero-section>
 
-      <div class="container">
-        <img
-          class="qr-code"
-          .src=${brightIDQrImage.get()}
-          alt="Scan with BrightID to sign in"
-        />
-      </div>
+      <a-card variant="default">
+        <div class="qr-code">
+          ${
+            brightIDQrImage.get()
+              ? html`<img
+                  .src=${brightIDQrImage.get()}
+                  alt="Scan with BrightID to sign in"
+                />`
+              : html`<a-skeleton
+                  style="width: min(100%, 320px); height: 320px"
+                ></a-skeleton>`
+          }
+        </div>
+      </a-card>
       <div class="instructions">
-        <p>Steps to complete:</p>
+        <a-text variant="muted">Steps</a-text>
 
         <ol>
           <li>
-            Download the brightid application from here:
-            <a href="https://www.brightid.org/">Link</a>
+            Download BrightID from
+            <a href="https://www.brightid.org/">brightid.org</a>.
           </li>
           <li>
-            Scan the qr code above or click
-            <a href="${brightIDQRLink.get()}">Here</a> to open the app
+            Scan the QR code, or
+            <a href="${brightIDQRLink.get()}">open this link</a>
+            in the app.
           </li>
         </ol>
       </div>

@@ -158,14 +158,14 @@ export default function SubjectPage() {
   return (
     <div class="flex flex-col gap-4 px-5 pt-6 pb-10">
       {/* ── Header: back link + view-as switcher (each role is a route) ── */}
-      <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center justify-between gap-3">
         <A
           href="/home"
           class="flex shrink-0 items-center gap-1 whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <a-icon name="arrow-left" /> Back
         </A>
-        <div class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+        <div class="-mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 pb-1">
           <For each={authorizedViewAs()}>
             {(c) => (
               <a-button
@@ -284,8 +284,12 @@ export default function SubjectPage() {
             <SearchInput />
             <ListState
               loading={inbound.loading()}
+              error={inbound.failed()}
+              errorText="Couldn't load evaluations."
               empty={filteredEvaluations().length === 0}
-              emptyText="No evaluations yet."
+              emptyText={
+                search().trim() ? 'No matches.' : 'No evaluations yet.'
+              }
             >
               <IncrementalList
                 items={filteredEvaluations()}
@@ -309,8 +313,12 @@ export default function SubjectPage() {
                 <SearchInput />
                 <ListState
                   loading={connections.loading()}
+                  error={connections.failed()}
+                  errorText="Couldn't load connections."
                   empty={filteredConnections().length === 0}
-                  emptyText="No connections yet."
+                  emptyText={
+                    search().trim() ? 'No matches.' : 'No connections yet.'
+                  }
                 >
                   <IncrementalList
                     items={filteredConnections()}
@@ -334,8 +342,12 @@ export default function SubjectPage() {
                 <SearchInput />
                 <ListState
                   loading={activity.loading()}
+                  error={activity.failed()}
+                  errorText="Couldn't load activity."
                   empty={filteredActivity().length === 0}
-                  emptyText="No activity yet."
+                  emptyText={
+                    search().trim() ? 'No matches.' : 'No activity yet.'
+                  }
                 >
                   <IncrementalList
                     items={filteredActivity()}

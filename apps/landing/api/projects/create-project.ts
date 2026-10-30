@@ -18,7 +18,6 @@ const createProjectSchema = z.object({
   isActive: z.boolean().optional().default(true),
   websiteUrl: z.url().optional(),
   brightIdAppId: z.string().max(500).optional(),
-  deadline: z.coerce.date().optional(),
 });
 
 async function handler(req: VercelRequest, res: VercelResponse) {
@@ -29,11 +28,28 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { uid } = await getAuth().verifyIdToken(token);
-    const body = createProjectSchema.parse(req.body);
+    const {
+      name,
+      description,
+      image,
+      landingMarkdown,
+      logoUrl,
+      isActive,
+      websiteUrl,
+      brightIdAppId,
+    } = createProjectSchema.parse(req.body);
 
     await db.insert(projectsTable).values({
-      ...body,
+      name,
+      description,
+      image,
+      landingMarkdown,
+      logoUrl,
+      isActive,
+      websiteUrl,
+      brightIdAppId,
       creatorId: uid,
+      // Free-plan starting balance. A later payment overwrites remainingtokens with that plan's token count. It does not add to this 1000.
       remainingtokens: 1000,
       requirementLevel: 1,
     });

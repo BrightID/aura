@@ -2,7 +2,12 @@ import { plans } from '~/constants/subscriptions';
 import type { Project } from '~/types/projects';
 
 export default function ProjectUsage({ project }: { project: Project }) {
-  const sub = plans.find((item) => project.selectedPlanId === item.id)!;
+  const sub =
+    plans.find((item) => item.id === (project.selectedPlanId ?? null)) ??
+    plans[0];
+  const allowance = sub.tokens || 1;
+  const remaining = project.remainingtokens ?? 0;
+  const available = Math.min((remaining / allowance) * 100, 100);
 
   return (
     <div className="space-y-6">
@@ -22,17 +27,10 @@ export default function ProjectUsage({ project }: { project: Project }) {
                 Remaining Tokens
               </span>
               <span className="text-sm font-medium">
-                {project.remainingtokens.toLocaleString()} /{' '}
-                {sub.tokens.toLocaleString()}
+                {remaining.toLocaleString()} / {allowance.toLocaleString()}
               </span>
             </div>
-            <a-progress
-              value={Math.min(
-                (project.remainingtokens / sub.tokens) * 100,
-                100,
-              )}
-              className="h-3"
-            />
+            <a-progress value={available} className="h-3" />
           </div>
 
           <a-separator />
@@ -40,20 +38,18 @@ export default function ProjectUsage({ project }: { project: Project }) {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <p className="text-3xl font-semibold">
-                {project.remainingtokens.toLocaleString()}
+                {remaining.toLocaleString()}
               </p>
               <p className="text-sm text-muted-foreground mt-1">Remaining</p>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <p className="text-3xl font-semibold">
-                {(sub.tokens - project.remainingtokens).toLocaleString()}
+                {Math.max(0, allowance - remaining).toLocaleString()}
               </p>
               <p className="text-sm text-muted-foreground mt-1">Used</p>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <p className="text-3xl font-semibold">
-                {((project.remainingtokens / sub.tokens) * 100).toFixed(1)}%
-              </p>
+              <p className="text-3xl font-semibold">{available.toFixed(1)}%</p>
               <p className="text-sm text-muted-foreground mt-1">Available</p>
             </div>
           </div>

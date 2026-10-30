@@ -29,12 +29,12 @@ const formSchema = z.object({
   usingBlindSig: z.boolean(),
   verifications: z.string().optional(),
   verificationExpirationLength: z.coerce.number().optional(),
-  nodeUrl: z.url().optional().or(z.literal('')),
+  nodeUrl: z.url('Enter a valid URL').optional().or(z.literal('')),
   context: z.string().optional(),
   description: z.string().optional(),
   links: z.string().optional(),
   images: z.string().optional(),
-  callbackUrl: z.url().optional().or(z.literal('')),
+  callbackUrl: z.url('Enter a valid URL').optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof formSchema>;

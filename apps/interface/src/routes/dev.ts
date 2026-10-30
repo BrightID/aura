@@ -14,10 +14,10 @@ export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
       padding: 24px;
       max-width: 1200px;
       margin: 0 auto;
-      font-family: Arial, sans-serif;
+      font-family: inherit;
     }
     a {
-      color: #bfb3f8;
+      color: var(--primary);
       font-weight: bold;
       text-decoration: none;
       display: block;

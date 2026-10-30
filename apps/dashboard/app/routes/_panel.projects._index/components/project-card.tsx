@@ -98,7 +98,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Zap className="h-3 w-3" />
-          {project.remainingtokens.toLocaleString()} tokens
+          {(project.remainingtokens ?? 0).toLocaleString()} tokens
         </div>
       </div>
 

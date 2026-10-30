@@ -12,7 +12,7 @@ import { getAuthHeaders } from '~/utils/apis';
 import * as React from 'react';
 
 const chartConfig = {
-  verifications: { label: 'Verifications', color: 'hsl(var(--primary))' },
+  verifications: { label: 'Verifications', color: 'var(--primary)' },
 } satisfies import('~/components/ui/chart').ChartConfig;
 
 async function fetchUsage(projectId: string) {
@@ -32,7 +32,11 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
   useAuraEvent<string>(toggleRef, 'change', (v) => v && setTimeRange(v));
   useAuraEvent<string>(selectRef, 'change', setTimeRange);
 
-  const { data: chartData = [] } = useQuery({
+  const {
+    data: chartData = [],
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: ['project-usage', projectId],
     queryFn: () => fetchUsage(projectId),
     enabled: Boolean(projectId),
@@ -92,6 +96,17 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
         </div>
       </div>
       <div className="p-6 pt-0">
+        {isError ? (
+          <p className="py-16 text-center text-sm text-destructive">
+            Could not load verifications.
+          </p>
+        ) : isPending ? (
+          <a-skeleton className="h-[300px] w-full" />
+        ) : filteredData.length === 0 ? (
+          <p className="py-16 text-center text-sm text-muted-foreground">
+            No verifications in this range.
+          </p>
+        ) : (
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <AreaChart data={filteredData}>
             <defs>
@@ -127,6 +142,7 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
             />
           </AreaChart>
         </ChartContainer>
+        )}
       </div>
     </a-card>
   );

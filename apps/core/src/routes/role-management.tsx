@@ -64,7 +64,14 @@ export default function RoleManagementPage() {
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
       <a-head class="text-2xl">Role Management</a-head>
 
-      <Show when={subjectId()}>
+      <Show
+        when={subjectId()}
+        fallback={
+          <a-text size="sm" variant="muted">
+            Sign in to see your roles.
+          </a-text>
+        }
+      >
         <For each={ROLES}>
           {(role) => (
             <RoleCard

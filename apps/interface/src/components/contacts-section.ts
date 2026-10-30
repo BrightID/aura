@@ -20,87 +20,83 @@ const isTried = signal(false);
 @customElement('contacts-section')
 export class ContactsSection extends SignalWatcher(LitElement) {
   static styles?: CSSResultGroup | undefined = css`
-    .card {
-      background: linear-gradient(
-        to bottom,
-        rgba(46, 51, 90, 0.26),
-        rgba(28, 27, 51, 0.26) 100%
-      );
-      box-shadow: 0px 1px 0px 0px #ffffff40 inset;
-      backdrop-filter: blur(31.5px);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      text-align: left;
-      margin-bottom: 2rem;
-    }
-
-    .muted {
-      color: #999999;
-      font-size: 14px;
-    }
-
-    .text-xs {
-      font-size: 12px;
-    }
-
     .title {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-weight: bold;
-      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .title img {
+      flex-shrink: 0;
+    }
+
+    .title a-head {
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     a {
-      text-decoration: none;
-      color: #bfb3f8;
-      font-weight: bold;
+      color: var(--primary);
+      font-weight: 600;
     }
 
     .integrations {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 5px;
     }
 
-    button {
-      /* padding: 5px 22px; */
-      /* background: linear-gradient(to bottom, rgba(46, 51, 90, 0.26), rgba(28, 27, 51, 0.26) 100%); */
-      background-color: transparent;
-      cursor: pointer;
-      outline: none;
-      border: none;
-      color: white;
+    .integrations a-button::part(button) {
+      height: auto;
+      gap: 8px;
+      padding: 8px 12px;
     }
 
     .contact-card {
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 10px;
-      margin: 8px;
-      background: #ffffff1a;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin: 8px 0;
+      background: color-mix(in oklch, var(--foreground) 6%, transparent);
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .contact-copy {
+      min-width: 0;
+    }
+
+    .contact-card a-button {
+      flex-shrink: 0;
     }
 
     .contact-header {
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 600;
-      color: #ffffff;
-      margin: 0 0 8px;
+      color: var(--foreground);
+      margin: 0 0 4px;
+      overflow-wrap: anywhere;
     }
 
     .contact-value {
-      font-size: 1rem;
-      color: #cfcfcf;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
       margin: 0;
+      overflow-wrap: anywhere;
     }
 
-    hr {
-      border-color: #45454b;
-      margin: 20px;
+    .divider {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .note {
+      margin-top: 12px;
     }
   `;
 
@@ -181,46 +177,50 @@ export class ContactsSection extends SignalWatcher(LitElement) {
   }
 
   protected render() {
-    return html` <div class="card">
+    return html` <a-card variant="default">
       <div class="title">
-        <img src="${contactsIcon}" width="24" height="24" alt="contacts" />
-        Search Contacts for Verifiers
+        <img src="${contactsIcon}" width="24" height="24" alt="" />
+        <a-head level="3">Search Contacts for Verifiers</a-head>
       </div>
 
-      <p class="muted">Discover who in your contacts is in Aura.</p>
+      <a-text variant="muted">Discover who in your contacts is in Aura.</a-text>
 
       ${
         isTried.get() && foundAuraPlayersFromContact.get().length === 0
-          ? html`<p>No Contacts Found in aura</p>`
+          ? html`<a-text variant="muted">No contacts found in Aura.</a-text>`
           : foundAuraPlayersFromContact.get().length > 0
-            ? html`<p>Aura Players List</p>`
+            ? html`<a-text>Aura players</a-text>`
             : ``
       }
       ${map(
         foundAuraPlayersFromContact.get(),
         (contact) => html`
           <div class="contact-card">
-            <div>
+            <div class="contact-copy">
               <h5 class="contact-header">${contact.name}</h5>
               <p class="contact-value">${contact.value}</p>
             </div>
-            <button @click=${this.openContactMethod.bind(null, contact.value)}>
+            <a-button
+              size="sm"
+              variant="outline"
+              @click=${() => this.openContactMethod(contact.value)}
+            >
               Contact
-            </button>
+            </a-button>
           </div>
         `,
       )}
-      <hr />
+      <hr class="divider" />
       <div class="integrations">
-        <button @click=${this.onGoogleContactsClick}>
-          <img .src=${googleIcon} width="39" height="39px" alt="google" />
-          <p>Google</p>
-        </button>
+        <a-button variant="outline" @click=${this.onGoogleContactsClick}>
+          <img .src=${googleIcon} width="24" height="24" alt="" />
+          Google
+        </a-button>
       </div>
 
-      <p class="muted text-xs">
+      <a-text variant="muted" size="xs" class="note">
         This is completely private, <a href="#">learn more</a>
-      </p>
-    </div>`;
+      </a-text>
+    </a-card>`;
   }
 }

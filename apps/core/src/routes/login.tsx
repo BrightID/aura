@@ -212,68 +212,98 @@ export default function LoginPage() {
           </FadeIn>
         </section>
 
-        <a
-          class="mb-4 flex flex-col items-center gap-4 text-center"
-          href={universalLink()}
-          target="_blank"
-          rel="noreferrer"
-          data-testid={universalLink() ? 'import-universal-qr-code' : undefined}
-        >
-          <Show when={qrImage()}>
-            <FadeIn delay={0.2}>
-              <img
-                id="qr-code"
-                src={qrImage()}
-                width={QR_SIZE}
-                height={QR_SIZE}
-                alt="login qr code"
-                class="h-auto max-w-full rounded-lg bg-white p-2"
-              />
-            </FadeIn>
+        <div class="mb-4 flex flex-col items-center gap-4 text-center">
+          <Show
+            when={qrImage()}
+            fallback={
+              <div class="bg-muted flex h-[270px] w-full max-w-[270px] items-center justify-center rounded-lg px-6 text-center text-sm">
+                <Show
+                  when={recoveryStore.recoverStep === 'ERROR'}
+                  fallback={
+                    <span class="text-muted-foreground">
+                      Preparing login code…
+                    </span>
+                  }
+                >
+                  <div class="flex flex-col items-center gap-3">
+                    <span class="text-destructive">
+                      Couldn't create a BrightID login code.
+                    </span>
+                    <a-button
+                      size="sm"
+                      variant="glass"
+                      onClick={() => window.location.reload()}
+                    >
+                      Try again
+                    </a-button>
+                  </div>
+                </Show>
+              </div>
+            }
+          >
+            <a
+              href={universalLink()}
+              target="_blank"
+              rel="noreferrer"
+              data-testid="import-universal-qr-code"
+            >
+              <FadeIn delay={0.2}>
+                <img
+                  id="qr-code"
+                  src={qrImage()}
+                  width={QR_SIZE}
+                  height={QR_SIZE}
+                  alt="login qr code"
+                  class="h-auto max-w-full rounded-lg bg-white p-2"
+                />
+              </FadeIn>
+            </a>
           </Show>
 
-          <FadeIn delay={0.25}>
-            <div class="flex items-center gap-2">
-              <hr class="h-px w-12" />
-              <a-text>Or</a-text>
-              <hr class="h-px w-12" />
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.25}>
-            <a-text size="lg" class="font-medium">
-              Open the link below on your phone
-            </a-text>
-          </FadeIn>
-        </a>
+          <Show when={universalLink()}>
+            <FadeIn delay={0.25}>
+              <div class="flex items-center gap-2">
+                <hr class="h-px w-12 border-0 bg-border" />
+                <a-text>Or</a-text>
+                <hr class="h-px w-12 border-0 bg-border" />
+              </div>
+            </FadeIn>
+            <FadeIn delay={0.25}>
+              <a-text size="lg" class="font-medium">
+                Open the link below on your phone
+              </a-text>
+            </FadeIn>
+          </Show>
+        </div>
 
         <FadeIn delay={0.3}>
           <section class="actions mb-auto pb-8 text-center">
-            <span class="bg-muted flex w-full items-center justify-between gap-2 rounded-lg py-2 pl-3 pr-2.5">
-              <a
-                href={universalLink()}
-                target="_blank"
-                rel="noreferrer"
-                data-testid={
-                  universalLink() ? 'import-universal-link' : undefined
-                }
-                class="min-w-0 flex-1 truncate text-left text-sm font-medium text-foreground underline"
-              >
-                {universalLink()}
-              </a>
-              <button
-                type="button"
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md hover:bg-foreground/10"
-                onClick={copyLink}
-                aria-label="Copy link"
-              >
-                <a-icon name="copy" />
-              </button>
-            </span>
+            <Show when={universalLink()}>
+              <span class="bg-muted flex w-full items-center justify-between gap-2 rounded-lg py-2 pl-3 pr-2.5">
+                <a
+                  href={universalLink()}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-testid="import-universal-link"
+                  class="min-w-0 flex-1 truncate text-left text-sm font-medium text-foreground underline"
+                >
+                  {universalLink()}
+                </a>
+                <a-button
+                  size="icon-sm"
+                  variant="glass"
+                  onClick={copyLink}
+                  aria-label="Copy link"
+                >
+                  <a-icon name="copy" />
+                </a-button>
+              </span>
+            </Show>
 
             <div class="mt-5 flex items-center justify-center gap-2">
-              <hr class="h-px w-12" />
+              <hr class="h-px w-12 border-0 bg-border" />
               <a-text>Or</a-text>
-              <hr class="h-px w-12" />
+              <hr class="h-px w-12 border-0 bg-border" />
             </div>
 
             <a-button
@@ -287,17 +317,17 @@ export default function LoginPage() {
                 ? 'Waiting for passkey...'
                 : 'Sign in with passkey'}
             </a-button>
-            <button
-              type="button"
+            <a-button
+              variant="ghost"
+              class="mt-3 w-full"
               data-testid="passkey-create"
-              class="text-muted-foreground mt-3 min-h-10 text-sm underline disabled:opacity-50"
               disabled={passkeyBusy()}
               onClick={() => !passkeyBusy() && passkeyCreate.mutate()}
             >
               {hasPasskeyCredential()
                 ? 'Create a new passkey identity'
                 : 'New to Aura? Create a passkey'}
-            </button>
+            </a-button>
           </section>
         </FadeIn>
 
@@ -308,7 +338,7 @@ export default function LoginPage() {
               <a-text data-testid="app-version">{__APP_VERSION__}</a-text>
             </span>
             <span class="flex gap-1">
-              <a-text class="text-muted-foreground/70">Powered by:</a-text>
+              <a-text class="text-muted-foreground">Powered by:</a-text>
               <a-text class="font-light">BrightID</a-text>
             </span>
           </footer>

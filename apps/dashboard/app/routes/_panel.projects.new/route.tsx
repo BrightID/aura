@@ -17,13 +17,22 @@ import { toast } from 'sonner';
 import { API_BASE_URL } from '~/constants';
 
 const formSchema = z.object({
-  name: z.string().min(1, 'Required').max(255),
-  description: z.string().min(1, 'Required').max(255),
-  image: z.url().optional().or(z.literal('')),
-  logoUrl: z.url().optional().or(z.literal('')),
-  websiteUrl: z.url().optional().or(z.literal('')),
+  name: z
+    .string()
+    .min(1, 'Project name is required')
+    .max(255, 'Use 255 characters or fewer'),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(255, 'Use 255 characters or fewer'),
+  image: z.url('Enter a valid URL').optional().or(z.literal('')),
+  logoUrl: z.url('Enter a valid URL').optional().or(z.literal('')),
+  websiteUrl: z.url('Enter a valid URL').optional().or(z.literal('')),
   remainingtokens: z.coerce.number().int().min(0).optional(),
-  brightIdAppId: z.string().max(500).optional(),
+  brightIdAppId: z
+    .string()
+    .max(500, 'Use 500 characters or fewer')
+    .optional(),
   deadline: z.string().optional(),
 });
 
@@ -74,7 +83,7 @@ export default function CreateProjectPage() {
               <Field data-invalid={!!errors.name}>
                 <FieldLabel>Project Name</FieldLabel>
                 <FieldDescription>
-                  Choose a clear, memorable name (max 100 chars)
+                  Choose a clear, memorable name (255 characters max)
                 </FieldDescription>
                 <Input
                   placeholder="e.g. Save the Rainforest"
@@ -86,7 +95,7 @@ export default function CreateProjectPage() {
               <Field data-invalid={!!errors.description}>
                 <FieldLabel>Description</FieldLabel>
                 <FieldDescription>
-                  Tell people what your project is about (10–500 chars)
+                  Tell people what your project is about (255 characters max)
                 </FieldDescription>
                 <Textarea
                   rows={4}
@@ -160,8 +169,8 @@ export default function CreateProjectPage() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-                  <p className="text-white text-3xl font-bold">
+                <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary to-primary/70">
+                  <p className="text-3xl font-bold text-primary-foreground">
                     Your Project Banner
                   </p>
                 </div>

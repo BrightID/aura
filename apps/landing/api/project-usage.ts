@@ -4,6 +4,7 @@ import { requireUid } from './lib/auth.js';
 import withCors from './lib/cors.js';
 import { db } from './lib/db.js';
 import { projectsTable, verificationsTable } from './lib/schema.js';
+import { usageDay, usageWindow } from './lib/usage-window.js';
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   const uid = await requireUid(req, res);
@@ -35,24 +36,16 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       .groupBy(sql`DATE(${verificationsTable.verifiedAt})`)
       .orderBy(sql`date`);
 
-    const today = new Date();
-    const dates = [];
-    for (
-      let d = new Date(today);
-      d >= new Date(today.setDate(today.getDate() - 89));
-      d.setDate(d.getDate() - 1)
-    ) {
-      dates.push(new Date(d));
+    const counts = new Map<string, number>();
+    for (const row of usage) {
+      const day = usageDay(row.date);
+      if (day) counts.set(day, Number(row.verifications) || 0);
     }
 
-    const filledData = dates.map((date) => {
-      const iso = date.toISOString().split('T')[0];
-      const found = usage.find((u) => u.date === iso);
-      return {
-        date: iso,
-        verifications: found?.verifications || 0,
-      };
-    });
+    const filledData = usageWindow().map((date) => ({
+      date,
+      verifications: counts.get(date) ?? 0,
+    }));
 
     return res.json({ data: filledData });
   } catch {

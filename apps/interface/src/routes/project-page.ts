@@ -1,4 +1,3 @@
-import '@/components/common/profile-card';
 import { pushRouter } from '@/router';
 import { projects, trackedProject } from '@/states/projects';
 import { levelUpProgress } from '@/states/user';
@@ -8,7 +7,7 @@ import { EvaluationCategory } from '@/utils/aura';
 import { getLevelupProgress } from '@/utils/score';
 import { signal, SignalWatcher } from '@lit-labs/signals';
 import { css, html, LitElement, type CSSResultGroup } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 
 const focusedProject = signal(null as Project | null);
 const progress = signal(0);
@@ -20,141 +19,57 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
   })
   projectId!: number;
 
+  @state() private isLoading = true;
+  @state() private loadFailed = false;
+
   static styles?: CSSResultGroup = css`
     :host {
       display: block;
-      max-width: 800px;
-      margin: 0 auto;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .container {
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
     .project-image {
-      max-width: 100%;
+      width: 100%;
       height: auto;
-      border-radius: 12px;
-      margin-bottom: 24px;
-      transition: transform 0.3s ease;
-    }
-
-    .project-image:hover {
-      transform: scale(1.02);
-    }
-
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
+      border-radius: var(--radius);
       margin-bottom: 16px;
-      line-height: 1.2;
     }
 
     .description {
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 24px;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+      margin: 8px 0 0;
+      overflow-wrap: anywhere;
     }
 
-    .info-section {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-bottom: 24px;
-      padding: 16px;
-      background: white;
-      border-radius: 12px;
+    .actions {
+      margin-top: 20px;
     }
 
-    .info-item {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .info-item label {
-      font-weight: 600;
-      color: #2d3748;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .info-item span {
-      color: #4a5568;
-    }
-
-    .continue-button {
-      background: linear-gradient(90deg, #007bff 0%, #00c4b4 100%);
-      color: white;
-      padding: 12px 32px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .continue-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-    }
-
-    .continue-button svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .progress-bar {
-      margin-top: 24px;
-      background: #e2e8f0;
-      border-radius: 8px;
-      height: 8px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #48bb78;
-      transition: width 0.5s ease;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        padding: 16px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
-      .description {
-        font-size: 14px;
-      }
-
-      .info-section {
-        flex-direction: column;
-      }
+    .actions a-button {
+      width: 100%;
     }
   `;
 
   connectedCallback(): void {
     super.connectedCallback();
-    const fetchData = queryClient
+    this.isLoading = true;
+    this.loadFailed = false;
+    queryClient
       .ensureQueryData({
         queryKey: ['projects'],
         queryFn: getProjects,
       })
       .then((res) => {
         projects.set(res);
-        focusedProject.set(
-          res.find((item) => item.id === this.projectId) ?? null,
-        );
+        const match = res.find((item) => item.id === this.projectId) ?? null;
+        focusedProject.set(match);
+        if (!match) this.loadFailed = true;
+      })
+      .catch(() => {
+        this.loadFailed = true;
+      })
+      .finally(() => {
+        this.isLoading = false;
       });
 
     getLevelupProgress({ evaluationCategory: EvaluationCategory.SUBJECT }).then(
@@ -167,15 +82,31 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
 
   protected trackProject() {
     trackedProject.set(focusedProject.get());
-    pushRouter(`/`);
+    pushRouter('/home');
   }
 
   protected render() {
+    if (this.isLoading) {
+      return html`<a-skeleton style="height: 12rem"></a-skeleton>`;
+    }
+
     const project = focusedProject.get();
-    if (!project) return html`<p>Loading...</p>`;
+    if (this.loadFailed || !project) {
+      return html`
+        <a-card variant="default">
+          <a-head level="2">Project unavailable</a-head>
+          <a-text variant="muted">That project could not be loaded.</a-text>
+          <div class="actions">
+            <a-button variant="outline" @click=${() => pushRouter('/home')}>
+              Back home
+            </a-button>
+          </div>
+        </a-card>
+      `;
+    }
 
     return html`
-      <div class="container">
+      <a-card variant="default">
         ${
           project.image
             ? html`<img
@@ -185,29 +116,17 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
               />`
             : ''
         }
-        <h1>${project.name} Verification</h1>
+        <a-head level="1">${project.name}</a-head>
         <p class="description">
           ${project.description || 'No description available.'}
         </p>
-
         <p class="description">
-          To claim your reward, complete the verification process through Aura.
+          To claim your reward, complete verification in Aura.
         </p>
-        <!-- <div class="progress-bar">
-          <div class="progress-fill" style="width: ${progress.get()}%"></div>
-        </div> -->
-        <button class="continue-button" @click=${this.trackProject}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-          Continue to Verification
-        </button>
-      </div>
+        <div class="actions">
+          <a-button @click=${this.trackProject}>Continue</a-button>
+        </div>
+      </a-card>
     `;
   }
 }

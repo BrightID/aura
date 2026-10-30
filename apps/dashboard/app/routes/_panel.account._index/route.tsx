@@ -254,7 +254,7 @@ function ProfileSection({ user }: { user: User }) {
                     {user.emailVerified ? (
                       <Badge
                         variant="secondary"
-                        className="shrink-0 gap-1 text-green-600 border-green-200 bg-green-50"
+                        className="shrink-0 gap-1 border-success/30 bg-success/15 text-success"
                       >
                         <Check className="h-3 w-3" />
                         Verified
@@ -262,7 +262,7 @@ function ProfileSection({ user }: { user: User }) {
                     ) : (
                       <Badge
                         variant="outline"
-                        className="shrink-0 gap-1 text-amber-600 border-amber-200 bg-amber-50"
+                        className="shrink-0 gap-1 border-warning/30 bg-warning/15 text-warning"
                       >
                         <AlertTriangle className="h-3 w-3" />
                         Unverified
@@ -611,7 +611,7 @@ function AccountDetailsSection({ user }: { user: User }) {
             >
               {copied ? (
                 <>
-                  <CheckCheck className="h-3.5 w-3.5 text-green-500" />
+                  <CheckCheck className="h-3.5 w-3.5 text-success" />
                   Copied
                 </>
               ) : (

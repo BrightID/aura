@@ -12,13 +12,31 @@ export class NotificationsPage extends LitElement {
     section {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 16px;
+      min-width: 0;
     }
 
     .filter {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter a-button {
+      flex: 0 0 auto;
+    }
+
+    .filter a-button[variant='ghost']::part(button) {
+      color: var(--muted-foreground);
+    }
+
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--muted-foreground);
     }
   `;
 
@@ -26,7 +44,7 @@ export class NotificationsPage extends LitElement {
 
   private filters = [
     { label: 'All', type: null },
-    { label: 'Alert', type: 'alert' },
+    { label: 'Score', type: 'score' },
     { label: 'Evaluations', type: 'evaluation' },
     { label: 'Level', type: 'level' },
   ];
@@ -38,20 +56,14 @@ export class NotificationsPage extends LitElement {
 
   protected render() {
     const items = notificationItems.get();
-    const filtered =
-      this.activeFilter === 'All'
-        ? items
-        : items.filter((item) => {
-            if (this.activeFilter === 'Evaluations')
-              return item.changeType === 'evaluation';
-            if (this.activeFilter === 'Level')
-              return item.changeType === 'level';
-            return true;
-          });
+    const active = this.filters.find((f) => f.label === this.activeFilter);
+    const filtered = active?.type
+      ? items.filter((item) => item.changeType === active.type)
+      : items;
 
     return html`
       <section>
-        <a-head level="1">Notifications</a-head>
+        <a-head level="1">Alerts</a-head>
 
         <div class="filter">
           ${this.filters.map(
@@ -70,40 +82,12 @@ export class NotificationsPage extends LitElement {
         ${
           filtered.length === 0
             ? html`
-                <div
-                  style="text-align:center; margin: 48px 0; color: var(--muted-foreground)"
-                >
-                  <svg width="48" height="48" fill="none" viewBox="0 0 48 48">
-                    <circle
-                      cx="24"
-                      cy="24"
-                      r="22"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      fill="none"
-                      opacity="0.3"
-                    />
-                    <path
-                      d="M16 32h16M24 16v8"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      opacity="0.3"
-                    />
-                    <circle
-                      cx="24"
-                      cy="28"
-                      r="1.5"
-                      fill="currentColor"
-                      opacity="0.3"
-                    />
-                  </svg>
-                  <a-text
-                    variant="muted"
-                    style="margin-top: 12px; display: block"
-                    >No notifications yet</a-text
-                  >
-                </div>
+                <a-card variant="default">
+                  <div class="empty">
+                    <a-icon name="bell" size="md"></a-icon>
+                    <a-text variant="muted">No notifications yet.</a-text>
+                  </div>
+                </a-card>
               `
             : filtered.map(
                 (item) => html`

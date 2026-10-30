@@ -97,7 +97,7 @@ export default function DashboardPage() {
                 class="flex h-32 flex-col justify-between p-4"
               >
                 <a-icon name={link.icon} />
-                <p class="text-right text-lg text-foreground/80">
+                <p class="text-right text-lg text-foreground">
                   {link.label}
                 </p>
               </a-card>

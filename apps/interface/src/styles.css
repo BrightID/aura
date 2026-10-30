@@ -1,9 +1,11 @@
+@import '@aura/ui/tokens.css';
+
 body {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  background: #080e12;
-  color: #edf3f6;
+  background: var(--background);
+  color: var(--foreground);
   font-family:
     system-ui,
     -apple-system,

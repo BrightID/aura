@@ -203,7 +203,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!project) {
       log('project not found or inactive');
-      return res.status(400).json({ error: 'Invalid project or no tokens' });
+      return res.status(400).json({ error: 'Invalid project' });
     }
 
     if (!project.brightIdAppId) {
@@ -234,6 +234,11 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         message: 'Already verified',
         data: toPublicVerification(alreadyVerified[0]),
       });
+    }
+
+    if ((project.remainingtokens ?? 0) <= 0) {
+      log('no tokens');
+      return res.status(402).json({ error: 'No tokens remaining' });
     }
 
     const base = nodeBase();
@@ -318,13 +323,43 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
       await sql.begin(async (tx) => {
+        const spent = await tx`
+          UPDATE "projects"
+          SET "remainingtokens" = "remainingtokens" - 1
+          WHERE "id" = ${projectId}
+            AND "remainingtokens" > 0
+          RETURNING "remainingtokens"
+        `;
+        if (spent.length === 0) {
+          throw Object.assign(new Error('No tokens remaining'), {
+            code: 'NO_TOKENS',
+          });
+        }
         await tx`INSERT INTO "verifications" ("userId", "projectId", "client", "signature", "auraScore", "auraLevel", "verifiedAt")
             VALUES (${body.userId}, ${projectId}, ${body.client}, ${signature}, ${auraScore}, ${auraLevel}, ${verifiedAt.toISOString()})`;
-        await tx`UPDATE "projects"
-            SET "remainingtokens" = COALESCE("remainingtokens", 0) - 1
-            WHERE "id" = ${projectId}`;
       });
     } catch (err) {
+      if ((err as { code?: string })?.code === 'NO_TOKENS') {
+        const [row] = await db
+          .select()
+          .from(verificationsTable)
+          .where(
+            and(
+              eq(verificationsTable.userId, body.userId),
+              eq(verificationsTable.projectId, projectId),
+            ),
+          )
+          .limit(1);
+        if (row) {
+          log('verified while tokens ran out');
+          return res.status(200).json({
+            message: 'Already verified',
+            data: toPublicVerification(row),
+          });
+        }
+        log('no tokens');
+        return res.status(402).json({ error: 'No tokens remaining' });
+      }
       // 23505 = unique_violation: concurrent request already verified this user+project
       if ((err as { code?: string })?.code === '23505') {
         log('concurrent verify race, already inserted');

@@ -19,9 +19,7 @@ const updateSchema = z.object({
   logoUrl: z.url().optional().nullable(),
   isActive: z.boolean().default(true),
   websiteUrl: z.url().optional().nullable(),
-  remainingtokens: z.number().int().min(0).optional(),
   brightIdAppId: z.string().max(500).optional().nullable(),
-  deadline: z.coerce.date().optional().nullable(),
 });
 
 async function handler(req: VercelRequest, res: VercelResponse) {
@@ -30,7 +28,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
   const token = req.headers['authorization']?.split('Bearer ')[1];
-  if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const { uid } = await getAuth().verifyIdToken(token);
     const { id, ...body } = updateSchema.parse(req.body);

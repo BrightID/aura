@@ -5,7 +5,9 @@ import { Link } from 'react-router';
 import type { Project } from '~/types/projects';
 
 export default function ProjectBilling({ project }: { project: Project }) {
-  const sub = plans.find((item) => project.selectedPlanId === item.id)!;
+  const sub =
+    plans.find((item) => item.id === (project.selectedPlanId ?? null)) ??
+    null;
 
   return (
     <div className="space-y-6">
@@ -24,7 +26,7 @@ export default function ProjectBilling({ project }: { project: Project }) {
               </div>
               <div>
                 <p className="font-semibold">
-                  {sub ? `Plan #${sub.name}` : 'No Plan Selected'}
+                  {sub ? sub.name : 'No plan selected'}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {project.selectedPlanId
@@ -52,7 +54,7 @@ export default function ProjectBilling({ project }: { project: Project }) {
             <div className="p-4 border rounded-lg">
               <p className="text-sm text-muted-foreground">Remaining Tokens</p>
               <p className="text-2xl font-semibold mt-1">
-                {project.remainingtokens.toLocaleString()}
+                {(project.remainingtokens ?? 0).toLocaleString()}
               </p>
             </div>
             <div className="p-4 border rounded-lg">

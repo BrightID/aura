@@ -16,8 +16,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useAuraEvent } from '~/lib/aura';
 
 const formSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6),
+  email: z.email({ message: 'Enter a valid email' }),
+  password: z.string().min(6, 'Use at least 6 characters'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -138,7 +138,7 @@ function LoginScreen() {
                 placeholder="you@example.com"
               />
               {loginForm.formState.errors.email && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-destructive">
                   {loginForm.formState.errors.email.message}
                 </p>
               )}
@@ -154,7 +154,7 @@ function LoginScreen() {
                 placeholder="••••••••"
               />
               {loginForm.formState.errors.password && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-destructive">
                   {loginForm.formState.errors.password.message}
                 </p>
               )}
@@ -186,7 +186,7 @@ function LoginScreen() {
                 placeholder="you@example.com"
               />
               {signupForm.formState.errors.email && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-destructive">
                   {signupForm.formState.errors.email.message}
                 </p>
               )}
@@ -202,7 +202,7 @@ function LoginScreen() {
                 placeholder="••••••••"
               />
               {signupForm.formState.errors.password && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-destructive">
                   {signupForm.formState.errors.password.message}
                 </p>
               )}
@@ -220,11 +220,10 @@ function LoginScreen() {
         </a-tab-panel>
       </a-tabs>
 
-      <div className="relative my-6">
-        <div className="h-px w-full bg-border" />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-          Or continue with
-        </span>
+      <div className="my-6 flex items-center gap-3 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        <div className="h-px flex-1 bg-border" />
+        <span className="shrink-0">Or continue with</span>
+        <div className="h-px flex-1 bg-border" />
       </div>
 
       <div className="grid gap-2.5">

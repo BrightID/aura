@@ -62,8 +62,8 @@ export default function PricingSection() {
                 key={plan.name}
                 className={`group relative p-8 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
-                    ? 'border-primary/50 shadow-[0_0_40px_rgba(99,102,241,0.2)] bg-card/60 hover:shadow-[0_0_60px_rgba(99,102,241,0.3)]'
-                    : 'border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]'
+                    ? 'border-primary/50 shadow-[0_0_40px_color-mix(in_oklch,var(--primary)_22%,transparent)] bg-card/60 hover:shadow-[0_0_60px_color-mix(in_oklch,var(--primary)_32%,transparent)]'
+                    : 'border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_18%,transparent)]'
                 } ${index === 1 ? 'lg:scale-105' : ''}`}
                 style={{
                   animationDelay: `${index * 100}ms`,
@@ -71,7 +71,7 @@ export default function PricingSection() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] animate-pulse">
+                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_45%,transparent)] animate-pulse">
                       Most Popular
                     </a-badge>
                   </div>
@@ -136,7 +136,7 @@ export default function PricingSection() {
                 <a-button
                   className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
                     plan.popular
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]'
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_28%,transparent)] hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_40%,transparent)]'
                       : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
                   }`}
                   size="lg"

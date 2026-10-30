@@ -10,10 +10,10 @@ const menuItems = [
   {
     icon: 'lucide:bell',
     href: '/notifications',
-    label: 'Notifications',
-    small: true,
+    label: 'Alerts',
   },
   { icon: 'lucide:share-2', href: '/share', label: 'Share' },
+  { icon: 'lucide:user', href: '/profile', label: 'Profile' },
 ];
 
 @customElement('app-footer')
@@ -158,10 +158,7 @@ export class AppFooter extends SignalWatcher(LitElement) {
               @click="${(e: Event) => this.navigate(e, item.href)}"
             >
               <div class="icon-wrap">
-                <iconify-icon
-                  icon="${item.icon}"
-                  class="${item.small ? 'small-icon' : ''}"
-                ></iconify-icon>
+                <iconify-icon icon="${item.icon}"></iconify-icon>
               </div>
               <span class="nav-label">${item.label}</span>
             </a>

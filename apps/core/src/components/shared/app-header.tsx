@@ -43,20 +43,20 @@ export default function AppHeader() {
 
   return (
     <Show when={!hidden() && authStore.user?.brightId}>
-      <header class="flex items-center justify-between px-5 pt-6">
-        <div class="flex items-center gap-2">
-          <A href="/home" data-testid="header-home">
+      <header class="flex items-center justify-between gap-2 px-5 pt-6">
+        <div class="flex min-w-0 items-center gap-2">
+          <A href="/home" data-testid="header-home" class="shrink-0">
             <a-button size="icon-sm" variant="glass" aria-label="Home">
               <a-icon name="house" />
             </a-button>
           </A>
           <Show when={title()}>
-            <a-head class="text-lg" data-testid="header-title">
+            <a-head class="min-w-0 truncate text-lg" data-testid="header-title">
               {title()}
             </a-head>
           </Show>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex shrink-0 items-center gap-2">
           <GlobalSearch />
           <NotificationBell />
           <A href="/settings" data-testid="header-settings">

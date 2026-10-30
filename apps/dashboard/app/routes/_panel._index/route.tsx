@@ -4,7 +4,7 @@ import { ProjectUsageChart } from './components/usage-chart-area';
 import { getUserProjects } from '~/utils/apis';
 
 export default function PanelDashboard() {
-  const { data, error, isLoading, status } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryFn: getUserProjects,
     queryKey: ['user-projects'],
   });
@@ -13,11 +13,29 @@ export default function PanelDashboard() {
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
       <div className="px-4 lg:px-6">
         <h3 className="text-xl font-bold mb-5">Projects List</h3>
-        <ProjectsTable data={data ?? []} />
+        {isPending ? (
+          <div className="space-y-3">
+            <a-skeleton className="h-10 w-full max-w-xs" />
+            <a-skeleton className="h-48 w-full rounded-lg" />
+          </div>
+        ) : isError ? (
+          <div className="rounded-lg border bg-card px-6 py-16 text-center">
+            <p className="font-medium text-destructive">
+              Could not load projects
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Please try again later
+            </p>
+          </div>
+        ) : (
+          <ProjectsTable data={data ?? []} />
+        )}
       </div>
-      <div className="px-4 lg:px-6">
-        <ProjectUsageChart projectId={data?.[0]?.id ?? ''} />
-      </div>
+      {!isPending && !isError && (data?.length ?? 0) > 0 ? (
+        <div className="px-4 lg:px-6">
+          <ProjectUsageChart projectId={data?.[0]?.id ?? ''} />
+        </div>
+      ) : null}
     </div>
   );
 }

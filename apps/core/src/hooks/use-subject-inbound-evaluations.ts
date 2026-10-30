@@ -5,6 +5,7 @@ import {
   createInboundConnectionsQuery,
   createOutboundConnectionsQuery,
 } from '@/queries/connections';
+import { isNotFound } from '@aura/domain/http';
 import { categoryEvaluatedBy } from '@aura/domain/labels';
 import { impactShare } from '@aura/domain/score';
 import type {
@@ -112,6 +113,7 @@ export function useSubjectInboundEvaluations(
 
   return {
     loading: () => query.isLoading,
+    failed: () => query.isError && !isNotFound(query.error),
     evaluations,
     positiveCount,
     negativeCount,
@@ -142,7 +144,11 @@ export function useSubjectOutboundEvaluations(
       .sort(byRecency);
   });
 
-  return { loading: () => query.isLoading, evaluations };
+  return {
+    loading: () => query.isLoading,
+    failed: () => query.isError && !isNotFound(query.error),
+    evaluations,
+  };
 }
 
 // Mirrors the old app's connection ordering: closer levels first, then recency.
@@ -170,5 +176,10 @@ export function useSubjectInboundConnections(subjectId: () => string) {
     });
   });
 
-  return { loading: () => query.isLoading, connections, nameOf };
+  return {
+    loading: () => query.isLoading,
+    failed: () => query.isError && !isNotFound(query.error),
+    connections,
+    nameOf,
+  };
 }

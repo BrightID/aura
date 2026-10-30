@@ -3,6 +3,7 @@ import { createHmac } from 'crypto';
 import { eq } from 'drizzle-orm';
 import { getAuth } from 'firebase-admin/auth';
 import { z } from 'zod';
+import { chargeForPlan } from '../lib/charge-plan.js';
 import withCors from '../lib/cors.js';
 import { db } from '../lib/db.js';
 import setupFirebaseApp from '../lib/firebase.js';
@@ -47,11 +48,17 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     if (!project[0] || project[0].creatorId !== uid)
       return res.status(403).json({ error: 'Forbidden' });
 
+    const price = await chargeForPlan(planId, isYearly);
+    if (price == null)
+      return res.status(400).json({ error: 'Plan not billable' });
+    if (amount !== price)
+      return res.status(400).json({ error: 'Amount does not match plan price' });
+
     const orderId = `${projectId}-${planId}-${isYearly ? 'y' : 'm'}-${Date.now()}`;
 
     const params = new URLSearchParams({
       apiKey: publishableKey,
-      baseCurrencyAmount: String(amount),
+      baseCurrencyAmount: String(price),
       baseCurrencyCode: 'usd',
       externalTransactionId: orderId,
       redirectURL: `${successUrl}?order_id=${orderId}`,
@@ -72,7 +79,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       planId,
       userId: uid,
       isYearly,
-      amount,
+      amount: price,
       nowpaymentsId: orderId,
       status: 'pending',
     });

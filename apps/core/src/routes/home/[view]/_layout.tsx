@@ -43,7 +43,17 @@ export default function HomeViewLayout(props: ParentProps) {
     isNotFound(profile.error) || isNotFound(inbound.error);
 
   return (
-    <Show when={subjectId()} fallback={<div class="p-6">Not logged in</div>}>
+    <Show
+      when={subjectId()}
+      fallback={
+        <div class="flex flex-col gap-2 px-5 pt-10">
+          <a-head class="text-2xl">Sign in required</a-head>
+          <a-text size="sm" variant="muted">
+            Sign in to see your community.
+          </a-text>
+        </div>
+      }
+    >
       <div class="px-5 pt-6 pb-10">
         <HomeHeader />
         <ProfileHeaderCard subjectId={subjectId()!} />

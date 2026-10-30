@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { plans } from '~/constants/subscriptions';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getUserProjects } from '~/utils/apis';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { toast } from '@aura/ui';
 import { useAuraEvent } from '~/lib/aura';
 import { getAuth } from 'firebase/auth';
@@ -51,7 +51,11 @@ export default function PricingSection() {
     if (!e.open) handleClose();
   });
 
-  const { data: projects } = useQuery({
+  const {
+    data: projects,
+    isPending,
+    isError,
+  } = useQuery({
     queryFn: getUserProjects,
     queryKey: ['user-projects'],
   });
@@ -115,6 +119,37 @@ export default function PricingSection() {
     setPaymentStatus(null);
   };
 
+  if (isPending) {
+    return (
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-8">
+        <a-skeleton className="mx-auto h-10 w-48" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <a-skeleton className="h-80 rounded-xl" />
+          <a-skeleton className="h-80 rounded-xl" />
+          <a-skeleton className="h-80 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !focusedProject) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-16 text-center">
+        <p className="font-medium">
+          {isError ? 'Could not load this project' : 'Project not found'}
+        </p>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          {isError
+            ? 'Please try again later.'
+            : 'This upgrade link does not match one of your projects.'}
+        </p>
+        <Link to="/projects">
+          <a-button variant="outline">Back to projects</a-button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <section className="w-full overflow-hidden py-3">
       <ParticlesBackground />
@@ -170,14 +205,14 @@ export default function PricingSection() {
                 key={plan.name}
                 className={`group relative p-4 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
-                    ? 'border-primary/50 shadow-[0_0_40px_rgba(99,102,241,0.2)] bg-card/60 hover:shadow-[0_0_60px_rgba(99,102,241,0.3)]'
-                    : 'border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]'
+                    ? 'border-primary/50 shadow-[0_0_40px_color-mix(in_oklch,var(--primary)_22%,transparent)] bg-card/60 hover:shadow-[0_0_60px_color-mix(in_oklch,var(--primary)_32%,transparent)]'
+                    : 'border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_18%,transparent)]'
                 }`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_rgba(99,102,241,0.5)] animate-pulse">
+                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_45%,transparent)] animate-pulse">
                       Most Popular
                     </a-badge>
                   </div>
@@ -277,12 +312,14 @@ export default function PricingSection() {
                       setLoadingPlanId(null);
                     }
                   }}
-                  disabled={isCurrent || isFree || loadingPlanId !== null}
+                  disabled={
+                    isCurrent || isFree || loadingPlanId !== null
+                  }
                   className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
                     isCurrent
                       ? 'bg-muted text-muted-foreground cursor-not-allowed'
                       : plan.popular
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_28%,transparent)] hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_40%,transparent)]'
                         : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
                   }`}
                   size="lg"
@@ -350,7 +387,7 @@ export default function PricingSection() {
 
           {paymentStatus === 'completed' && (
             <div className="flex flex-col items-center gap-4 py-10 px-6">
-              <CheckCircle className="h-12 w-12 text-green-500" />
+              <CheckCircle className="h-12 w-12 text-success" />
               <p className="text-muted-foreground text-sm text-center">
                 Your subscription is now active. You can close this window.
               </p>

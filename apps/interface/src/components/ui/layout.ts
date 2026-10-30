@@ -26,12 +26,20 @@ export class AppLayout extends LitElement {
     .layout,
     .embed-layout {
       box-sizing: border-box;
-      text-align: center;
+      text-align: left;
       position: relative;
       margin: 0 auto;
       width: 100%;
       max-width: 640px;
       padding: 32px 20px calc(104px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .layout main {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .embed-layout {

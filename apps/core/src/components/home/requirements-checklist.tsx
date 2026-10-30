@@ -26,7 +26,7 @@ function ChecklistItem(props: { item: LevelRequirement }) {
         <div class="flex items-center gap-2">
           <span
             class={`mr-2 h-4 w-4 rounded-full ${
-              base().requirement <= 0 ? 'bg-green-500' : 'bg-red-500'
+              base().requirement <= 0 ? 'bg-aura-success' : 'bg-destructive'
             }`}
           />
           <span class="text-sm">

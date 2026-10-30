@@ -1,16 +1,17 @@
+import brightIDIcon from '@/assets/icons/brightid.svg';
 import moreIcon from '@/assets/icons/thirdparties/more.svg';
 import smsIcon from '@/assets/icons/thirdparties/sms.svg';
 import telegramIcon from '@/assets/icons/thirdparties/telegram.svg';
 import whatsappIcon from '@/assets/icons/thirdparties/whatsapp.svg';
 import xIcon from '@/assets/icons/thirdparties/x.svg';
+import { pushRouter } from '@/router';
 import { userBrightId } from '@/states/user';
 import { signal, SignalWatcher } from '@lit-labs/signals';
 import { css, html, LitElement, type CSSResultGroup } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import QrCodeWithLogo from 'qrcode-with-logos';
 
 import '@/components/common/gravatar-profile';
-import '@/components/contacts-section';
 
 const gravatarEmail = signal('');
 
@@ -18,7 +19,7 @@ const nickname = signal('');
 
 const hashedEmail = signal('');
 
-const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+const emailRegex = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
 
 async function getGravatarHash(email: string) {
   const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase());
@@ -30,76 +31,39 @@ async function getGravatarHash(email: string) {
 
 @customElement('share-page')
 export class SharePage extends SignalWatcher(LitElement) {
+  @state() private contactsReady = false;
+  @state() private contactsFailed = false;
   static styles?: CSSResultGroup = css`
     .container {
       display: flex;
       flex-direction: column;
-      color: #ffffff;
+      color: var(--foreground);
     }
 
     .main-content {
       flex: 1;
-      padding: 0rem 1rem;
-      max-width: 480px;
-      margin: 0 auto;
       width: 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .header {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .header {
-      margin-bottom: 1.5rem;
-    }
-
-    .platform-buttons {
-      display: flex;
-      justify-content: start;
-      gap: 12px;
-      margin-top: 1.5rem;
-    }
-
-    .platform-button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #ffffff;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 63.537%;
-    }
-
-    .platform-icon {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(
-        to bottom,
-        rgba(46, 51, 90, 0.26),
-        rgba(28, 27, 51, 0.26) 100%
-      );
-      margin-bottom: 0.25rem;
-    }
-
-    .platform-label {
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
+      align-items: flex-start;
+      text-align: left;
+      gap: 6px;
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    .gate a-button {
+      width: 100%;
+      margin-top: 16px;
     }
 
     .qr-code {
@@ -110,9 +74,10 @@ export class SharePage extends SignalWatcher(LitElement) {
 
     .qr-image {
       object-fit: contain;
-      width: 240px;
-      height: 240px;
-      border-radius: 12px;
+      width: min(240px, 100%);
+      height: auto;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
     }
 
     .profile-link {
@@ -121,70 +86,96 @@ export class SharePage extends SignalWatcher(LitElement) {
     }
 
     .link {
-      color: var(--accent);
+      color: var(--primary);
       text-decoration: underline;
     }
 
     .social-buttons {
       display: flex;
-      justify-content: space-around;
-      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 12px;
     }
 
-    .social-button {
-      display: flex;
+    .social-buttons a-button {
+      flex: 0 0 5.5rem;
+    }
+
+    .social-buttons a-button::part(button) {
       flex-direction: column;
-      align-items: center;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #ffffff;
+      height: auto;
+      gap: 6px;
+      padding: 8px 4px;
+      color: var(--foreground);
     }
 
     .social-icon {
       width: 3rem;
       height: 3rem;
-      border-radius: 10px;
+      border-radius: var(--radius);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(
-        to bottom,
-        rgba(46, 51, 90, 0.26),
-        rgba(28, 27, 51, 0.26) 100%
-      );
-      margin-bottom: 0.25rem;
+      background: var(--muted);
     }
 
     .social-label {
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
+      display: block;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      text-align: center;
+      white-space: nowrap;
     }
   `;
 
   constructor() {
     super();
-
     this.generateQRCodeLink();
   }
 
-  protected generateQRCodeLink() {
-    const qrCode = new QrCodeWithLogo({
-      width: 300,
-      content: this.profileLink,
-      logo: {
-        src: '/images/brightId.svg',
-        bgColor: '#333',
-        borderWidth: 5,
-      },
-      dotsOptions: {
-        color: '#111',
-      },
-    });
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!userBrightId.get()) return;
+    import('@/components/contacts-section')
+      .then(() => {
+        this.contactsReady = true;
+      })
+      .catch(() => {
+        this.contactsFailed = true;
+      });
+  }
 
-    qrCode.getImage().then((res) => {
-      this.linkImage.set(res.src);
-    });
+  protected generateQRCodeLink() {
+    const build = (withLogo: boolean) =>
+      new QrCodeWithLogo({
+        width: 300,
+        content: this.profileLink,
+        nodeQrCodeOptions: {
+          margin: 1,
+          errorCorrectionLevel: 'H',
+          color: { dark: '#111111', light: '#ffffff' },
+        },
+        ...(withLogo
+          ? {
+              logo: {
+                src: brightIDIcon,
+                bgColor: '#ffffff',
+                borderColor: '#ffffff',
+                borderWidth: 4,
+              },
+            }
+          : {}),
+      });
+
+    build(true)
+      .getImage()
+      .then((res) => this.linkImage.set(res.src))
+      .catch(() => {
+        build(false)
+          .getImage()
+          .then((res) => this.linkImage.set(res.src))
+          .catch(() => this.linkImage.set(''));
+      });
   }
 
   private get profileLink() {
@@ -280,16 +271,34 @@ export class SharePage extends SignalWatcher(LitElement) {
   }
 
   protected render() {
+    if (!userBrightId.get()) {
+      return html`
+        <a-card variant="default" class="gate">
+          <a-head level="2">Share</a-head>
+          <a-text variant="muted">Sign in to share your profile.</a-text>
+          <a-button @click=${() => pushRouter('/login')}>Sign in</a-button>
+        </a-card>
+      `;
+    }
+
     return html` <div class="container">
       <main class="main-content">
         <div class="header">
-          <a-head level="1">Find Verifiers</a-head>
+          <a-head level="1">Share</a-head>
           <a-text variant="muted">
-            Share your profile to relative aura players and ask for evaluation
+            Share your profile with Aura players and ask them to evaluate you.
           </a-text>
         </div>
 
-        <contacts-section></contacts-section>
+        ${
+          this.contactsFailed
+            ? html`<a-text variant="muted">
+                Contacts are unavailable in this session.
+              </a-text>`
+            : this.contactsReady
+              ? html`<contacts-section></contacts-section>`
+              : html`<a-skeleton style="height: 4rem"></a-skeleton>`
+        }
 
         <gravatar-profile .hashedEmail=${hashedEmail.get()}></gravatar-profile>
 
@@ -308,13 +317,19 @@ export class SharePage extends SignalWatcher(LitElement) {
           placeholder="Your name"
         ></a-input>
 
-        <a-card style="margin-bottom: 1.5rem; text-align: center">
+        <a-card variant="default" style="text-align: center">
           <div class="qr-code">
-            <img
-              class="qr-image"
-              .src="${this.linkImage.get()}"
-              alt="qr code"
-            />
+            ${
+              this.linkImage.get()
+                ? html`<img
+                    class="qr-image"
+                    src="${this.linkImage.get()}"
+                    alt="Profile QR code"
+                  />`
+                : html`<a-skeleton
+                    style="width: 240px; height: 240px; border-radius: 12px"
+                  ></a-skeleton>`
+            }
           </div>
 
           <a-separator></a-separator>
@@ -327,58 +342,36 @@ export class SharePage extends SignalWatcher(LitElement) {
         </a-card>
 
         <div class="social-buttons">
-          <button
-            class="social-button"
-            @click=${() => this.handleShare('twitter')}
-          >
-            <div class="social-icon twitter">
-              <img src="${xIcon}" width="24" height="24" alt="x" />
-            </div>
-            <span class="social-label">Twitter</span>
-          </button>
-          <button
-            class="social-button"
-            @click=${() => this.handleShare('whatsapp')}
-          >
-            <div class="social-icon whatsapp">
-              <img
-                src="${whatsappIcon}"
-                width="24"
-                height="24"
-                alt="whatsapp"
-              />
-            </div>
-            <span class="social-label">Whatsapp</span>
-          </button>
-          <button
-            class="social-button"
-            @click=${() => this.handleShare('telegram')}
-          >
-            <div class="social-icon telegram">
-              <img
-                src="${telegramIcon}"
-                width="24"
-                height="24"
-                alt="telegram"
-              />
-            </div>
+          <a-button variant="ghost" @click=${() => this.handleShare('twitter')}>
+            <span class="social-icon">
+              <img src="${xIcon}" width="24" height="24" alt="" />
+            </span>
+            <span class="social-label">X</span>
+          </a-button>
+          <a-button variant="ghost" @click=${() => this.handleShare('whatsapp')}>
+            <span class="social-icon">
+              <img src="${whatsappIcon}" width="24" height="24" alt="" />
+            </span>
+            <span class="social-label">WhatsApp</span>
+          </a-button>
+          <a-button variant="ghost" @click=${() => this.handleShare('telegram')}>
+            <span class="social-icon">
+              <img src="${telegramIcon}" width="24" height="24" alt="" />
+            </span>
             <span class="social-label">Telegram</span>
-          </button>
-          <button class="social-button" @click=${() => this.handleShare('sms')}>
-            <div class="social-icon sms">
-              <img src="${smsIcon}" width="24" height="24" alt="sms" />
-            </div>
+          </a-button>
+          <a-button variant="ghost" @click=${() => this.handleShare('sms')}>
+            <span class="social-icon">
+              <img src="${smsIcon}" width="24" height="24" alt="" />
+            </span>
             <span class="social-label">SMS</span>
-          </button>
-          <button
-            class="social-button"
-            @click=${() => this.handleShare('more')}
-          >
-            <div class="social-icon more">
-              <img src="${moreIcon}" width="24" height="24" alt="x" />
-            </div>
+          </a-button>
+          <a-button variant="ghost" @click=${() => this.handleShare('more')}>
+            <span class="social-icon">
+              <img src="${moreIcon}" width="24" height="24" alt="" />
+            </span>
             <span class="social-label">More</span>
-          </button>
+          </a-button>
         </div>
       </main>
     </div>`;

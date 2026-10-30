@@ -21,23 +21,14 @@ import '../components/common/verification-card-skeleton.ts';
 import '../components/common/verification-card.ts';
 
 const isLoading = signal(true);
+const loadError = signal(false);
 
 @customElement('my-home')
 export class HomeElement extends SignalWatcher(LitElement) {
   static styles?: CSSResultGroup = css`
-    .status-bar {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    h2 {
-      margin-top: 40px;
-      margin-left: 12px;
-    }
-
     .profile-card-wrapper {
       position: relative;
+      margin-bottom: 32px;
     }
 
     .apps-section {
@@ -46,12 +37,12 @@ export class HomeElement extends SignalWatcher(LitElement) {
     }
 
     .apps-section a-head {
-      margin-bottom: 24px;
+      margin-bottom: 8px;
     }
 
     .page-heading {
       text-align: left;
-      margin-bottom: 24px;
+      margin-bottom: 8px;
     }
     .eyebrow {
       color: var(--muted-foreground);
@@ -60,18 +51,16 @@ export class HomeElement extends SignalWatcher(LitElement) {
       text-transform: uppercase;
       margin: 0 0 6px;
     }
-    h1 {
-      font-size: 28px;
-      letter-spacing: -0.03em;
-      margin: 0;
-    }
-    .profile-card-wrapper {
-      margin-bottom: 32px;
-    }
     .section-description {
+      margin: 0 0 20px;
+    }
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 24px 0;
       color: var(--muted-foreground);
-      margin: 8px 0 20px;
-      font-size: 14px;
     }
   `;
 
@@ -85,6 +74,7 @@ export class HomeElement extends SignalWatcher(LitElement) {
 
   connectedCallback(): void {
     super.connectedCallback();
+    if (!userBrightId.get()) return;
     queryClient
       .ensureQueryData({
         queryKey: ['projects'],
@@ -92,6 +82,11 @@ export class HomeElement extends SignalWatcher(LitElement) {
       })
       .then((res) => {
         projects.set(res);
+        loadError.set(false);
+        isLoading.set(false);
+      })
+      .catch(() => {
+        loadError.set(true);
         isLoading.set(false);
       });
 
@@ -103,11 +98,12 @@ export class HomeElement extends SignalWatcher(LitElement) {
   }
 
   protected render() {
+    if (!userBrightId.get()) return html``;
     const trackP = trackedProject.get();
     return html` <div class="body">
       <header class="page-heading">
         <p class="eyebrow">Aura / Verified</p>
-        <h1>Your verification</h1>
+        <a-head level="1">Your verification</a-head>
       </header>
       <div class="profile-card-wrapper">
         <profile-card
@@ -120,9 +116,9 @@ export class HomeElement extends SignalWatcher(LitElement) {
 
       <div class="apps-section">
         <a-head level="2">Your apps</a-head>
-        <p class="section-description">
+        <a-text variant="muted" class="section-description">
           Choose an app to view requirements and continue your verification.
-        </p>
+        </a-text>
 
         ${
           isLoading.get()
@@ -131,7 +127,21 @@ export class HomeElement extends SignalWatcher(LitElement) {
                 <verification-card-skeleton></verification-card-skeleton>
                 <verification-card-skeleton></verification-card-skeleton>
               `
-            : map(trackP ? [trackP] : projects.get(), (project) => {
+            : loadError.get()
+              ? html`<a-card variant="default">
+                  <div class="empty">
+                    <a-icon name="triangle-alert" size="md"></a-icon>
+                    <a-text variant="muted">Could not load apps.</a-text>
+                  </div>
+                </a-card>`
+              : (trackP ? [trackP] : projects.get()).length === 0
+                ? html`<a-card variant="default">
+                    <div class="empty">
+                      <a-icon name="inbox" size="md"></a-icon>
+                      <a-text variant="muted">No apps to verify yet.</a-text>
+                    </div>
+                  </a-card>`
+                : map(trackP ? [trackP] : projects.get(), (project) => {
                 const totalSteps = levelUpProgress
                   .get()
                   .filter((item) => item.level <= project.requirementLevel);

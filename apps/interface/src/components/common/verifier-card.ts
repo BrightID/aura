@@ -20,16 +20,16 @@ export class VerifierCard extends LitElement {
   progressPercent = 30;
 
   @property({ type: Number })
-  evaluationScore = 4;
+  evaluationScore = 0;
 
   @property({ type: String })
-  evaluationText = 'Very High';
+  evaluationText = '';
 
   @property({ type: String })
   evaluationIcon = thumbsUpGreen;
 
   @property({ type: String })
-  evaluationNote = 'Evaluated you';
+  evaluationNote = '';
 
   static styles = css`
     .verifier-header {
@@ -59,8 +59,9 @@ export class VerifierCard extends LitElement {
       min-width: 0;
       overflow-wrap: anywhere;
     }
-    .verifier-info a-head,
-    .verifier-info a-text {
+    .ellipsis {
+      display: block;
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -107,7 +108,7 @@ export class VerifierCard extends LitElement {
               level="5"
               style="margin: 0; font-size: 0.9375rem"
               title=${this.verifierName}
-              >${this.verifierName}</a-head
+              ><span class="ellipsis">${this.verifierName}</span></a-head
             >
             ${
               this.verifierEmail
@@ -115,7 +116,7 @@ export class VerifierCard extends LitElement {
                     variant="muted"
                     style="display: block; margin-top: 2px"
                     title=${this.verifierEmail}
-                    >${this.verifierEmail}</a-text
+                    ><span class="ellipsis">${this.verifierEmail}</span></a-text
                   >`
                 : ''
             }
@@ -133,16 +134,26 @@ export class VerifierCard extends LitElement {
           <a-badge variant="secondary" size="xs"
             >Level ${this.verifierLevel}</a-badge
           >
-          <img
-            width="14"
-            height="14"
-            src="${this.evaluationIcon}"
-            alt="evaluation"
-          />
-          <a-text variant="small" style="color: var(--aura-success)">
-            +${this.evaluationScore} ${this.evaluationText}
-          </a-text>
-          <span class="evaluation-note">${this.evaluationNote}</span>
+          ${
+            this.evaluationText
+              ? html`
+                  <img
+                    width="14"
+                    height="14"
+                    src="${this.evaluationIcon}"
+                    alt=""
+                  />
+                  <a-text variant="small" style="color: var(--aura-success)">
+                    +${this.evaluationScore} ${this.evaluationText}
+                  </a-text>
+                `
+              : ''
+          }
+          ${
+            this.evaluationNote
+              ? html`<span class="evaluation-note">${this.evaluationNote}</span>`
+              : ''
+          }
         </div>
       </a-card>
     `;

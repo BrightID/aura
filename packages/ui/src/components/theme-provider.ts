@@ -3,6 +3,8 @@ import { customElement } from 'lit/decorators.js';
 
 @customElement('a-theme-provider')
 export class ThemeProvider extends LitElement {
+  /* A shadow root does not apply packages/ui/src/tokens.css, so this :host block repeats that file's dark custom properties, including color and spacing.
+     Change this block and that file together, or shadow components and the rest of the page get different values. */
   static styles?: CSSResultGroup = css`
     :host {
       display: block;

@@ -48,8 +48,8 @@ export default function HomeHeader() {
 
   return (
     <header class="mb-6 flex flex-col gap-5">
-      <div class="flex items-center justify-between gap-2">
-        <div>
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
           <p class="text-xs font-medium uppercase tracking-widest text-muted-foreground">
             Aura / Core
           </p>
@@ -94,7 +94,7 @@ export default function HomeHeader() {
                       class="flex w-72 max-w-full flex-col gap-2"
                     >
                       <p class="font-medium text-foreground">{label} locked</p>
-                      <a-text size="sm" class="text-muted-foreground">
+                      <a-text size="sm" class="text-muted-foreground" variant="muted">
                         {lockMessage(gate)}
                       </a-text>
                     </div>

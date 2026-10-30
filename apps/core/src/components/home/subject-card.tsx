@@ -17,7 +17,7 @@ import type {
 } from '@aura/domain/types/aura';
 
 const LEVEL_COLORS: Record<ConnectionLevel, string> = {
-  reported: 'text-red-700 dark:text-red-400',
+  reported: 'text-destructive',
   suspicious: 'text-orange-700 dark:text-orange-300',
   recovery: 'text-amber-700 dark:text-amber-300',
   'already known': 'text-amber-700 dark:text-amber-200',
@@ -96,7 +96,7 @@ export default function SubjectCard(props: {
             <Show
               when={progress() >= 0}
               fallback={
-                <span class="text-xs text-red-700 dark:text-red-400">
+                <span class="text-xs text-destructive">
                   Negative standing
                 </span>
               }
@@ -127,8 +127,8 @@ export default function SubjectCard(props: {
                   data-testid={`subject-${subjectId()}-evaluation`}
                   class={`flex max-w-full flex-wrap items-center gap-1 rounded-md px-2 py-1 text-xs font-medium ${
                     rating() > 0
-                      ? 'bg-aura-success/15 text-emerald-700 dark:text-aura-success'
-                      : 'bg-destructive/15 text-red-700 dark:text-red-400'
+                      ? 'bg-aura-success/15 text-aura-success'
+                      : 'bg-destructive/15 text-destructive'
                   }`}
                 >
                   <a-icon name={rating() > 0 ? 'thumbs-up' : 'thumbs-down'} />

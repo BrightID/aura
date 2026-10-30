@@ -1,11 +1,6 @@
-import {
-  ArrowLeft,
-  Globe,
-  ExternalLink,
-} from 'lucide-react';
+import { ArrowLeft, Globe, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router';
 import type { Project } from '~/types/projects';
-import { Button } from '~/components/ui/button';
 import { cn } from '~/lib/utils';
 
 function hostname(url: string) {
@@ -16,11 +11,7 @@ function hostname(url: string) {
   }
 }
 
-export function ProjectHeader({
-  project,
-}: {
-  project: Project;
-}) {
+export function ProjectHeader({ project }: { project: Project }) {
   return (
     <header className="flex flex-col gap-4">
       <Link
@@ -54,14 +45,14 @@ export function ProjectHeader({
                 className={cn(
                   'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium',
                   project.isActive
-                    ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                    ? 'border-success/25 bg-success/10 text-success'
                     : 'border-border bg-muted text-muted-foreground',
                 )}
               >
                 <span
                   className={cn(
                     'size-1.5 rounded-full',
-                    project.isActive ? 'bg-emerald-400' : 'bg-muted-foreground',
+                    project.isActive ? 'bg-success' : 'bg-muted-foreground',
                   )}
                 />
                 {project.isActive ? 'Active' : 'Inactive'}
@@ -87,29 +78,28 @@ export function ProjectHeader({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" asChild>
+          <a
+            href={`/interface/projects/${project.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <a-button variant="outline" size="sm">
+              <ExternalLink className="size-4" />
+              Open public page
+            </a-button>
+          </a>
+          {project.websiteUrl ? (
             <a
-              href={`/interface/projects/${project.id}`}
+              href={project.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <ExternalLink className="size-4" />
-              Open public page
-            </a>
-          </Button>
-          {project.websiteUrl ? (
-            <Button variant="outline" size="sm" asChild>
-              <a
-                href={project.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a-button variant="outline" size="sm">
                 <ExternalLink className="size-4" />
                 Website
-              </a>
-            </Button>
+              </a-button>
+            </a>
           ) : null}
-
         </div>
       </div>
     </header>

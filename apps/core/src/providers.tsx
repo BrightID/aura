@@ -33,12 +33,12 @@ const Providers: ParentComponent = (props) => {
       );
   });
 
-  // Apply the persisted theme to the document root (tailwind `.dark` variant).
+  // `dark` and `light` are the class selectors in @aura/ui/tokens.css.
+  // :root in that file is the dark palette, so a `light` class that does not match leaves the page dark.
   createEffect(() => {
-    document.documentElement.classList.toggle(
-      'dark',
-      preferencesStore.theme === 'dark',
-    );
+    const dark = preferencesStore.theme === 'dark';
+    document.documentElement.classList.toggle('dark', dark);
+    document.documentElement.classList.toggle('light', !dark);
   });
 
   return (

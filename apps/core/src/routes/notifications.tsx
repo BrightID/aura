@@ -80,7 +80,7 @@ export default function NotificationsPage() {
 
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <a-head class="text-2xl">Notifications</a-head>
         <Show when={unreadCount() > 0}>
           <a-button
@@ -131,7 +131,7 @@ export default function NotificationsPage() {
                 >
                   {title(alert)}
                 </p>
-                <p class="text-xs text-muted-foreground/70">
+                <p class="text-xs text-muted-foreground">
                   <span class="capitalize">{alert.category}</span> ·{' '}
                   {formatDuration(alert.timestamp)}
                 </p>

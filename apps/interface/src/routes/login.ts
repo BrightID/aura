@@ -1,6 +1,5 @@
 import brightIDIcon from '@/assets/icons/brightid.svg';
 import LockIcon from '@/assets/icons/lock.svg';
-import spinnerIcon from '@/assets/icons/spinner.svg';
 import { pushRouter } from '@/router';
 import { isLoginLoading } from '@/states/login';
 import { loginWithPasskey, registerWithPasskey } from '@aura/sdk/auth/passkeys';
@@ -53,60 +52,43 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
       color: var(--muted-foreground);
       font-size: 14px;
     }
-    .space-y-3 {
+    .methods {
       display: grid;
       gap: 12px;
     }
-    .button {
+    .methods a-button {
+      width: 100%;
+    }
+    .methods a-button::part(button) {
+      width: 100%;
+      height: auto;
+      min-height: 4.75rem;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 16px;
+      text-align: left;
+    }
+    .method-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      min-width: 0;
+    }
+    .method-copy img {
+      flex-shrink: 0;
+    }
+    .method-row {
       display: flex;
       align-items: center;
       gap: 12px;
       width: 100%;
-      min-height: 76px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--secondary);
-      color: var(--foreground);
-      font: inherit;
-      text-align: left;
-      cursor: pointer;
-      transition:
-        background 160ms ease,
-        border-color 160ms ease;
-    }
-    .button:hover {
-      background: var(--muted);
-      border-color: var(--primary);
-    }
-    .method-arrow {
-      color: var(--muted-foreground);
-      font-size: 20px;
-    }
-    .button:focus-visible {
-      outline: 2px solid var(--ring);
-      outline-offset: 4px;
-    }
-    .flex-container {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex: 1;
-      min-width: 0;
-    }
-    .flex-1 {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-    .flex-container img {
-      flex-shrink: 0;
     }
     .font-medium {
       font-weight: 600;
     }
     .text-xs {
       font-size: 13px;
-      margin-top: 4px;
     }
     .text-muted-foreground,
     .form-footer {
@@ -117,25 +99,17 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
       text-align: center;
       margin: 24px 0 0;
     }
+    .form-footer a {
+      color: var(--primary);
+    }
     .loading-wrapper {
       min-height: 300px;
       display: grid;
       place-items: center;
       text-align: center;
     }
-    .loading-wrapper img {
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
     @media (prefers-reduced-motion: reduce) {
-      .button {
-        transition: none;
-      }
-      .loading-wrapper img {
+      a-skeleton {
         animation: none;
       }
     }
@@ -175,15 +149,8 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
               isLoginLoading.get()
                 ? html`
                     <div class="loading-wrapper">
-                      <div>
-                        <h2>Signing In</h2>
-                        <img
-                          width="25"
-                          height="25"
-                          src="${spinnerIcon}"
-                          alt="spinner"
-                        />
-                      </div>
+                      <a-head level="3">Signing in</a-head>
+                      <a-skeleton style="width: 12rem; margin-top: 16px"></a-skeleton>
                     </div>
                   `
                 : html`
@@ -192,40 +159,36 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
                       Use a passkey or connect BrightID to continue.
                     </p>
 
-                    <div class="space-y-3">
+                    <div class="methods">
                       ${map(
                         this.authMethods,
                         (method) => html`
-                          <div class="space-y-2">
-                            <button
-                              class="button"
-                              @click=${() => method.callback?.()}
-                            >
-                              <div class="flex-container">
-                                <img
-                                  width="20"
-                                  height="20"
-                                  src="${method.icon}"
-                                  alt=""
-                                />
-                                <div class="flex-1">
-                                  <div class="font-medium">${method.name}</div>
-                                  <div class="text-xs text-muted-foreground">
-                                    ${method.description}
-                                  </div>
-                                </div>
-                              </div>
-                              <span class="method-arrow" aria-hidden="true"
-                                >→</span
-                              >
-                            </button>
-                          </div>
+                          <a-button
+                            variant="outline"
+                            @click=${() => method.callback?.()}
+                          >
+                            <span class="method-row">
+                              <img
+                                width="20"
+                                height="20"
+                                src="${method.icon}"
+                                alt=""
+                              />
+                              <span class="method-copy">
+                                <span class="font-medium">${method.name}</span>
+                                <span class="text-xs text-muted-foreground">
+                                  ${method.description}
+                                </span>
+                              </span>
+                            </span>
+                          </a-button>
                         `,
                       )}
                     </div>
 
                     <p class="form-footer">
-                      By signing in, you agree to our privacy policy.
+                      By signing in, you agree to our
+                      <a href="/interface/privacy-policy">privacy policy</a>.
                     </p>
                   `
             }

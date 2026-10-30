@@ -3,8 +3,8 @@ import FadeIn from '@/components/motions/fade-in';
 // `about.tsx` => `/about`.
 function About() {
   return (
-    <div class="flex min-h-[calc(100vh-80px)] flex-col px-5.5 pt-20 pb-4">
-      <section class="content mb-auto pl-5 pr-12">
+    <div class="flex min-h-[calc(100vh-80px)] flex-col px-5.5 pt-16 pb-4">
+      <section class="content mb-auto">
         <FadeIn delay={0.1}>
           <a-head class="mb-6 text-5xl">About</a-head>
         </FadeIn>
@@ -22,7 +22,7 @@ function About() {
           <a-text>{__APP_VERSION__}</a-text>
         </span>
         <span class="flex gap-1">
-          <a-text class="text-muted-foreground/70">Powered by:</a-text>
+          <a-text class="text-muted-foreground">Powered by:</a-text>
           <a-text class="font-light">BrightID</a-text>
         </span>
       </footer>

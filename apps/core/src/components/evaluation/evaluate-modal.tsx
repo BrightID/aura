@@ -86,11 +86,9 @@ export default function EvaluateModal(props: {
 
   const close = () => dialog?.hide();
 
-  const fail = (e: unknown) =>
-    toast.error('Error', {
-      description:
-        'Failed to submit evaluation' +
-        (e instanceof Error ? `: ${e.message}` : String(e)),
+  const fail = () =>
+    toast.error('Could not submit evaluation', {
+      description: 'Something went wrong. Try again.',
       duration: 5000,
     });
 
@@ -104,8 +102,8 @@ export default function EvaluateModal(props: {
         description: name(),
       });
       close();
-    } catch (e) {
-      fail(e);
+    } catch {
+      fail();
     }
   };
 
@@ -118,8 +116,8 @@ export default function EvaluateModal(props: {
       await submitEvaluation(id, 0);
       toast.success('Evaluation removed', { description: name() });
       close();
-    } catch (e) {
-      fail(e);
+    } catch {
+      fail();
     }
   };
 
