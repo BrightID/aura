@@ -79,7 +79,7 @@ export default function OverviewSection({
         project.requirementLevel !== null
           ? `Level ${project.requirementLevel}`
           : 'Not set',
-      hint: project.requirementLevel === null ? 'Set in General' : 'Aura score',
+      hint: project.requirementLevel === null ? 'Set in Verification' : 'Aura score',
       icon: <Shield className="size-3.5 text-muted-foreground" />,
     },
     {

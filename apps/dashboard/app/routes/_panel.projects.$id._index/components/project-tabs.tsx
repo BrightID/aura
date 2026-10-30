@@ -58,13 +58,13 @@ export function ProjectTabs({
         </div>
       </a-tab-panel>
       <a-tab-panel slot="panel" value="settings">
-        <div className="space-y-6">
-          <UserRequiredLevelCard project={project} />
-          <SettingsTab project={project} />
-        </div>
+        <SettingsTab key={project.id} project={project} />
       </a-tab-panel>
       <a-tab-panel slot="panel" value="brightid">
-        <BrightIdSettingsForm initialData={project.brightIdApp as never} />
+        <div className="space-y-6">
+          <UserRequiredLevelCard key={project.id} project={project} />
+          <BrightIdSettingsForm initialData={project.brightIdApp as never} />
+        </div>
       </a-tab-panel>
       <a-tab-panel slot="panel" value="preview">
         <PreviewTab project={project} />

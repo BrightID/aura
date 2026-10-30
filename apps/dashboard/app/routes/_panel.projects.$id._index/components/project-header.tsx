@@ -2,8 +2,6 @@ import {
   ArrowLeft,
   Globe,
   ExternalLink,
-  Settings,
-  AppWindow,
 } from 'lucide-react';
 import { Link } from 'react-router';
 import type { Project } from '~/types/projects';
@@ -20,10 +18,8 @@ function hostname(url: string) {
 
 export function ProjectHeader({
   project,
-  onOpenSettings,
 }: {
   project: Project;
-  onOpenSettings: () => void;
 }) {
   return (
     <header className="flex flex-col gap-4">
@@ -91,14 +87,14 @@ export function ProjectHeader({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Button variant="default" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild>
             <a
               href={`/interface/projects/${project.id}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <AppWindow className="size-4" />
-              Your page
+              <ExternalLink className="size-4" />
+              Open public page
             </a>
           </Button>
           {project.websiteUrl ? (
@@ -113,10 +109,7 @@ export function ProjectHeader({
               </a>
             </Button>
           ) : null}
-          <Button variant="ghost" size="sm" onClick={onOpenSettings}>
-            <Settings className="size-4" />
-            Settings
-          </Button>
+
         </div>
       </div>
     </header>

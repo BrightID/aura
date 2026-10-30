@@ -1,14 +1,17 @@
-import { toast } from '@aura/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
-import { Check, Shield } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { Shield } from 'lucide-react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { Button } from '~/components/ui/button';
 import { API_BASE_URL } from '~/constants';
-import { useAuraEvent } from '~/lib/aura';
 import { cn } from '~/lib/utils';
 import type { Project } from '~/types/projects';
 import { formatScore } from '~/utils/numbers';
+import {
+  saveVerification,
+  type VerificationSaveResult,
+} from './verification-save';
 
 // One line on purpose. brightid-apps splits this string on newlines, and the
 // node evaluates each line as its own expr-eval expression. Shape matches the
@@ -32,212 +35,270 @@ export const LEVEL_SCRIPTS: Record<number, string> = {
   4: subjectLevelScript(4),
 };
 
-const levelPalette: Record<
-  number,
-  {
-    selected: string;
-    current: string;
-    text: string;
-    dot: string;
-    badge: string;
-    radio: string;
-  }
-> = {
-  0: {
-    selected: 'border-zinc-400 bg-zinc-500/10',
-    current: 'border-zinc-400/60 bg-zinc-500/5',
-    text: 'text-zinc-400',
-    dot: 'bg-zinc-400',
-    badge: 'bg-zinc-500/15 text-zinc-400',
-    radio: 'border-zinc-400 text-zinc-400',
-  },
-  1: {
-    selected: 'border-amber-500 bg-amber-500/10',
-    current: 'border-amber-500/60 bg-amber-500/5',
-    text: 'text-amber-500',
-    dot: 'bg-amber-500',
-    badge: 'bg-amber-500/15 text-amber-600',
-    radio: 'border-amber-500 text-amber-500',
-  },
-  2: {
-    selected: 'border-sky-500 bg-sky-500/10',
-    current: 'border-sky-500/60 bg-sky-500/5',
-    text: 'text-sky-500',
-    dot: 'bg-sky-500',
-    badge: 'bg-sky-500/15 text-sky-600',
-    radio: 'border-sky-500 text-sky-500',
-  },
-  3: {
-    selected: 'border-emerald-500 bg-emerald-500/10',
-    current: 'border-emerald-500/60 bg-emerald-500/5',
-    text: 'text-emerald-500',
-    dot: 'bg-emerald-500',
-    badge: 'bg-emerald-500/15 text-emerald-600',
-    radio: 'border-emerald-500 text-emerald-500',
-  },
-  4: {
-    selected: 'border-violet-500 bg-violet-500/10',
-    current: 'border-violet-500/60 bg-violet-500/5',
-    text: 'text-violet-500',
-    dot: 'bg-violet-500',
-    badge: 'bg-violet-500/15 text-violet-600',
-    radio: 'border-violet-500 text-violet-500',
-  },
+const levelRequirements: Record<number, string[]> = {
+  0: ['Anyone can pass, including users without verification.'],
+  1: [
+    'One evaluation with low confidence or higher, from an evaluator at Level 1 or above.',
+  ],
+  2: [
+    'One evaluation with medium confidence or higher, from an evaluator at Level 1 or above.',
+  ],
+  3: [
+    'One evaluation with high confidence or higher, from an evaluator at Level 2 or above.',
+    'Two evaluations with medium confidence, from two evaluators at Level 2 or above.',
+  ],
+  4: [
+    'One evaluation with high confidence or higher, from an evaluator at Level 3 or above.',
+    'Two evaluations with medium confidence, from two evaluators at Level 3 or above.',
+  ],
 };
-
-const levelRequirements: Record<number, string> = {
-  0: 'No minimum evaluation requirements',
-  1: '1 low+ confidence eval from 1 level 1+ evaluator',
-  2: '1 medium+ confidence eval from 1 level 1+ evaluator',
-  3: '1 high+ confidence eval from 1 level 2+ evaluator OR 2 medium confidence evals from 2 level 2+ evaluators',
-  4: '1 high+ confidence eval from 1 level 3+ evaluator OR 2 medium confidence evals from 2 level 3+ evaluators',
-};
-
 const levelPoints = [0, 1_000_000, 5_000_000, 10_000_000, 150_000_000];
 
 export function UserRequiredLevelCard({ project }: { project: Project }) {
-  const [selectedLevel, setSelectedLevel] = useState<string>(
-    project.requirementLevel?.toString() ?? '',
-  );
-
-  const radioGroupRef = useRef<HTMLElement>(null);
-  useAuraEvent<string>(radioGroupRef, 'change', setSelectedLevel);
-
+  const groupId = useId();
+  const savedLevel = project.requirementLevel;
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(savedLevel);
+  const [result, setResult] = useState<
+    VerificationSaveResult | 'save-failed' | null
+  >(null);
+  const previousSavedLevel = useRef(savedLevel);
   const queryClient = useQueryClient();
+  const isDirty = selectedLevel !== savedLevel;
+
+  // Follow refreshed saved values without replacing a draft the user is editing.
+  useEffect(() => {
+    const previous = previousSavedLevel.current;
+    previousSavedLevel.current = savedLevel;
+    setSelectedLevel((draft) => (draft === previous ? savedLevel : draft));
+  }, [savedLevel]);
 
   const { isPending, mutate } = useMutation({
-    mutationKey: ['update-project', project.id],
-    mutationFn: async (level: number) => {
+    mutationKey: ['update-project-verification', project.id],
+    mutationFn: async ({
+      level,
+      retrySync,
+    }: {
+      level: number;
+      retrySync: boolean;
+    }) => {
       const token = await getAuth().currentUser?.getIdToken();
+      if (!token) throw new Error('Please sign in again.');
       const headers = { Authorization: `Bearer ${token}` };
-
-      await axios.post(
-        `${API_BASE_URL}/api/projects/update-project`,
-        { ...project, requirementLevel: level },
-        { headers },
-      );
-
-      const { data } = await axios.post(
-        `${API_BASE_URL}/api/projects/update-project-verifications`,
-        { projectId: Number(project.id), verifications: LEVEL_SCRIPTS[level] },
-        { headers },
-      );
-
-      return data as { updated: boolean; reason?: string };
+      await queryClient.cancelQueries({ queryKey: ['user-projects'] });
+      return saveVerification({
+        saveLevel: retrySync
+          ? undefined
+          : async () => {
+              await axios.post(
+                `${API_BASE_URL}/api/projects/update-project`,
+                {
+                  id: Number(project.id),
+                  requirementLevel: level,
+                  isActive: project.isActive,
+                },
+                { headers },
+              );
+              // The level is persisted even if the following sync fails.
+              queryClient.setQueryData<Project[]>(
+                ['user-projects'],
+                (projects) =>
+                  projects?.map((item) =>
+                    item.id === project.id
+                      ? { ...item, requirementLevel: level }
+                      : item,
+                  ),
+              );
+            },
+        syncLevel: async () => {
+          const { data } = await axios.post<{
+            updated: boolean;
+            reason?: string;
+          }>(
+            `${API_BASE_URL}/api/projects/update-project-verifications`,
+            {
+              projectId: Number(project.id),
+              verifications: LEVEL_SCRIPTS[level],
+            },
+            { headers },
+          );
+          return data;
+        },
+      });
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
-      if (data?.updated) {
-        toast.success('Requirement level and verifications script updated');
-      } else {
-        toast.success('Requirement level updated');
-        toast.warning(
-          'No BrightID app is linked to this project yet — configure one in the Verification tab to sync the script.',
-        );
-      }
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onMutate: () => setResult(null),
+    onSuccess: setResult,
+    onError: (_error, { retrySync }) =>
+      setResult(retrySync ? 'sync-failed' : 'save-failed'),
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ['user-projects'] }),
   });
 
-  const handleSave = () => {
-    if (selectedLevel === '') return;
-    mutate(Number(selectedLevel));
-  };
+  const needsSync = result === 'sync-failed' || result === 'unlinked';
+  const message = isPending
+    ? 'Saving verification settings…'
+    : result === 'unlinked'
+      ? 'Level saved. Link a BrightID app below, then retry verification sync.'
+      : result === 'sync-failed'
+        ? 'Level saved, but verification sync failed. The linked app may still use the previous rule. Retry sync.'
+        : result === 'save-failed'
+          ? 'Could not save the verification level. Your selection is still here; try saving again.'
+          : isDirty
+            ? 'Unsaved changes'
+            : result === 'synced'
+              ? 'Verification level saved and synced.'
+              : 'No unsaved changes';
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warnBeforeLeaving);
+    return () => window.removeEventListener('beforeunload', warnBeforeLeaving);
+  }, [isDirty]);
 
   return (
-    <a-card className="overflow-hidden">
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="h-6 w-6 text-primary" />
-            <div>
-              <a-head level="3" className="text-lg font-semibold">
-                Verification Requirement Level
-              </a-head>
-              <p className="text-muted-foreground text-sm">
-                Minimum level users must achieve to pass
-              </p>
-            </div>
-          </div>
-          <a-button
-            size="sm"
-            onClick={handleSave}
-            disabled={
-              isPending ||
-              selectedLevel === project.requirementLevel?.toString()
-            }
+    <a-card>
+      <div className="flex items-start gap-3">
+        <Shield
+          className="mt-0.5 size-5 shrink-0 text-primary"
+          aria-hidden="true"
+        />
+        <div>
+          <h2 id={`${groupId}-title`} className="text-lg font-semibold">
+            Minimum verification level
+          </h2>
+          <p
+            id={`${groupId}-help`}
+            className="mt-1 text-sm text-muted-foreground"
           >
-            {isPending ? 'Saving...' : 'Save'}
-          </a-button>
+            Users below this level cannot pass your project’s verification. Save
+            to apply the rule to your linked BrightID app.
+          </p>
         </div>
       </div>
 
-      <div className="mt-6">
-        <a-radio-group
-          ref={radioGroupRef}
-          value={selectedLevel}
-          className="space-y-3"
-        >
-          {[4, 3, 2, 1, 0].map((level) => {
-            const isSelected = selectedLevel === level.toString();
-            const isCurrent = project.requirementLevel === level;
-            const palette = levelPalette[level];
+      <details className="mt-4 text-sm">
+        <summary className="w-fit cursor-pointer rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-ring">
+          How levels work
+        </summary>
+        <p className="mt-2 max-w-prose text-muted-foreground">
+          Choose the minimum Aura level a user must have. Higher levels have
+          stricter evaluation requirements. Confidence describes an evaluation’s
+          strength; the evaluator’s level describes the person providing it.
+          Scores are shown for reference. This setting checks the user’s level.
+        </p>
+      </details>
 
-            return (
-              <label
-                key={level}
-                onClick={() => setSelectedLevel(level.toString())}
-                className={cn(
-                  'flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-all',
-                  isSelected
-                    ? cn(palette.selected, 'shadow-sm')
-                    : isCurrent
-                      ? palette.current
-                      : 'border-border bg-muted/30 hover:bg-muted/60',
+      <fieldset
+        disabled={isPending}
+        aria-describedby={`${groupId}-help`}
+        className="mt-4 min-w-0 space-y-2"
+      >
+        <legend className="sr-only">Minimum verification level</legend>
+        {[0, 1, 2, 3, 4].map((level) => (
+          <label
+            key={level}
+            className={cn(
+              'flex min-h-14 items-start gap-3 rounded-lg border p-3 transition-colors focus-within:ring-2 focus-within:ring-ring',
+              isPending
+                ? 'cursor-wait opacity-70'
+                : 'cursor-pointer hover:bg-muted/50',
+              selectedLevel === level
+                ? 'border-primary bg-primary/10'
+                : 'border-foreground/25',
+            )}
+          >
+            <input
+              type="radio"
+              name={groupId}
+              value={level}
+              checked={selectedLevel === level}
+              onChange={() => setSelectedLevel(level)}
+              aria-labelledby={`${groupId}-name-${level}`}
+              aria-describedby={`${groupId}-level-${level}`}
+              className="mt-1 size-4 shrink-0 accent-primary"
+            />
+            <span className="min-w-0 flex-1">
+              <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span id={`${groupId}-name-${level}`} className="font-semibold">
+                  {level === 0
+                    ? 'Level 0 — No verification required'
+                    : `Level ${level}`}
+                </span>
+                {level > 0 && (
+                  <span className="text-sm text-muted-foreground">
+                    {formatScore(levelPoints[level])} score
+                  </span>
                 )}
+                {savedLevel === level && (
+                  <span className="rounded border border-foreground/25 px-2 py-0.5 text-xs">
+                    Saved level
+                  </span>
+                )}
+                {selectedLevel === level && isDirty && (
+                  <span className="text-xs font-medium text-primary">
+                    Unsaved selection
+                  </span>
+                )}
+              </span>
+              <span
+                id={`${groupId}-level-${level}`}
+                className="mt-1 block text-sm text-muted-foreground"
               >
-                <div className="flex items-center gap-4">
-                  <a-radio
-                    value={level.toString()}
-                    className={isSelected ? palette.radio : ''}
-                  />
-                  <div className="select-none space-y-1">
-                    <p
-                      className={cn(
-                        'font-semibold text-lg flex items-center gap-2',
-                        isSelected && palette.text,
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'inline-block w-2 h-2 rounded-full',
-                          palette.dot,
-                        )}
-                      />
-                      Level {level} • {formatScore(levelPoints[level])} Score
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {levelRequirements[level]}
-                    </p>
-                  </div>
-                </div>
+                {levelRequirements[level].map((requirement, index) => (
+                  <span key={requirement} className="block">
+                    {index > 0 && <strong className="font-medium">Or: </strong>}
+                    {requirement}
+                  </span>
+                ))}
+              </span>
+            </span>
+          </label>
+        ))}
+      </fieldset>
 
-                <div className="flex items-center gap-2">
-                  {isCurrent && (
-                    <a-badge variant="secondary" className={palette.badge}>
-                      Current
-                    </a-badge>
-                  )}
-                  {isSelected && !isCurrent && (
-                    <Check className={cn('w-5 h-5', palette.text)} />
-                  )}
-                </div>
-              </label>
-            );
-          })}
-        </a-radio-group>
+      <div
+        className="mt-4 flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between"
+        aria-busy={isPending}
+      >
+        <p role="status" aria-live="polite" className="text-sm">
+          {message}
+        </p>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          {needsSync && savedLevel !== null && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              onClick={() => mutate({ level: savedLevel, retrySync: true })}
+            >
+              Retry sync
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isPending || !isDirty}
+            onClick={() => {
+              setSelectedLevel(savedLevel);
+              if (!needsSync) setResult(null);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            disabled={isPending || !isDirty || selectedLevel === null}
+            onClick={() => {
+              if (selectedLevel !== null)
+                mutate({ level: selectedLevel, retrySync: false });
+            }}
+          >
+            {isPending ? 'Saving…' : 'Save verification level'}
+          </Button>
+        </div>
       </div>
     </a-card>
   );

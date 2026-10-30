@@ -23,10 +23,7 @@ export default function ProjectDetail() {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-5 lg:px-6">
-      <ProjectHeader
-        project={focusedProject}
-        onOpenSettings={() => setTab('settings')}
-      />
+      <ProjectHeader project={focusedProject} />
       <ProjectTabs project={focusedProject} tab={tab} onTabChange={setTab} />
     </div>
   );
