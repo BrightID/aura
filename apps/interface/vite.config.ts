@@ -1,4 +1,5 @@
 import { resolve } from 'node:path';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { litHMRPlugin } from './vite-plugin-lit-hmr';
@@ -27,7 +28,12 @@ export default defineConfig({
   define: {
     'process.env': {},
   },
-  plugins: [tsconfigPaths(), litHMRPlugin(), injectRemoteCss('/interface/')],
+  plugins: [
+    tailwindcss(),
+    tsconfigPaths(),
+    litHMRPlugin(),
+    injectRemoteCss('/interface/'),
+  ],
   server: {
     host: true,
     allowedHosts: ['localhost', '.localhost'],

@@ -1,6 +1,8 @@
+import { LightElement } from '@aura/widgets/light-element';
 import '@/components/ui/markdown';
-import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import './privacy-policy.css';
 
 export const content = `
 
@@ -47,29 +49,7 @@ If you have questions about this Privacy Policy, contact us at [Discord Channel]
 `;
 
 @customElement('privacy-policy')
-export class PrivacyPolicyElement extends LitElement {
-  static styles?: CSSResultGroup | undefined = css`
-    c-markdown {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .container {
-      text-align: left;
-    }
-
-    a {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .back {
-      display: inline-flex;
-      margin-bottom: 16px;
-      text-decoration: none;
-    }
-  `;
+export class PrivacyPolicyElement extends LightElement {
   protected render() {
     return html`
       <div class="container">

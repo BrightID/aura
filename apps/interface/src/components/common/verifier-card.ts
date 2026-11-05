@@ -1,9 +1,11 @@
-import { css, html, LitElement } from 'lit';
+import { LightElement } from '@aura/widgets/light-element';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import thumbsUpGreen from '@/assets/icons/thumbs-up.svg';
+import './verifier-card.css';
 
 @customElement('verifier-card')
-export class VerifierCard extends LitElement {
+export class VerifierCard extends LightElement {
   @property({ type: String })
   verifierName = 'Ali Maktabi';
 
@@ -31,93 +33,32 @@ export class VerifierCard extends LitElement {
   @property({ type: String })
   evaluationNote = '';
 
-  static styles = css`
-    .verifier-header {
-      display: flex;
-      align-items: flex-start;
-      text-align: left;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .verifier-picture {
-      width: 52px;
-      height: 52px;
-      border-radius: 6px;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .verifier-picture img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .verifier-info {
-      flex: 1 1 auto;
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-    .ellipsis {
-      display: block;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background-color: color-mix(in oklch, var(--border) 50%, transparent);
-      border-radius: 9999px;
-      overflow: hidden;
-    }
-
-    .progress {
-      height: 100%;
-      background-color: var(--primary);
-      border-radius: 9999px;
-    }
-
-    .evaluation {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-      text-align: left;
-    }
-
-    .evaluation-note {
-      font-size: 12px;
-      color: var(--muted-foreground);
-    }
-  `;
-
   protected render() {
     return html`
-      <a-card variant="default">
+      <div class="a-card" data-variant="default">
         <div class="verifier-header">
           <div class="verifier-picture">
             <img src="${this.verifierPicture}" alt="verifier picture" />
           </div>
           <div class="verifier-info">
-            <a-head
-              level="5"
+            <h5
+              class="a-head"
+              data-level="5"
               style="margin: 0; font-size: 0.9375rem"
               title=${this.verifierName}
-              ><span class="ellipsis">${this.verifierName}</span></a-head
             >
+              <span class="ellipsis">${this.verifierName}</span>
+            </h5>
             ${
               this.verifierEmail
-                ? html`<a-text
-                    variant="muted"
+                ? html`<p
+                    class="a-text"
+                    data-variant="muted"
                     style="display: block; margin-top: 2px"
                     title=${this.verifierEmail}
-                    ><span class="ellipsis">${this.verifierEmail}</span></a-text
-                  >`
+                  >
+                    <span class="ellipsis">${this.verifierEmail}</span>
+                  </p>`
                 : ''
             }
           </div>
@@ -131,8 +72,8 @@ export class VerifierCard extends LitElement {
         </div>
 
         <div class="evaluation">
-          <a-badge variant="secondary" size="xs"
-            >Level ${this.verifierLevel}</a-badge
+          <span class="a-badge" data-variant="secondary" data-size="xs"
+            >Level ${this.verifierLevel}</span
           >
           ${
             this.evaluationText
@@ -143,19 +84,25 @@ export class VerifierCard extends LitElement {
                     src="${this.evaluationIcon}"
                     alt=""
                   />
-                  <a-text variant="small" style="color: var(--aura-success)">
+                  <p
+                    class="a-text"
+                    data-variant="small"
+                    style="color: var(--aura-success)"
+                  >
                     +${this.evaluationScore} ${this.evaluationText}
-                  </a-text>
+                  </p>
                 `
               : ''
           }
           ${
             this.evaluationNote
-              ? html`<span class="evaluation-note">${this.evaluationNote}</span>`
+              ? html`<span class="evaluation-note"
+                  >${this.evaluationNote}</span
+                >`
               : ''
           }
         </div>
-      </a-card>
+      </div>
     `;
   }
 }

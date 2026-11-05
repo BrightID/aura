@@ -1,0 +1,1125 @@
+/* Aura UI: design tokens, the Tailwind colour mapping and component classes.
+   Import once per app, after tailwindcss:
+
+     @import 'tailwindcss';
+     @import '@aura/ui/aura.css';
+
+   Each class is named after the Lit tag it replaces (<a-button> becomes
+   <button class="a-button">). The a- prefix matters: landing loads core,
+   dashboard, interface and demo into one document, and demo already defines
+   a global .badge. Variants are data attributes (data-variant, data-size,
+   data-color), so an expression such as variant={x ? 'ghost' : 'default'}
+   moves over unchanged. The classes sit in @layer components, so any
+   Tailwind utility on the same element overrides them without !important. */
+
+@import './tokens.css';
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-orange: var(--orange);
+
+  --color-success: var(--aura-success);
+  --color-warning: var(--aura-warning);
+  --color-info: var(--aura-info);
+  --color-aura-success: var(--aura-success);
+  --color-aura-warning: var(--aura-warning);
+  --color-aura-info: var(--aura-info);
+  --color-aura-level-1: var(--aura-level-1);
+  --color-aura-level-2: var(--aura-level-2);
+  --color-aura-level-3: var(--aura-level-3);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  body:has(dialog[open]) {
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  /* Native controls don't inherit the page font, and buttons get a UA border.
+     Tailwind's preflight fixes both, but interface ships without Tailwind. */
+  .a-button,
+  .a-toggle,
+  .a-tab,
+  .a-menu-item,
+  .a-dialog-close,
+  .a-input {
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .a-tab,
+  .a-menu-item,
+  .a-dialog-close {
+    border: 0;
+  }
+  .a-head,
+  .a-text {
+    margin: 0;
+  }
+
+  /* ---------- button: <button class="a-button" data-variant data-size data-color aria-pressed> */
+  .a-button {
+    --_c: var(--primary);
+    --_c-fg: var(--primary-foreground);
+    --_bg: var(--_c);
+    --_fg: var(--_c-fg);
+    --_bd: transparent;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.5rem;
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-radius: var(--radius);
+    border: 1px solid var(--_bd);
+    background: var(--_bg);
+    color: var(--_fg);
+    cursor: pointer;
+    transition:
+      transform 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .a-button:hover:not(:disabled) {
+    --_bg: oklch(from var(--_c) calc(l + 0.05) c h);
+  }
+  .a-button:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+  .a-button:focus-visible {
+    outline: 2px solid oklch(from var(--_c) 0.7 c h);
+    outline-offset: 2px;
+  }
+  .a-button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .a-button[data-size='sm'] {
+    height: 2rem;
+    padding: 0 0.75rem;
+    font-size: 0.8125rem;
+  }
+  .a-button[data-size='lg'] {
+    height: 3rem;
+    padding: 0 1.5rem;
+    font-size: 1rem;
+  }
+  .a-button[data-size^='icon'] {
+    font-size: inherit; /* the icon is 1em: match the old icon buttons */
+    gap: 0;
+    padding: 0;
+    width: 2.5rem;
+  }
+  .a-button[data-size='icon-sm'] {
+    width: 2rem;
+    height: 2rem;
+  }
+  .a-button[data-size='icon-lg'] {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .a-button[data-color='secondary'] {
+    --_c: var(--secondary);
+    --_c-fg: var(--secondary-foreground);
+  }
+  .a-button[data-color='success'] {
+    --_c: var(--aura-success);
+  }
+  .a-button[data-color='warning'] {
+    --_c: var(--aura-warning);
+  }
+  .a-button[data-color='destructive'] {
+    --_c: var(--destructive);
+    --_c-fg: var(--destructive-foreground);
+  }
+
+  .a-button[data-variant='secondary'] {
+    --_bg: color-mix(in oklch, var(--_c) 15%, transparent);
+    --_fg: var(--_c);
+  }
+  .a-button[data-variant='secondary']:hover:not(:disabled) {
+    --_bg: color-mix(in oklch, var(--_c) 25%, transparent);
+  }
+  .a-button[data-variant='ghost'] {
+    --_bg: transparent;
+    --_fg: var(--_c);
+  }
+  .a-button[data-variant='ghost']:hover:not(:disabled) {
+    --_bg: color-mix(in oklch, var(--_c) 20%, transparent);
+  }
+  .a-button[data-variant='outline'] {
+    --_bg: transparent;
+    --_fg: var(--_c);
+    --_bd: var(--_c);
+  }
+  .a-button[data-variant='outline']:hover:not(:disabled) {
+    --_bg: color-mix(in oklch, var(--_c) 10%, transparent);
+  }
+  .a-button[data-variant='glass'] {
+    --_fg: color-mix(in oklch, var(--_c) 45%, var(--foreground));
+    --_bd: color-mix(in oklch, var(--_c) 20%, transparent);
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--_c) 18%, transparent) 0%,
+      color-mix(in oklch, var(--_c) 8%, transparent) 100%
+    );
+    backdrop-filter: blur(6px) saturate(180%);
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.05),
+      0 8px 24px oklch(0 0 0 / 0.1);
+  }
+  .a-button[data-variant='glass']:hover:not(:disabled) {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--_c) 28%, transparent) 0%,
+      color-mix(in oklch, var(--_c) 14%, transparent) 100%
+    );
+  }
+  /* Pressed (toggle/pill) wins over every variant. */
+  .a-button[aria-pressed='true'],
+  .a-button[aria-pressed='true']:hover:not(:disabled) {
+    --_fg: var(--primary-foreground);
+    --_bd: transparent;
+    background: var(--primary);
+    backdrop-filter: none;
+  }
+
+  /* ---------- toggle: <button class="a-toggle" aria-pressed data-variant="outline" data-size> */
+  .a-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .a-toggle[data-variant='outline'] {
+    border-color: var(--border);
+  }
+  .a-toggle[data-size='sm'] {
+    height: 2rem;
+    padding: 0 0.625rem;
+    font-size: 0.8125rem;
+  }
+  .a-toggle[data-size='lg'] {
+    height: 2.5rem;
+    padding: 0 1rem;
+    font-size: 1rem;
+  }
+  .a-toggle:hover:not(:disabled) {
+    background: color-mix(in oklch, var(--accent) 50%, transparent);
+    color: var(--accent-foreground);
+  }
+  .a-toggle[aria-pressed='true'] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  .a-toggle:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .a-toggle-group {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  /* ---------- card: <div class="a-card" data-variant="default|glass" data-interactive> (glass when unset) */
+  .a-card {
+    display: block;
+    padding: var(--lg);
+    border-radius: var(--radius);
+    color: var(--card-foreground);
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--card) 20%, transparent) 0%,
+      color-mix(in oklch, var(--card) 8%, transparent) 100%
+    );
+    backdrop-filter: blur(2px) saturate(180%);
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.04),
+      0 12px 40px oklch(0 0 0 / 0.12);
+    transition:
+      background 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.15s ease;
+  }
+  .a-card[data-variant='default'] {
+    background: var(--card);
+    border: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+    backdrop-filter: none;
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.06),
+      0 8px 30px oklch(0 0 0 / 0.08);
+  }
+  .a-card[data-interactive] {
+    cursor: pointer;
+  }
+  .a-card[data-interactive][data-variant='default']:hover {
+    background: color-mix(in oklch, var(--foreground) 6%, var(--card));
+  }
+  .a-card[data-interactive]:not([data-variant='default']):hover {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--card) 28%, transparent) 0%,
+      color-mix(in oklch, var(--card) 30%, transparent) 100%
+    );
+  }
+  .a-card[data-interactive]:active {
+    transform: scale(0.99);
+  }
+  .a-card[data-interactive]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* ---------- typography: <h2 class="a-head" data-level="1-6">, <p class="a-text" data-variant data-size> */
+  .a-head {
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  .a-head[data-level='1'] {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  .a-head[data-level='3'] {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  .a-head[data-level='4'] {
+    font-size: 1.125rem;
+    line-height: 1.625rem;
+  }
+  .a-head[data-level='5'] {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  .a-head[data-level='6'] {
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+  }
+
+  .a-text {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  .a-text[data-variant='title'] {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  .a-text[data-variant='lead'] {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: var(--muted-foreground);
+  }
+  .a-text[data-variant='small'],
+  .a-text[data-variant='muted'] {
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+  }
+  .a-text[data-variant='muted'] {
+    color: var(--muted-foreground);
+  }
+  .a-text[data-size='xs'] {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  .a-text[data-size='sm'] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  .a-text[data-size='md'] {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  .a-text[data-size='lg'] {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  .a-text[data-size='xl'] {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  .a-text[data-size='2xl'] {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .a-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    user-select: none;
+  }
+
+  /* ---------- badge: <span class="a-badge" data-variant data-size data-rounded> */
+  .a-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35em;
+    min-height: 1.75rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border-radius: var(--xl2);
+    border: 1px solid transparent;
+    background: var(--muted);
+    color: var(--muted-foreground);
+  }
+  .a-badge[data-size='xs'] {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    min-height: 1rem;
+  }
+  .a-badge[data-size='sm'] {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.55rem;
+    min-height: 1.4rem;
+  }
+  .a-badge[data-size='lg'] {
+    font-size: 1rem;
+    padding: 0.45rem 0.95rem;
+    min-height: 2rem;
+  }
+  .a-badge[data-rounded] {
+    border-radius: 9999px;
+  }
+  .a-badge[data-variant='secondary'] {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+  }
+  .a-badge[data-variant='destructive'] {
+    background: var(--destructive);
+    color: var(--destructive-foreground);
+  }
+  .a-badge[data-variant='accent'] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  .a-badge[data-variant='outline'] {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+  .a-badge[data-variant='glass'] {
+    background: color-mix(in oklch, var(--background) 35%, transparent);
+    backdrop-filter: blur(12px) saturate(1.8);
+    border-color: color-mix(in oklch, var(--border) 50%, transparent);
+    color: var(--foreground);
+    box-shadow: 0 1px 5px oklch(0 0 0 / 0.07);
+  }
+
+  /* ---------- small display pieces */
+  .a-skeleton {
+    display: block;
+    width: 100%;
+    height: 1rem;
+    background: var(--muted);
+    border-radius: var(--radius);
+    animation: a-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* <hr class="a-separator"> or <div class="a-separator" data-orientation="vertical">.
+     No margin: space it with utilities. */
+  .a-separator {
+    flex-shrink: 0;
+    height: 1px;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: var(--border);
+  }
+  .a-separator[data-orientation='vertical'] {
+    width: 1px;
+    height: auto;
+    align-self: stretch;
+  }
+
+  /* <progress class="a-progress" value max> */
+  .a-progress {
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 0.5rem;
+    border: 0;
+    border-radius: 9999px;
+    overflow: hidden;
+    background: var(--muted);
+  }
+  .a-progress::-webkit-progress-bar {
+    background: var(--muted);
+  }
+  .a-progress::-webkit-progress-value {
+    background: var(--primary);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+  }
+  .a-progress::-moz-progress-bar {
+    background: var(--primary);
+    border-radius: 9999px;
+  }
+
+  /* <span class="a-avatar" data-size><img src alt> or fallback text</span> */
+  .a-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    user-select: none;
+    vertical-align: middle;
+  }
+  .a-avatar[data-size='sm'] {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.625rem;
+  }
+  .a-avatar[data-size='lg'] {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.875rem;
+  }
+  .a-avatar > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* <span class="a-icon" style="--icon-url: url(...)">; size it with font-size or text-* */
+  .a-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    background-color: currentColor;
+    mask: var(--icon-url) no-repeat center / contain;
+  }
+
+  /* ---------- form controls: native <input>, <textarea>, <select> */
+  .a-input {
+    display: block;
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--foreground);
+    background: color-mix(in oklch, var(--background) 82%, transparent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      background-color 0.18s ease;
+  }
+  textarea.a-input {
+    height: auto;
+    min-height: 4rem;
+    padding: 0.625rem 0.875rem;
+    resize: vertical;
+  }
+  select.a-input {
+    appearance: none;
+    padding-right: 2.25rem;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+  .a-input::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.7;
+  }
+  .a-input:hover:not(:disabled):not(:focus) {
+    border-color: color-mix(in oklch, var(--border) 85%, var(--foreground) 15%);
+  }
+  .a-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 30%, transparent);
+    background-color: color-mix(in oklch, var(--background) 75%, transparent);
+  }
+  .a-input:disabled {
+    opacity: 0.52;
+    cursor: not-allowed;
+  }
+
+  /* An input with a leading icon:
+     <div class="a-input-group"><svg or .a-icon /><input class="a-input" /></div> */
+  .a-input-group {
+    position: relative;
+  }
+  .a-input-group > :not(.a-input) {
+    position: absolute;
+    top: 50%;
+    left: 0.875rem;
+    width: 1rem;
+    height: 1rem;
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+  .a-input-group > .a-input {
+    padding-left: 2.75rem;
+  }
+
+  /* <label class="a-field">Name <input class="a-input"></label> */
+  .a-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+  }
+  .a-field > .a-input {
+    font-weight: 400;
+  }
+
+  /* <input type="checkbox" role="switch" class="a-switch"> */
+  .a-switch {
+    appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
+    background: var(--input);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .a-switch::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.2);
+    transition: transform 0.15s ease;
+  }
+  .a-switch:checked {
+    background: var(--primary);
+    border-color: transparent;
+  }
+  .a-switch:checked::before {
+    transform: translateX(1.25rem);
+  }
+  .a-switch:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* <input type="range" class="a-slider" style="--_pct: 40%">: the page sets
+     --_pct from value, because CSS can't read an input's value. */
+  .a-slider {
+    appearance: none;
+    width: 100%;
+    height: 0.375rem;
+    margin: 0.5rem 0;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--primary) var(--_pct, 0%),
+      var(--muted) var(--_pct, 0%)
+    );
+    cursor: pointer;
+  }
+  .a-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    background: var(--background);
+    border: 2px solid var(--primary);
+    box-shadow: 0 1px 3px oklch(0 0 0 / 0.2);
+  }
+  .a-slider::-moz-range-thumb {
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    background: var(--background);
+    border: 2px solid var(--primary);
+  }
+  .a-slider::-moz-range-progress {
+    height: 0.375rem;
+    border-radius: 999px;
+    background: var(--primary);
+  }
+  .a-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  /* appearance: none drops the browser's focus ring, so draw one on the thumb. */
+  .a-slider:focus-visible {
+    outline: none;
+  }
+  .a-slider:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  .a-slider:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .a-switch:focus-visible,
+  .a-toggle:focus-visible,
+  .a-tab:focus-visible,
+  .a-menu-item:focus-visible,
+  .a-dialog-close:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* ---------- tabs: <div class="a-tabs" role="tablist" data-compact>
+                <button class="a-tab" role="tab" aria-selected="true"> ...
+     The selected tab is filled. The old sliding indicator is gone. */
+  .a-tabs {
+    display: flex;
+    align-items: stretch;
+    padding: 0.25rem;
+    border-radius: var(--radius);
+    background: var(--tab-bg, var(--muted));
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  }
+  .a-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 2rem;
+    padding: 0 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    border-radius: calc(var(--radius) - 0.125rem);
+    background: transparent;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  .a-tab[aria-selected='true'] {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+  }
+  .a-tab:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .a-tabs[data-compact] {
+    width: 100%;
+    padding: 0;
+    gap: 0.25rem;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .a-tabs[data-compact] .a-tab {
+    flex: 0 0 auto;
+    border-radius: 0;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+  }
+  .a-tabs[data-compact] .a-tab[aria-selected='true'] {
+    background: transparent;
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .a-tab-panel {
+    padding-top: 1rem;
+    animation: a-rise 0.22s ease-out;
+  }
+
+  /* ---------- overlays: native <dialog> and [popover] */
+  /* <dialog class="a-dialog" aria-label closedby="any"> + <button class="a-dialog-close"> */
+  .a-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 2rem);
+    padding: 3.5rem 1.25rem 1.25rem;
+    overflow: auto;
+    overflow-wrap: anywhere;
+    overscroll-behavior: contain;
+    color: var(--foreground);
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    opacity: 0;
+    transform: scale(0.8);
+    transition:
+      opacity 0.22s,
+      transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+      overlay 0.22s allow-discrete,
+      display 0.22s allow-discrete;
+  }
+  .a-dialog[open] {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @starting-style {
+    .a-dialog[open] {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+  .a-dialog::backdrop,
+  .a-sheet::backdrop {
+    background: rgb(0 0 0 / 0.5);
+    backdrop-filter: blur(4px);
+  }
+  .a-dialog-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius);
+    background: var(--muted);
+    color: var(--foreground);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  /* <dialog class="a-sheet" data-side="right|left|top|bottom"> (right when unset) */
+  .a-sheet {
+    position: fixed;
+    inset: 0 0 0 auto;
+    margin: 0;
+    width: min(24rem, 100vw);
+    max-width: 100vw;
+    height: 100%;
+    max-height: 100dvh;
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+    padding: var(--md);
+    overflow: auto;
+    color: var(--card-foreground);
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 40px -10px #0007;
+    --_from: translateX(100%);
+    transform: var(--_from);
+    transition:
+      transform 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+      overlay 0.32s allow-discrete,
+      display 0.32s allow-discrete;
+  }
+  .a-sheet[open] {
+    display: flex;
+    transform: none;
+  }
+  @starting-style {
+    .a-sheet[open] {
+      transform: var(--_from);
+    }
+  }
+  .a-sheet[data-side='left'] {
+    inset: 0 auto 0 0;
+    --_from: translateX(-100%);
+  }
+  .a-sheet[data-side='top'],
+  .a-sheet[data-side='bottom'] {
+    width: 100%;
+    height: auto;
+    max-height: 90vh;
+  }
+  .a-sheet[data-side='top'] {
+    inset: 0 0 auto 0;
+    --_from: translateY(-100%);
+  }
+  .a-sheet[data-side='bottom'] {
+    inset: auto 0 0 0;
+    --_from: translateY(100%);
+  }
+
+  /* <div class="a-popover" popover> for popovers, hover cards and tooltips;
+     <div class="a-menu" popover> holding .a-menu-item / .a-menu-label / .a-menu-separator.
+     The page positions it: CSS anchor positioning, or inline top/left. */
+  .a-popover,
+  .a-menu {
+    margin: 0;
+    color: var(--popover-foreground);
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  .a-popover {
+    min-width: 18rem;
+    max-width: 24rem;
+    padding: 1rem;
+  }
+  .a-popover[data-tooltip] {
+    min-width: 0;
+    max-width: 20rem;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
+  }
+  .a-menu {
+    min-width: 10rem;
+    max-width: 20rem;
+    padding: 0.25rem;
+  }
+  .a-popover:popover-open,
+  .a-menu:popover-open {
+    animation: a-fade 0.12s ease-out;
+  }
+  .a-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    text-align: left;
+    color: var(--foreground);
+    background: transparent;
+    border-radius: calc(var(--radius) - 0.25rem);
+    cursor: pointer;
+    user-select: none;
+  }
+  .a-menu-item:hover:not(:disabled),
+  .a-menu-item:focus-visible {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  .a-menu-item[data-variant='destructive'] {
+    color: var(--destructive);
+  }
+  .a-menu-item[data-variant='destructive']:hover:not(:disabled) {
+    background: color-mix(in oklch, var(--destructive) 12%, transparent);
+    color: var(--destructive);
+  }
+  .a-menu-item:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .a-menu-label {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+  }
+  .a-menu-separator {
+    height: 1px;
+    margin: 0.25rem -0.25rem;
+    border: 0;
+    background: var(--border);
+  }
+
+  /* ---------- toast: <div class="a-toaster"><div class="a-toast" data-variant> */
+  .a-toaster {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: min(22rem, calc(100vw - 2rem));
+  }
+  .a-toast {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px -8px rgb(0 0 0 / 0.4);
+    cursor: pointer;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+  /* <button class="a-toast-close" aria-label="Dismiss">×</button> inside the
+     toast: the keyboard way to dismiss it. */
+  .a-toast {
+    position: relative;
+    padding-right: 2.5rem;
+  }
+  .a-toast-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 0;
+    border-radius: calc(var(--radius) - 0.25rem);
+    background: transparent;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .a-toast-close:hover {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  .a-toast-close:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  /* The toast store marks a toast hidden while it enters and leaves. */
+  .a-toast[data-hidden] {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .a-toast[data-variant='success'] {
+    border-color: var(--aura-success);
+  }
+  .a-toast[data-variant='warning'] {
+    border-color: var(--aura-warning);
+  }
+  .a-toast[data-variant='info'] {
+    border-color: var(--aura-info);
+  }
+  .a-toast[data-variant='error'] {
+    border-color: var(--destructive);
+  }
+}
+
+/* Keep state changes, drop movement: no pulsing, scaling or sliding. */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .a-skeleton {
+      animation: none;
+    }
+    .a-button:active:not(:disabled),
+    .a-card[data-interactive]:active {
+      transform: none;
+    }
+    .a-dialog,
+    .a-sheet,
+    .a-toast,
+    .a-tab-panel,
+    .a-popover:popover-open,
+    .a-menu:popover-open {
+      animation: none;
+      transition-property: opacity;
+    }
+    .a-dialog,
+    .a-dialog[open],
+    .a-sheet,
+    .a-sheet[open],
+    .a-toast[data-hidden] {
+      transform: none;
+    }
+  }
+}
+
+@keyframes a-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+@keyframes a-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes a-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}

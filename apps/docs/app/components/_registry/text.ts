@@ -3,7 +3,8 @@ import type { ComponentDoc } from './types';
 export const text: ComponentDoc = {
   slug: 'text',
   name: 'Text',
-  tag: 'a-text',
+  element: 'p',
+  className: 'a-text',
   description:
     'Typographic primitive. Pick a semantic `variant` for the type scale; `size` overrides the raw font size when you need finer control.',
   slot: 'The quick brown fox jumps over the lazy dog.',
@@ -26,12 +27,12 @@ export const text: ComponentDoc = {
   cssVars: [
     {
       name: '--foreground',
-      default: 'oklch(0.96 0.005 265)',
+      default: 'oklch(0.965 0.008 245)',
       description: 'Default text color.',
     },
     {
       name: '--muted-foreground',
-      default: 'oklch(0.58 0.01 265)',
+      default: 'oklch(0.69 0.012 245)',
       description: 'Color for the `lead` and `muted` variants.',
     },
   ],

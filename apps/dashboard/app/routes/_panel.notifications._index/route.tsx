@@ -23,10 +23,10 @@ import {
   Shield,
   MessageSquare,
 } from 'lucide-react';
-import { toast } from '@aura/ui';
+import { toast } from '@aura/ui/toast';
 
 import { auth, db } from '~/lib/firebase';
-import { useAuraEvent } from '~/lib/aura';
+import { AuraSwitch } from '~/components/aura-form-controls';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -163,10 +163,10 @@ const eventIconMap: Record<EventType, React.ReactNode> = {
 
 function SectionSkeleton() {
   return (
-    <a-card>
+    <div className="a-card">
       <div className="flex flex-col gap-1.5 p-6">
-        <a-skeleton className="h-5 w-40" />
-        <a-skeleton className="h-4 w-64 mt-1" />
+        <div className="a-skeleton h-5 w-40" />
+        <div className="a-skeleton h-4 w-64 mt-1" />
       </div>
       <div className="p-6 pt-0">
         <div className="divide-y">
@@ -176,18 +176,18 @@ function SectionSkeleton() {
               className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
             >
               <div className="flex items-start gap-3">
-                <a-skeleton className="size-4 mt-0.5 rounded-full" />
+                <div className="a-skeleton size-4 mt-0.5 rounded-full" />
                 <div className="space-y-1.5">
-                  <a-skeleton className="h-4 w-36" />
-                  <a-skeleton className="h-3 w-52" />
+                  <div className="a-skeleton h-4 w-36" />
+                  <div className="a-skeleton h-3 w-52" />
                 </div>
               </div>
-              <a-skeleton className="h-[1.15rem] w-8 rounded-full" />
+              <div className="a-skeleton h-[1.15rem] w-8 rounded-full" />
             </div>
           ))}
         </div>
       </div>
-    </a-card>
+    </div>
   );
 }
 
@@ -210,23 +210,26 @@ function ToggleRow({
   checked,
   onCheckedChange,
 }: ToggleRowProps) {
-  const switchRef = useRef<HTMLElement>(null);
-  useAuraEvent<boolean>(switchRef, 'change', onCheckedChange);
   return (
     <div className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
       <div className="flex items-start gap-3">
         <span className="mt-0.5 shrink-0">{icon}</span>
         <div>
-          <a-label
-            for={id}
-            className="text-sm font-medium leading-none cursor-pointer"
+          <label
+            className="a-label text-sm font-medium leading-none cursor-pointer"
+            htmlFor={id}
           >
             {label}
-          </a-label>
+          </label>
           <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         </div>
       </div>
-      <a-switch ref={switchRef} name={id} checked={checked} />
+      <AuraSwitch
+        id={id}
+        name={id}
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+      />
     </div>
   );
 }
@@ -370,13 +373,13 @@ export default function NotificationsPage() {
           </>
         ) : (
           <>
-            <a-card>
+            <div className="a-card">
               <div className="flex flex-col gap-1.5 p-6">
                 <div className="flex items-center gap-2">
                   <Mail className="size-4" />
-                  <a-head level="3" className="font-semibold">
+                  <h3 className="a-head font-semibold" data-level="3">
                     Email Notifications
-                  </a-head>
+                  </h3>
                 </div>
                 <p className="text-muted-foreground text-sm">
                   Choose which events send you an email
@@ -399,16 +402,16 @@ export default function NotificationsPage() {
                   ))}
                 </div>
               </div>
-            </a-card>
+            </div>
 
             {/* ── In-App Notifications ────────────────────────────────────── */}
-            <a-card>
+            <div className="a-card">
               <div className="flex flex-col gap-1.5 p-6">
                 <div className="flex items-center gap-2">
                   <Bell className="size-4" />
-                  <a-head level="3" className="font-semibold">
+                  <h3 className="a-head font-semibold" data-level="3">
                     In-App Notifications
-                  </a-head>
+                  </h3>
                 </div>
                 <p className="text-muted-foreground text-sm">
                   Manage alerts shown inside the dashboard
@@ -431,16 +434,16 @@ export default function NotificationsPage() {
                   ))}
                 </div>
               </div>
-            </a-card>
+            </div>
           </>
         )}
 
         {/* ── Notification History ─────────────────────────────────────────── */}
-        <a-card>
+        <div className="a-card">
           <div className="flex flex-col gap-1.5 p-6">
-            <a-head level="3" className="font-semibold">
+            <h3 className="a-head font-semibold" data-level="3">
               Notification History
-            </a-head>
+            </h3>
             <p className="text-muted-foreground text-sm">
               Your 10 most recent in-app notifications
             </p>
@@ -450,10 +453,10 @@ export default function NotificationsPage() {
               <div className="space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <a-skeleton className="size-4 rounded-full mt-0.5 shrink-0" />
+                    <div className="a-skeleton size-4 rounded-full mt-0.5 shrink-0" />
                     <div className="space-y-1.5 flex-1">
-                      <a-skeleton className="h-4 w-48" />
-                      <a-skeleton className="h-3 w-24" />
+                      <div className="a-skeleton h-4 w-48" />
+                      <div className="a-skeleton h-3 w-24" />
                     </div>
                   </div>
                 ))}
@@ -479,12 +482,12 @@ export default function NotificationsPage() {
                           {event.title}
                         </span>
                         {!event.read && (
-                          <a-badge
-                            variant="secondary"
-                            className="text-[10px] h-4 px-1.5"
+                          <span
+                            className="a-badge text-[10px] h-4 px-1.5"
+                            data-variant="secondary"
                           >
                             New
-                          </a-badge>
+                          </span>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
@@ -498,7 +501,7 @@ export default function NotificationsPage() {
               </div>
             )}
           </div>
-        </a-card>
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,9 @@ import type { ComponentDoc } from './types';
 export const separator: ComponentDoc = {
   slug: 'separator',
   name: 'Separator',
-  tag: 'a-separator',
+  element: 'hr',
+  className: 'a-separator',
+  void: true,
   description:
     'A thin rule that divides content. Switch `orientation` for horizontal or vertical layouts.',
   frame: 'block',
@@ -20,7 +22,7 @@ export const separator: ComponentDoc = {
   cssVars: [
     {
       name: '--border',
-      default: 'oklch(0.27 0.018 265)',
+      default: 'oklch(0.305 0.018 244)',
       description: 'Rule color.',
     },
   ],

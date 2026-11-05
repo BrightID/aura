@@ -1,3 +1,5 @@
+import { icon } from '../icon';
+import { LightElement } from '../light-element';
 import {
   askedEvaluationPlayers,
   foundAuraPlayersFromContact,
@@ -23,7 +25,7 @@ async function getGravatarHash(email: string): Promise<string> {
 
 import { Mutation } from '@aura/query';
 import { SignalWatcher } from '@lit-labs/signals';
-import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { clientAPI } from '@/utils/apis';
 import type { Contact } from '@/utils/integrations/contacts';
@@ -31,10 +33,13 @@ import { parseContactsFile } from '@/utils/integrations/contacts-file';
 import { getContactsList } from '@/utils/integrations/google';
 import './level-badge';
 import type { ContactsHashWorkerOutput } from '../workers/contacts-hash.worker';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './find-players.css';
 
 @customElement('verification-find-players')
-export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
+export class VerificationFindPlayersElement extends SignalWatcher(
+  LightElement,
+) {
   @property({ type: Array }) auraImpacts: AuraImpact[] = [];
 
   @state() private searchQuery = '';
@@ -70,607 +75,6 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     },
   });
 
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        font-size: inherit;
-      }
-
-      /* ── Layout ─────────────────────────────── */
-      .stack {
-        display: flex;
-        flex-direction: column;
-        gap: 0.875em;
-      }
-
-      /* ── Header ─────────────────────────────── */
-      .header {
-        display: flex;
-        align-items: center;
-        gap: 0.625em;
-      }
-      .back-btn {
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.25em;
-        height: 2.25em;
-        border-radius: 0.5em;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--muted-foreground);
-        transition:
-          background 0.15s,
-          color 0.15s;
-      }
-      .back-btn:hover {
-        background: var(--secondary);
-        color: var(--foreground);
-      }
-      .back-btn iconify-icon {
-        width: 1.375em;
-        height: 1.375em;
-      }
-      .header-text {
-        flex: 1;
-        min-width: 0;
-      }
-      .header-title {
-        margin: 0;
-        font-size: 0.9375em;
-        font-weight: 600;
-        color: var(--foreground);
-        line-height: 1.2;
-      }
-      .header-sub {
-        font-size: 0.7em;
-        color: var(--muted-foreground);
-        margin-top: 0.15em;
-      }
-
-      /* ── Profile share bar ───────────────────── */
-      .profile-bar {
-        display: flex;
-        align-items: center;
-        gap: 0.625em;
-        padding: 0.625em 0.75em;
-        background: color-mix(in srgb, var(--primary) 5%, var(--secondary));
-        border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
-        border-radius: var(--radius, 0.75rem);
-      }
-      .profile-bar-icon {
-        flex-shrink: 0;
-        width: 1.875em;
-        height: 1.875em;
-        border-radius: 0.5em;
-        background: color-mix(in srgb, var(--primary) 12%, transparent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--primary);
-      }
-      .profile-bar-icon iconify-icon {
-        width: 1em;
-        height: 1em;
-      }
-      .profile-bar-info {
-        flex: 1;
-        min-width: 0;
-      }
-      .profile-bar-label {
-        font-size: 0.775em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-      .profile-bar-desc {
-        font-size: 0.68em;
-        color: var(--muted-foreground);
-        margin-top: 0.1em;
-      }
-      .profile-bar-actions {
-        display: flex;
-        gap: 0.375em;
-        flex-shrink: 0;
-      }
-      .icon-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 2em;
-        height: 2em;
-        border-radius: 0.5em;
-        cursor: pointer;
-        transition:
-          background 0.15s,
-          transform 0.1s;
-        flex-shrink: 0;
-      }
-      .icon-btn:active {
-        transform: scale(0.93);
-      }
-      .icon-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-      }
-      .icon-btn iconify-icon {
-        width: 0.9375em;
-        height: 0.9375em;
-      }
-      .icon-btn.solid {
-        background: var(--primary);
-        color: var(--primary-foreground, #fff);
-        border: none;
-      }
-      .icon-btn.solid:hover:not(:disabled) {
-        background: color-mix(in srgb, var(--primary) 85%, black 15%);
-      }
-      .icon-btn.solid.success {
-        background: var(--aura-success, #22c55e);
-      }
-      .icon-btn.ghost {
-        background: color-mix(in srgb, var(--primary) 10%, transparent);
-        border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
-        color: var(--primary);
-      }
-      .icon-btn.ghost:hover:not(:disabled) {
-        background: color-mix(in srgb, var(--primary) 16%, transparent);
-      }
-
-      /* ── Contacts section ────────────────────── */
-      .section-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        font-size: 0.7em;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      .section-label::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-      }
-      .import-row {
-        display: flex;
-        gap: 0.5em;
-      }
-      .import-btn {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4em;
-        padding: 0.5em 0.625em;
-        background: var(--secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.625em;
-        cursor: pointer;
-        font: inherit;
-        font-size: 0.775em;
-        font-weight: 500;
-        color: var(--foreground);
-        transition:
-          background 0.15s,
-          border-color 0.15s;
-      }
-      .import-btn:hover:not(:disabled) {
-        background: color-mix(
-          in srgb,
-          var(--secondary) 70%,
-          var(--foreground) 6%
-        );
-        border-color: color-mix(
-          in srgb,
-          var(--border) 60%,
-          var(--foreground) 20%
-        );
-      }
-      .import-btn:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-      }
-      .import-btn img,
-      .import-btn iconify-icon {
-        width: 1em;
-        height: 1em;
-        flex-shrink: 0;
-      }
-      .file-input {
-        display: none;
-      }
-
-      /* ── Search ──────────────────────────────── */
-      .search-wrap {
-        position: relative;
-      }
-      .search-icon {
-        position: absolute;
-        left: 0.75em;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--muted-foreground);
-        pointer-events: none;
-      }
-      .search-icon iconify-icon {
-        width: 0.875em;
-        height: 0.875em;
-      }
-      .search-input {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 0.575em 0.875em 0.575em 2.125em;
-        background: var(--secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.625em;
-        font-size: 0.85em;
-        color: var(--foreground);
-        outline: none;
-        transition: border-color 0.15s;
-        font: inherit;
-        font-size: 0.85em;
-      }
-      .search-input::placeholder {
-        color: var(--muted-foreground);
-      }
-      .search-input:focus {
-        border-color: var(--primary);
-      }
-
-      /* ── Loading / error ─────────────────────── */
-      .import-loading {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        padding: 0.5em 0.75em;
-        background: color-mix(in srgb, var(--primary) 5%, transparent);
-        border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
-        border-radius: 0.625em;
-        font-size: 0.775em;
-        color: var(--muted-foreground);
-      }
-      .spinner {
-        width: 0.875em;
-        height: 0.875em;
-        flex-shrink: 0;
-        border: 2px solid var(--border);
-        border-top-color: var(--primary);
-        border-radius: 9999px;
-        animation: spin 0.6s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .error-msg {
-        padding: 0.5em 0.75em;
-        background: rgba(239, 68, 68, 0.08);
-        border: 1px solid rgba(239, 68, 68, 0.25);
-        border-radius: 0.625em;
-        font-size: 0.75em;
-        color: var(--destructive);
-      }
-
-      /* ── Discord banner ─────────────────────── */
-      .discord-banner {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-        padding: 0.75em 0.875em;
-        background: color-mix(in srgb, #5865f2 6%, var(--secondary));
-        border: 1px solid color-mix(in srgb, #5865f2 22%, transparent);
-        border-radius: var(--radius, 0.75rem);
-      }
-      .discord-icon {
-        flex-shrink: 0;
-        width: 2em;
-        height: 2em;
-        border-radius: 0.5em;
-        background: color-mix(in srgb, #5865f2 14%, transparent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #5865f2;
-      }
-      .discord-icon iconify-icon {
-        width: 1em;
-        height: 1em;
-      }
-      .discord-text {
-        flex: 1;
-        min-width: 0;
-      }
-      .discord-title {
-        font-size: 0.775em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-      .discord-desc {
-        font-size: 0.68em;
-        color: var(--muted-foreground);
-        margin-top: 0.15em;
-      }
-      .discord-link {
-        flex-shrink: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3em;
-        font-size: 0.72em;
-        font-weight: 600;
-        color: #5865f2;
-        text-decoration: none;
-        padding: 0.35em 0.65em;
-        border-radius: 0.5em;
-        border: 1px solid color-mix(in srgb, #5865f2 35%, transparent);
-        background: color-mix(in srgb, #5865f2 8%, transparent);
-        transition: background 0.15s;
-        white-space: nowrap;
-      }
-      .discord-link:hover {
-        background: color-mix(in srgb, #5865f2 16%, transparent);
-      }
-      .discord-link iconify-icon {
-        width: 0.8em;
-        height: 0.8em;
-      }
-
-      /* ── Players list ────────────────────────── */
-      .list-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .list-count {
-        font-size: 0.72em;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .players-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        max-height: 14em;
-        overflow-y: auto;
-        border: 1px solid var(--border);
-        border-radius: var(--radius, 0.75rem);
-        overflow: hidden;
-      }
-
-      /* ── Player card ─────────────────────────── */
-      .player-card {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-        padding: 0.625em 0.75em;
-        background: var(--card);
-        border: none;
-        border-bottom: 1px solid var(--border);
-        cursor: pointer;
-        text-align: left;
-        font: inherit;
-        transition: background 0.15s;
-        width: 100%;
-        min-width: 0;
-      }
-      .player-card:last-child {
-        border-bottom: none;
-      }
-      .player-card:hover {
-        background: color-mix(in srgb, var(--card) 60%, var(--secondary) 40%);
-      }
-      .player-card.selected {
-        background: color-mix(in srgb, var(--primary) 5%, var(--card));
-      }
-      .player-card.done {
-        opacity: 0.5;
-      }
-
-      .player-avatar-wrap {
-        position: relative;
-        flex-shrink: 0;
-      }
-      .player-avatar {
-        width: 2.25em;
-        height: 2.25em;
-        border-radius: 9999px;
-        background: color-mix(in srgb, var(--primary) 14%, transparent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.72em;
-        font-weight: 700;
-        color: var(--primary);
-        overflow: hidden;
-      }
-      .player-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .sent-dot {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 0.625em;
-        height: 0.625em;
-        border-radius: 9999px;
-        background: var(--aura-success, #22c55e);
-        border: 1.5px solid var(--card);
-      }
-
-      .player-info {
-        flex: 1;
-        min-width: 0;
-      }
-      .player-name {
-        font-size: 0.85em;
-        font-weight: 500;
-        color: var(--foreground);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .player-credential {
-        display: flex;
-        align-items: center;
-        gap: 0.275em;
-        font-size: 0.68em;
-        color: var(--muted-foreground);
-        margin-top: 0.125em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .player-credential iconify-icon {
-        flex-shrink: 0;
-      }
-
-      .eval-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25em;
-        font-size: 0.65em;
-        font-weight: 600;
-        color: var(--aura-success, #22c55e);
-        background: rgba(34, 197, 94, 0.1);
-        border: 1px solid rgba(34, 197, 94, 0.22);
-        border-radius: 9999px;
-        padding: 0.2em 0.55em;
-        flex-shrink: 0;
-      }
-      .eval-badge iconify-icon {
-        width: 0.7em;
-        height: 0.7em;
-      }
-
-      .asked-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25em;
-        font-size: 0.65em;
-        font-weight: 600;
-        color: var(--aura-info, #06b6d4);
-        background: rgba(6, 182, 212, 0.1);
-        border: 1px solid rgba(6, 182, 212, 0.22);
-        border-radius: 9999px;
-        padding: 0.2em 0.55em;
-        flex-shrink: 0;
-      }
-      .asked-badge iconify-icon {
-        width: 0.7em;
-        height: 0.7em;
-      }
-
-      .sent-dot.asked {
-        background: var(--aura-info, #06b6d4);
-      }
-
-      .card-chevron {
-        flex-shrink: 0;
-        color: var(--muted-foreground);
-        opacity: 0.5;
-        transition:
-          opacity 0.15s,
-          transform 0.2s;
-      }
-      .player-card.selected .card-chevron {
-        opacity: 1;
-        color: var(--primary);
-        transform: rotate(90deg);
-      }
-      .card-chevron iconify-icon {
-        width: 0.875em;
-        height: 0.875em;
-      }
-
-      /* ── Share strip (inline, below selected card) ── */
-      .share-strip {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        padding: 0.5em 0.75em;
-        background: color-mix(in srgb, var(--primary) 5%, var(--secondary));
-        border-bottom: 1px solid var(--border);
-      }
-      .share-strip:last-child {
-        border-bottom: none;
-      }
-      .share-strip-text {
-        flex: 1;
-        min-width: 0;
-        font-size: 0.72em;
-        color: var(--muted-foreground);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .share-strip-text strong {
-        color: var(--foreground);
-        font-weight: 600;
-      }
-
-      /* ── Divider between groups ──────────────── */
-      .group-divider {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        padding: 0.375em 0.75em;
-        font-size: 0.65em;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        background: color-mix(in srgb, var(--secondary) 60%, transparent);
-        border-bottom: 1px solid var(--border);
-      }
-
-      /* ── Empty state ─────────────────────────── */
-      .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.375em;
-        padding: 1.5em 1em;
-        border: 1px solid var(--border);
-        border-radius: var(--radius, 0.75rem);
-        text-align: center;
-      }
-      .empty-icon {
-        width: 2.5em;
-        height: 2.5em;
-        border-radius: 9999px;
-        background: var(--secondary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--muted-foreground);
-        margin-bottom: 0.25em;
-      }
-      .empty-icon iconify-icon {
-        width: 1.25em;
-        height: 1.25em;
-      }
-      .empty-title {
-        font-size: 0.825em;
-        font-weight: 500;
-        color: var(--foreground);
-      }
-      .empty-desc {
-        font-size: 0.72em;
-        color: var(--muted-foreground);
-      }
-    `,
-  ];
-
   protected render() {
     const players = foundAuraPlayersFromContact.get();
     const brightId = userBrightId.get();
@@ -695,7 +99,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
             aria-label="Go back"
             @click=${() => this._emit('back')}
           >
-            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+            ${icon('lucide:chevron-left')}
           </button>
           <div class="header-text">
             <h2 class="header-title">Find Aura Players</h2>
@@ -707,9 +111,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
 
         <!-- Profile share bar -->
         <div class="profile-bar">
-          <div class="profile-bar-icon">
-            <iconify-icon icon="lucide:link"></iconify-icon>
-          </div>
+          <div class="profile-bar-icon">${icon('lucide:link')}</div>
           <div class="profile-bar-info">
             <div class="profile-bar-label">Your profile link</div>
             <div class="profile-bar-desc">
@@ -723,9 +125,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
               aria-label=${this._copied ? 'Copied' : 'Copy link'}
               @click=${() => this._copyProfileLink(brightId)}
             >
-              <iconify-icon
-                icon=${this._copied ? 'lucide:check' : 'lucide:copy'}
-              ></iconify-icon>
+              ${icon(this._copied ? 'lucide:check' : 'lucide:copy')}
             </button>
             <button
               class="icon-btn ghost"
@@ -733,7 +133,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
               aria-label="Share profile"
               @click=${() => this._shareProfileLink(brightId)}
             >
-              <iconify-icon icon="lucide:share-2"></iconify-icon>
+              ${icon('lucide:share-2')}
             </button>
           </div>
         </div>
@@ -747,19 +147,17 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
               ?disabled=${isImporting}
               @click=${() => this.#googleImport.mutate()}
             >
-              <iconify-icon icon="simple-icons:google"></iconify-icon>
-              Google Contacts
+              ${icon('simple-icons:google')} Google Contacts
             </button>
             <button
               class="import-btn"
               ?disabled=${isImporting}
               @click=${() =>
-                this.shadowRoot
+                this.renderRoot
                   ?.querySelector<HTMLInputElement>('.file-input')
                   ?.click()}
             >
-              <iconify-icon icon="lucide:upload"></iconify-icon>
-              Import file
+              ${icon('lucide:upload')} Import file
             </button>
             <input
               class="file-input"
@@ -786,7 +184,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
             ? html`
                 <div class="discord-banner">
                   <div class="discord-icon">
-                    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+                    ${icon('simple-icons:discord')}
                   </div>
                   <div class="discord-text">
                     <div class="discord-title">
@@ -803,8 +201,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Join
-                    <iconify-icon icon="lucide:external-link"></iconify-icon>
+                    Join ${icon('lucide:external-link')}
                   </a>
                 </div>
               `
@@ -816,9 +213,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
           players.length > 0
             ? html`
                 <div class="search-wrap">
-                  <span class="search-icon">
-                    <iconify-icon icon="lucide:search"></iconify-icon>
-                  </span>
+                  <span class="search-icon"> ${icon('lucide:search')} </span>
                   <input
                     class="search-input"
                     type="text"
@@ -845,9 +240,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
     if (filtered.length === 0) {
       return html`
         <div class="empty-state">
-          <div class="empty-icon">
-            <iconify-icon icon="lucide:users"></iconify-icon>
-          </div>
+          <div class="empty-icon">${icon('lucide:users')}</div>
           <p class="empty-title">No players found</p>
           <p class="empty-desc">Try a different name or import more contacts</p>
         </div>
@@ -897,27 +290,21 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
           <div class="player-info">
             <div class="player-name">${player.name}</div>
             <div class="player-credential">
-              <iconify-icon
-                icon=${isEmail ? 'lucide:mail' : 'lucide:phone'}
-                width="0.75em"
-                height="0.75em"
-              ></iconify-icon>
+              ${icon(isEmail ? 'lucide:mail' : 'lucide:phone', '', 'width: 0.75em; height: 0.75em')}
               ${player.value}
             </div>
           </div>
           ${
             isEvaluated
               ? html`<span class="eval-badge">
-                  <iconify-icon icon="lucide:check"></iconify-icon>
-                  Evaluated
+                  ${icon('lucide:check')} Evaluated
                 </span>`
               : isAsked
                 ? html`<span class="asked-badge">
-                    <iconify-icon icon="lucide:clock"></iconify-icon>
-                    Asked
+                    ${icon('lucide:clock')} Asked
                   </span>`
                 : html`<span class="card-chevron">
-                    <iconify-icon icon="lucide:chevron-right"></iconify-icon>
+                    ${icon('lucide:chevron-right')}
                   </span>`
           }
         </button>
@@ -936,9 +323,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                       this._copyForPlayer();
                     }}
                   >
-                    <iconify-icon
-                      icon=${this._shareTargetCopied ? 'lucide:check' : 'lucide:copy'}
-                    ></iconify-icon>
+                    ${icon(this._shareTargetCopied ? 'lucide:check' : 'lucide:copy')}
                   </button>
                   <button
                     class="icon-btn ghost"
@@ -948,7 +333,7 @@ export class VerificationFindPlayersElement extends SignalWatcher(LitElement) {
                       this._shareForPlayer();
                     }}
                   >
-                    <iconify-icon icon="lucide:share-2"></iconify-icon>
+                    ${icon('lucide:share-2')}
                   </button>
                 </div>
               `

@@ -98,10 +98,11 @@ export function ProgressStep({
 
             {/* Action buttons */}
             <div className="flex gap-2">
-              <a-button
+              <button
+                className="a-button flex-1"
+                type="button"
                 onClick={onStartVerification}
-                className="flex-1"
-                size="sm"
+                data-size="sm"
               >
                 <svg
                   className="w-4 h-4 mr-2"
@@ -117,12 +118,13 @@ export function ProgressStep({
                   />
                 </svg>
                 Get Verified
-              </a-button>
-              <a-button
+              </button>
+              <button
+                className="a-button bg-transparent"
+                type="button"
                 onClick={onFindPlayers}
-                variant="outline"
-                size="sm"
-                className="bg-transparent"
+                data-variant="outline"
+                data-size="sm"
               >
                 <svg
                   className="w-4 h-4 mr-1"
@@ -138,7 +140,7 @@ export function ProgressStep({
                   />
                 </svg>
                 Find Players
-              </a-button>
+              </button>
             </div>
           </div>
 

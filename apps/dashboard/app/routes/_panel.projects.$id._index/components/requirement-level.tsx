@@ -159,7 +159,7 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
   }, [isDirty]);
 
   return (
-    <a-card>
+    <div className="a-card">
       <div className="flex items-start gap-3">
         <Shield
           className="mt-0.5 size-5 shrink-0 text-primary"
@@ -300,6 +300,6 @@ export function UserRequiredLevelCard({ project }: { project: Project }) {
           </Button>
         </div>
       </div>
-    </a-card>
+    </div>
   );
 }

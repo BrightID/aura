@@ -5,6 +5,13 @@ import { Globe, MoreVertical, ExternalLink, Calendar, Zap } from 'lucide-react';
 import { Link } from 'react-router';
 import type { Project } from '~/components/projects-table';
 import { cn } from '~/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
 
 interface ProjectCardProps {
   project: Project;
@@ -46,33 +53,36 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </div>
 
-        <a-dropdown-menu align="end">
-          <a-button
-            slot="trigger"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <MoreVertical className="h-4 w-4" />
-          </a-button>
-          <div slot="content">
-            <a-dropdown-item onClick={(e) => e.stopPropagation()}>
-              <ExternalLink slot="icon" className="h-4 w-4" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="a-button h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+              type="button"
+              data-variant="ghost"
+              data-size="icon"
+              aria-label="Project actions"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MoreVertical className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+              <ExternalLink className="h-4 w-4" />
               Visit Site
-            </a-dropdown-item>
-            <a-dropdown-item onClick={(e) => e.stopPropagation()}>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
               Settings
-            </a-dropdown-item>
-            <a-dropdown-separator />
-            <a-dropdown-item
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
               variant="destructive"
               onClick={(e) => e.stopPropagation()}
             >
               Delete
-            </a-dropdown-item>
-          </div>
-        </a-dropdown-menu>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <p className="mt-3 text-sm text-muted-foreground line-clamp-2">
@@ -81,19 +91,19 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <a-badge
-            variant={project.isActive ? 'default' : 'secondary'}
-            className="text-xs"
+          <span
+            className="a-badge text-xs"
+            data-variant={project.isActive ? 'default' : 'secondary'}
           >
             {project.isActive ? 'Active' : 'Inactive'}
-          </a-badge>
+          </span>
           {project.deadline && (
-            <a-badge variant="outline" className="text-xs">
+            <span className="a-badge text-xs" data-variant="outline">
               <Calendar className="mr-1 h-3 w-3" />
               {formatDistanceToNow(new Date(project.deadline), {
                 addSuffix: true,
               })}
-            </a-badge>
+            </span>
           )}
         </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">

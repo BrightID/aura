@@ -1,10 +1,11 @@
-import { createEffect, Show } from 'solid-js';
+import { Show } from 'solid-js';
 import ImpactStrip from '@/components/charts/impact-strip';
 import Avatar from '@/components/home/avatar';
 import LevelScore from '@/components/shared/level-score';
 import { formatDuration } from '@/shared/lib/time';
 import type { InboundEvaluation } from '@/hooks/use-subject-inbound-evaluations';
 import { confidenceLabel } from '@aura/domain/labels';
+import Icon from '@/components/ui/icon';
 
 /**
  * Inbound-evaluation row: evaluator (photo, name, level), signed rating chip
@@ -18,20 +19,15 @@ export default function EvaluationCard(props: {
   const positive = () => e().rating > 0;
 
   return (
-    <a-card
-      interactive={!!props.onClick}
+    <div
+      class="a-card w-full p-4"
+      data-interactive={!!props.onClick}
       role={props.onClick ? 'button' : undefined}
-      ref={(card) =>
-        createEffect(() => {
-          // Solid's custom-element tabindex prop does not set native focusability.
-          card.tabIndex = props.onClick ? 0 : -1;
-        })
-      }
+      tabIndex={props.onClick ? 0 : undefined}
       aria-label={
         props.onClick ? `View evaluation details for ${e().name}` : undefined
       }
       data-testid={`evaluation-card-${e().evaluatorId}`}
-      class="w-full p-4"
       onClick={() => props.onClick?.(e().evaluatorId)}
       onKeyDown={(event: KeyboardEvent) => {
         if (event.target !== event.currentTarget || !props.onClick) return;
@@ -69,7 +65,7 @@ export default function EvaluationCard(props: {
                   : 'bg-destructive/15 text-destructive'
               }`}
             >
-              <a-icon name={positive() ? 'thumbs-up' : 'thumbs-down'} />
+              <Icon name={positive() ? 'thumbs-up' : 'thumbs-down'} />
               {(positive() ? '+' : '') + e().rating}
               <span class="font-medium">{confidenceLabel(e().confidence)}</span>
             </span>
@@ -87,6 +83,6 @@ export default function EvaluationCard(props: {
           />
         </div>
       </div>
-    </a-card>
+    </div>
   );
 }

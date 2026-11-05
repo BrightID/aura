@@ -6,10 +6,10 @@ import { resetRecovery } from '@/store/recovery';
 export default function LogoutButton() {
   const navigate = useNavigate();
   return (
-    <a-card
-      variant="glass"
+    <div
+      class="a-card cursor-pointer rounded-lg py-3.5 pl-5 pr-2"
+      data-variant="glass"
       data-testid="logout-button"
-      class="cursor-pointer rounded-lg py-3.5 pl-5 pr-2"
       onClick={() => {
         logout();
         resetRecovery();
@@ -19,6 +19,6 @@ export default function LogoutButton() {
       }}
     >
       <span class="text-xl font-medium text-destructive">Logout</span>
-    </a-card>
+    </div>
   );
 }

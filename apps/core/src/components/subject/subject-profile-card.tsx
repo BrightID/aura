@@ -25,7 +25,7 @@ export default function SubjectProfileCard(props: {
   const my = useMyRating(props.subjectId, vm.currentEvaluationCategory);
 
   return (
-    <a-card class="flex flex-col gap-3 p-4">
+    <div class="a-card flex flex-col gap-3 p-4">
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <Avatar
@@ -45,15 +45,17 @@ export default function SubjectProfileCard(props: {
             />
           </div>
         </div>
-        <a-button
-          size="sm"
+        <button
+          class="a-button"
+          type="button"
+          data-size="sm"
           data-testid="subject-evaluate"
           onClick={props.onEvaluate}
         >
           <Show when={my.rating() !== undefined} fallback="Evaluate">
             Edit
           </Show>
-        </a-button>
+        </button>
       </div>
 
       <div class="text-sm text-muted-foreground">
@@ -68,6 +70,6 @@ export default function SubjectProfileCard(props: {
           </span>
         </Show>
       </div>
-    </a-card>
+    </div>
   );
 }

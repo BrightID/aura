@@ -9,8 +9,7 @@
     "jsx": "react-jsx",
     "paths": {
       "~/*": ["./app/*"],
-      "@/*": ["./app/*"],
-      "@aura/ui/jsx/react": ["../../packages/ui/src/jsx/react.ts"]
+      "@/*": ["./app/*"]
     },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,

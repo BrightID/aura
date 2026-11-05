@@ -8,6 +8,7 @@ import { formatDuration } from '@/shared/lib/time';
 import { authStore } from '@/store/auth';
 import { confidenceLabel } from '@aura/domain/labels';
 import type { AuraImpactRaw } from '@aura/domain/types/aura';
+import Hover from '@/components/ui/hover';
 
 // Old chart showed evaluator pictures for up to 20 bars, 16–40px by count.
 const MAX_AVATARS = 20;
@@ -199,7 +200,8 @@ export default function EvaluationsChart(props: {
           >
             <For each={bars()}>
               {(bar) => (
-                <a-tooltip
+                <Hover
+                  tooltip
                   content={tooltipText(bar)}
                   side="top"
                   class="flex min-w-0 flex-1"
@@ -254,7 +256,7 @@ export default function EvaluationsChart(props: {
                       />
                     </Show>
                   </button>
-                </a-tooltip>
+                </Hover>
               )}
             </For>
           </div>

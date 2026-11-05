@@ -1,6 +1,7 @@
+import { LightElement } from '@aura/widgets/light-element';
 import { EvaluationCategory } from '@/utils/aura';
 import { getLevelupProgress } from '@/utils/score';
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from 'lit';
+import { html, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import '@/components/common/profile-card';
@@ -16,13 +17,16 @@ import {
   userProfilePicture,
 } from '@/states/user';
 import { signal, SignalWatcher } from '@lit-labs/signals';
+import './verify-without-project.css';
 
 const isPassed = signal(false);
 
 const isBrightIDSection = signal(false);
 
 @customElement('verify-without-project-page')
-export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
+export class VerifyWithoutProjectPageElement extends SignalWatcher(
+  LightElement,
+) {
   @property({
     type: Number,
   })
@@ -44,105 +48,6 @@ export class VerifyWithoutProjectPageElement extends SignalWatcher(LitElement) {
   image?: string;
 
   previousBrightID = signal(userBrightId.get());
-
-  static styles?: CSSResultGroup = css`
-    .title {
-      font-size: 24px;
-      font-weight: 600;
-      margin: 0;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    .image-container {
-      width: 100%;
-      height: 100px;
-      margin-bottom: 5px;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .image {
-      object-fit: contain;
-      max-height: 100%;
-      max-width: 100%;
-    }
-
-    .level-requirement {
-      text-align: center;
-      margin-bottom: 14px;
-      font-size: 16px;
-    }
-
-    .highlight-text {
-      color: var(--highlight, #15c8ec);
-    }
-
-    .steps-heading {
-      color: #e4dad7;
-      text-align: center;
-      margin-bottom: 24px;
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-    }
-
-    .timeline {
-      position: relative;
-      padding-left: 16px;
-    }
-
-    .step {
-      display: flex;
-      margin-bottom: 10px;
-      position: relative;
-      z-index: 1;
-      text-align: left;
-    }
-
-    .step-content {
-      flex: 1;
-    }
-
-    .step-title {
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      margin: 10px 0;
-      letter-spacing: -0.4px;
-    }
-
-    .step-description {
-      margin-top: 4px;
-      color: var(--muted, #8c8c8c);
-      font-size: 14px;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin: 24px auto 0;
-      padding: 8px 20px;
-      background: var(--accent, #144bb9);
-      color: #fff;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      text-align: center;
-      transition: background 0.2s;
-    }
-
-    .back-btn:hover {
-      background-color: #0d3466;
-    }
-
-    .mt-5 {
-      margin-top: 20px;
-    }
-  `;
 
   connectedCallback(): void {
     super.connectedCallback();

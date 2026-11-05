@@ -1,9 +1,11 @@
+import Dialog from '@/components/ui/dialog';
 import { For } from 'solid-js';
 import {
   subjectRatingColorMap,
   userRatingColorMap,
   valueColorMap,
 } from '@/components/charts/colors';
+import Icon from '@/components/ui/icon';
 
 /** Info dialog explaining the impact chart's bar colors. */
 export default function ChartHelp() {
@@ -28,36 +30,46 @@ export default function ChartHelp() {
   );
 
   return (
-    <a-dialog label="Reading the impact chart">
-      <a-button
-        slot="trigger"
-        size="icon-sm"
-        variant="glass"
-        aria-label="How to read this chart"
-        data-testid="chart-help"
-      >
-        <a-icon name="info" />
-      </a-button>
-      <div slot="content" class="flex w-80 max-w-full flex-col gap-3">
+    <Dialog
+      label="Reading the impact chart"
+      trigger={
+        <button
+          class="a-button"
+          type="button"
+          data-size="icon"
+          data-variant="glass"
+          aria-label="How to read this chart"
+          data-testid="chart-help"
+        >
+          <Icon name="info" />
+        </button>
+      }
+    >
+      <div class="flex w-80 max-w-full flex-col gap-3">
         <p class="font-bold text-foreground">Reading the impact chart</p>
-        <a-text size="sm" class="text-muted-foreground" variant="muted">
+        <p
+          class="a-text text-muted-foreground"
+          data-size="sm"
+          data-variant="muted"
+        >
           Each bar is one evaluator; its height is that evaluation's share of
           the subject's total impact. Bars below the line are negative
           evaluations. Darker shades mean higher confidence.
-        </a-text>
+        </p>
         <Strip label="Other evaluators" map={valueColorMap} />
         <Strip label="You" map={userRatingColorMap} />
         <Strip label="This subject" map={subjectRatingColorMap} />
         <a
+          class="a-button w-full"
+          data-variant="glass"
+          data-size="sm"
           href="https://brightid.gitbook.io/aura/evidence/impact-bar-chart"
           target="_blank"
           rel="noreferrer"
         >
-          <a-button variant="glass" size="sm" class="w-full">
-            <a-icon name="external-link" /> Learn more
-          </a-button>
+          <Icon name="external-link" /> Learn more
         </a>
       </div>
-    </a-dialog>
+    </Dialog>
   );
 }

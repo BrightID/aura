@@ -1,6 +1,5 @@
 'use client';
 
-import { AColorPicker, AInput } from '@aura/ui/react-wrappers';
 import type { CssVarSpec } from '../_registry';
 
 export type CssVarState = Record<string, string>;
@@ -44,11 +43,12 @@ export function CssVarsPanel({
           return (
             <div key={v.name} className="flex items-center gap-3 py-2.5">
               {isColor && (
-                <AColorPicker
-                  value={value}
-                  onChange={(e: Event) =>
-                    onChange(v.name, (e as CustomEvent<string>).detail)
-                  }
+                // A swatch, not a picker: the tokens are oklch, which
+                // <input type="color"> can't edit. Edit the value on the right.
+                <span
+                  aria-hidden="true"
+                  className="size-6 shrink-0 rounded-md border border-[var(--border)]"
+                  style={{ background: value }}
                 />
               )}
               <label className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -59,12 +59,12 @@ export function CssVarsPanel({
                   {v.description}
                 </span>
               </label>
-              <AInput
-                style={{ width: '11rem', marginBottom: 0 }}
+              <input
+                className="a-input"
+                style={{ width: '11rem' }}
+                aria-label={v.name}
                 value={value}
-                onChange={(e: Event) =>
-                  onChange(v.name, (e as CustomEvent<string>).detail)
-                }
+                onChange={(e) => onChange(v.name, e.currentTarget.value)}
               />
             </div>
           );

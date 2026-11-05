@@ -3,6 +3,7 @@ import makeBlockie from 'ethereum-blockies-base64';
 import { createProfilePhotoQuery } from '@/queries/backup';
 import { authStore } from '@/store/auth';
 import { hash } from '@aura/domain/crypto';
+import Hover from '@/components/ui/hover';
 
 /**
  * Avatar with the real BrightID profile photo when available (decrypted from
@@ -72,26 +73,29 @@ export default function Avatar(props: {
 
   return (
     <Show when={src() && !props.noHover} fallback={<Circle />}>
-      <a-hover-card openDelay={100}>
+      <Hover
+        panelClass="min-w-0 overflow-hidden bg-card p-0 text-card-foreground"
+        content={
+          <div class="w-72 max-w-full p-1">
+            <img
+              src={src()}
+              alt={props.name}
+              class="h-auto w-full max-h-72 max-w-full rounded-md object-contain"
+            />
+            <p class="mt-1 text-center text-sm text-muted-foreground">
+              {props.name}
+            </p>
+          </div>
+        }
+      >
         <button
-          slot="trigger"
           type="button"
           class="inline-block rounded-full"
           aria-label={`Preview photo of ${props.name}`}
         >
           <Circle />
         </button>
-        <div slot="content" class="w-72 max-w-full p-1">
-          <img
-            src={src()}
-            alt={props.name}
-            class="h-auto w-full max-h-72 max-w-full rounded-md object-contain"
-          />
-          <p class="mt-1 text-center text-sm text-muted-foreground">
-            {props.name}
-          </p>
-        </div>
-      </a-hover-card>
+      </Hover>
     </Show>
   );
 }

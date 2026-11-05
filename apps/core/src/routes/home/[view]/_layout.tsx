@@ -47,10 +47,10 @@ export default function HomeViewLayout(props: ParentProps) {
       when={subjectId()}
       fallback={
         <div class="flex flex-col gap-2 px-5 pt-10">
-          <a-head class="text-2xl">Sign in required</a-head>
-          <a-text size="sm" variant="muted">
+          <h2 class="a-head text-2xl">Sign in required</h2>
+          <p class="a-text" data-size="sm" data-variant="muted">
             Sign in to see your community.
-          </a-text>
+          </p>
         </div>
       }
     >

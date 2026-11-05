@@ -1,3 +1,4 @@
+import Dialog from '@/components/ui/dialog';
 import { A } from '@solidjs/router';
 import { For, Show } from 'solid-js';
 import GlobalSearch from '@/components/search/global-search';
@@ -12,6 +13,7 @@ import {
 } from '@aura/domain/view-mode';
 import { PreferredView } from '@aura/domain/types/dashboard';
 import { EvaluationCategory } from '@aura/domain/types/evaluations';
+import Icon from '@/components/ui/icon';
 
 /** Views in the switcher, paired with the category that gates each one. */
 const VIEWS: { view: PreferredView; gate: EvaluationCategory | null }[] = [
@@ -53,15 +55,21 @@ export default function HomeHeader() {
           <p class="text-xs font-medium uppercase tracking-widest text-muted-foreground">
             Aura / Core
           </p>
-          <a-head class="text-xl sm:text-2xl">Your community</a-head>
+          <h2 class="a-head text-xl sm:text-2xl">Your community</h2>
         </div>
         <div class="flex shrink-0 items-center gap-2">
           <GlobalSearch />
           <NotificationBell />
           <A href="/settings" data-testid="header-settings">
-            <a-button size="icon-sm" variant="glass" aria-label="Settings">
-              <a-icon name="settings" />
-            </a-button>
+            <button
+              class="a-button"
+              type="button"
+              data-size="icon"
+              data-variant="glass"
+              aria-label="Settings"
+            >
+              <Icon name="settings" />
+            </button>
           </A>
         </div>
       </div>
@@ -77,44 +85,51 @@ export default function HomeHeader() {
               <Show
                 when={isUnlocked(gate)}
                 fallback={
-                  <a-dialog label="Locked role" class="shrink-0">
-                    <a-button
-                      slot="trigger"
-                      size="sm"
-                      variant="glass"
-                      class="cursor-help"
-                      title={`${label} (locked)`}
-                      aria-label={`${label} (locked)`}
-                    >
-                      <a-icon name="lock" />
-                      <span>{label}</span>
-                    </a-button>
-                    <div
-                      slot="content"
-                      class="flex w-72 max-w-full flex-col gap-2"
-                    >
+                  <Dialog
+                    label="Locked role"
+                    trigger={
+                      <button
+                        class="a-button cursor-help"
+                        type="button"
+                        data-size="sm"
+                        data-variant="glass"
+                        title={`${label} (locked)`}
+                        aria-label={`${label} (locked)`}
+                      >
+                        <Icon name="lock" />
+                        <span>{label}</span>
+                      </button>
+                    }
+                  >
+                    <div class="flex w-72 max-w-full flex-col gap-2">
                       <p class="font-medium text-foreground">{label} locked</p>
-                      <a-text size="sm" class="text-muted-foreground" variant="muted">
+                      <p
+                        class="a-text text-muted-foreground"
+                        data-size="sm"
+                        data-variant="muted"
+                      >
                         {lockMessage(gate)}
-                      </a-text>
+                      </p>
                     </div>
-                  </a-dialog>
+                  </Dialog>
                 }
               >
                 <A href={`/home/${viewModeToSlug[view]}`} class="shrink-0">
-                  <a-button
-                    size="sm"
-                    variant="glass"
-                    selected={selected()}
+                  <button
+                    class="a-button"
+                    type="button"
+                    data-size="sm"
+                    data-variant="glass"
+                    aria-pressed={selected()}
                     title={label}
                     aria-label={label}
                   >
-                    <a-icon
+                    <Icon
                       name={roleIcon[viewModeToViewAs[view]]}
                       style={{ color: roleColor[viewModeToViewAs[view]] }}
                     />
                     <span>{label}</span>
-                  </a-button>
+                  </button>
                 </A>
               </Show>
             );

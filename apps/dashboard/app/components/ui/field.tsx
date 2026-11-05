@@ -105,14 +105,15 @@ function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
 
 function FieldLabel({ className, ...props }: React.ComponentProps<'label'>) {
   return (
-    <a-label
-      data-slot="field-label"
+    <label
       className={cn(
+        'a-label',
         'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50',
         'has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border [&>*]:data-[slot=field]:p-4',
         'has-data-[state=checked]:bg-primary/5 has-data-[state=checked]:border-primary dark:has-data-[state=checked]:bg-primary/10',
         className,
       )}
+      data-slot="field-label"
       {...(props as Record<string, unknown>)}
     />
   );
@@ -163,7 +164,7 @@ function FieldSeparator({
       )}
       {...props}
     >
-      <a-separator className="absolute inset-0 top-1/2" />
+      <hr className="a-separator absolute inset-0 top-1/2" />
       {children && (
         <span
           className="bg-background text-muted-foreground relative mx-auto block w-fit px-2"

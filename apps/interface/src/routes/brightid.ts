@@ -1,5 +1,6 @@
+import { LightElement } from '@aura/widgets/light-element';
 import { signal, SignalWatcher } from '@lit-labs/signals';
-import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import platform from 'platform';
 import nacl from 'tweetnacl';
@@ -30,6 +31,7 @@ import QrCodeWithLogo from 'qrcode-with-logos';
 
 import '@/components/landing/footer-section';
 import '@/components/landing/hero-section';
+import './brightid.css';
 
 const brightIDQRLink = signal('');
 const brightIDQrImage = signal('');
@@ -37,54 +39,7 @@ const brightIDQrImage = signal('');
 const interval = signal(null as null | number | NodeJS.Timeout);
 
 @customElement('brightid-login')
-export class BrightIDLoginElement extends SignalWatcher(LitElement) {
-  static styles?: CSSResultGroup | undefined = css`
-    a,
-    .back {
-      background-color: transparent;
-      box-shadow: none;
-      border: none;
-      text-decoration: none;
-      color: var(--primary);
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .back {
-      display: block;
-      margin-bottom: 12px;
-      text-align: left;
-    }
-
-    ol {
-      margin: 8px 0 0;
-      padding-left: 1.25rem;
-    }
-
-    li {
-      margin: 8px 0;
-    }
-
-    li a {
-      overflow-wrap: anywhere;
-    }
-
-    .qr-code {
-      display: flex;
-      justify-content: center;
-    }
-
-    .qr-code img {
-      display: block;
-      width: min(100%, 320px);
-      height: auto;
-    }
-
-    .instructions {
-      text-align: left;
-    }
-  `;
-
+export class BrightIDLoginElement extends SignalWatcher(LightElement) {
   @property({ type: Boolean })
   withoutTitle = false;
 
@@ -324,7 +279,7 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
 
       <hero-section title="Sign in with BrightID"></hero-section>
 
-      <a-card variant="default">
+      <div class="a-card" data-variant="default">
         <div class="qr-code">
           ${
             brightIDQrImage.get()
@@ -332,14 +287,15 @@ export class BrightIDLoginElement extends SignalWatcher(LitElement) {
                   .src=${brightIDQrImage.get()}
                   alt="Scan with BrightID to sign in"
                 />`
-              : html`<a-skeleton
+              : html`<div
+                  class="a-skeleton"
                   style="width: min(100%, 320px); height: 320px"
-                ></a-skeleton>`
+                ></div>`
           }
         </div>
-      </a-card>
+      </div>
       <div class="instructions">
-        <a-text variant="muted">Steps</a-text>
+        <p class="a-text" data-variant="muted">Steps</p>
 
         <ol>
           <li>

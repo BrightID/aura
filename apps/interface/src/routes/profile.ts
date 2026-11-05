@@ -1,3 +1,4 @@
+import { LightElement } from '@aura/widgets/light-element';
 import '@/components/common/profile-card';
 import { pushRouter } from '@/router';
 import {
@@ -9,30 +10,12 @@ import {
 } from '@/states/user';
 import { createBlockiesImage } from '@/utils/image';
 import { SignalWatcher } from '@lit-labs/signals';
-import { css, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import './profile.css';
 
 @customElement('profile-page')
-export class ProfilePage extends SignalWatcher(LitElement) {
-  static styles = css`
-    .heading {
-      margin-bottom: 8px;
-    }
-    .eyebrow {
-      color: var(--muted-foreground);
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin: 0 0 6px;
-    }
-    a-button {
-      margin-top: 16px;
-    }
-    a-text {
-      overflow-wrap: anywhere;
-    }
-  `;
-
+export class ProfilePage extends SignalWatcher(LightElement) {
   constructor() {
     super();
     if (!userBrightId.get()) pushRouter('/login');
@@ -47,7 +30,7 @@ export class ProfilePage extends SignalWatcher(LitElement) {
     return html`
       <header class="heading">
         <p class="eyebrow">Aura / Verified</p>
-        <a-head level="1">Profile</a-head>
+        <h1 class="a-head" data-level="1">Profile</h1>
       </header>
       <profile-card
         .firstName=${userFirstName.get()}
@@ -55,10 +38,15 @@ export class ProfilePage extends SignalWatcher(LitElement) {
         .email=${email}
         .image=${userProfilePicture.get() || createBlockiesImage(brightId)}
       ></profile-card>
-      <a-text variant="muted">Signed in as ${who}</a-text>
-      <a-button variant="outline" @click=${() => pushRouter('/home')}>
+      <p class="a-text" data-variant="muted">Signed in as ${who}</p>
+      <button
+        class="a-button"
+        type="button"
+        data-variant="outline"
+        @click=${() => pushRouter('/home')}
+      >
         Back home
-      </a-button>
+      </button>
     `;
   }
 }

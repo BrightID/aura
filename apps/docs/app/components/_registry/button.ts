@@ -3,9 +3,11 @@ import type { ComponentDoc } from './types';
 export const button: ComponentDoc = {
   slug: 'button',
   name: 'Button',
-  tag: 'a-button',
+  element: 'button',
+  className: 'a-button',
+  fixedAttrs: { type: 'button' },
   description:
-    'Clickable action element. Combine a `variant` (surface treatment) with a `color` (palette) — or use `selected` for a toggle/pill that fills in the primary palette regardless of variant.',
+    'Clickable action element. Combine a `variant` (surface treatment) with a `color` (palette) — or set `aria-pressed` for a toggle/pill that fills in the primary palette regardless of variant.',
   slot: 'Button',
   frame: 'center',
   props: [
@@ -34,12 +36,14 @@ export const button: ComponentDoc = {
     },
     {
       name: 'disabled',
+      attr: 'disabled',
       type: 'boolean',
       default: false,
       description: 'Dims the button and blocks pointer events.',
     },
     {
       name: 'selected',
+      attr: 'aria-pressed',
       type: 'boolean',
       default: false,
       description:
@@ -49,18 +53,18 @@ export const button: ComponentDoc = {
   cssVars: [
     {
       name: '--primary',
-      default: 'oklch(0.74 0.20 152)',
+      default: 'oklch(0.69 0.14 182)',
       description: 'Primary palette base color.',
     },
     {
       name: '--primary-foreground',
-      default: 'oklch(0.10 0.01 265)',
+      default: 'oklch(0.115 0.018 226)',
       description: 'Text/foreground on primary surfaces.',
     },
-    { name: '--radius', default: '0.75rem', description: 'Corner radius.' },
+    { name: '--radius', default: '0.625rem', description: 'Corner radius.' },
     {
       name: '--destructive',
-      default: 'oklch(0.57 0.22 20)',
+      default: 'oklch(0.62 0.2 25)',
       description: 'Destructive palette base color.',
     },
   ],

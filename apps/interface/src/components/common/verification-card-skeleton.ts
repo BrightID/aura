@@ -1,42 +1,23 @@
-import { css, html, LitElement } from 'lit';
+import { LightElement } from '@aura/widgets/light-element';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import './verification-card-skeleton.css';
 
 @customElement('verification-card-skeleton')
-export class VerificationCardSkeleton extends LitElement {
-  static styles = css`
-    :host {
-      display: block;
-      margin-bottom: 16px;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-  `;
-
+export class VerificationCardSkeleton extends LightElement {
   render() {
     return html`
-      <a-card variant="default">
+      <div class="a-card" data-variant="default">
         <div class="header">
-          <a-skeleton style="width: 8rem; height: 1.125rem"></a-skeleton>
-          <a-skeleton style="width: 5rem; height: 1.25rem"></a-skeleton>
+          <div class="a-skeleton" style="width: 8rem; height: 1.125rem"></div>
+          <div class="a-skeleton" style="width: 5rem; height: 1.25rem"></div>
         </div>
         <div class="stack">
-          <a-skeleton style="width: 7rem; height: 0.875rem"></a-skeleton>
-          <a-skeleton style="height: 0.5rem"></a-skeleton>
-          <a-skeleton style="height: 2.25rem"></a-skeleton>
+          <div class="a-skeleton" style="width: 7rem; height: 0.875rem"></div>
+          <div class="a-skeleton" style="height: 0.5rem"></div>
+          <div class="a-skeleton" style="height: 2.25rem"></div>
         </div>
-      </a-card>
+      </div>
     `;
   }
 }

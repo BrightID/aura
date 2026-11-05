@@ -1,0 +1,27 @@
+/* <privacy-policy>, privacy-policy.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (privacy-policy) to (:scope [data-c] > *) {
+    c-markdown {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .container {
+      text-align: left;
+    }
+
+    a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .back {
+      display: inline-flex;
+      margin-bottom: 16px;
+      text-decoration: none;
+    }
+  }
+}

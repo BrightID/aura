@@ -1,8 +1,14 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { useAuraEvent } from '~/lib/aura';
-import { WidgetPreviewFrame } from '~/components/core/verification/WidgetPreviewFrame';
+import { lazy, Suspense, useState } from 'react';
+import { AuraSlider } from '~/components/aura-form-controls';
+
+// Lazy: the frame loads the Lit widget components, which nothing else needs.
+const WidgetPreviewFrame = lazy(() =>
+  import('~/components/core/verification/WidgetPreviewFrame').then((m) => ({
+    default: m.WidgetPreviewFrame,
+  })),
+);
 import {
   DEFAULT_DEMO_CONFIG,
   DEMO_APP_PRESETS,
@@ -26,22 +32,6 @@ export default function PreviewTab({ project }: { project: Project }) {
 
   const update = (patch: Partial<DemoConfig>) =>
     setConfig((prev) => ({ ...prev, ...patch }));
-
-  const requiredLevelRef = useRef<HTMLElement>(null);
-  const currentLevelRef = useRef<HTMLElement>(null);
-  const evaluationsRef = useRef<HTMLElement>(null);
-  const scoreRef = useRef<HTMLElement>(null);
-
-  useAuraEvent<number>(requiredLevelRef, 'change', (v) =>
-    update({ requiredLevel: v as VerificationLevel }),
-  );
-  useAuraEvent<number>(currentLevelRef, 'change', (v) =>
-    update({ currentLevel: v as 0 | 1 | 2 | 3 }),
-  );
-  useAuraEvent<number>(evaluationsRef, 'change', (v) =>
-    update({ evaluationsReceived: v }),
-  );
-  useAuraEvent<number>(scoreRef, 'change', (v) => update({ score: v }));
 
   return (
     <div className="mx-auto px-4 py-8">
@@ -115,8 +105,10 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.requiredLevel}
                   </span>
                 </div>
-                <a-slider
-                  ref={requiredLevelRef}
+                <AuraSlider
+                  onValueChange={(v) =>
+                    update({ requiredLevel: v as VerificationLevel })
+                  }
                   value={config.requiredLevel}
                   min={1}
                   max={3}
@@ -159,8 +151,10 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.currentLevel}
                   </span>
                 </div>
-                <a-slider
-                  ref={currentLevelRef}
+                <AuraSlider
+                  onValueChange={(v) =>
+                    update({ currentLevel: v as 0 | 1 | 2 | 3 })
+                  }
                   value={config.currentLevel}
                   min={0}
                   max={3}
@@ -184,8 +178,8 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.evaluationsReceived}/{config.evaluationsNeeded}
                   </span>
                 </div>
-                <a-slider
-                  ref={evaluationsRef}
+                <AuraSlider
+                  onValueChange={(v) => update({ evaluationsReceived: v })}
                   value={config.evaluationsReceived}
                   min={0}
                   max={10}
@@ -203,8 +197,8 @@ export default function PreviewTab({ project }: { project: Project }) {
                     {config.score}%
                   </span>
                 </div>
-                <a-slider
-                  ref={scoreRef}
+                <AuraSlider
+                  onValueChange={(v) => update({ score: v })}
                   value={config.score}
                   min={0}
                   max={100}
@@ -273,20 +267,22 @@ export default function PreviewTab({ project }: { project: Project }) {
         {/* Live widget preview */}
         <div className="lg:sticky lg:top-24">
           <div className="flex justify-center">
-            <WidgetPreviewFrame
-              appName={config.appName}
-              appDescription={config.appDescription}
-              appLogo={config.appLogo}
-              requiredLevel={config.requiredLevel}
-              theme={config.theme}
-              testMode={config.testMode}
-              isConnected={config.isConnected}
-              currentLevel={config.currentLevel as 0 | 1 | 2 | 3}
-              evaluationsReceived={config.evaluationsReceived}
-              evaluationsNeeded={config.evaluationsNeeded}
-              score={config.score}
-              scoreNeeded={config.scoreNeeded}
-            />
+            <Suspense fallback={<div className="a-skeleton h-96 w-80" />}>
+              <WidgetPreviewFrame
+                appName={config.appName}
+                appDescription={config.appDescription}
+                appLogo={config.appLogo}
+                requiredLevel={config.requiredLevel}
+                theme={config.theme}
+                testMode={config.testMode}
+                isConnected={config.isConnected}
+                currentLevel={config.currentLevel as 0 | 1 | 2 | 3}
+                evaluationsReceived={config.evaluationsReceived}
+                evaluationsNeeded={config.evaluationsNeeded}
+                score={config.score}
+                scoreNeeded={config.scoreNeeded}
+              />
+            </Suspense>
           </div>
         </div>
       </div>

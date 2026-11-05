@@ -10,7 +10,7 @@ import { getAuth } from 'firebase/auth';
 import axios from 'axios';
 import { API_BASE_URL } from '~/constants';
 import _ from 'lodash';
-import { toast } from '@aura/ui';
+import { toast } from '@aura/ui/toast';
 import { cn } from '~/lib/utils';
 import {
   AuraInput,
@@ -54,7 +54,7 @@ function FieldShell({
 }) {
   return (
     <div className={cn('grid gap-2', className)}>
-      <a-label>{label}</a-label>
+      <label className="a-label">{label}</label>
       {children}
       {description && (
         <p className="text-muted-foreground text-sm">{description}</p>
@@ -78,7 +78,7 @@ function SwitchField({
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="space-y-0.5">
-        <a-label>{title}</a-label>
+        <label className="a-label">{title}</label>
         <p className="text-muted-foreground text-sm">{description}</p>
       </div>
       <AuraSwitch checked={checked} onCheckedChange={onCheckedChange} />
@@ -104,7 +104,7 @@ function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <a-card variant="default">
+    <div className="a-card" data-variant="default">
       <div className="flex flex-col gap-1.5">
         <h3 className="font-semibold leading-none">{title}</h3>
         {description && (
@@ -112,7 +112,7 @@ function SectionCard({
         )}
       </div>
       <div className="mt-6 space-y-6">{children}</div>
-    </a-card>
+    </div>
   );
 }
 
@@ -414,9 +414,14 @@ export function BrightIdSettingsForm({
       </SectionCard>
 
       <div className="flex justify-end">
-        <a-button disabled={isPending} type="submit" size="lg">
+        <button
+          className="a-button"
+          disabled={isPending}
+          type="submit"
+          data-size="lg"
+        >
           Save BrightID Settings
-        </a-button>
+        </button>
       </div>
     </form>
   );

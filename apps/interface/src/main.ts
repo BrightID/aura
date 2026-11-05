@@ -1,11 +1,9 @@
-import { LitElement, html } from 'lit';
+import { LightElement } from '@aura/widgets/light-element';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import './styles.css';
 
 import { createRouter } from '@/app-routes';
-
-import 'iconify-icon';
-import '@aura/ui';
 
 import './components/ui/layout.ts';
 
@@ -36,7 +34,7 @@ function onInjectLogin(
 }
 
 @customElement('my-app')
-export class AuraAppElement extends LitElement {
+export class AuraAppElement extends LightElement {
   interval: ReturnType<typeof setInterval> | undefined;
 
   private router = createRouter(this);
@@ -93,6 +91,6 @@ export class AuraAppElement extends LitElement {
   }
 
   render() {
-    return html`<a-theme-provider> ${this.router.outlet()} </a-theme-provider>`;
+    return html`${this.router.outlet()}`;
   }
 }

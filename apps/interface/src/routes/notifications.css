@@ -1,0 +1,36 @@
+/* <notifications-page>, notifications.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (notifications-page) to (:scope [data-c] > *) {
+    section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter .a-button {
+      flex: 0 0 auto;
+    }
+
+    .filter .a-button[data-variant='ghost']::part(button) {
+      color: var(--muted-foreground);
+    }
+
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--muted-foreground);
+    }
+  }
+}

@@ -1,0 +1,43 @@
+/* <my-home>, home.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (my-home) to (:scope [data-c] > *) {
+    .profile-card-wrapper {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .apps-section {
+      text-align: left;
+      margin-bottom: 32px;
+    }
+
+    .apps-section .a-head {
+      margin-bottom: 8px;
+    }
+
+    .page-heading {
+      text-align: left;
+      margin-bottom: 8px;
+    }
+    .eyebrow {
+      color: var(--muted-foreground);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+    .section-description {
+      margin: 0 0 20px;
+    }
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 24px 0;
+      color: var(--muted-foreground);
+    }
+  }
+}

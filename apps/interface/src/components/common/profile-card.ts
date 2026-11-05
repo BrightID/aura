@@ -1,3 +1,4 @@
+import { LightElement } from '@aura/widgets/light-element';
 import { subjectLevelPoints } from '@/lib/data/levels';
 import { userBrightId } from '@/states/user';
 import { getBrightId, queryClient } from '@/utils/apis';
@@ -5,8 +6,9 @@ import { EvaluationCategory, getAuraVerification } from '@/utils/aura';
 import { createBlockiesImage } from '@/utils/image';
 import { compactFormat } from '@/utils/number';
 import { signal, SignalWatcher } from '@lit-labs/signals';
-import { css, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import './profile-card.css';
 
 const score = signal(0);
 const level = signal(0);
@@ -14,68 +16,7 @@ const profileLoaded = signal(false);
 const profileError = signal(false);
 
 @customElement('profile-card')
-export class ProfileCard extends SignalWatcher(LitElement) {
-  static styles = css`
-    .profile-header {
-      display: flex;
-      align-items: center;
-      text-align: left;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .profile-picture {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .profile-picture img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-info {
-      flex: 1 1 auto;
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-    .ellipsis {
-      display: block;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .profile-stats {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-      text-align: left;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background-color: color-mix(in oklch, var(--border) 50%, transparent);
-      border-radius: 9999px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
-
-    .progress {
-      height: 100%;
-      background-color: var(--primary);
-      border-radius: 9999px;
-    }
-  `;
-
+export class ProfileCard extends SignalWatcher(LightElement) {
   @property({})
   firstName = '';
 
@@ -141,7 +82,7 @@ export class ProfileCard extends SignalWatcher(LitElement) {
 
   protected render() {
     return html`
-      <a-card variant="default">
+      <div class="a-card" data-variant="default">
         <div class="profile-header">
           <div class="profile-picture">
             <img
@@ -150,46 +91,61 @@ export class ProfileCard extends SignalWatcher(LitElement) {
             />
           </div>
           <div class="profile-info">
-            <a-head
-              level="5"
+            <h5
+              class="a-head"
+              data-level="5"
               style="margin: 0; font-size: 1rem"
               title=${this.displayName}
             >
               <span class="ellipsis">${this.displayName}</span>
-            </a-head>
+            </h5>
             ${
               this.email
-                ? html`<a-text
-                    variant="muted"
+                ? html`<p
+                    class="a-text"
+                    data-variant="muted"
                     style="margin-top: 2px; display: block"
                     title=${this.email}
-                    ><span class="ellipsis">${this.email}</span></a-text
-                  >`
+                  >
+                    <span class="ellipsis">${this.email}</span>
+                  </p>`
                 : ''
             }
           </div>
         </div>
         ${
           profileError.get()
-            ? html`<a-text variant="muted">Could not load your level.</a-text>`
+            ? html`<p class="a-text" data-variant="muted">
+                Could not load your level.
+              </p>`
             : !profileLoaded.get()
-              ? html`<a-skeleton style="height: 2.5rem"></a-skeleton>`
+              ? html`<div class="a-skeleton" style="height: 2.5rem"></div>`
               : html`
                   <div class="profile-stats">
-                    <a-badge variant="secondary" size="sm"
-                      >Level ${level.get()}</a-badge
+                    <span
+                      class="a-badge"
+                      data-variant="secondary"
+                      data-size="sm"
+                      >Level ${level.get()}</span
                     >
-                    <a-badge variant="secondary" size="sm"
-                      >Score ${compactFormat(score.get())}</a-badge
+                    <span
+                      class="a-badge"
+                      data-variant="secondary"
+                      data-size="sm"
+                      >Score ${compactFormat(score.get())}</span
                     >
-                    <a-text variant="small" style="color: var(--muted-foreground)">
+                    <p
+                      class="a-text"
+                      data-variant="small"
+                      style="color: var(--muted-foreground)"
+                    >
                       ${
                         this.nextLevelScore > 0
                           ? html`${compactFormat(this.nextLevelScore)} to Level
                             ${this.nextLevel}`
                           : html`Max level`
                       }
-                    </a-text>
+                    </p>
                   </div>
                   <div class="progress-bar">
                     <div
@@ -199,9 +155,8 @@ export class ProfileCard extends SignalWatcher(LitElement) {
                   </div>
                 `
         }
-
-        <slot></slot>
-      </a-card>
+        ${this.slotted}
+      </div>
     `;
   }
 }

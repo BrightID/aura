@@ -15,8 +15,8 @@ export default function PanelDashboard() {
         <h3 className="text-xl font-bold mb-5">Projects List</h3>
         {isPending ? (
           <div className="space-y-3">
-            <a-skeleton className="h-10 w-full max-w-xs" />
-            <a-skeleton className="h-48 w-full rounded-lg" />
+            <div className="a-skeleton h-10 w-full max-w-xs" />
+            <div className="a-skeleton h-48 w-full rounded-lg" />
           </div>
         ) : isError ? (
           <div className="rounded-lg border bg-card px-6 py-16 text-center">

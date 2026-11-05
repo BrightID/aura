@@ -1,6 +1,6 @@
 import { fetchOperationState } from '@aura/domain/operations';
 import type { OperationState } from '@aura/domain/types/evaluations';
-import { toast } from '@aura/ui';
+import { toast } from '@aura/ui/toast';
 import { useQueryClient } from '@tanstack/solid-query';
 import { createEffect, createMemo, onCleanup } from 'solid-js';
 import { useBackup } from '@/hooks/use-backup';

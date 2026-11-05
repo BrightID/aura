@@ -4,6 +4,7 @@ import GlobalSearch from '@/components/search/global-search';
 import NotificationBell from '@/components/shared/notification-bell';
 import { toRouterPath } from '@/shared/lib/urls';
 import { authStore } from '@/store/auth';
+import Icon from '@/components/ui/icon';
 
 /**
  * Persistent app header, ported from the old `DefaultHeader`: home link on the
@@ -46,23 +47,38 @@ export default function AppHeader() {
       <header class="flex items-center justify-between gap-2 px-5 pt-6">
         <div class="flex min-w-0 items-center gap-2">
           <A href="/home" data-testid="header-home" class="shrink-0">
-            <a-button size="icon-sm" variant="glass" aria-label="Home">
-              <a-icon name="house" />
-            </a-button>
+            <button
+              class="a-button"
+              type="button"
+              data-size="icon"
+              data-variant="glass"
+              aria-label="Home"
+            >
+              <Icon name="house" />
+            </button>
           </A>
           <Show when={title()}>
-            <a-head class="min-w-0 truncate text-lg" data-testid="header-title">
+            <h2
+              class="a-head min-w-0 truncate text-lg"
+              data-testid="header-title"
+            >
               {title()}
-            </a-head>
+            </h2>
           </Show>
         </div>
         <div class="flex shrink-0 items-center gap-2">
           <GlobalSearch />
           <NotificationBell />
           <A href="/settings" data-testid="header-settings">
-            <a-button size="icon-sm" variant="glass" aria-label="Settings">
-              <a-icon name="settings" />
-            </a-button>
+            <button
+              class="a-button"
+              type="button"
+              data-size="icon"
+              data-variant="glass"
+              aria-label="Settings"
+            >
+              <Icon name="settings" />
+            </button>
           </A>
         </div>
       </header>

@@ -1,4 +1,5 @@
-import { toast } from '@aura/ui';
+import { toast } from '@aura/ui/toast';
+import Icon from '@/components/ui/icon';
 
 /**
  * Shown when a profile/connections lookup 404s: the aura node only creates a
@@ -27,34 +28,40 @@ export default function ProfileNotFoundHint(props: {
   };
 
   return (
-    <a-card
-      variant="glass"
+    <div
+      class="a-card flex flex-col gap-3 p-4"
+      data-variant="glass"
       data-testid="profile-not-found-hint"
-      class="flex flex-col gap-3 p-4"
     >
       <div class="flex items-center gap-2">
-        <a-icon name="info" />
+        <Icon name="info" />
         <p class="font-medium text-foreground">
           {props.self
             ? 'No Aura profile yet'
             : 'This subject has no profile yet'}
         </p>
       </div>
-      <a-text size="sm" class="text-muted-foreground" variant="muted">
+      <p
+        class="a-text text-muted-foreground"
+        data-size="sm"
+        data-variant="muted"
+      >
         {props.self
           ? 'Your profile is created when another player evaluates you. ' +
             'Share your profile link with a connection and ask for your first evaluation.'
           : 'A profile is created once someone evaluates this subject — ' +
             'evaluate them or share their profile to get them started.'}
-      </a-text>
-      <a-button
-        size="sm"
-        variant="glass"
+      </p>
+      <button
+        class="a-button"
+        type="button"
+        data-size="sm"
+        data-variant="glass"
         data-testid="share-profile"
         onClick={share}
       >
         Share profile
-      </a-button>
-    </a-card>
+      </button>
+    </div>
   );
 }

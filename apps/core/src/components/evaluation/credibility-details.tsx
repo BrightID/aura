@@ -1,7 +1,8 @@
+import Dialog from '@/components/ui/dialog';
 import { categoryLabel, confidenceLabel } from '@aura/domain/labels';
 import { calculateUserScorePercentage, impactShare } from '@aura/domain/score';
 import { EvaluationCategory } from '@aura/domain/types/evaluations';
-import type { DialogElement } from '@aura/ui';
+import type { DialogHandle } from '@/components/ui/dialog';
 import { useNavigate } from '@solidjs/router';
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import EvaluationsChart from '@/components/charts/evaluations-chart';
@@ -15,6 +16,7 @@ import { useSubjectInboundEvaluations } from '@/hooks/use-subject-inbound-evalua
 import { useSubjectVerifications } from '@/hooks/use-subject-verifications';
 import { roleColor, roleIcon } from '@/shared/lib/role-style';
 import { authStore } from '@/store/auth';
+import Icon from '@/components/ui/icon';
 
 /** One role's stats panel: standing, your evaluation, impacts chart. */
 function RoleStats(props: {
@@ -70,17 +72,18 @@ function RoleStats(props: {
           </Show>
         </span>
         <Show when={!isSelf()}>
-          <a-button
-            size="sm"
-            class="shrink-0"
-            variant="glass"
+          <button
+            class="a-button shrink-0"
+            type="button"
+            data-size="sm"
+            data-variant="glass"
             data-testid={`credibility-evaluate-${props.category}`}
             onClick={() => props.onEvaluate(props.category)}
           >
             <Show when={my.rating() !== undefined} fallback="Evaluate">
               Edit
             </Show>
-          </a-button>
+          </button>
         </Show>
       </div>
 
@@ -97,7 +100,7 @@ export default function CredibilityDetails(props: {
   subjectId: () => string | null;
   onClose: () => void;
 }) {
-  let dialog: DialogElement | undefined;
+  let dialog: DialogHandle | undefined;
   const navigate = useNavigate();
 
   const id = () => props.subjectId() ?? '';
@@ -128,16 +131,61 @@ export default function CredibilityDetails(props: {
     else dialog?.hide();
   });
 
+  // One per subject: the keyed <Show> below remounts it, resetting the tab.
+  const RoleTabs = () => {
+    const [picked, setPicked] = createSignal<EvaluationCategory | null>(null);
+    const active = () => picked() ?? authorizedRoles()[0];
+    return (
+      <div>
+        <div class="a-tabs" data-compact role="tablist">
+          <For each={authorizedRoles()}>
+            {(category) => (
+              <button
+                type="button"
+                role="tab"
+                class="a-tab"
+                aria-selected={active() === category}
+                onClick={() => setPicked(category)}
+              >
+                <Icon
+                  name={roleIcon[category]}
+                  style={{ color: roleColor[category] }}
+                />
+                {categoryLabel[category]}
+              </button>
+            )}
+          </For>
+        </div>
+        <For each={authorizedRoles()}>
+          {(category) => (
+            <div
+              class="a-tab-panel"
+              role="tabpanel"
+              hidden={active() !== category}
+            >
+              <RoleStats
+                subjectId={id}
+                category={category}
+                onNavigate={goTo}
+                onEvaluate={setEvaluatingCategory}
+              />
+            </div>
+          )}
+        </For>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* State clears only after the leave animation completes, so the body
           never re-renders to its empty state mid-exit. */}
-      <a-dialog
+      <Dialog
         label="Credibility details"
         ref={dialog}
-        on:after-hide={() => props.onClose()}
+        onClose={() => props.onClose()}
       >
-        <div slot="content" class="flex w-96 max-w-full flex-col gap-3">
+        <div class="flex w-96 max-w-full flex-col gap-3">
           <div class="flex items-center gap-3">
             <Avatar name={name()} subjectId={id()} noHover class="h-10 w-10" />
             <p class="min-w-0 break-words font-medium text-foreground">
@@ -147,41 +195,18 @@ export default function CredibilityDetails(props: {
 
           {/* keyed: remount the tabs (and reset the active one) per subject */}
           <Show when={props.subjectId()} keyed>
-            <a-tabs compact>
-              <For each={authorizedRoles()}>
-                {(category) => (
-                  <a-tab value={category}>
-                    <a-icon
-                      name={roleIcon[category]}
-                      style={{ color: roleColor[category] }}
-                    />
-                    {categoryLabel[category]}
-                  </a-tab>
-                )}
-              </For>
-              <For each={authorizedRoles()}>
-                {(category) => (
-                  <a-tab-panel slot="panel" value={category}>
-                    <RoleStats
-                      subjectId={id}
-                      category={category}
-                      onNavigate={goTo}
-                      onEvaluate={setEvaluatingCategory}
-                    />
-                  </a-tab-panel>
-                )}
-              </For>
-            </a-tabs>
+            <RoleTabs />
           </Show>
-          <a-button
-            class="mt-2 w-full"
+          <button
+            class="a-button mt-2 w-full"
+            type="button"
             data-testid="credibility-view-profile"
             onClick={() => goTo(id())}
           >
             View profile
-          </a-button>
+          </button>
         </div>
-      </a-dialog>
+      </Dialog>
 
       <EvaluateModal
         subjectId={() => (evaluatingCategory() ? id() : null)}

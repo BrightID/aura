@@ -1,0 +1,32 @@
+/* <project-landing>, project-page.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (project-landing) to (:scope [data-c] > *) {
+    :scope {
+      display: block;
+    }
+
+    .project-image {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+
+    .description {
+      color: var(--muted-foreground);
+      line-height: 1.5;
+      margin: 8px 0 0;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      margin-top: 20px;
+    }
+
+    .actions .a-button {
+      width: 100%;
+    }
+  }
+}

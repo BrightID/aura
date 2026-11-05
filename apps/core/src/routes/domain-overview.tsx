@@ -1,5 +1,6 @@
 import { For } from 'solid-js';
 import { useRequireSession } from '@/hooks/use-require-session';
+import Icon from '@/components/ui/icon';
 
 // Straight port of the old page's hardcoded stats — there is no domain-stats
 // endpoint yet (same as the old app; wire real counts when one exists).
@@ -16,9 +17,9 @@ export default function DomainOverviewPage() {
 
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
-      <a-head class="text-2xl">Domain Overview</a-head>
+      <h2 class="a-head text-2xl">Domain Overview</h2>
 
-      <a-card variant="glass" class="flex flex-col gap-4 p-4">
+      <div class="a-card flex flex-col gap-4 p-4" data-variant="glass">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
             <p class="text-sm text-muted-foreground">Domain</p>
@@ -40,22 +41,22 @@ export default function DomainOverviewPage() {
             how identities are verified online
           </p>
         </div>
-      </a-card>
+      </div>
 
       <div class="grid grid-cols-2 gap-4">
         <For each={STATS}>
           {(stat) => (
-            <a-card
-              variant="glass"
+            <div
+              class="a-card flex h-28 flex-col justify-between p-4"
+              data-variant="glass"
               data-testid={`domain-stat-${stat.label.toLowerCase()}`}
-              class="flex h-28 flex-col justify-between p-4"
             >
               <div class="flex items-center justify-between">
-                <a-icon name={stat.icon} />
+                <Icon name={stat.icon} />
                 <p class="font-bold text-foreground">{stat.value}</p>
               </div>
               <p class="text-right text-lg text-foreground">{stat.label}</p>
-            </a-card>
+            </div>
           )}
         </For>
       </div>

@@ -5,6 +5,7 @@ import { useSubjectVerifications } from '@/hooks/use-subject-verifications';
 import { useViewMode } from '@/hooks/use-view-mode';
 import { compactFormat } from '@/shared/lib/number';
 import { EvaluationCategory } from '@aura/domain/types/evaluations';
+import Icon from '@/components/ui/icon';
 
 /** Level-up progress toward the evaluator role. Hidden once unlocked. */
 export default function ProfileInfoPerformance(props: { subjectId: string }) {
@@ -17,15 +18,15 @@ export default function ProfileInfoPerformance(props: { subjectId: string }) {
 
   return (
     <Show when={!progress().isUnlocked}>
-      <a-card
-        variant="glass"
+      <div
+        class="a-card flex flex-col gap-3 p-4"
+        data-variant="glass"
         data-testid="levelup-progress-card"
-        class="flex flex-col gap-3 p-4"
       >
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <span class="bg-primary/15 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
-              <a-icon name="lock" />
+              <Icon name="lock" />
             </span>
             <div class="flex flex-col">
               <p class="text-sm font-semibold text-foreground">
@@ -54,7 +55,7 @@ export default function ProfileInfoPerformance(props: { subjectId: string }) {
             Evaluate subjects below to make progress.
           </p>
         </Show>
-      </a-card>
+      </div>
     </Show>
   );
 }

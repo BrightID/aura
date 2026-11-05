@@ -1,16 +1,18 @@
+import Dialog from '@/components/ui/dialog';
 import {
   CONFIDENCE_LABELS,
   categoryLabel,
   confidenceLabel,
 } from '@aura/domain/labels';
 import { EvaluationCategory } from '@aura/domain/types/evaluations';
-import type { DialogElement } from '@aura/ui';
-import { toast } from '@aura/ui';
+import type { DialogHandle } from '@/components/ui/dialog';
+import { toast } from '@aura/ui/toast';
 import { createEffect, createSignal, For, Show } from 'solid-js';
 import { useSubjectName } from '@/hooks/use-backup';
 import { useEvaluateSubject } from '@/hooks/use-evaluate-subject';
 import { useMyRating } from '@/hooks/use-my-evaluations';
 import { useViewMode } from '@/hooks/use-view-mode';
+import Icon from '@/components/ui/icon';
 
 const CONFIDENCE_VALUES = Object.keys(CONFIDENCE_LABELS).map(Number);
 
@@ -57,7 +59,7 @@ export default function EvaluateModal(props: {
   onClose: () => void;
   category?: () => EvaluationCategory;
 }) {
-  let dialog: DialogElement | undefined;
+  let dialog: DialogHandle | undefined;
 
   const vm = useViewMode();
   const category = () => props.category?.() ?? vm.currentEvaluationCategory();
@@ -122,58 +124,64 @@ export default function EvaluateModal(props: {
   };
 
   return (
-    <a-dialog
+    <Dialog
       label="Evaluate account"
       ref={dialog}
-      on:after-hide={() => props.onClose()}
+      onClose={() => props.onClose()}
     >
-      <div slot="content" class="flex w-80 max-w-full flex-col gap-5">
+      <div class="flex w-80 max-w-full flex-col gap-5">
         <div class="flex flex-col gap-1">
-          <a-text variant="muted">
+          <p class="a-text" data-variant="muted">
             Evaluate <span class="font-bold">{name()}</span> as a{' '}
             <span class="font-bold">{categoryLabel[category()]}</span> in the{' '}
             <span class="font-bold">BrightID</span> domain
-          </a-text>
+          </p>
           <p class="font-medium text-foreground">
             {QUESTIONS[category()].replace('{name}', name())}
           </p>
         </div>
 
         <div class="flex gap-2">
-          <a-button
-            class="flex-1 transition-all duration-200"
+          <button
+            class="a-button flex-1 transition-all duration-200"
+            type="button"
             data-testid="evaluate-positive"
-            variant={isYes() ? 'default' : 'outline'}
+            data-variant={isYes() ? 'default' : 'outline'}
             onClick={() => setIsYes(true)}
           >
-            <a-icon name="thumbs-up" /> Yes
-          </a-button>
-          <a-button
-            class="flex-1 transition-all duration-200"
+            <Icon name="thumbs-up" /> Yes
+          </button>
+          <button
+            class="a-button flex-1 transition-all duration-200"
+            type="button"
             data-testid="evaluate-negative"
-            color="destructive"
-            variant={isYes() ? 'outline' : 'default'}
+            data-color="destructive"
+            data-variant={isYes() ? 'outline' : 'default'}
             onClick={() => setIsYes(false)}
           >
-            <a-icon name="thumbs-down" /> No
-          </a-button>
+            <Icon name="thumbs-down" /> No
+          </button>
         </div>
 
         <div class="flex flex-col gap-2">
-          <a-text variant="muted">How confident are you?</a-text>
+          <p class="a-text" data-variant="muted">
+            How confident are you?
+          </p>
           <div class="flex flex-wrap gap-2">
             <For each={CONFIDENCE_VALUES}>
               {(value) => (
-                <a-button
+                <button
+                  class="a-button"
+                  type="button"
                   data-testid={`evaluate-confidence-${value}`}
-                  size="sm"
-                  variant="glass"
-                  color="secondary"
-                  selected={confidence() === value}
+                  data-size="sm"
+                  data-variant="glass"
+                  data-color="secondary"
+                  aria-pressed={confidence() === value}
                   onClick={() => setConfidence(value)}
                 >
                   {confidenceLabel(value)}
-                </a-button>
+                </button>
               )}
             </For>
           </div>
@@ -191,16 +199,18 @@ export default function EvaluateModal(props: {
           when={existing.rating() !== undefined}
           fallback={
             <div class="flex gap-2">
-              <a-button
-                class="flex-1"
-                variant="outline"
+              <button
+                class="a-button flex-1"
+                type="button"
+                data-variant="outline"
                 data-testid="evaluate-cancel"
                 onClick={() => dialog?.hide()}
               >
                 Cancel
-              </a-button>
-              <a-button
-                class="flex-1"
+              </button>
+              <button
+                class="a-button flex-1"
+                type="button"
                 data-testid="submit-evaluation"
                 disabled={isPending()}
                 onClick={submit}
@@ -208,38 +218,40 @@ export default function EvaluateModal(props: {
                 <Show when={isPending()} fallback="Submit">
                   Sending…
                 </Show>
-              </a-button>
+              </button>
             </div>
           }
         >
           <div class="flex flex-col gap-2 sm:flex-row">
-            <a-button
-              class="flex-1"
+            <button
+              class="a-button flex-1"
+              type="button"
               data-testid="submit-evaluation"
-              variant={onDelete() ? 'outline' : 'default'}
+              data-variant={onDelete() ? 'outline' : 'default'}
               disabled={isPending()}
               onClick={submit}
             >
               <Show when={isPending()} fallback="Update Evaluation">
                 Sending…
               </Show>
-            </a-button>
-            <a-button
+            </button>
+            <button
+              class="a-button flex-1"
+              type="button"
               data-testid="remove-evaluation"
-              color="destructive"
-              variant={onDelete() ? 'default' : 'outline'}
-              class="flex-1"
+              data-color="destructive"
+              data-variant={onDelete() ? 'default' : 'outline'}
               disabled={isPending()}
               onClick={remove}
             >
-              <a-icon name="trash-2" />
+              <Icon name="trash-2" />
               <Show when={onDelete()} fallback={<span>Remove evaluation</span>}>
                 <span>Confirm removal</span>
               </Show>
-            </a-button>
+            </button>
           </div>
         </Show>
       </div>
-    </a-dialog>
+    </Dialog>
   );
 }

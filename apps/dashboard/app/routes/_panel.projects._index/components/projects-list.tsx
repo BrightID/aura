@@ -1,10 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Plus, LayoutGrid, List } from 'lucide-react';
 import { getUserProjects } from '~/utils/apis';
-import { useAuraEvent } from '~/lib/aura';
+import { AuraInput, AuraSelect } from '~/components/aura-form-controls';
 import { cn } from '~/lib/utils';
 import type { Project } from '~/components/projects-table';
 import { ProjectCard } from './project-card';
@@ -16,13 +16,6 @@ export default function ProjectsList() {
     'all' | 'active' | 'inactive'
   >('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const searchRef = useRef<HTMLElement>(null);
-  const statusRef = useRef<HTMLElement>(null);
-  useAuraEvent<string>(searchRef, 'change', setSearchQuery);
-  useAuraEvent<string>(statusRef, 'change', (v) =>
-    setStatusFilter(v as 'all' | 'active' | 'inactive'),
-  );
 
   const {
     data: projects,
@@ -54,31 +47,28 @@ export default function ProjectsList() {
               Manage and monitor your projects
             </p>
           </div>
-          <Link to="/projects/new">
-            <a-button>
-              <Plus className="mr-2 h-4 w-4" />
-              New Project
-            </a-button>
+          <Link to="/projects/new" className="a-button">
+            <Plus className="h-4 w-4" />
+            New Project
           </Link>
         </div>
 
         {/* Filters */}
         <div className="flex items-center gap-4 px-6 pb-4">
-          <div className="flex-1 max-w-sm">
-            <a-input
-              ref={searchRef}
+          <div className="a-input-group flex-1 max-w-sm">
+            <Search />
+            <AuraInput
               placeholder="Search projects..."
               value={searchQuery}
-            >
-              <span slot="prefix">
-                <Search className="h-4 w-4 text-muted-foreground" />
-              </span>
-            </a-input>
+              onValueChange={setSearchQuery}
+            />
           </div>
-          <a-select
-            ref={statusRef}
+          <AuraSelect
             value={statusFilter}
-            placeholder="Status"
+            onValueChange={(v) =>
+              setStatusFilter(v as 'all' | 'active' | 'inactive')
+            }
+            aria-label="Status"
             className="w-[140px]"
             options={[
               { value: 'all', label: 'All Status' },
@@ -87,22 +77,24 @@ export default function ProjectsList() {
             ]}
           />
           <div className="flex items-center border rounded-md">
-            <a-button
-              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-              size="icon"
-              className="h-9 w-9 rounded-r-none"
+            <button
+              className="a-button h-9 w-9 rounded-r-none"
+              type="button"
+              data-variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+              data-size="icon"
               onClick={() => setViewMode('grid')}
             >
               <LayoutGrid className="h-4 w-4" />
-            </a-button>
-            <a-button
-              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-              size="icon"
-              className="h-9 w-9 rounded-l-none"
+            </button>
+            <button
+              className="a-button h-9 w-9 rounded-l-none"
+              type="button"
+              data-variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+              data-size="icon"
               onClick={() => setViewMode('list')}
             >
               <List className="h-4 w-4" />
-            </a-button>
+            </button>
           </div>
         </div>
       </header>
@@ -120,16 +112,16 @@ export default function ProjectsList() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-lg border bg-card p-4 space-y-3">
                 <div className="flex items-center gap-3">
-                  <a-skeleton className="h-10 w-10 rounded-md" />
+                  <div className="a-skeleton h-10 w-10 rounded-md" />
                   <div className="space-y-2">
-                    <a-skeleton className="h-4 w-32" />
-                    <a-skeleton className="h-3 w-24" />
+                    <div className="a-skeleton h-4 w-32" />
+                    <div className="a-skeleton h-3 w-24" />
                   </div>
                 </div>
-                <a-skeleton className="h-10 w-full" />
+                <div className="a-skeleton h-10 w-full" />
                 <div className="flex gap-2">
-                  <a-skeleton className="h-5 w-16" />
-                  <a-skeleton className="h-5 w-20" />
+                  <div className="a-skeleton h-5 w-16" />
+                  <div className="a-skeleton h-5 w-20" />
                 </div>
               </div>
             ))}
@@ -155,11 +147,9 @@ export default function ProjectsList() {
                 : 'Create your first project to get started'}
             </p>
             {!searchQuery && (
-              <Link to="/projects/new">
-                <a-button className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Project
-                </a-button>
+              <Link to="/projects/new" className="a-button mt-4">
+                <Plus className="h-4 w-4" />
+                New Project
               </Link>
             )}
           </div>

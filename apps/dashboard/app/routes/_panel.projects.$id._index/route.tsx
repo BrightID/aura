@@ -36,8 +36,8 @@ export default function ProjectDetail() {
             ? 'Please try again later.'
             : 'This project is not in your account.'}
         </p>
-        <Link to="/projects">
-          <a-button variant="outline">Back to projects</a-button>
+        <Link to="/projects" className="a-button" data-variant="outline">
+          Back to projects
         </Link>
       </div>
     );

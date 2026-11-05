@@ -6,7 +6,7 @@ import {
   ChartTooltipContent,
 } from '~/components/ui/chart';
 import { useIsMobile } from '~/hooks/use-mobile';
-import { useAuraEvent } from '~/lib/aura';
+import { AuraSelect } from '~/components/aura-form-controls';
 import { API_BASE_URL } from '~/constants';
 import { getAuthHeaders } from '~/utils/apis';
 import * as React from 'react';
@@ -24,13 +24,15 @@ async function fetchUsage(projectId: string) {
   return json.data as { date: string; verifications: number }[];
 }
 
+const RANGES = [
+  { value: '90d', label: 'Last 3 months', short: '3 months' },
+  { value: '30d', label: 'Last 30 days', short: '30 days' },
+  { value: '7d', label: 'Last 7 days', short: '7 days' },
+];
+
 export function ProjectUsageChart({ projectId }: { projectId: string }) {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState('90d');
-  const toggleRef = React.useRef<HTMLElement>(null);
-  const selectRef = React.useRef<HTMLElement>(null);
-  useAuraEvent<string>(toggleRef, 'change', (v) => v && setTimeRange(v));
-  useAuraEvent<string>(selectRef, 'change', setTimeRange);
 
   const {
     data: chartData = [],
@@ -53,11 +55,11 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
   }, [isMobile]);
 
   return (
-    <a-card>
+    <div className="a-card">
       <div className="flex flex-col gap-1.5 p-6">
-        <a-head level="3" className="font-semibold">
+        <h3 className="a-head font-semibold" data-level="3">
           Project Verifications
-        </a-head>
+        </h3>
         <p className="text-muted-foreground text-sm">
           Last{' '}
           {timeRange === '90d'
@@ -67,31 +69,30 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
               : '7 days'}
         </p>
         <div className="flex justify-end">
-          <a-toggle-group
-            ref={toggleRef}
-            type="single"
-            value={timeRange}
-            className="hidden @[767px]:flex"
+          <div
+            role="group"
+            aria-label="Time range"
+            className="a-toggle-group hidden @[767px]:flex"
           >
-            <a-toggle variant="outline" value="90d">
-              3 months
-            </a-toggle>
-            <a-toggle variant="outline" value="30d">
-              30 days
-            </a-toggle>
-            <a-toggle variant="outline" value="7d">
-              7 days
-            </a-toggle>
-          </a-toggle-group>
-          <a-select
-            ref={selectRef}
+            {RANGES.map((r) => (
+              <button
+                key={r.value}
+                type="button"
+                className="a-toggle"
+                data-variant="outline"
+                aria-pressed={timeRange === r.value}
+                onClick={() => setTimeRange(r.value)}
+              >
+                {r.short}
+              </button>
+            ))}
+          </div>
+          <AuraSelect
+            aria-label="Time range"
             value={timeRange}
+            onValueChange={setTimeRange}
             className="w-40 @[767px]:hidden"
-            options={[
-              { value: '90d', label: 'Last 3 months' },
-              { value: '30d', label: 'Last 30 days' },
-              { value: '7d', label: 'Last 7 days' },
-            ]}
+            options={RANGES}
           />
         </div>
       </div>
@@ -101,49 +102,49 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
             Could not load verifications.
           </p>
         ) : isPending ? (
-          <a-skeleton className="h-[300px] w-full" />
+          <div className="a-skeleton h-[300px] w-full" />
         ) : filteredData.length === 0 ? (
           <p className="py-16 text-center text-sm text-muted-foreground">
             No verifications in this range.
           </p>
         ) : (
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillVerif" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-verifications)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-verifications)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(v) =>
-                new Date(v).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                })
-              }
-            />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Area
-              dataKey="verifications"
-              type="natural"
-              fill="url(#fillVerif)"
-              stroke="var(--color-verifications)"
-            />
-          </AreaChart>
-        </ChartContainer>
+          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            <AreaChart data={filteredData}>
+              <defs>
+                <linearGradient id="fillVerif" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-verifications)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-verifications)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(v) =>
+                  new Date(v).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                }
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                dataKey="verifications"
+                type="natural"
+                fill="url(#fillVerif)"
+                stroke="var(--color-verifications)"
+              />
+            </AreaChart>
+          </ChartContainer>
         )}
       </div>
-    </a-card>
+    </div>
   );
 }

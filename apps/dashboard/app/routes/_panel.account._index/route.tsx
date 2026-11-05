@@ -13,7 +13,7 @@ import {
 } from 'firebase/auth';
 import { useNavigate } from 'react-router';
 import { auth } from '~/lib/firebase';
-import { toast } from 'sonner';
+import { toast } from '@aura/ui/toast';
 
 import {
   Card,

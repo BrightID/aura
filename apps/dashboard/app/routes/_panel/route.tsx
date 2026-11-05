@@ -19,7 +19,7 @@ export default function PanelLayout() {
   if (loading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <a-skeleton className="h-8 w-40" />
+        <div className="a-skeleton h-8 w-40" />
       </div>
     );
   }

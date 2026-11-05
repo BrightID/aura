@@ -1,6 +1,5 @@
 // Run on an isolated origin: bun run dev --port 5174, then /core/tests/cards.html.
 import '../src/index.css';
-import '@aura/ui';
 import { Router, Route } from '@solidjs/router';
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
 import { For, createSignal, onMount } from 'solid-js';
@@ -14,7 +13,9 @@ import ChartHelp from '../src/components/charts/chart-help';
 import EvidenceHelp from '../src/components/subject/evidence-help';
 import SubjectListControls from '../src/components/home/subject-list-controls';
 import { useSubjectsList } from '../src/hooks/use-subjects-list';
-import type { DialogElement } from '@aura/ui';
+import Dialog, { type DialogHandle } from '../src/components/ui/dialog';
+import Toaster from '../src/components/ui/toaster';
+import { toast } from '@aura/ui/toast';
 import { authStore, setAuthStore } from '../src/store/auth';
 import { operationsStore, setOperationsStore } from '../src/store/operations';
 import {
@@ -181,10 +182,10 @@ function Cards() {
     const assert = (ok: boolean, message: string) => {
       if (!ok) failures.push(message);
     };
-    for (const card of document.querySelectorAll('a-card')) {
+    for (const card of document.querySelectorAll('.a-card')) {
       const rect = card.getBoundingClientRect();
       for (const el of card.querySelectorAll('*')) {
-        if (el.closest('[slot="content"]')) continue;
+        if (el.closest('[popover]')) continue; // floating popup, not in the card
         const child = el.getBoundingClientRect();
         assert(
           child.right <= rect.right + 1 && child.left >= rect.left - 1,
@@ -205,16 +206,16 @@ function Cards() {
       'Missing score must remain missing',
     );
     const subject = document.querySelector(
-      '[data-testid="fixture-subject-card-positive"] a-card',
+      '[data-testid="fixture-subject-card-positive"] .a-card',
     )!;
     const path = location.pathname;
-    (subject.querySelector('a-button') as HTMLElement).click();
+    (subject.querySelector('.a-button') as HTMLElement).click();
     assert(
       action() === 'Evaluate card-positive' && location.pathname === path,
       'Evaluate must not open the profile',
     );
     const evaluation = document.querySelector(
-      '[data-testid="fixture-evaluation-card-positive"] a-card',
+      '[data-testid="fixture-evaluation-card-positive"] .a-card',
     )!;
     assert(
       (subject as HTMLElement).tabIndex === 0 &&
@@ -233,7 +234,7 @@ function Cards() {
     }
     setAction('No action');
     subject
-      .querySelector('a-button')!
+      .querySelector('.a-button')!
       .dispatchEvent(
         new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
       );
@@ -243,25 +244,41 @@ function Cards() {
     );
     assert(
       document.querySelector(
-        '[data-testid="fixture-subject-card-pending"] a-icon[name="loader-circle"]',
+        '[data-testid="fixture-subject-card-pending"] .a-icon[style*="loader-circle"]',
       ) !== null,
       'Pending evaluation must show a spinner',
     );
     // Exercise native modality and the existing delayed close/reopen contract.
-    const overlay = document.createElement('a-dialog') as DialogElement;
-    overlay.label = 'Overlay regression';
-    overlay.innerHTML =
-      '<button slot="trigger" type="button">Open regression</button><div slot="content" style="width:384px;max-width:100%"><button type="button">Inside</button></div>';
-    document.body.append(overlay);
-    await overlay.updateComplete;
-    const trigger = overlay.querySelector('button')!;
+    const host = document.createElement('div');
+    document.body.append(host);
+    let overlay!: DialogHandle;
+    let closed = 0;
+    let onClosed = () => {};
+    const dispose = render(
+      () => (
+        <Dialog
+          label="Overlay regression"
+          ref={(handle) => (overlay = handle)}
+          onClose={() => {
+            closed++;
+            onClosed();
+          }}
+          trigger={<button type="button">Open regression</button>}
+        >
+          <div style={{ width: '384px', 'max-width': '100%' }}>
+            <button type="button">Inside</button>
+          </div>
+        </Dialog>
+      ),
+      host,
+    );
+    const trigger = host.querySelector('button')!;
+    const native = host.querySelector('dialog')!;
     trigger.focus();
     overlay.show();
-    await overlay.updateComplete;
-    const native = overlay.shadowRoot!.querySelector('dialog')!;
     assert(native.matches(':modal'), 'Dialog must use the top layer');
     assert(
-      overlay.contains(document.activeElement),
+      native.contains(document.activeElement),
       'Dialog must receive focus',
     );
     const bounds = native.getBoundingClientRect();
@@ -269,8 +286,6 @@ function Cards() {
       bounds.left >= 0 && bounds.right <= innerWidth,
       'Dialog must fit the viewport',
     );
-    let closed = 0;
-    overlay.addEventListener('after-hide', () => closed++);
     overlay.hide();
     overlay.show();
     await new Promise((resolve) => setTimeout(resolve, 240));
@@ -278,9 +293,7 @@ function Cards() {
       native.open && closed === 0,
       'Reopening must cancel the pending close',
     );
-    const hidden = new Promise((resolve) =>
-      overlay.addEventListener('after-hide', resolve, { once: true }),
-    );
+    const hidden = new Promise<void>((resolve) => (onClosed = resolve));
     overlay.hide();
     await hidden;
     assert(!native.open && closed === 1, 'Close must finish once');
@@ -288,13 +301,17 @@ function Cards() {
       document.activeElement === trigger,
       'Dialog must restore trigger focus',
     );
-    overlay.remove();
-    const preview = subject.querySelector('a-hover-card')!;
-    const previewTrigger = preview.querySelector('button')!;
+    dispose();
+    host.remove();
+    const previewTrigger = subject.querySelector<HTMLElement>(
+      'button[aria-label^="Preview photo"]',
+    )!;
+    const preview = previewTrigger.parentElement!;
+    const tick = () => new Promise((resolve) => setTimeout(resolve));
     previewTrigger.focus();
     previewTrigger.click();
-    await (preview as import('@aura/ui').HoverCardElement).updateComplete;
-    const popup = preview.shadowRoot!.querySelector<HTMLElement>('[popover]')!;
+    await tick();
+    const popup = preview.querySelector<HTMLElement>('[popover]')!;
     assert(popup.matches(':popover-open'), 'Avatar preview must open on click');
     preview.dispatchEvent(new MouseEvent('mouseleave'));
     await new Promise((resolve) => setTimeout(resolve, 240));
@@ -321,11 +338,31 @@ function Cards() {
         composed: true,
       }),
     );
-    await (preview as import('@aura/ui').HoverCardElement).updateComplete;
+    await tick();
     assert(
       !popup.matches(':popover-open'),
       'Escape must dismiss avatar preview',
     );
+    // Dismissing an older toast leaves a newer one where it is: same node,
+    // still fully shown, with no second fade-in.
+    const older = toast('Older toast', { duration: Infinity });
+    const newer = toast('Newer toast', { duration: Infinity });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const toastNode = (text: string) =>
+      [...document.querySelectorAll<HTMLElement>('.a-toast')].find((el) =>
+        el.textContent?.includes(text),
+      );
+    const newerNode = toastNode('Newer toast');
+    toast.dismiss(older);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    assert(
+      newerNode !== undefined &&
+        toastNode('Newer toast') === newerNode &&
+        !newerNode.hasAttribute('data-hidden'),
+      'Dismissing a toast must not re-render the next one',
+    );
+    toast.dismiss(newer);
+    await new Promise((resolve) => setTimeout(resolve, 400));
     setResult(
       failures.length
         ? failures.join('\n')
@@ -334,9 +371,16 @@ function Cards() {
   });
   return (
     <main class="mx-auto flex max-w-2xl flex-col gap-3 px-5 py-6 text-foreground">
+      <Toaster />
       <button
         class="self-start"
-        onClick={() => document.documentElement.classList.toggle('dark')}
+        onClick={() => {
+          const root = document.documentElement;
+          root.classList.toggle(
+            'light',
+            root.classList.toggle('dark') === false,
+          );
+        }}
       >
         Toggle theme
       </button>
@@ -389,7 +433,11 @@ function Cards() {
     </main>
   );
 }
-document.documentElement.classList.add('dark');
+// cards-light.html puts class="light" on <html>; cards.html has no class, so
+// this script makes it dark. (Not a URL flag: the list controls sync filters
+// to the URL, and a query string re-renders the page mid-check.)
+if (!document.documentElement.classList.contains('light'))
+  document.documentElement.classList.add('dark');
 document.body.classList.add('bg-background');
 render(
   () => (

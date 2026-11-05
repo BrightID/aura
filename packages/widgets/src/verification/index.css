@@ -1,0 +1,78 @@
+/* <app-verification-embed>, index.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (app-verification-embed) to (:scope [data-c] > *) {
+    /* The scroll container that replaced <a-scroll-area>. */
+    .scroll {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    :scope {
+      display: block;
+      /* Establish a size-query container so the whole widget can scale to
+       whatever box it is embedded in. All inner sizing is em-based, so
+       scaling this single root font-size fluidly resizes everything. */
+      container-type: inline-size;
+      font-size: var(--verification-size, 0.875rem);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .frame {
+      width: 100%;
+      height: 100%;
+      /* Fluid root size: tracks container width, clamped to a sane range.
+       An explicit --verification-size still wins when the host sets one. */
+      font-size: var(
+        --verification-size,
+        clamp(0.8125rem, 0.7rem + 1cqi, 1.0625rem)
+      );
+      border-radius: var(--radius, 0.75rem);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+      position: relative;
+    }
+
+    .content {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      /* "safe" keeps content reachable (aligned to start) when it is taller
+       than the frame, instead of overflowing past the top unscrollably. */
+      justify-content: safe center;
+      padding: clamp(1em, 4cqi, 1.5em);
+    }
+
+    .loading-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 8em;
+      gap: 0.75em;
+      color: var(--muted-foreground);
+      font-size: 0.875em;
+    }
+
+    .spinner {
+      width: 1.25em;
+      height: 1.25em;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 9999px;
+      animation: app-verification-embed--spin 0.6s linear infinite;
+    }
+  }
+
+  @keyframes app-verification-embed--spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

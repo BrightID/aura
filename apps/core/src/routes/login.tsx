@@ -15,7 +15,7 @@ import {
   pollRecoveredUser,
   uploadRecoveryData,
 } from '@aura/domain/recovery';
-import { toast } from '@aura/ui';
+import { toast } from '@aura/ui/toast';
 import { useNavigate, useSearchParams } from '@solidjs/router';
 import { createMutation, createQuery } from '@tanstack/solid-query';
 import QRCode from 'qrcode';
@@ -38,6 +38,7 @@ import {
   setRecoveryChannel,
   setRecoveryError,
 } from '@/store/recovery';
+import Icon from '@/components/ui/icon';
 
 const QR_SIZE = 270;
 
@@ -191,24 +192,24 @@ export default function LoginPage() {
         when={!importing()}
         fallback={
           <section data-testid="login-download-state" class="content mb-6">
-            <a-head class="mb-6 text-5xl">Login</a-head>
-            <a-text size="lg" class="font-medium">
+            <h2 class="a-head mb-6 text-5xl">Login</h2>
+            <p class="a-text font-medium" data-size="lg">
               Downloading backup data...
-            </a-text>
+            </p>
           </section>
         }
       >
         <section class="content mb-6">
           <FadeIn delay={0.1}>
-            <a-head data-testid="recovery-title" class="mb-6 text-5xl">
+            <h2 class="a-head mb-6 text-5xl" data-testid="recovery-title">
               Login
-            </a-head>
+            </h2>
           </FadeIn>
           <FadeIn delay={0.15}>
-            <a-text size="lg" class="font-medium">
+            <p class="a-text font-medium" data-size="lg">
               Scan this code with the BrightID app to log in to your Aura
               account.
-            </a-text>
+            </p>
           </FadeIn>
         </section>
 
@@ -229,13 +230,15 @@ export default function LoginPage() {
                     <span class="text-destructive">
                       Couldn't create a BrightID login code.
                     </span>
-                    <a-button
-                      size="sm"
-                      variant="glass"
+                    <button
+                      class="a-button"
+                      type="button"
+                      data-size="sm"
+                      data-variant="glass"
                       onClick={() => window.location.reload()}
                     >
                       Try again
-                    </a-button>
+                    </button>
                   </div>
                 </Show>
               </div>
@@ -264,14 +267,14 @@ export default function LoginPage() {
             <FadeIn delay={0.25}>
               <div class="flex items-center gap-2">
                 <hr class="h-px w-12 border-0 bg-border" />
-                <a-text>Or</a-text>
+                <p class="a-text">Or</p>
                 <hr class="h-px w-12 border-0 bg-border" />
               </div>
             </FadeIn>
             <FadeIn delay={0.25}>
-              <a-text size="lg" class="font-medium">
+              <p class="a-text font-medium" data-size="lg">
                 Open the link below on your phone
-              </a-text>
+              </p>
             </FadeIn>
           </Show>
         </div>
@@ -289,26 +292,29 @@ export default function LoginPage() {
                 >
                   {universalLink()}
                 </a>
-                <a-button
-                  size="icon-sm"
-                  variant="glass"
+                <button
+                  class="a-button"
+                  type="button"
+                  data-size="icon"
+                  data-variant="glass"
                   onClick={copyLink}
                   aria-label="Copy link"
                 >
-                  <a-icon name="copy" />
-                </a-button>
+                  <Icon name="copy" />
+                </button>
               </span>
             </Show>
 
             <div class="mt-5 flex items-center justify-center gap-2">
               <hr class="h-px w-12 border-0 bg-border" />
-              <a-text>Or</a-text>
+              <p class="a-text">Or</p>
               <hr class="h-px w-12 border-0 bg-border" />
             </div>
 
-            <a-button
-              class="mt-4 w-full"
-              size="lg"
+            <button
+              class="a-button mt-4 w-full"
+              type="button"
+              data-size="lg"
               data-testid="passkey-sign-in"
               disabled={passkeyBusy()}
               onClick={() => !passkeyBusy() && passkeySignIn.mutate()}
@@ -316,10 +322,11 @@ export default function LoginPage() {
               {passkeySignIn.isPending
                 ? 'Waiting for passkey...'
                 : 'Sign in with passkey'}
-            </a-button>
-            <a-button
-              variant="ghost"
-              class="mt-3 w-full"
+            </button>
+            <button
+              class="a-button mt-3 w-full"
+              type="button"
+              data-variant="ghost"
               data-testid="passkey-create"
               disabled={passkeyBusy()}
               onClick={() => !passkeyBusy() && passkeyCreate.mutate()}
@@ -327,19 +334,21 @@ export default function LoginPage() {
               {hasPasskeyCredential()
                 ? 'Create a new passkey identity'
                 : 'New to Aura? Create a passkey'}
-            </a-button>
+            </button>
           </section>
         </FadeIn>
 
         <FadeIn delay={0.35}>
           <footer class="text-muted-foreground flex justify-between text-sm">
             <span class="flex gap-1">
-              <a-text class="font-light">Version</a-text>
-              <a-text data-testid="app-version">{__APP_VERSION__}</a-text>
+              <p class="a-text font-light">Version</p>
+              <p class="a-text" data-testid="app-version">
+                {__APP_VERSION__}
+              </p>
             </span>
             <span class="flex gap-1">
-              <a-text class="text-muted-foreground">Powered by:</a-text>
-              <a-text class="font-light">BrightID</a-text>
+              <p class="a-text text-muted-foreground">Powered by:</p>
+              <p class="a-text font-light">BrightID</p>
             </span>
           </footer>
         </FadeIn>

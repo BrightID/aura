@@ -49,9 +49,14 @@ export function SuccessStep({ appName, level, onContinue }: SuccessStepProps) {
       </div>
 
       {/* Continue Button */}
-      <a-button onClick={onContinue} className="w-full" size="lg">
+      <button
+        className="a-button w-full"
+        type="button"
+        onClick={onContinue}
+        data-size="lg"
+      >
         Continue to {appName}
-      </a-button>
+      </button>
 
       {/* Footer Note */}
       <p className="text-xs text-muted-foreground">

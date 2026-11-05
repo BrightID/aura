@@ -1,9 +1,11 @@
+import { LightElement } from '@aura/widgets/light-element';
 import checkboxGreenIcon from '@/assets/icons/checkbox-green.svg';
-import { css, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import './verification-card.css';
 
 @customElement('verification-card')
-export class VerificationCard extends LitElement {
+export class VerificationCard extends LightElement {
   @property({})
   name = 'UBI Raffle Verification';
 
@@ -22,129 +24,48 @@ export class VerificationCard extends LitElement {
   @property({ type: Number })
   projectId = -1;
 
-  static styles = css`
-    .card-link {
-      color: inherit;
-      text-decoration: none;
-      display: block;
-      margin-bottom: 16px;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .card-link:focus-visible {
-      outline: 2px solid var(--ring);
-      outline-offset: 4px;
-      border-radius: var(--radius);
-    }
-
-    .card-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      overflow-wrap: anywhere;
-    }
-
-    .level-requirement {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .progress-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background-color: color-mix(in oklch, var(--border) 50%, transparent);
-      border-radius: 9999px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-
-    .progress {
-      height: 100%;
-      background-color: var(--primary);
-      border-radius: 9999px;
-    }
-
-    .verified {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-icon {
-      width: 30px;
-      height: 30px;
-    }
-
-    .card-action {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      border-radius: var(--radius);
-      background: var(--primary);
-      color: var(--primary-foreground);
-      font-size: 14px;
-      font-weight: 500;
-    }
-  `;
-
   render() {
     const isCompleted =
       this.totalSteps > 0 && this.stepsCompleted >= this.totalSteps;
     const progress =
       this.totalSteps > 0
-        ? Math.max(0, Math.min(100, (this.stepsCompleted / this.totalSteps) * 100))
+        ? Math.max(
+            0,
+            Math.min(100, (this.stepsCompleted / this.totalSteps) * 100),
+          )
         : 0;
     return html`
       <a href="/interface/projects/${this.projectId}" class="card-link">
-        <a-card variant="default" interactive>
+        <div class="a-card" data-variant="default" data-interactive>
           <div class="card-header">
             <span class="card-title">${this.name}</span>
-            <a-badge
-              size="sm"
-              rounded
-              variant="${isCompleted ? 'secondary' : 'accent'}"
+            <span
+              class="a-badge"
+              data-size="sm"
+              data-rounded
+              data-variant="${isCompleted ? 'secondary' : 'accent'}"
               style="${isCompleted ? 'color: var(--aura-success)' : ''}"
-              >${this.status}</a-badge
+              >${this.status}</span
             >
           </div>
 
           <div class="level-requirement">
-            <a-text variant="small" style="color: var(--accent)"
-              >Requires Level:</a-text
-            >
-            <a-text variant="small"
-              ><strong>${this.levelRequirement}</strong></a-text
-            >
+            <p class="a-text" data-variant="small" style="color: var(--accent)">
+              Requires Level:
+            </p>
+            <p class="a-text" data-variant="small">
+              <strong>${this.levelRequirement}</strong>
+            </p>
           </div>
 
           ${
             !isCompleted
               ? html`
                   <div class="progress-info">
-                    <a-text variant="small">Progress</a-text>
-                    <a-text variant="small"
-                      >${this.stepsCompleted}/${this.totalSteps}
-                      completed</a-text
-                    >
+                    <p class="a-text" data-variant="small">Progress</p>
+                    <p class="a-text" data-variant="small">
+                      ${this.stepsCompleted}/${this.totalSteps} completed
+                    </p>
                   </div>
                 `
               : ''
@@ -158,24 +79,25 @@ export class VerificationCard extends LitElement {
                       class="status-icon"
                       alt="verified"
                     />
-                    <a-text variant="small" style="color: var(--aura-success)"
-                      >Verified</a-text
+                    <p
+                      class="a-text"
+                      data-variant="small"
+                      style="color: var(--aura-success)"
                     >
+                      Verified
+                    </p>
                   </div>
                 `
               : html`
                   <div class="progress-bar">
-                    <div
-                      class="progress"
-                      style="width: ${progress}%;"
-                    ></div>
+                    <div class="progress" style="width: ${progress}%;"></div>
                   </div>
                   <span class="card-action">
                     ${this.stepsCompleted === 0 ? 'Start verification' : 'Continue'}
                   </span>
                 `
           }
-        </a-card>
+        </div>
       </a>
     `;
   }

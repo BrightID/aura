@@ -229,7 +229,12 @@ export function FindPlayersStep({
       </div>
 
       {/* Scan QR Button */}
-      <a-button variant="outline" className="w-full bg-transparent" size="sm">
+      <button
+        className="a-button w-full bg-transparent"
+        type="button"
+        data-variant="outline"
+        data-size="sm"
+      >
         <svg
           className="w-4 h-4 mr-2"
           fill="none"
@@ -250,7 +255,7 @@ export function FindPlayersStep({
           />
         </svg>
         Scan QR Code
-      </a-button>
+      </button>
     </div>
   );
 }

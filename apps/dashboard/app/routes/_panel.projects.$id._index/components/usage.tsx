@@ -11,11 +11,11 @@ export default function ProjectUsage({ project }: { project: Project }) {
 
   return (
     <div className="space-y-6">
-      <a-card>
+      <div className="a-card">
         <div className="flex flex-col gap-1.5">
-          <a-head level="3" className="text-lg font-semibold">
+          <h3 className="a-head text-lg font-semibold" data-level="3">
             Token Usage
-          </a-head>
+          </h3>
           <p className="text-muted-foreground text-sm">
             Monitor your token consumption and remaining allocation
           </p>
@@ -30,10 +30,10 @@ export default function ProjectUsage({ project }: { project: Project }) {
                 {remaining.toLocaleString()} / {allowance.toLocaleString()}
               </span>
             </div>
-            <a-progress value={available} className="h-3" />
+            <progress className="a-progress h-3" value={available} max={100} />
           </div>
 
-          <a-separator />
+          <hr className="a-separator" />
 
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center p-4 bg-muted/50 rounded-lg">
@@ -54,7 +54,7 @@ export default function ProjectUsage({ project }: { project: Project }) {
             </div>
           </div>
         </div>
-      </a-card>
+      </div>
     </div>
   );
 }

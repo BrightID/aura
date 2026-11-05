@@ -11,13 +11,12 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["vite/client", "./aura-ui.d.ts"],
+    "types": ["vite/client"],
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@aura/ui/jsx/solid": ["../../packages/ui/src/jsx/solid.ts"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "aura-ui.d.ts"]
+  "include": ["src"]
 }

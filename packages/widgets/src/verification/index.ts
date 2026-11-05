@@ -1,11 +1,6 @@
+import { LightElement } from '../light-element';
 import { SignalWatcher } from '@lit-labs/signals';
-import {
-  type CSSResultGroup,
-  css,
-  html,
-  LitElement,
-  PropertyValues,
-} from 'lit';
+import { html, PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { focusedProject } from '@/lib/projects';
 import { projects } from '@/states/projects';
@@ -15,7 +10,6 @@ import { getProjects, verifyProject } from '@/utils/apis';
 import { EvaluationCategory } from '@/utils/aura';
 import { getLevelupProgress } from '@/utils/score';
 import { getSubjectVerifications } from '@/utils/subject';
-import { widgetBase } from './shared-styles';
 
 import './edit-profile';
 import './evaluations-step';
@@ -27,6 +21,8 @@ import './progress-step';
 import type { ProgressStepData } from './progress-step';
 import './score-step';
 import './success-step';
+import './shared-styles.css';
+import './index.css';
 
 export type Step =
   | 'connect'
@@ -39,7 +35,7 @@ export type Step =
   | 'score';
 
 @customElement('app-verification-embed')
-export class AppVerificationElement extends SignalWatcher(LitElement) {
+export class AppVerificationElement extends SignalWatcher(LightElement) {
   @property({ type: Number })
   projectId!: number;
 
@@ -60,74 +56,6 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   @state() private isLoadingVerification = false;
   @state() private isGeneratingSignature = false;
   @state() private verificationData: ProgressStepData | null = null;
-
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        /* Establish a size-query container so the whole widget can scale to
-         whatever box it is embedded in. All inner sizing is em-based, so
-         scaling this single root font-size fluidly resizes everything. */
-        container-type: inline-size;
-        font-size: var(--verification-size, 0.875rem);
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .frame {
-        width: 100%;
-        height: 100%;
-        /* Fluid root size: tracks container width, clamped to a sane range.
-         An explicit --verification-size still wins when the host sets one. */
-        font-size: var(
-          --verification-size,
-          clamp(0.8125rem, 0.7rem + 1cqi, 1.0625rem)
-        );
-        border-radius: var(--radius, 0.75rem);
-        overflow: hidden;
-        border: 1px solid var(--border);
-        background: var(--card);
-        position: relative;
-      }
-
-      .content {
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-        /* "safe" keeps content reachable (aligned to start) when it is taller
-         than the frame, instead of overflowing past the top unscrollably. */
-        justify-content: safe center;
-        padding: clamp(1em, 4cqi, 1.5em);
-      }
-
-      .loading-state {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 8em;
-        gap: 0.75em;
-        color: var(--muted-foreground);
-        font-size: 0.875em;
-      }
-
-      .spinner {
-        width: 1.25em;
-        height: 1.25em;
-        flex-shrink: 0;
-        border: 2px solid var(--border);
-        border-top-color: var(--primary);
-        border-radius: 9999px;
-        animation: spin 0.6s linear infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-    `,
-  ];
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -284,10 +212,10 @@ export class AppVerificationElement extends SignalWatcher(LitElement) {
   protected render() {
     const project = focusedProject.get();
     return html`
-      <a-scroll-area .height=${this.height} id="scrollbar" class="frame">
+      <div id="scrollbar" class="frame scroll">
         <div class="content">${this._renderStep(project)}</div>
         <verification-footer></verification-footer>
-      </a-scroll-area>
+      </div>
     `;
   }
 

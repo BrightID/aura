@@ -3,9 +3,10 @@ import type { ComponentDoc } from './types';
 export const badge: ComponentDoc = {
   slug: 'badge',
   name: 'Badge',
-  tag: 'a-badge',
+  element: 'span',
+  className: 'a-badge',
   description:
-    'Small inline label for statuses, tags, and counts. Set `rounded` for a pill shape and `removable` to render a dismiss affordance.',
+    'Small inline label for statuses, tags, and counts. Set `rounded` for a pill shape.',
   slot: 'Badge',
   frame: 'center',
   props: [
@@ -36,32 +37,26 @@ export const badge: ComponentDoc = {
       default: false,
       description: 'Fully rounded pill shape.',
     },
-    {
-      name: 'removable',
-      type: 'boolean',
-      default: false,
-      description: 'Renders a trailing remove/dismiss control.',
-    },
   ],
   cssVars: [
     {
       name: '--secondary',
-      default: 'oklch(0.22 0.018 265)',
+      default: 'oklch(0.255 0.022 246)',
       description: 'Secondary surface color.',
     },
     {
       name: '--accent',
-      default: 'oklch(0.68 0.18 195)',
+      default: 'oklch(0.665 0.12 226)',
       description: 'Accent (electric cyan) color.',
     },
     {
       name: '--destructive',
-      default: 'oklch(0.57 0.22 20)',
+      default: 'oklch(0.62 0.2 25)',
       description: 'Destructive color.',
     },
     {
       name: '--border',
-      default: 'oklch(0.27 0.018 265)',
+      default: 'oklch(0.305 0.018 244)',
       description: 'Outline variant border color.',
     },
   ],

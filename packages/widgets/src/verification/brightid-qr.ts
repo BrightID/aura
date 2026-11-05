@@ -1,3 +1,5 @@
+import { icon } from '../icon';
+import { LightElement } from '../light-element';
 import brightIDIcon from '@/assets/icons/brightid.svg';
 import { AURA_NODE_URL } from '@/lib/constants/domains';
 import { IMPORT_PREFIX, RECOVERY_CHANNEL_TTL } from '@/lib/constants/time';
@@ -18,15 +20,16 @@ import {
   uInt8ArrayToB64,
   urlSafeRandomKey,
 } from '@/utils/encoding';
-import { css, type CSSResultGroup, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import nacl from 'tweetnacl';
 import platform from 'platform';
 import QrCodeWithLogo from 'qrcode-with-logos';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './brightid-qr.css';
 
 @customElement('verification-brightid-qr')
-export class VerificationBrightIDQrElement extends LitElement {
+export class VerificationBrightIDQrElement extends LightElement {
   @state() private qrSrc = '';
   @state() private deeplink = '';
   @state() private status: 'loading' | 'ready' | 'scanning' | 'error' =
@@ -34,217 +37,6 @@ export class VerificationBrightIDQrElement extends LitElement {
   @state() private errorMsg = '';
 
   private _pollInterval: ReturnType<typeof setInterval> | null = null;
-
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        font-size: inherit;
-      }
-
-      .stack {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25em;
-      }
-
-      /* Header */
-      .page-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-      }
-      .back-btn {
-        padding: 0.5em;
-        margin-left: -0.5em;
-        border-radius: 0.5em;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--muted-foreground);
-        transition: background 0.15s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .back-btn:hover {
-        background: var(--secondary);
-      }
-      .back-btn iconify-icon {
-        width: 1.5em;
-        height: 1.5em;
-      }
-      .header-icon {
-        width: 1.5em;
-        height: 1.5em;
-        flex-shrink: 0;
-      }
-      .title {
-        margin: 0;
-        font-size: 1em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-
-      /* QR card */
-      .qr-card {
-        background: var(--secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius, 0.75rem);
-        padding: 1.25em;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1em;
-      }
-      .qr-frame {
-        width: 11em;
-        height: 11em;
-        border-radius: 0.75em;
-        overflow: hidden;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-      .qr-frame img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-      .qr-caption {
-        margin: 0;
-        font-size: 0.8em;
-        color: var(--muted-foreground);
-        text-align: center;
-        line-height: 1.4;
-      }
-
-      /* Loading skeleton */
-      .qr-skeleton {
-        width: 11em;
-        height: 11em;
-        border-radius: 0.75em;
-        background: linear-gradient(
-          90deg,
-          var(--border) 25%,
-          rgba(128, 128, 128, 0.08) 50%,
-          var(--border) 75%
-        );
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-      }
-      @keyframes shimmer {
-        0% {
-          background-position: 200% 0;
-        }
-        100% {
-          background-position: -200% 0;
-        }
-      }
-
-      /* Scanning indicator */
-      .scanning-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375em;
-        font-size: 0.75em;
-        color: var(--aura-success, #22c55e);
-        background: rgba(34, 197, 94, 0.1);
-        border: 1px solid rgba(34, 197, 94, 0.25);
-        padding: 0.25em 0.625em;
-        border-radius: 9999px;
-      }
-      .scanning-dot {
-        width: 0.5em;
-        height: 0.5em;
-        border-radius: 9999px;
-        background: currentColor;
-        animation: pulse 1s ease-in-out infinite;
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.3;
-        }
-      }
-
-      /* Steps */
-      .steps {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5em;
-      }
-      .step-row {
-        display: flex;
-        gap: 0.625em;
-        align-items: flex-start;
-      }
-      .step-num {
-        flex-shrink: 0;
-        width: 1.375em;
-        height: 1.375em;
-        border-radius: 9999px;
-        background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-        color: var(--primary);
-        font-size: 0.7em;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 0.1em;
-      }
-      .step-text {
-        font-size: 0.8125em;
-        color: var(--muted-foreground);
-        line-height: 1.5;
-      }
-      .step-text a {
-        color: var(--primary);
-        text-decoration: none;
-      }
-      .step-text a:hover {
-        text-decoration: underline;
-      }
-
-      /* Open in app link */
-      .open-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.375em;
-        font-size: 0.8125em;
-        color: var(--primary);
-        text-decoration: none;
-        padding: 0.5em;
-        border-radius: 0.5em;
-        transition: background 0.15s;
-      }
-      .open-link:hover {
-        background: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
-      }
-      .open-link iconify-icon {
-        width: 0.875em;
-        height: 0.875em;
-        flex-shrink: 0;
-      }
-
-      /* Error */
-      .error-msg {
-        padding: 0.625em 0.75em;
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 0.5em;
-        font-size: 0.75em;
-        color: var(--destructive);
-      }
-    `,
-  ];
 
   async connectedCallback() {
     super.connectedCallback();
@@ -405,7 +197,7 @@ export class VerificationBrightIDQrElement extends LitElement {
             aria-label="Go back"
             @click=${() => this._emit('back')}
           >
-            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+            ${icon('lucide:chevron-left')}
           </button>
           <img src=${brightIDIcon} class="header-icon" alt="BrightID" />
           <h2 class="title">Connect with BrightID</h2>
@@ -444,8 +236,7 @@ export class VerificationBrightIDQrElement extends LitElement {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <iconify-icon icon="lucide:smartphone"></iconify-icon>
-                  Open in BrightID app instead
+                  ${icon('lucide:smartphone')} Open in BrightID app instead
                 </a>
               `
             : ''

@@ -99,9 +99,14 @@ export function IntroStep({
       </div>
 
       {/* CTA */}
-      <a-button onClick={onContinue} className="w-full" size="lg">
+      <button
+        className="a-button w-full"
+        type="button"
+        onClick={onContinue}
+        data-size="lg"
+      >
         Verify with Aura
-      </a-button>
+      </button>
 
       {/* Trust Note */}
       <p className="text-xs text-center text-muted-foreground">

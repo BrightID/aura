@@ -1,6 +1,6 @@
+import { LightElement } from '@aura/widgets/light-element';
 import appleIcon from '@/assets/icons/apple.svg';
 import brightIDIcon from '@/assets/icons/brightid.svg';
-import EmailIcon from '@/assets/icons/email.svg';
 import externalLinkIcon from '@/assets/icons/external-link.svg';
 import googleIcon from '@/assets/icons/google.svg';
 import spinnerIcon from '@/assets/icons/spinner.svg';
@@ -21,10 +21,11 @@ import { wagmiConfig } from '@/utils/wallet';
 import { SignalWatcher } from '@lit-labs/signals';
 import { Connector, signMessage } from '@wagmi/core';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { Address } from 'viem';
+import './index.css';
 
 const generateUUID = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -66,7 +67,7 @@ interface AuthMethod {
 }
 
 @customElement('home-page')
-export class LoginPage extends SignalWatcher(LitElement) {
+export class LoginPage extends SignalWatcher(LightElement) {
   @property({
     type: Boolean,
   })
@@ -90,398 +91,6 @@ export class LoginPage extends SignalWatcher(LitElement) {
       pushRouter('/home');
     }
   }
-
-  static styles?: CSSResultGroup = css`
-    :host {
-      display: block;
-      font-family:
-        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .space-y-3 {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .space-y-2 {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .mini-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 4rem;
-    }
-
-    .flex-container {
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex: 1;
-    }
-
-    .flex-1 {
-      flex: 1;
-    }
-
-    .font-medium {
-      font-weight: 600;
-    }
-
-    .text-xs {
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-    }
-
-    .text-muted-foreground {
-      color: #9ca3af;
-    }
-
-    .badge-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 0.75rem;
-    }
-
-    .mini {
-      margin-left: 0 !important;
-      gap: 0.5rem;
-      justify-content: center;
-    }
-
-    .badge {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.5rem;
-      border: 1px solid #454545;
-    }
-
-    .mini .badge,
-    .badge-mini {
-      padding: 0.2rem;
-    }
-
-    .opacity-50 {
-      opacity: 0.5;
-    }
-
-    .security-0,
-    .security-1,
-    .security-2,
-    .security-3 {
-      background-color: #3d1c1c;
-      color: #f87171;
-      border-color: #b91c1c;
-    }
-
-    .security-4,
-    .security-5,
-    .security-6 {
-      background-color: #3d3b1c;
-      color: #facc15;
-      border-color: #ca8a04;
-    }
-
-    .security-7,
-    .security-8,
-    .security-9,
-    .security-10 {
-      background-color: #1c3d2e;
-      color: #34d399;
-      border-color: #059669;
-    }
-
-    .icon {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    .wrapper {
-      margin-top: 3rem;
-      max-width: 28rem;
-      margin-left: auto;
-      margin-right: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .logo {
-      width: 10rem;
-      height: 10rem;
-      position: relative;
-      z-index: 12;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem 0;
-      flex: 1;
-    }
-
-    h1.title {
-      margin: 1.5rem 0 0;
-      font-size: 2rem;
-      font-weight: 700;
-      color: #ffffff;
-    }
-
-    .info-text {
-      margin: 1rem 0 1.5rem;
-      color: #9ca3af;
-      font-size: 0.875rem;
-      text-align: center;
-    }
-
-    .desc-btn {
-      display: inline-flex;
-      align-items: center;
-      background: transparent;
-      border: none;
-      font-weight: 600;
-      color: #60a5fa;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-
-    .desc-btn:hover {
-      color: #3b82f6;
-    }
-
-    .desc-btn span {
-      margin-right: 0.5rem;
-    }
-
-    .form-container {
-      margin: 2rem 0;
-      position: relative;
-      border-radius: 1rem;
-      border: 1px solid #4b5563;
-      background: rgba(255, 255, 255, 0.08);
-      width: 24rem;
-      max-width: 75vw;
-      padding: 1.5rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .lamp-light {
-      position: absolute;
-      top: -0.5rem;
-      right: -0.5rem;
-      width: 1px;
-      height: 1px;
-      border-radius: 50%;
-      box-shadow: 0 0 300px 100px rgba(253, 224, 255, 0.15);
-    }
-
-    h2.form-title {
-      margin: 0;
-      color: #e5e7eb;
-      font-size: 1.875rem;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    .form-desc {
-      margin: 0.75rem 0 1.25rem;
-      color: #9ca3af;
-      font-size: 0.875rem;
-      text-align: center;
-    }
-
-    .mini-divider {
-      margin: 0.75rem 0;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid #6b7280;
-    }
-
-    .btn-google {
-      background: #ffffff;
-      color: #111827;
-      border: 1px solid #d1d5db;
-    }
-
-    .btn-google:hover {
-      background: #f3f4f6;
-    }
-
-    .btn-apple {
-      background: #000000;
-      color: #ffffff;
-      border: 1px solid #4b5563;
-    }
-
-    .btn-apple:hover {
-      background: #1f1f1f;
-    }
-
-    .btn-brightid {
-      background: #1e40af;
-      color: #ffffff;
-      border: 1px solid #3b82f6;
-    }
-
-    .btn-brightid:hover {
-      background: #1e3a8a;
-    }
-
-    .btn-icon {
-      margin-right: 0.75rem;
-      height: 1.5rem;
-      width: 1.5rem;
-    }
-
-    .form-footer {
-      color: #9ca3af;
-      font-size: 0.75rem;
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    .bottom-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem;
-      margin-top: 2rem;
-      gap: 2rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-    }
-
-    .brand-icon {
-      margin-right: 0.5rem;
-      height: 2rem;
-      width: 2rem;
-      fill: #f97316;
-    }
-
-    .brand-name {
-      font-weight: 700;
-      color: #ffffff;
-      font-size: 1rem;
-    }
-
-    .privacy {
-      color: #60a5fa;
-      text-decoration: none;
-      font-size: 0.875rem;
-    }
-
-    .privacy:hover {
-      text-decoration: underline;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .loading-wrapper {
-      height: 24rem;
-      display: grid;
-      place-items: center;
-    }
-
-    .loading-wrapper h2 {
-      margin: 0;
-      color: #e5e7eb;
-      font-size: 1.5rem;
-    }
-
-    .loading-wrapper img {
-      margin-top: 1.5rem;
-      animation: spin 1s linear infinite;
-    }
-
-    .mini-integrations {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .mini-integrations button {
-      justify-content: center;
-      height: 3rem;
-      padding: 0;
-    }
-
-    .mini-integrations button .btn-icon {
-      margin: 0;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .integration-info {
-      display: flex;
-      flex-direction: column;
-      font-size: 0.875rem;
-      color: #9ca3af;
-      margin-left: 0.75rem;
-    }
-
-    .mini-integration-wrapper {
-      position: relative;
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      flex: 1;
-    }
-
-    .mini-info {
-      position: absolute;
-      bottom: -0.875rem;
-      font-size: 0.75rem;
-      color: #9ca3af;
-      white-space: nowrap;
-    }
-
-    .btn-wrapper {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 0.5rem;
-    }
-
-    .btn-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-top: 0.5rem;
-    }
-
-    .green {
-      color: #34d399;
-    }
-
-    .yellow {
-      color: #f4d03f;
-    }
-
-    .orange {
-      color: #f97316;
-    }
-  `;
 
   private onInputChange(e: Event) {
     const target = e.target as HTMLInputElement;
@@ -722,42 +331,37 @@ export class LoginPage extends SignalWatcher(LitElement) {
             : html`
                 <h2 class="form-title">Sign In</h2>
                 <p class="form-desc">Use one of these integrations to login</p>
-                <a-input
-                  .value="${inputText.get()}"
+                <input
+                  class="a-input mb-2"
+                  .value=${inputText.get()}
                   @input=${this.onInputChange}
                   type="email"
                   placeholder="Enter your email"
-                >
-                  <img
-                    slot="icon"
-                    width="25"
-                    height="25"
-                    src="${EmailIcon}"
-                    alt="email"
-                  />
-                </a-input>
+                />
 
                 <div class="btn-wrapper">
-                  <a-button
-                    size="lg"
+                  <button
+                    class="a-button"
+                    type="button"
+                    data-size="lg"
                     style="width: 100%"
                     @click=${this.onSubmit}
                     .disabled=${isLoginLoading.get()}
                   >
                     Sign in with Email
-                  </a-button>
+                  </button>
                   <div class="btn-info">
-                    <a-badge
-                      size="xs"
-                      variant="outline"
-                      class="security-3"
+                    <span
+                      class="a-badge security-3"
+                      data-size="xs"
+                      data-variant="outline"
                       style="opacity: 0.5"
                     >
                       <span>🛡️</span><span>3/10</span>
-                    </a-badge>
-                    <a-badge size="xs" variant="outline">
+                    </span>
+                    <span class="a-badge" data-size="xs" data-variant="outline">
                       <span>🕒</span><span>Setup: +1m</span>
-                    </a-badge>
+                    </span>
                   </div>
                 </div>
 
@@ -769,10 +373,11 @@ export class LoginPage extends SignalWatcher(LitElement) {
                       this.authMethods,
                       (method) => html`
                         <div class="space-y-2">
-                          <a-button
-                            variant="ghost"
-                            size="sm"
-                            class="mini-button"
+                          <button
+                            class="a-button mini-button"
+                            type="button"
+                            data-variant="ghost"
+                            data-size="sm"
                             @click=${() => method.callback?.()}
                           >
                             <img
@@ -781,16 +386,16 @@ export class LoginPage extends SignalWatcher(LitElement) {
                               src="${method.icon}"
                               alt="${method.name}"
                             />
-                          </a-button>
+                          </button>
                           <div class="badge-container mini">
-                            <a-badge
-                              size="xs"
-                              variant="outline"
-                              class="security-${method.security}"
+                            <span
+                              class="a-badge security-${method.security}"
+                              data-size="xs"
+                              data-variant="outline"
                             >
                               <span>🛡️</span>
                               <span>${method.security}/10</span>
-                            </a-badge>
+                            </span>
                           </div>
                         </div>
                       `,
@@ -823,7 +428,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
             <img src=${externalLinkIcon} alt="Aura" />
           </a>
 
-          <a-card class="form-container">
+          <div class="a-card form-container">
             <div class="lamp-light"></div>
 
             ${
@@ -844,44 +449,40 @@ export class LoginPage extends SignalWatcher(LitElement) {
                 : html`
               <h2 class="form-title">Sign In</h2>
               <p class="form-desc">Use one of these integrations to login</p>
-              <a-input
+              <input
+                  class="a-input mb-2"
                   .value=${inputText.get()}
                   @input=${this.onInputChange}
                   type="email"
                   placeholder="Enter your email"
-                >
-                    <img slot="icon" width="25" height="25" src="${EmailIcon}" alt="email" />
-                </a-input>
+                />
 
               <div class="btn-wrapper">
-                <a-button
-                  size="lg"
-                  style="width: 100%"
-                  @click=${this.onSubmit}
-                  .disabled=${isLoginLoading.get()}
-                >
+                <button class="a-button" type="button" data-size="lg" style="width: 100%" @click=${this.onSubmit} .disabled=${isLoginLoading.get()}>
                   Sign in with Email
-                </a-button>
+                </button>
 
                 <div class="btn-info">
-                  <a-badge size="xs" variant="outline" class="security-3">
+                  <span class="a-badge security-3" data-size="xs" data-variant="outline">
                     <span>🛡️</span><span>3/10</span>
-                  </a-badge>
-                  <a-badge size="xs" variant="outline">
+                  </span>
+                  <span class="a-badge" data-size="xs" data-variant="outline">
                     <span>🕒</span><span>~1 min</span>
-                  </a-badge>
+                  </span>
                 </div>
               </div>
 
-              <a-separator></a-separator>
+              <hr class="a-separator my-6">
 
               <div class="space-y-3">
                 ${map(
                   this.authMethods,
                   (method) => html`
                     <div class="space-y-2">
-                      <a-button
-                        variant="secondary"
+                      <button
+                        class="a-button"
+                        type="button"
+                        data-variant="secondary"
                         style="width: 100%; height: 3.75rem; justify-content: flex-start; padding: 0 1.25rem; display: flex"
                         @click=${() => method.callback?.()}
                       >
@@ -899,21 +500,25 @@ export class LoginPage extends SignalWatcher(LitElement) {
                             </div>
                           </div>
                         </div>
-                      </a-button>
+                      </button>
 
                       <div class="badge-container">
-                        <a-badge size="xs" style="color: ${method.color}">
+                        <span
+                          class="a-badge"
+                          data-size="xs"
+                          style="color: ${method.color}"
+                        >
                           <span>🕒</span>
                           <span>Setup time: + ${method.setupTime}</span>
-                        </a-badge>
-                        <a-badge
-                          size="xs"
-                          variant="outline"
-                          class="security-${method.security}"
+                        </span>
+                        <span
+                          class="a-badge security-${method.security}"
+                          data-size="xs"
+                          data-variant="outline"
                         >
                           <span>🛡️</span>
                           <span>Security: ${method.security}/10</span>
-                        </a-badge>
+                        </span>
                       </div>
                     </div>
                   `,
@@ -924,7 +529,7 @@ export class LoginPage extends SignalWatcher(LitElement) {
             </div>
             `
             }
-          </a-card>
+          </div>
 
           <div class="bottom-bar">
             <div class="brand">

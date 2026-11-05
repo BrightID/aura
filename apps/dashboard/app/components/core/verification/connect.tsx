@@ -53,9 +53,10 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
 
       {/* Connection Options */}
       <div className="space-y-2">
-        <a-button
-          variant="outline"
-          className="w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
+        <button
+          className="a-button w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
+          type="button"
+          data-variant="outline"
           onClick={() => handleConnect('brightid')}
           disabled={isConnecting}
         >
@@ -79,11 +80,12 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
           {isConnecting && connectMethod === 'brightid' && (
             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           )}
-        </a-button>
+        </button>
 
-        <a-button
-          variant="outline"
-          className="w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
+        <button
+          className="a-button w-full h-auto py-3 px-4 justify-start gap-3 bg-secondary/50 hover:bg-secondary border-border"
+          type="button"
+          data-variant="outline"
           onClick={() => handleConnect('passkey')}
           disabled={isConnecting}
         >
@@ -113,7 +115,7 @@ export function ConnectStep({ onConnect, onHowItWorks }: ConnectStepProps) {
           {isConnecting && connectMethod === 'passkey' && (
             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           )}
-        </a-button>
+        </button>
       </div>
 
       {/* Help Link */}

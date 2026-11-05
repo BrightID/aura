@@ -1,13 +1,11 @@
 import { Check } from 'lucide-react';
 import { ParticlesBackground } from '@/components/particles-background';
-import { useRef, useState } from 'react';
-import { useAuraEvent } from '~/lib/aura';
+import { useState } from 'react';
+import { AuraSwitch } from '~/components/aura-form-controls';
 import { plans } from '~/constants/subscriptions';
 
 export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
-  const yearlyRef = useRef<HTMLElement>(null);
-  useAuraEvent<boolean>(yearlyRef, 'change', setIsYearly);
 
   return (
     <section className="w-full overflow-hidden py-5">
@@ -29,18 +27,22 @@ export default function PricingSection() {
             >
               Monthly
             </span>
-            <a-switch ref={yearlyRef} checked={isYearly} />
+            <AuraSwitch
+              aria-label="Bill yearly"
+              checked={isYearly}
+              onCheckedChange={setIsYearly}
+            />
             <span
               className={`text-sm font-medium transition-colors ${isYearly ? 'text-foreground' : 'text-muted-foreground'}`}
             >
               Yearly
             </span>
-            <a-badge
-              variant="secondary"
-              className="bg-primary/10 text-primary text-xs"
+            <span
+              className="a-badge bg-primary/10 text-primary text-xs"
+              data-variant="secondary"
             >
               Save 20%
-            </a-badge>
+            </span>
           </div>
         </div>
 
@@ -58,22 +60,22 @@ export default function PricingSection() {
                 : 0;
 
             return (
-              <a-card
-                key={plan.name}
-                className={`group relative p-8 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
+              <div
+                className={`a-card group relative p-8 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
                     ? 'border-primary/50 shadow-[0_0_40px_color-mix(in_oklch,var(--primary)_22%,transparent)] bg-card/60 hover:shadow-[0_0_60px_color-mix(in_oklch,var(--primary)_32%,transparent)]'
                     : 'border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_18%,transparent)]'
                 } ${index === 1 ? 'lg:scale-105' : ''}`}
+                key={plan.name}
                 style={{
                   animationDelay: `${index * 100}ms`,
                 }}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_45%,transparent)] animate-pulse">
+                    <span className="a-badge bg-primary text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_45%,transparent)] animate-pulse">
                       Most Popular
-                    </a-badge>
+                    </span>
                   </div>
                 )}
 
@@ -133,19 +135,20 @@ export default function PricingSection() {
                   </ul>
                 </div>
 
-                <a-button
-                  className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
+                <button
+                  className={`a-button w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
                     plan.popular
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_28%,transparent)] hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_40%,transparent)]'
                       : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
                   }`}
-                  size="lg"
+                  type="button"
+                  data-size="lg"
                 >
                   {plan.cta}
-                </a-button>
+                </button>
 
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              </a-card>
+              </div>
             );
           })}
         </div>
