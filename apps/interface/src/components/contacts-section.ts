@@ -1,3 +1,4 @@
+import { LightElement } from '@aura/widgets/light-element';
 import contactsIcon from '@/assets/icons/contacts.svg';
 import googleIcon from '@/assets/icons/google.svg';
 import {
@@ -11,95 +12,15 @@ import { getContactsList } from '@/utils/integrations/google';
 // import appleIcon from '@/assets/icons/apple.svg'
 
 import { signal, SignalWatcher } from '@lit-labs/signals';
-import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
+import './contacts-section.css';
 
 const isTried = signal(false);
 
 @customElement('contacts-section')
-export class ContactsSection extends SignalWatcher(LitElement) {
-  static styles?: CSSResultGroup | undefined = css`
-    .title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .title img {
-      flex-shrink: 0;
-    }
-
-    .title a-head {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-
-    a {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .integrations {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .integrations a-button::part(button) {
-      height: auto;
-      gap: 8px;
-      padding: 8px 12px;
-    }
-
-    .contact-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px;
-      margin: 8px 0;
-      background: color-mix(in oklch, var(--foreground) 6%, transparent);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .contact-copy {
-      min-width: 0;
-    }
-
-    .contact-card a-button {
-      flex-shrink: 0;
-    }
-
-    .contact-header {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--foreground);
-      margin: 0 0 4px;
-      overflow-wrap: anywhere;
-    }
-
-    .contact-value {
-      font-size: 0.875rem;
-      color: var(--muted-foreground);
-      margin: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .divider {
-      border: 0;
-      border-top: 1px solid var(--border);
-      margin: 16px 0;
-    }
-
-    .note {
-      margin-top: 12px;
-    }
-  `;
-
+export class ContactsSection extends SignalWatcher(LightElement) {
   constructor() {
     super();
   }
@@ -177,19 +98,23 @@ export class ContactsSection extends SignalWatcher(LitElement) {
   }
 
   protected render() {
-    return html` <a-card variant="default">
+    return html` <div class="a-card" data-variant="default">
       <div class="title">
         <img src="${contactsIcon}" width="24" height="24" alt="" />
-        <a-head level="3">Search Contacts for Verifiers</a-head>
+        <h3 class="a-head" data-level="3">Search Contacts for Verifiers</h3>
       </div>
 
-      <a-text variant="muted">Discover who in your contacts is in Aura.</a-text>
+      <p class="a-text" data-variant="muted">
+        Discover who in your contacts is in Aura.
+      </p>
 
       ${
         isTried.get() && foundAuraPlayersFromContact.get().length === 0
-          ? html`<a-text variant="muted">No contacts found in Aura.</a-text>`
+          ? html`<p class="a-text" data-variant="muted">
+              No contacts found in Aura.
+            </p>`
           : foundAuraPlayersFromContact.get().length > 0
-            ? html`<a-text>Aura players</a-text>`
+            ? html`<p class="a-text">Aura players</p>`
             : ``
       }
       ${map(
@@ -200,27 +125,34 @@ export class ContactsSection extends SignalWatcher(LitElement) {
               <h5 class="contact-header">${contact.name}</h5>
               <p class="contact-value">${contact.value}</p>
             </div>
-            <a-button
-              size="sm"
-              variant="outline"
+            <button
+              class="a-button"
+              type="button"
+              data-size="sm"
+              data-variant="outline"
               @click=${() => this.openContactMethod(contact.value)}
             >
               Contact
-            </a-button>
+            </button>
           </div>
         `,
       )}
       <hr class="divider" />
       <div class="integrations">
-        <a-button variant="outline" @click=${this.onGoogleContactsClick}>
+        <button
+          class="a-button"
+          type="button"
+          data-variant="outline"
+          @click=${this.onGoogleContactsClick}
+        >
           <img .src=${googleIcon} width="24" height="24" alt="" />
           Google
-        </a-button>
+        </button>
       </div>
 
-      <a-text variant="muted" size="xs" class="note">
+      <p class="a-text note" data-variant="muted" data-size="xs">
         This is completely private, <a href="#">learn more</a>
-      </a-text>
-    </a-card>`;
+      </p>
+    </div>`;
   }
 }

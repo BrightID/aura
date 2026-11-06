@@ -1,0 +1,54 @@
+/* <footer-section>, footer-section.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (footer-section) to (:scope [data-c] > *) {
+    :scope {
+      display: block;
+      width: 100%;
+    }
+
+    .form-footer {
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      margin-top: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      color: var(--foreground);
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+
+    .privacy {
+      color: var(--muted-foreground);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .privacy:hover {
+      text-decoration: underline;
+    }
+  }
+}

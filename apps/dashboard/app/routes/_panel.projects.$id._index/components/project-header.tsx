@@ -82,22 +82,24 @@ export function ProjectHeader({ project }: { project: Project }) {
             href={`/interface/projects/${project.id}`}
             target="_blank"
             rel="noopener noreferrer"
+            className="a-button"
+            data-variant="outline"
+            data-size="sm"
           >
-            <a-button variant="outline" size="sm">
-              <ExternalLink className="size-4" />
-              Open public page
-            </a-button>
+            <ExternalLink className="size-4" />
+            Open public page
           </a>
           {project.websiteUrl ? (
             <a
               href={project.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
+              className="a-button"
+              data-variant="outline"
+              data-size="sm"
             >
-              <a-button variant="outline" size="sm">
-                <ExternalLink className="size-4" />
-                Website
-              </a-button>
+              <ExternalLink className="size-4" />
+              Website
             </a>
           ) : null}
         </div>

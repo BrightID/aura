@@ -1,0 +1,62 @@
+/* <hero-section>, hero-section.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (hero-section) to (:scope [data-c] > *) {
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0 0;
+      flex: 1;
+    }
+
+    .logo {
+      width: 4rem;
+      height: 4rem;
+      position: relative;
+      z-index: 12;
+    }
+
+    h1.title {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.04em;
+    }
+
+    .info-text {
+      margin: 12px 0;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    .desc-btn {
+      display: inline-flex;
+      align-items: center;
+      background: transparent;
+      border: none;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      min-height: 44px;
+      transition: color 0.2s ease;
+    }
+
+    .desc-btn:hover {
+      color: var(--foreground);
+    }
+    .desc-btn:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .desc-btn span {
+      margin-right: 0.5rem;
+    }
+  }
+}

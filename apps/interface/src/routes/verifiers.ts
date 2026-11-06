@@ -1,4 +1,6 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { iconUrl } from '@aura/ui/icon';
+import { LightElement } from '@aura/widgets/light-element';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 import '@/components/common/verifier-card';
@@ -13,6 +15,7 @@ import { map } from 'lit/directives/map.js';
 import { createBlockiesImage } from '@/utils/image';
 import { EvaluationCategory, getAuraVerification } from '@/utils/aura';
 import { subjectLevelPoints } from '@/lib/data/levels';
+import './verifiers.css';
 
 const verifications = signal([] as AuraNodeBrightIdConnection[]);
 const isLoading = signal(true);
@@ -30,41 +33,7 @@ const filters: { id: ActivityFilter; label: string }[] = [
 ];
 
 @customElement('verifiers-page')
-export class VerifiersPage extends SignalWatcher(LitElement) {
-  static styles?: CSSResultGroup = css`
-    .filter {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .filter a-button {
-      flex: 0 0 auto;
-    }
-
-    .filter a-button[variant='ghost']::part(button) {
-      color: var(--muted-foreground);
-    }
-
-    main {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .empty {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 24px 0;
-      color: var(--muted-foreground);
-    }
-  `;
-
+export class VerifiersPage extends SignalWatcher(LightElement) {
   constructor() {
     super();
     if (!userBrightId.get()) {
@@ -121,18 +90,20 @@ export class VerifiersPage extends SignalWatcher(LitElement) {
 
   protected render() {
     return html`
-      <a-head level="1">Activity</a-head>
+      <h1 class="a-head" data-level="1">Activity</h1>
 
       <div class="filter">
         ${filters.map(
           (filter) => html`
-            <a-button
-              size="sm"
-              variant=${activityFilter.get() === filter.id ? 'default' : 'ghost'}
+            <button
+              class="a-button"
+              type="button"
+              data-size="sm"
+              data-variant=${activityFilter.get() === filter.id ? 'default' : 'ghost'}
               @click=${() => this.setFilter(filter.id)}
             >
               ${filter.label}
-            </a-button>
+            </button>
           `,
         )}
       </div>
@@ -146,12 +117,18 @@ export class VerifiersPage extends SignalWatcher(LitElement) {
                 <verifier-card-skeleton></verifier-card-skeleton>
               `
             : loadError.get()
-              ? html`<a-card variant="default">
+              ? html`<div class="a-card" data-variant="default">
                   <div class="empty">
-                    <a-icon name="triangle-alert" size="md"></a-icon>
-                    <a-text variant="muted">Could not load activity.</a-text>
+                    <span
+                      class="a-icon text-2xl"
+                      aria-hidden="true"
+                      style="--icon-url: url('${iconUrl('triangle-alert')}')"
+                    ></span>
+                    <p class="a-text" data-variant="muted">
+                      Could not load activity.
+                    </p>
                   </div>
-                </a-card>`
+                </div>`
               : map(
                   verifications.get().filter((item) => this.passesFilter(item)),
                   (item) => {
@@ -181,13 +158,18 @@ export class VerifiersPage extends SignalWatcher(LitElement) {
         ${
           !isLoading.get() &&
           !loadError.get() &&
-          verifications.get().filter((item) => this.passesFilter(item)).length === 0
-            ? html`<a-card variant="default">
+          verifications.get().filter((item) => this.passesFilter(item))
+            .length === 0
+            ? html`<div class="a-card" data-variant="default">
                 <div class="empty">
-                  <a-icon name="inbox" size="md"></a-icon>
-                  <a-text variant="muted">No activity yet.</a-text>
+                  <span
+                    class="a-icon text-2xl"
+                    aria-hidden="true"
+                    style="--icon-url: url('${iconUrl('inbox')}')"
+                  ></span>
+                  <p class="a-text" data-variant="muted">No activity yet.</p>
                 </div>
-              </a-card>`
+              </div>`
             : ''
         }
       </main>

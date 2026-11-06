@@ -126,7 +126,7 @@ export default function LevelProgress(props: { subjectId: string }) {
   const nextLevelLabel = () => `Level ${(v.auraLevel() ?? 0) + 1}`;
 
   return (
-    <a-card variant="glass" class="relative block p-4">
+    <div class="a-card relative block p-4" data-variant="glass">
       <div class="flex w-full flex-row items-end gap-4">
         <Show when={ratingsToBeDone() === 0}>
           <div class="flex flex-col items-center gap-1 rounded-md bg-primary/20 px-2.5 py-2">
@@ -213,6 +213,6 @@ export default function LevelProgress(props: { subjectId: string }) {
           </div>
         )}
       </Show>
-    </a-card>
+    </div>
   );
 }

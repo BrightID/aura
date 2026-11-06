@@ -1,3 +1,4 @@
+import Icon from '@/components/ui/icon';
 /**
  * Zoom/pan controls for the evaluations chart — ported from the old aura
  * `ZoomControls`. The chart shows a sliding window over the bars; these
@@ -17,51 +18,61 @@ export default function ZoomControls(props: {
 }) {
   return (
     <div class="flex justify-end gap-0.5">
-      <a-button
-        variant="ghost"
-        size="icon-sm"
+      <button
+        class="a-button"
+        type="button"
+        data-variant="ghost"
+        data-size="icon"
         data-testid="chart-zoom-reset"
         disabled={props.disabledZoomOut}
         onClick={() => props.onReset()}
       >
-        <a-icon name="refresh-cw" label="Reset zoom" />
-      </a-button>
-      <a-button
-        variant="ghost"
-        size="icon-sm"
+        <Icon name="refresh-cw" label="Reset zoom" />
+      </button>
+      <button
+        class="a-button"
+        type="button"
+        data-variant="ghost"
+        data-size="icon"
         data-testid="chart-zoom-in"
         disabled={props.disabledZoomIn}
         onClick={() => props.onZoomIn()}
       >
-        <a-icon name="zoom-in" label="Zoom in" />
-      </a-button>
-      <a-button
-        variant="ghost"
-        size="icon-sm"
+        <Icon name="zoom-in" label="Zoom in" />
+      </button>
+      <button
+        class="a-button"
+        type="button"
+        data-variant="ghost"
+        data-size="icon"
         data-testid="chart-zoom-out"
         disabled={props.disabledZoomOut}
         onClick={() => props.onZoomOut()}
       >
-        <a-icon name="zoom-out" label="Zoom out" />
-      </a-button>
-      <a-button
-        variant="ghost"
-        size="icon-sm"
+        <Icon name="zoom-out" label="Zoom out" />
+      </button>
+      <button
+        class="a-button"
+        type="button"
+        data-variant="ghost"
+        data-size="icon"
         data-testid="chart-pan-left"
         disabled={props.disabledPanLeft}
         onClick={() => props.onPanLeft()}
       >
-        <a-icon name="arrow-left" label="Pan left" />
-      </a-button>
-      <a-button
-        variant="ghost"
-        size="icon-sm"
+        <Icon name="arrow-left" label="Pan left" />
+      </button>
+      <button
+        class="a-button"
+        type="button"
+        data-variant="ghost"
+        data-size="icon"
         data-testid="chart-pan-right"
         disabled={props.disabledPanRight}
         onClick={() => props.onPanRight()}
       >
-        <a-icon name="arrow-right" label="Pan right" />
-      </a-button>
+        <Icon name="arrow-right" label="Pan right" />
+      </button>
     </div>
   );
 }

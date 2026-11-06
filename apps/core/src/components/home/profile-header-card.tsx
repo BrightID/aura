@@ -22,7 +22,7 @@ export default function ProfileHeaderCard(props: { subjectId: string }) {
   );
 
   return (
-    <a-card variant="default" class="relative">
+    <div class="a-card relative" data-variant="default">
       <div class="flex flex-1 gap-3">
         <Avatar name={name()} subjectId={props.subjectId} class="h-16 w-16" />
         <div class="flex min-w-0 flex-1 flex-col gap-2">
@@ -42,6 +42,6 @@ export default function ProfileHeaderCard(props: { subjectId: string }) {
           </Show>
         </div>
       </div>
-    </a-card>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import { type JSX, Show } from 'solid-js';
 import ListSkeleton from '@/components/list/list-skeleton';
+import Icon from '@/components/ui/icon';
 
 export default function ListState(props: {
   loading: boolean;
@@ -18,7 +19,7 @@ export default function ListState(props: {
         when={!props.error}
         fallback={
           <div class="flex flex-col items-center gap-2 py-10 text-center">
-            <a-icon name="circle-alert" class="text-2xl text-destructive" />
+            <Icon name="circle-alert" class="text-2xl text-destructive" />
             <span class="text-sm text-foreground">
               {props.errorText ?? 'Something went wrong. Try again.'}
             </span>
@@ -29,7 +30,7 @@ export default function ListState(props: {
           when={!props.empty}
           fallback={
             <div class="flex flex-col items-center gap-2 py-10 text-center text-muted-foreground">
-              <a-icon name="inbox" class="text-2xl opacity-60" />
+              <Icon name="inbox" class="text-2xl opacity-60" />
               <span class="text-sm">{props.emptyText}</span>
             </div>
           }

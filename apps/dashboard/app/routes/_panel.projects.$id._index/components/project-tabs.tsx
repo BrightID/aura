@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import {
   BarChart3,
   CreditCard,
@@ -14,7 +13,7 @@ import { SettingsTab } from './settings';
 import { BrightIdSettingsForm } from './brightid-settings';
 import type { Project } from '~/types/projects';
 import PreviewTab from './preview-tab';
-import { useAuraEvent } from '~/lib/aura';
+import { AuraTabs } from '~/components/aura-tabs';
 
 export function ProjectTabs({
   project,
@@ -25,50 +24,77 @@ export function ProjectTabs({
   tab: string;
   onTabChange: (tab: string) => void;
 }) {
-  const tabsRef = useRef<HTMLElement>(null);
-  useAuraEvent<{ value: string }>(tabsRef, 'change', (d) =>
-    onTabChange(d.value),
-  );
-
   return (
-    <a-tabs ref={tabsRef} value={tab} compact className="space-y-6">
-      <a-tab value="overview" className="flex items-center gap-2">
-        <BarChart3 className="h-4 w-4" /> Overview
-      </a-tab>
-      <a-tab value="billing" className="flex items-center gap-2">
-        <CreditCard className="h-4 w-4" /> Billing
-      </a-tab>
-      <a-tab value="settings" className="flex items-center gap-2">
-        <Settings className="h-4 w-4" /> General
-      </a-tab>
-      <a-tab value="brightid" className="flex items-center gap-2">
-        <ShieldCheck className="h-4 w-4" /> Verification
-      </a-tab>
-      <a-tab value="preview" className="flex items-center gap-2">
-        <View className="h-4 w-4" /> Preview
-      </a-tab>
+    <div className="space-y-6">
+      <AuraTabs
+        compact
+        value={tab}
+        onValueChange={onTabChange}
+        tabs={[
+          {
+            value: 'overview',
+            label: (
+              <>
+                <BarChart3 className="h-4 w-4" /> Overview
+              </>
+            ),
+          },
+          {
+            value: 'billing',
+            label: (
+              <>
+                <CreditCard className="h-4 w-4" /> Billing
+              </>
+            ),
+          },
+          {
+            value: 'settings',
+            label: (
+              <>
+                <Settings className="h-4 w-4" /> General
+              </>
+            ),
+          },
+          {
+            value: 'brightid',
+            label: (
+              <>
+                <ShieldCheck className="h-4 w-4" /> Verification
+              </>
+            ),
+          },
+          {
+            value: 'preview',
+            label: (
+              <>
+                <View className="h-4 w-4" /> Preview
+              </>
+            ),
+          },
+        ]}
+      />
 
-      <a-tab-panel slot="panel" value="overview">
+      <div role="tabpanel" className="a-tab-panel" hidden={tab !== 'overview'}>
         <OverviewSection project={project} onOpenTab={onTabChange} />
-      </a-tab-panel>
-      <a-tab-panel slot="panel" value="billing">
+      </div>
+      <div role="tabpanel" className="a-tab-panel" hidden={tab !== 'billing'}>
         <div className="space-y-6">
           <ProjectUsage project={project} />
           <ProjectBilling project={project} />
         </div>
-      </a-tab-panel>
-      <a-tab-panel slot="panel" value="settings">
+      </div>
+      <div role="tabpanel" className="a-tab-panel" hidden={tab !== 'settings'}>
         <SettingsTab key={project.id} project={project} />
-      </a-tab-panel>
-      <a-tab-panel slot="panel" value="brightid">
+      </div>
+      <div role="tabpanel" className="a-tab-panel" hidden={tab !== 'brightid'}>
         <div className="space-y-6">
           <UserRequiredLevelCard key={project.id} project={project} />
           <BrightIdSettingsForm initialData={project.brightIdApp as never} />
         </div>
-      </a-tab-panel>
-      <a-tab-panel slot="panel" value="preview">
+      </div>
+      <div role="tabpanel" className="a-tab-panel" hidden={tab !== 'preview'}>
         <PreviewTab project={project} />
-      </a-tab-panel>
-    </a-tabs>
+      </div>
+    </div>
   );
 }

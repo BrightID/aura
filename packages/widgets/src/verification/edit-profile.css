@@ -1,0 +1,118 @@
+/* <verification-edit-profile>, edit-profile.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (verification-edit-profile) to (:scope [data-c] > *) {
+    :scope {
+      display: block;
+      font-size: inherit;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875em;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+    }
+    .back-btn {
+      padding: 0.5em;
+      margin-left: -0.5em;
+      border-radius: 0.5em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .back-btn:hover {
+      background: var(--secondary);
+    }
+    .back-btn .a-icon {
+      width: 1.5em;
+      height: 1.5em;
+    }
+    .title {
+      margin: 0;
+      font-size: 1em;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    /* Purpose note */
+    .purpose-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4em;
+      font-size: 0.75em;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .purpose-note .a-icon {
+      width: 0.9em;
+      height: 0.9em;
+      flex-shrink: 0;
+      margin-top: 0.3em;
+    }
+
+    /* Form */
+    .form-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125em;
+      padding: 0.875em;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius, 0.75rem);
+    }
+
+    /* Gravatar hint */
+    .gravatar-hint {
+      /*display: flex;
+    align-items: center;
+    justify-content: space-between;*/
+      padding: 0.25em 0.125em 0.375em;
+      font-size: 0.7em;
+      color: var(--muted-foreground);
+    }
+    .gravatar-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2em;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .gravatar-link:hover {
+      text-decoration: underline;
+    }
+    .gravatar-link .a-icon {
+      width: 0.75em;
+      height: 0.75em;
+    }
+    .gravatar-link span {
+      flex: 1 1 auto;
+      width: 100%;
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      gap: 0.5em;
+      justify-content: flex-end;
+      padding-top: 0.625em;
+      border-top: 1px solid var(--border);
+      margin-top: 0.375em;
+    }
+  }
+}

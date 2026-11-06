@@ -1,0 +1,51 @@
+/* <brightid-login>, brightid.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (brightid-login) to (:scope [data-c] > *) {
+    a,
+    .back {
+      background-color: transparent;
+      box-shadow: none;
+      border: none;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .back {
+      display: block;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    ol {
+      margin: 8px 0 0;
+      padding-left: 1.25rem;
+    }
+
+    li {
+      margin: 8px 0;
+    }
+
+    li a {
+      overflow-wrap: anywhere;
+    }
+
+    .qr-code {
+      display: flex;
+      justify-content: center;
+    }
+
+    .qr-code img {
+      display: block;
+      width: min(100%, 320px);
+      height: auto;
+    }
+
+    .instructions {
+      text-align: left;
+    }
+  }
+}

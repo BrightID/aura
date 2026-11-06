@@ -15,6 +15,7 @@ import type {
   BrightIdBackupConnection,
   ConnectionLevel,
 } from '@aura/domain/types/aura';
+import Icon from '@/components/ui/icon';
 
 const LEVEL_COLORS: Record<ConnectionLevel, string> = {
   reported: 'text-destructive',
@@ -63,16 +64,13 @@ export default function SubjectCard(props: {
   );
 
   return (
-    <a-card
-      interactive
+    <div
+      class="a-card w-full p-4"
+      data-interactive
       role="link"
-      ref={(card) => {
-        // Solid's custom-element tabindex prop does not set native focusability.
-        card.tabIndex = 0;
-      }}
+      tabIndex={0}
       aria-label={`View profile for ${name()}`}
       data-testid={`subject-card-${subjectId()}`}
-      class="w-full p-4"
       onClick={() => navigate(`/subject/${subjectId()}`)}
       onKeyDown={(event: KeyboardEvent) => {
         if (event.target === event.currentTarget && event.key === 'Enter') {
@@ -96,9 +94,7 @@ export default function SubjectCard(props: {
             <Show
               when={progress() >= 0}
               fallback={
-                <span class="text-xs text-destructive">
-                  Negative standing
-                </span>
+                <span class="text-xs text-destructive">Negative standing</span>
               }
             >
               <ProgressBar
@@ -117,7 +113,7 @@ export default function SubjectCard(props: {
               title={`You connected as "${props.connection.level}"`}
               class={`bg-foreground/10 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs ${LEVEL_COLORS[props.connection.level]}`}
             >
-              <a-icon name={LEVEL_ICONS[props.connection.level]} />
+              <Icon name={LEVEL_ICONS[props.connection.level]} />
               {toTitleCase(props.connection.level)}
             </span>
 
@@ -131,12 +127,12 @@ export default function SubjectCard(props: {
                       : 'bg-destructive/15 text-destructive'
                   }`}
                 >
-                  <a-icon name={rating() > 0 ? 'thumbs-up' : 'thumbs-down'} />
+                  <Icon name={rating() > 0 ? 'thumbs-up' : 'thumbs-down'} />
                   <span>{(rating() > 0 ? '+' : '') + rating()}</span>
                   <Show
                     when={!my.isPending()}
                     fallback={
-                      <a-icon name="loader-circle" class="animate-spin" />
+                      <Icon name="loader-circle" class="animate-spin" />
                     }
                   >
                     <span>{confidenceLabel(rating())}</span>
@@ -157,10 +153,11 @@ export default function SubjectCard(props: {
               testid={`subject-card-${subjectId()}-chart`}
             />
 
-            <a-button
-              size="md"
-              class="shrink-0"
-              variant="glass"
+            <button
+              class="a-button shrink-0"
+              type="button"
+              data-size="md"
+              data-variant="glass"
               data-testid={`subject-card-${subjectId()}-evaluate`}
               onClick={(e: MouseEvent) => {
                 e.stopPropagation();
@@ -170,10 +167,10 @@ export default function SubjectCard(props: {
               <Show when={my.rating()} fallback="Evaluate">
                 Edit
               </Show>
-            </a-button>
+            </button>
           </div>
         </div>
       </div>
-    </a-card>
+    </div>
   );
 }

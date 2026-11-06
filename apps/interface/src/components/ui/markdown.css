@@ -1,0 +1,52 @@
+/* <c-markdown>, markdown.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (c-markdown) to (:scope [data-c] > *) {
+    :scope {
+      display: block;
+      color: var(--foreground);
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: var(--foreground);
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 1.875rem;
+      margin: 0 0 12px;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin: 1rem 0 0.35rem;
+    }
+
+    p,
+    li {
+      margin: 0.35rem 0;
+    }
+
+    ul,
+    ol {
+      margin: 0.35rem 0;
+      padding-left: 1.25rem;
+    }
+
+    a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+  }
+}

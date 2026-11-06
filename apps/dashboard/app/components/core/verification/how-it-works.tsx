@@ -167,9 +167,9 @@ export function HowItWorks({ onBack }: HowItWorksProps) {
         </div>
       </div>
 
-      <a-button onClick={onBack} className="w-full">
+      <button className="a-button w-full" type="button" onClick={onBack}>
         Got it
-      </a-button>
+      </button>
     </div>
   );
 }

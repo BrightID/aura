@@ -1,4 +1,13 @@
-@import '@aura/ui/tokens.css';
+/* Layer order for the whole page. `app` holds the components' own CSS (the
+   .css file next to each component): it overrides aura.css's base classes,
+   and Tailwind utilities override it. */
+@layer theme, base, components, app, utilities;
+/* Theme and utilities only: no Tailwind base reset. The components were
+   written against browser defaults (heading sizes, margins), and
+   aura.css resets the controls it styles itself. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@aura/ui/aura.css';
 
 body {
   padding: 0;

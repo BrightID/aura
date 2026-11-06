@@ -1,11 +1,14 @@
+import { icon } from '../icon';
+import { LightElement } from '../light-element';
 import { SignalWatcher } from '@lit-labs/signals';
-import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { askedEvaluationPlayers } from '@/lib/data/contacts';
 import { userFirstName, userLastName, userProfilePicture } from '@/states/user';
 import type { AuraImpact } from '@/types/evaluation';
 import './level-badge';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './progress-step.css';
 
 export interface ProgressStepData {
   brightId: string;
@@ -29,643 +32,12 @@ const scoreThresholds: Record<number, number> = {
 };
 
 @customElement('verification-progress')
-export class VerificationProgressElement extends SignalWatcher(LitElement) {
+export class VerificationProgressElement extends SignalWatcher(LightElement) {
   @property({ type: Object }) data!: ProgressStepData;
   @property({ type: Number }) requiredLevel = 1;
   @property() appName = '';
 
   @state() private _askedExpanded = false;
-
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        font-size: inherit;
-        padding-bottom: 10px;
-      }
-      .stack {
-        display: flex;
-        flex-direction: column;
-        gap: 1em;
-      }
-
-      /* User header */
-      .user-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-      }
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-      }
-      .user-avatar {
-        width: 2.5em;
-        height: 2.5em;
-        border-radius: 9999px;
-        background: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-      .user-avatar svg {
-        width: 1.25em;
-        height: 1.25em;
-        color: var(--primary);
-      }
-      .user-id {
-        font-size: 0.875em;
-        font-weight: 500;
-        margin: 0.25rem;
-        color: var(--foreground);
-        font-family: monospace;
-      }
-      .disconnect-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 0.75em;
-        color: var(--muted-foreground);
-        padding: 0;
-        transition: color 0.15s;
-      }
-      .disconnect-btn:hover {
-        color: var(--foreground);
-      }
-
-      /* Level requirement indicator */
-      .req-indicator {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        padding: 0.5em 0.75em;
-        border-radius: 0.5em;
-        font-size: 0.875em;
-        border: 1px solid;
-      }
-      .req-indicator.met {
-        background: rgba(74, 222, 128, 0.1);
-        color: var(--aura-success);
-        border-color: rgba(74, 222, 128, 0.2);
-      }
-      .req-indicator.unmet {
-        background: var(--secondary);
-        color: var(--muted-foreground);
-        border-color: var(--border);
-      }
-      .req-indicator svg {
-        width: 1em;
-        height: 1em;
-        flex-shrink: 0;
-      }
-
-      /* Progress bars */
-      .progress-section {
-        display: flex;
-        flex-direction: column;
-        gap: 1em;
-      }
-      .progress-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 0.875em;
-      }
-      .progress-label {
-        color: var(--muted-foreground);
-      }
-      .progress-value {
-        font-weight: 500;
-        color: var(--foreground);
-      }
-      .progress-track {
-        height: 0.5em;
-        background: var(--secondary);
-        border-radius: 9999px;
-        overflow: hidden;
-        margin-top: 0.5em;
-      }
-      .progress-fill {
-        height: 100%;
-        border-radius: 9999px;
-        transition: width 0.4s ease-out;
-        background: var(--primary);
-      }
-      .progress-fill.success {
-        background: var(--aura-success);
-      }
-
-      /* Metric cards */
-      .metrics-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75em;
-      }
-      .metric-card--full {
-        grid-column: 1 / -1;
-      }
-      .metric-card {
-        padding: 0.75em;
-        background: var(--secondary);
-        border-radius: 0.5em;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5em;
-        cursor: pointer;
-        border: 1px solid transparent;
-        transition:
-          border-color 0.15s,
-          background 0.15s;
-        text-align: left;
-        width: 100%;
-        font: inherit;
-      }
-      .metric-card:hover {
-        border-color: var(--border);
-        background: color-mix(
-          in srgb,
-          var(--secondary) 80%,
-          var(--foreground) 4%
-        );
-      }
-      .metric-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        font-size: 0.75em;
-        color: var(--muted-foreground);
-      }
-      .metric-header svg {
-        width: 0.875em;
-        height: 0.875em;
-        flex-shrink: 0;
-      }
-      .metric-value {
-        display: flex;
-        align-items: baseline;
-        gap: 0.25em;
-      }
-      .metric-value .num {
-        font-size: 1.125em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-      .metric-value .denom {
-        font-size: 0.875em;
-        color: var(--muted-foreground);
-      }
-      .metric-bar {
-        height: 0.25em;
-        background: var(--muted);
-        border-radius: 9999px;
-        overflow: hidden;
-      }
-      .metric-bar-fill {
-        height: 100%;
-        border-radius: 9999px;
-        transition: width 0.4s;
-      }
-
-      /* Current step card (focused next-action) */
-      .step-card {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75em;
-        padding: 0.875em;
-        background: color-mix(in srgb, var(--primary) 6%, var(--secondary));
-        border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
-        border-radius: 0.625em;
-      }
-      .step-card-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5em;
-      }
-      .step-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3em;
-        padding: 0.2em 0.55em;
-        border-radius: 9999px;
-        background: color-mix(in srgb, var(--primary) 18%, transparent);
-        border: 1px solid color-mix(in srgb, var(--primary) 32%, transparent);
-        font-size: 0.62em;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--primary);
-      }
-      .stepper {
-        display: flex;
-        align-items: center;
-        gap: 0.3em;
-      }
-      .stepper-dot {
-        width: 0.45em;
-        height: 0.45em;
-        border-radius: 9999px;
-        background: color-mix(
-          in srgb,
-          var(--muted-foreground) 35%,
-          transparent
-        );
-        transition:
-          background 0.2s,
-          transform 0.2s;
-      }
-      .stepper-dot.done {
-        background: var(--aura-success);
-      }
-      .stepper-dot.active {
-        background: var(--primary);
-        transform: scale(1.5);
-      }
-      .step-title {
-        margin: 0;
-        font-size: 0.875em;
-        font-weight: 600;
-        color: var(--foreground);
-        line-height: 1.3;
-      }
-      .step-desc {
-        margin: 0;
-        font-size: 0.75em;
-        color: var(--muted-foreground);
-        line-height: 1.5;
-      }
-      .step-cta {
-        margin-top: 0.25em;
-      }
-      .step-cta a-button {
-        width: 100%;
-      }
-      .step-skip {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font: inherit;
-        font-size: 0.7em;
-        color: var(--muted-foreground);
-        padding: 0.2em 0;
-        align-self: center;
-        transition: color 0.15s;
-      }
-      .step-skip:hover {
-        color: var(--foreground);
-      }
-
-      /* Requirements checklist (grouped by target level) */
-      .requirements {
-        display: flex;
-        flex-direction: column;
-        gap: 0.875em;
-      }
-      .req-group {
-        border: 1px solid var(--border);
-        border-radius: 0.625em;
-        overflow: hidden;
-        background: var(--card);
-      }
-      .req-group-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        padding: 0.5em 0.75em;
-        background: color-mix(in srgb, var(--primary) 6%, var(--secondary));
-        border-bottom: 1px solid var(--border);
-      }
-      .req-group-header.done {
-        background: color-mix(
-          in srgb,
-          var(--aura-success) 8%,
-          var(--secondary)
-        );
-      }
-      .req-group-title {
-        flex: 1;
-        font-size: 0.75em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-      .req-group-count {
-        font-size: 0.65em;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        padding: 0.15em 0.5em;
-        border-radius: 9999px;
-        background: var(--secondary);
-        border: 1px solid var(--border);
-      }
-      .req-group-count.done {
-        color: var(--aura-success);
-        border-color: color-mix(in srgb, var(--aura-success) 30%, transparent);
-        background: color-mix(in srgb, var(--aura-success) 12%, transparent);
-      }
-      .req-items {
-        display: flex;
-        flex-direction: column;
-      }
-      .req-item {
-        display: flex;
-        align-items: center;
-        gap: 0.625em;
-        padding: 0.625em 0.75em;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.75em;
-        transition: background 0.15s;
-      }
-      .req-item:last-child {
-        border-bottom: none;
-      }
-      .req-item.passed .req-reason {
-        color: var(--muted-foreground);
-        text-decoration: line-through;
-        text-decoration-color: color-mix(
-          in srgb,
-          var(--muted-foreground) 50%,
-          transparent
-        );
-      }
-      .req-check {
-        width: 1.125em;
-        height: 1.125em;
-        border-radius: 9999px;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .req-check.passed {
-        background: var(--aura-success);
-        color: white;
-      }
-      .req-check.incomplete {
-        border: 1.5px dashed
-          color-mix(in srgb, var(--muted-foreground) 55%, transparent);
-        background: transparent;
-      }
-      .req-check iconify-icon {
-        width: 0.75em;
-        height: 0.75em;
-      }
-      .req-reason {
-        flex: 1;
-        color: var(--foreground);
-        line-height: 1.35;
-      }
-
-      /* Success state */
-      .success-state {
-        text-align: center;
-        padding: 1em 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75em;
-        align-items: center;
-      }
-      .success-icon {
-        width: 3.5em;
-        height: 3.5em;
-        border-radius: 9999px;
-        background: rgba(74, 222, 128, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .success-icon svg {
-        width: 2em;
-        height: 2em;
-        color: var(--aura-success);
-      }
-      .success-title {
-        margin: 0;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-      .success-desc {
-        margin: 0;
-        font-size: 0.875em;
-        color: var(--muted-foreground);
-      }
-
-      /* Inline svg helpers */
-      .btn-icon {
-        display: inline;
-        margin-right: 0.375em;
-        vertical-align: -0.125em;
-      }
-
-      .user-avatar iconify-icon {
-        color: var(--primary);
-      }
-      .req-indicator iconify-icon {
-        width: 1em;
-        height: 1em;
-        flex-shrink: 0;
-      }
-      .metric-header iconify-icon {
-        width: 0.875em;
-        height: 0.875em;
-        flex-shrink: 0;
-      }
-      .success-icon iconify-icon {
-        color: var(--aura-success);
-      }
-
-      /* Avatar image */
-      .user-avatar-img {
-        width: 2.5em;
-        height: 2.5em;
-        border-radius: 9999px;
-        object-fit: cover;
-        flex-shrink: 0;
-      }
-
-      /* Header actions */
-      .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-      }
-      .edit-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 0.75em;
-        color: var(--primary);
-        padding: 0;
-        transition: opacity 0.15s;
-      }
-      .edit-btn:hover {
-        opacity: 0.75;
-      }
-
-      /* ── Asked players section ──────────────── */
-      .asked-section {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5em;
-      }
-      .asked-section-title {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        font-size: 0.7em;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      .asked-section-title::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-      }
-      .asked-section-title iconify-icon {
-        width: 0.875em;
-        height: 0.875em;
-        flex-shrink: 0;
-      }
-      .asked-player-row {
-        display: flex;
-        align-items: center;
-        gap: 0.625em;
-        padding: 0.5em 0.625em;
-        border-radius: 0.5em;
-        border: 1px solid var(--border);
-        background: var(--secondary);
-      }
-      .asked-avatar {
-        width: 1.875em;
-        height: 1.875em;
-        border-radius: 9999px;
-        background: color-mix(in srgb, var(--primary) 14%, transparent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.65em;
-        font-weight: 700;
-        color: var(--primary);
-        overflow: hidden;
-        flex-shrink: 0;
-      }
-      .asked-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .asked-player-info {
-        flex: 1;
-        min-width: 0;
-      }
-      .asked-player-name {
-        font-size: 0.8em;
-        font-weight: 500;
-        color: var(--foreground);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .asked-player-sub {
-        font-size: 0.68em;
-        color: var(--muted-foreground);
-        margin-top: 0.1em;
-        display: flex;
-        align-items: center;
-        gap: 0.25em;
-      }
-      .asked-player-sub iconify-icon {
-        width: 0.7em;
-        height: 0.7em;
-        flex-shrink: 0;
-      }
-      .asked-status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25em;
-        font-size: 0.62em;
-        font-weight: 600;
-        border-radius: 9999px;
-        padding: 0.2em 0.55em;
-        flex-shrink: 0;
-      }
-      .asked-status-badge.waiting {
-        color: var(--aura-info, #06b6d4);
-        background: rgba(6, 182, 212, 0.1);
-        border: 1px solid rgba(6, 182, 212, 0.22);
-      }
-      .asked-status-badge iconify-icon {
-        width: 0.65em;
-        height: 0.65em;
-      }
-
-      /* Compact asked summary (widget-friendly) */
-      .asked-summary {
-        display: flex;
-        align-items: center;
-        gap: 0.625em;
-        padding: 0.5em 0.75em;
-        border-radius: 0.5em;
-        border: 1px solid var(--border);
-        background: var(--secondary);
-        cursor: pointer;
-        font: inherit;
-        text-align: left;
-        width: 100%;
-        transition: background 0.15s;
-      }
-      .asked-summary:hover {
-        background: color-mix(
-          in srgb,
-          var(--secondary) 70%,
-          var(--foreground) 4%
-        );
-      }
-      .avatar-stack {
-        display: flex;
-        flex-shrink: 0;
-      }
-      .avatar-stack .asked-avatar {
-        border: 2px solid var(--card);
-        margin-left: -0.4em;
-      }
-      .avatar-stack .asked-avatar:first-child {
-        margin-left: 0;
-      }
-      .asked-summary-text {
-        flex: 1;
-        min-width: 0;
-        font-size: 0.75em;
-        color: var(--foreground);
-      }
-      .asked-summary-text strong {
-        font-weight: 600;
-      }
-      .asked-summary-sub {
-        display: block;
-        font-size: 0.9em;
-        color: var(--muted-foreground);
-        margin-top: 0.1em;
-      }
-      .asked-chevron {
-        flex-shrink: 0;
-        color: var(--muted-foreground);
-        transition: transform 0.2s;
-      }
-      .asked-chevron iconify-icon {
-        width: 0.875em;
-        height: 0.875em;
-      }
-      .asked-summary[aria-expanded='true'] .asked-chevron {
-        transform: rotate(180deg);
-      }
-    `,
-  ];
 
   protected render() {
     if (!this.data) return html``;
@@ -711,11 +83,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
                   />`
                 : html`
                     <div class="user-avatar">
-                      <iconify-icon
-                        icon="lucide:user"
-                        width="1.25em"
-                        height="1.25em"
-                      ></iconify-icon>
+                      ${icon('lucide:user', '', 'width: 1.25em; height: 1.25em')}
                     </div>
                   `
             }
@@ -737,11 +105,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               class="disconnect-btn"
               @click=${() => this._emit('disconnect')}
             >
-              <iconify-icon
-                icon="mdi:shutdown"
-                width="20"
-                height="20"
-              ></iconify-icon>
+              ${icon('mdi:shutdown', '', 'width: 20; height: 20')}
             </button>
           </div>
         </div>
@@ -749,8 +113,8 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
         <div class="req-indicator ${isMet ? 'met' : 'unmet'}">
           ${
             isMet
-              ? html`<iconify-icon icon="lucide:check"></iconify-icon>`
-              : html`<iconify-icon icon="lucide:circle-help"></iconify-icon>`
+              ? html`${icon('lucide:check')}`
+              : html`${icon('lucide:circle-help')}`
           }
           <span
             >${
@@ -829,10 +193,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
             class="metric-card ${hasScoreReq ? '' : 'metric-card--full'}"
             @click=${() => this._emit('show-evaluations')}
           >
-            <div class="metric-header">
-              <iconify-icon icon="lucide:users"></iconify-icon>
-              Evaluations
-            </div>
+            <div class="metric-header">${icon('lucide:users')} Evaluations</div>
             <div class="metric-value">
               <span class="num">${evaluationsReceived}</span>
               <span class="denom">/ ${evalTarget}</span>
@@ -853,8 +214,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
                     @click=${() => this._emit('show-score')}
                   >
                     <div class="metric-header">
-                      <iconify-icon icon="lucide:trending-up"></iconify-icon>
-                      Score
+                      ${icon('lucide:trending-up')} Score
                     </div>
                     <div class="metric-value">
                       <span class="num">${scoreDisplay}</span>
@@ -917,9 +277,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
                       <div class="req-check ${req.status}">
                         ${
                           req.status === 'passed'
-                            ? html`<iconify-icon
-                                icon="lucide:check"
-                              ></iconify-icon>`
+                            ? html`${icon('lucide:check')}`
                             : ''
                         }
                       </div>
@@ -981,11 +339,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
       <div class="step-card">
         <div class="step-card-top">
           <span class="step-pill">
-            <iconify-icon
-              icon="lucide:zap"
-              width="0.75em"
-              height="0.75em"
-            ></iconify-icon>
+            ${icon('lucide:zap', '', 'width: 0.75em; height: 0.75em')}
             ${pillLabel}
           </span>
           <div
@@ -1006,15 +360,15 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
         <h3 class="step-title">${step.title}</h3>
         <p class="step-desc">${step.desc}</p>
         <div class="step-cta">
-          <a-button size="md" @click=${step.action}>
-            <iconify-icon
-              icon=${step.ctaIcon}
-              class="btn-icon"
-              width="1em"
-              height="1em"
-            ></iconify-icon>
+          <button
+            class="a-button"
+            type="button"
+            data-size="md"
+            @click=${step.action}
+          >
+            ${icon(step.ctaIcon, 'btn-icon', 'width: 1em; height: 1em')}
             ${step.ctaLabel}
-          </a-button>
+          </button>
         </div>
       </div>
     `;
@@ -1024,11 +378,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
     return html`
       <div class="success-state">
         <div class="success-icon">
-          <iconify-icon
-            icon="lucide:circle-check"
-            width="2em"
-            height="2em"
-          ></iconify-icon>
+          ${icon('lucide:circle-check', '', 'width: 2em; height: 2em')}
         </div>
         <h3 class="success-title">Verification Complete</h3>
         <p class="success-desc">
@@ -1077,9 +427,7 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
               >Tap to ${expanded ? 'hide' : 'view'}</span
             >
           </div>
-          <span class="asked-chevron">
-            <iconify-icon icon="lucide:chevron-down"></iconify-icon>
-          </span>
+          <span class="asked-chevron"> ${icon('lucide:chevron-down')} </span>
         </button>
         ${
           expanded
@@ -1096,13 +444,11 @@ export class VerificationProgressElement extends SignalWatcher(LitElement) {
                     <div class="asked-player-info">
                       <div class="asked-player-name">${player.name}</div>
                       <div class="asked-player-sub">
-                        <iconify-icon icon="lucide:clock"></iconify-icon>
-                        Waiting for evaluation
+                        ${icon('lucide:clock')} Waiting for evaluation
                       </div>
                     </div>
                     <span class="asked-status-badge waiting">
-                      <iconify-icon icon="lucide:hourglass"></iconify-icon>
-                      Waiting
+                      ${icon('lucide:hourglass')} Waiting
                     </span>
                   </div>
                 `,

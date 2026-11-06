@@ -33,6 +33,7 @@ import { isNotFound } from '@aura/domain/http';
 import { categoryLabel } from '@aura/domain/labels';
 import { PreferredView } from '@aura/domain/types/dashboard';
 import { EvaluationCategory } from '@aura/domain/types/evaluations';
+import Icon from '@/components/ui/icon';
 
 type ProfileTab = 'overview' | 'evaluations' | 'connections' | 'activity';
 
@@ -142,17 +143,31 @@ export default function SubjectPage() {
         ?.filter((c) => matches(c.id, connections.nameOf(c.id))) ?? [],
   );
 
+  const TabButton = (p: { value: ProfileTab; children: string }) => (
+    <button
+      type="button"
+      role="tab"
+      class="a-tab"
+      aria-selected={tab() === p.value}
+      onClick={() => setTab(p.value)}
+    >
+      {p.children}
+    </button>
+  );
+
   // Component (not a shared element) — each panel needs its own DOM node.
   const SearchInput = () => (
-    <a-input
-      type="text"
-      data-testid="subject-list-search"
-      placeholder="Name or ID…"
-      value={search()}
-      onChange={(e: CustomEvent<string>) => setSearch(e.detail)}
-    >
-      <a-icon name="search" slot="prefix" />
-    </a-input>
+    <div class="a-input-group">
+      <Icon name="search" />
+      <input
+        class="a-input"
+        type="text"
+        data-testid="subject-list-search"
+        placeholder="Name or ID…"
+        value={search()}
+        onInput={(e) => setSearch(e.currentTarget.value)}
+      />
+    </div>
   );
 
   return (
@@ -163,16 +178,18 @@ export default function SubjectPage() {
           href="/home"
           class="flex shrink-0 items-center gap-1 whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          <a-icon name="arrow-left" /> Back
+          <Icon name="arrow-left" /> Back
         </A>
         <div class="-mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 pb-1">
           <For each={authorizedViewAs()}>
             {(c) => (
-              <a-button
-                size="sm"
+              <button
+                class="a-button"
+                type="button"
+                data-size="sm"
                 data-testid={`subject-view-${categoryLabel[c]}`}
-                variant="glass"
-                selected={category() === c}
+                data-variant="glass"
+                aria-pressed={category() === c}
                 title={categoryLabel[c]}
                 aria-label={categoryLabel[c]}
                 onClick={() =>
@@ -183,10 +200,10 @@ export default function SubjectPage() {
                   )
                 }
               >
-                <a-icon name={roleIcon[c]} style={{ color: roleColor[c] }} />
+                <Icon name={roleIcon[c]} style={{ color: roleColor[c] }} />
                 {/* Compact: only the active role keeps its label. */}
                 <Show when={category() === c}>{categoryLabel[c]}</Show>
-              </a-button>
+              </button>
             )}
           </For>
         </div>
@@ -211,24 +228,21 @@ export default function SubjectPage() {
 
       {/* ── Evidence tabs ── */}
       <EvidenceHelp />
-      <a-tabs
-        value={tab()}
-        on:change={(e: CustomEvent<{ value: string }>) =>
-          setTab(e.detail.value as ProfileTab)
-        }
-      >
-        <a-tab value="overview">Overview</a-tab>
-        <Show
-          when={isPlayerView()}
-          fallback={<a-tab value="activity">Activity</a-tab>}
-        >
-          <a-tab value="connections">Connections</a-tab>
-        </Show>
-        <a-tab value="evaluations">Evaluations</a-tab>
+      <div>
+        <div class="a-tabs" role="tablist">
+          <TabButton value="overview">Overview</TabButton>
+          <Show
+            when={isPlayerView()}
+            fallback={<TabButton value="activity">Activity</TabButton>}
+          >
+            <TabButton value="connections">Connections</TabButton>
+          </Show>
+          <TabButton value="evaluations">Evaluations</TabButton>
+        </div>
 
-        <a-tab-panel slot="panel" value="overview">
+        <div class="a-tab-panel" role="tabpanel" hidden={tab() !== 'overview'}>
           <div class="flex flex-col gap-4 pt-2">
-            <a-card class="flex items-center justify-around p-4 text-center">
+            <div class="a-card flex items-center justify-around p-4 text-center">
               <div class="flex flex-col">
                 <span
                   data-testid="subject-positive-count"
@@ -253,9 +267,9 @@ export default function SubjectPage() {
                 </span>
                 <span class="text-sm text-muted-foreground">Total</span>
               </div>
-            </a-card>
+            </div>
 
-            <a-card class="flex flex-col gap-2 p-4">
+            <div class="a-card flex flex-col gap-2 p-4">
               <div class="flex items-center justify-between">
                 <p class="text-sm text-muted-foreground">
                   Evaluation impacts — tap a bar for details
@@ -267,19 +281,25 @@ export default function SubjectPage() {
                 onBarClick={setDetailsId}
                 loading={() => v.loading()}
               />
-            </a-card>
+            </div>
 
-            <a-button
-              variant="glass"
+            <button
+              class="a-button"
+              type="button"
+              data-variant="glass"
               data-testid="subject-show-evidence"
               onClick={() => setTab('evaluations')}
             >
               View evaluations
-            </a-button>
+            </button>
           </div>
-        </a-tab-panel>
+        </div>
 
-        <a-tab-panel slot="panel" value="evaluations">
+        <div
+          class="a-tab-panel"
+          role="tabpanel"
+          hidden={tab() !== 'evaluations'}
+        >
           <div class="flex flex-col gap-3 pt-2">
             <SearchInput />
             <ListState
@@ -304,11 +324,15 @@ export default function SubjectPage() {
               </IncrementalList>
             </ListState>
           </div>
-        </a-tab-panel>
+        </div>
 
         <Switch>
           <Match when={isPlayerView()}>
-            <a-tab-panel slot="panel" value="connections">
+            <div
+              class="a-tab-panel"
+              role="tabpanel"
+              hidden={tab() !== 'connections'}
+            >
               <div class="flex flex-col gap-3 pt-2">
                 <SearchInput />
                 <ListState
@@ -334,10 +358,14 @@ export default function SubjectPage() {
                   </IncrementalList>
                 </ListState>
               </div>
-            </a-tab-panel>
+            </div>
           </Match>
           <Match when={!isPlayerView()}>
-            <a-tab-panel slot="panel" value="activity">
+            <div
+              class="a-tab-panel"
+              role="tabpanel"
+              hidden={tab() !== 'activity'}
+            >
               <div class="flex flex-col gap-3 pt-2">
                 <SearchInput />
                 <ListState
@@ -362,10 +390,10 @@ export default function SubjectPage() {
                   </IncrementalList>
                 </ListState>
               </div>
-            </a-tab-panel>
+            </div>
           </Match>
         </Switch>
-      </a-tabs>
+      </div>
 
       <EvaluateModal
         subjectId={evaluating}

@@ -1,0 +1,39 @@
+/* <verification-footer>, footer.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (verification-footer) to (:scope [data-c] > *) {
+    :scope {
+      display: block;
+      flex-shrink: 0;
+      font-size: inherit;
+      padding: 0.625em 1.25em;
+      border-top: 1px solid var(--border);
+      background: var(--muted);
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
+      font-size: 0.75em;
+      color: var(--muted-foreground);
+    }
+
+    .icon {
+      width: 0.875em;
+      height: 0.875em;
+      flex-shrink: 0;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+}

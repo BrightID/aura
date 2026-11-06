@@ -1,13 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
     "skipLibCheck": true,
-    "jsx": "preserve",
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -15,10 +11,6 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
-
-    "paths": {
-      "@aura/ui/*": ["./src/*"]
-    },
 
     /* Linting */
     "strict": true,

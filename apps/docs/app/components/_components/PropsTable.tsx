@@ -1,12 +1,13 @@
 import type { ComponentDoc } from '../_registry';
 import { Table } from '../../query/_components/Code';
+import { attrOf } from './snippet';
 
 export function PropsTable({ doc }: { doc: ComponentDoc }) {
   return (
     <Table
-      headers={['Prop', 'Type', 'Default', 'Description']}
+      headers={['Attribute', 'Type', 'Default', 'Description']}
       rows={doc.props.map((p) => [
-        <code key="n">{p.name}</code>,
+        <code key="n">{attrOf(p)}</code>,
         p.type === 'enum' && p.options ? (
           <code key="t">{p.options.map((o) => `"${o}"`).join(' | ')}</code>
         ) : (

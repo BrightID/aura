@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
 import {
   Controller,
@@ -86,19 +85,16 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function FormLabel({
-  className,
-  ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+function FormLabel({ className, ...props }: React.ComponentProps<'label'>) {
   const { error, formItemId } = useFormField();
 
   return (
-    <a-label
+    <label
+      className={cn('a-label', 'data-[error=true]:text-destructive', className)}
       data-slot="form-label"
       data-error={!!error}
-      className={cn('data-[error=true]:text-destructive', className)}
-      for={formItemId}
-      {...(props as Record<string, unknown>)}
+      htmlFor={formItemId}
+      {...props}
     />
   );
 }

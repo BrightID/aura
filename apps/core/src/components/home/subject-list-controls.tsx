@@ -1,9 +1,11 @@
+import Dialog from '@/components/ui/dialog';
 import { For, Show } from 'solid-js';
 import type { useSubjectsList } from '@/hooks/use-subjects-list';
 import type { SubjectRatedState, SubjectSort } from '@/hooks/use-subjects-list';
 import { toTitleCase } from '@/shared/lib/text';
 import type { ConnectionLevel } from '@aura/domain/types/aura';
-import type { DialogElement } from '@aura/ui';
+import type { DialogHandle } from '@/components/ui/dialog';
+import Icon from '@/components/ui/icon';
 
 type Controls = ReturnType<typeof useSubjectsList>;
 
@@ -19,15 +21,14 @@ const RATED_STATES: { id: SubjectRatedState; label: string }[] = [
 ];
 
 /**
- * Search + filter + sort controls for the subjects list. Collapses the old
- * three-modal design (SubjectListControls + FiltersModal + SortsModal) into a
- * single inline search box and one `<a-dialog>` holding the filter/sort toggles.
+ * Search, filter and sort controls for the subjects list: an inline search
+ * box, and one `<Dialog>` that holds the filter and sort toggles.
  */
 export default function SubjectListControls(props: {
   controls: Controls;
   count: number;
 }) {
-  let dialog: DialogElement | undefined;
+  let dialog: DialogHandle | undefined;
 
   const c = () => props.controls;
   const activeFilters = () =>
@@ -35,114 +36,139 @@ export default function SubjectListControls(props: {
 
   return (
     <div class="flex flex-col gap-2">
-      <a-input
-        type="text"
-        data-testid="subject-search"
-        placeholder="Subject name or ID…"
-        value={c().search()}
-        onChange={(e: CustomEvent<string>) => c().setSearch(e.detail)}
-      >
-        <a-icon name="search" slot="prefix" />
-      </a-input>
+      <div class="a-input-group">
+        <Icon name="search" />
+        <input
+          class="a-input"
+          type="text"
+          data-testid="subject-search"
+          placeholder="Subject name or ID…"
+          value={c().search()}
+          onInput={(e) => c().setSearch(e.currentTarget.value)}
+        />
+      </div>
 
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
-        <a-dialog label="Filter and sort connections" ref={dialog}>
-          <a-button slot="trigger" size="sm" variant="glass">
-            <span class="flex items-center gap-1.5">
-              <a-icon name="sliders-horizontal" />
-              Filter & sort
-              <Show when={activeFilters() > 0}>
-                <span
-                  data-testid="subject-controls-badge"
-                  class="rounded-full bg-foreground/15 px-1.5 text-xs"
-                >
-                  {activeFilters()}
-                </span>
-              </Show>
-            </span>
-          </a-button>
-
-          <div slot="content" class="flex w-80 max-w-full flex-col gap-5">
+        <Dialog
+          label="Filter and sort connections"
+          ref={dialog}
+          trigger={
+            <button
+              class="a-button"
+              type="button"
+              data-size="sm"
+              data-variant="glass"
+            >
+              <span class="flex items-center gap-1.5">
+                <Icon name="sliders-horizontal" />
+                Filter & sort
+                <Show when={activeFilters() > 0}>
+                  <span
+                    data-testid="subject-controls-badge"
+                    class="rounded-full bg-foreground/15 px-1.5 text-xs"
+                  >
+                    {activeFilters()}
+                  </span>
+                </Show>
+              </span>
+            </button>
+          }
+        >
+          <div class="flex w-80 max-w-full flex-col gap-5">
             <div class="flex flex-col gap-2">
-              <a-text variant="muted">Sort by</a-text>
+              <p class="a-text" data-variant="muted">
+                Sort by
+              </p>
               <div class="flex flex-wrap gap-2">
                 <For each={SORTS}>
                   {(s) => (
-                    <a-button
+                    <button
+                      class="a-button"
+                      type="button"
                       data-testid={`subject-sort-${s.id}`}
-                      size="sm"
-                      variant="glass"
-                      color="secondary"
-                      selected={c().sort() === s.id}
+                      data-size="sm"
+                      data-variant="glass"
+                      data-color="secondary"
+                      aria-pressed={c().sort() === s.id}
                       onClick={() => c().setSort(s.id)}
                     >
                       {s.label}
-                    </a-button>
+                    </button>
                   )}
                 </For>
               </div>
             </div>
 
             <div class="flex flex-col gap-2">
-              <a-text variant="muted">Your evaluation</a-text>
+              <p class="a-text" data-variant="muted">
+                Your evaluation
+              </p>
               <div class="flex flex-wrap gap-2">
                 <For each={RATED_STATES}>
                   {(r) => (
-                    <a-button
+                    <button
+                      class="a-button"
+                      type="button"
                       data-testid={`subject-rated-${r.id}`}
-                      size="sm"
-                      variant="glass"
-                      color="secondary"
-                      selected={c().ratedState() === r.id}
+                      data-size="sm"
+                      data-variant="glass"
+                      data-color="secondary"
+                      aria-pressed={c().ratedState() === r.id}
                       onClick={() => c().setRatedState(r.id)}
                     >
                       {r.label}
-                    </a-button>
+                    </button>
                   )}
                 </For>
               </div>
             </div>
 
             <div class="flex flex-col gap-2">
-              <a-text variant="muted">Connection level</a-text>
+              <p class="a-text" data-variant="muted">
+                Connection level
+              </p>
               <div class="flex flex-wrap gap-2">
                 <For each={c().levelOptions}>
                   {(level: ConnectionLevel) => (
-                    <a-button
+                    <button
+                      class="a-button"
+                      type="button"
                       data-testid={`subject-level-${level.split(' ').join('-')}`}
-                      size="sm"
-                      variant="glass"
-                      color="secondary"
-                      selected={c().levels().includes(level)}
+                      data-size="sm"
+                      data-variant="glass"
+                      data-color="secondary"
+                      aria-pressed={c().levels().includes(level)}
                       onClick={() => c().toggleLevel(level)}
                     >
                       {toTitleCase(level)}
-                    </a-button>
+                    </button>
                   )}
                 </For>
               </div>
             </div>
 
             <div class="flex gap-2">
-              <a-button
-                class="flex-1"
-                variant="ghost"
+              <button
+                class="a-button flex-1"
+                type="button"
+                data-variant="ghost"
                 data-testid="subject-controls-clear"
                 onClick={() => c().reset()}
               >
                 Clear
-              </a-button>
-              <a-button
-                class="flex-1"
-                variant="default"
+              </button>
+              <button
+                class="a-button flex-1"
+                type="button"
+                data-variant="default"
                 data-testid="subject-controls-done"
                 onClick={() => dialog?.hide()}
               >
                 Done
-              </a-button>
+              </button>
             </div>
           </div>
-        </a-dialog>
+        </Dialog>
 
         <span data-testid="subject-results" class="ml-auto">
           {props.count} result{props.count === 1 ? '' : 's'}

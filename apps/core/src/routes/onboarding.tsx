@@ -59,12 +59,12 @@ export default function OnboardingPage() {
     >
       <section class="content" data-testid={`onboarding-step-${step()}`}>
         <FadeIn delay={0.1}>
-          <a-head class="mb-2 text-4xl">{current().title}</a-head>
+          <h2 class="a-head mb-2 text-4xl">{current().title}</h2>
         </FadeIn>
         <FadeIn delay={0.15}>
-          <a-text size="lg" class="font-medium">
+          <p class="a-text font-medium" data-size="lg">
             {current().description}
-          </a-text>
+          </p>
         </FadeIn>
       </section>
 
@@ -86,21 +86,23 @@ export default function OnboardingPage() {
           </For>
         </div>
 
-        <a-button
-          size="lg"
+        <button
+          class="a-button"
+          type="button"
+          data-size="lg"
           data-testid={isLast() ? 'onboarding-finish' : 'onboarding-next'}
           onClick={next}
         >
           <Show when={isLast()} fallback="Next">
             Let's Start
           </Show>
-        </a-button>
+        </button>
       </section>
 
       <footer class="text-muted-foreground flex justify-end text-sm">
         <span class="flex gap-1">
-          <a-text class="text-muted-foreground">Powered by:</a-text>
-          <a-text class="font-light">BrightID</a-text>
+          <p class="a-text text-muted-foreground">Powered by:</p>
+          <p class="a-text font-light">BrightID</p>
         </span>
       </footer>
     </div>

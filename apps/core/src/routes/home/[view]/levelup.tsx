@@ -46,7 +46,7 @@ export default function HomeLevelUp() {
         <div class="mt-4 flex flex-col gap-4">
           <LevelProgress subjectId={id()} />
 
-          <a-card variant="glass" class="block p-4">
+          <div class="a-card block p-4" data-variant="glass">
             <div class="mb-3 text-lg font-bold text-foreground">
               Evaluations
             </div>
@@ -64,7 +64,7 @@ export default function HomeLevelUp() {
                 }
               />
             </div>
-          </a-card>
+          </div>
         </div>
       )}
     </Show>

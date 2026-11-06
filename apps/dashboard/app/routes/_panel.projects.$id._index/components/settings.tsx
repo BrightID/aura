@@ -24,11 +24,7 @@ import { copyToClipboard } from '~/utils/clipboard';
 const formSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
-  websiteUrl: z
-    .string()
-    .url('Enter a valid URL')
-    .optional()
-    .or(z.literal('')),
+  websiteUrl: z.string().url('Enter a valid URL').optional().or(z.literal('')),
   isActive: z.boolean(),
   logoUrl: z.string().optional(),
   image: z.string().optional(),
@@ -94,11 +90,11 @@ export function SettingsTab({ project }: { project: Project }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <a-card>
+        <div className="a-card">
           <div className="flex flex-col gap-1.5">
-            <a-head level="3" className="text-lg font-semibold">
+            <h3 className="a-head text-lg font-semibold" data-level="3">
               General Settings
-            </a-head>
+            </h3>
             <p className="text-muted-foreground text-sm">
               Configure your project settings
             </p>
@@ -171,13 +167,13 @@ export function SettingsTab({ project }: { project: Project }) {
               )}
             />
           </div>
-        </a-card>
+        </div>
 
-        <a-card>
+        <div className="a-card">
           <div className="flex flex-col gap-1.5">
-            <a-head level="3" className="text-lg font-semibold">
+            <h3 className="a-head text-lg font-semibold" data-level="3">
               Branding
-            </a-head>
+            </h3>
             <p className="text-muted-foreground text-sm">
               Customize your project appearance
             </p>
@@ -245,13 +241,13 @@ export function SettingsTab({ project }: { project: Project }) {
               )}
             />
           </div>
-        </a-card>
+        </div>
 
-        <a-card>
+        <div className="a-card">
           <div className="flex flex-col gap-1.5">
-            <a-head level="3" className="text-lg font-semibold">
+            <h3 className="a-head text-lg font-semibold" data-level="3">
               Integration
-            </a-head>
+            </h3>
             <p className="text-muted-foreground text-sm">
               BrightID integration settings
             </p>
@@ -266,10 +262,11 @@ export function SettingsTab({ project }: { project: Project }) {
                   <FormControl>
                     <div className="flex gap-2">
                       <Input readOnly {...field} className="font-mono" />
-                      <a-button
+                      <button
+                        className="a-button"
                         type="button"
-                        variant="outline"
-                        size="sm"
+                        data-variant="outline"
+                        data-size="sm"
                         onClick={() => {
                           const id = form.getValues('brightIdAppId');
                           if (!id) return;
@@ -279,7 +276,7 @@ export function SettingsTab({ project }: { project: Project }) {
                         }}
                       >
                         {copied ? 'Copied' : 'Copy'}
-                      </a-button>
+                      </button>
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -287,16 +284,17 @@ export function SettingsTab({ project }: { project: Project }) {
               )}
             />
           </div>
-        </a-card>
+        </div>
 
         <div className="flex justify-end">
-          <a-button
+          <button
+            className="a-button"
             disabled={isPending}
             type="submit"
             onClick={form.handleSubmit(onSubmit)}
           >
             Save Changes
-          </a-button>
+          </button>
         </div>
       </form>
     </Form>

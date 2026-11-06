@@ -1,3 +1,5 @@
+import { iconUrl } from '@aura/ui/icon';
+import { LightElement } from '@aura/widgets/light-element';
 import '@/components/common/profile-card.ts';
 import { pushRouter } from '@/router.js';
 import { projects, trackedProject } from '@/states/projects';
@@ -14,56 +16,18 @@ import { EvaluationCategory } from '@/utils/aura';
 import { createBlockiesImage } from '@/utils/image.js';
 import { getLevelupProgress } from '@/utils/score';
 import { signal, SignalWatcher } from '@lit-labs/signals';
-import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import '../components/common/verification-card-skeleton.ts';
 import '../components/common/verification-card.ts';
+import './home.css';
 
 const isLoading = signal(true);
 const loadError = signal(false);
 
 @customElement('my-home')
-export class HomeElement extends SignalWatcher(LitElement) {
-  static styles?: CSSResultGroup = css`
-    .profile-card-wrapper {
-      position: relative;
-      margin-bottom: 32px;
-    }
-
-    .apps-section {
-      text-align: left;
-      margin-bottom: 32px;
-    }
-
-    .apps-section a-head {
-      margin-bottom: 8px;
-    }
-
-    .page-heading {
-      text-align: left;
-      margin-bottom: 8px;
-    }
-    .eyebrow {
-      color: var(--muted-foreground);
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin: 0 0 6px;
-    }
-    .section-description {
-      margin: 0 0 20px;
-    }
-    .empty {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 24px 0;
-      color: var(--muted-foreground);
-    }
-  `;
-
+export class HomeElement extends SignalWatcher(LightElement) {
   constructor() {
     super();
 
@@ -103,7 +67,7 @@ export class HomeElement extends SignalWatcher(LitElement) {
     return html` <div class="body">
       <header class="page-heading">
         <p class="eyebrow">Aura / Verified</p>
-        <a-head level="1">Your verification</a-head>
+        <h1 class="a-head" data-level="1">Your verification</h1>
       </header>
       <div class="profile-card-wrapper">
         <profile-card
@@ -115,10 +79,10 @@ export class HomeElement extends SignalWatcher(LitElement) {
       </div>
 
       <div class="apps-section">
-        <a-head level="2">Your apps</a-head>
-        <a-text variant="muted" class="section-description">
+        <h2 class="a-head">Your apps</h2>
+        <p class="a-text section-description" data-variant="muted">
           Choose an app to view requirements and continue your verification.
-        </a-text>
+        </p>
 
         ${
           isLoading.get()
@@ -128,45 +92,57 @@ export class HomeElement extends SignalWatcher(LitElement) {
                 <verification-card-skeleton></verification-card-skeleton>
               `
             : loadError.get()
-              ? html`<a-card variant="default">
+              ? html`<div class="a-card" data-variant="default">
                   <div class="empty">
-                    <a-icon name="triangle-alert" size="md"></a-icon>
-                    <a-text variant="muted">Could not load apps.</a-text>
+                    <span
+                      class="a-icon text-2xl"
+                      aria-hidden="true"
+                      style="--icon-url: url('${iconUrl('triangle-alert')}')"
+                    ></span>
+                    <p class="a-text" data-variant="muted">
+                      Could not load apps.
+                    </p>
                   </div>
-                </a-card>`
+                </div>`
               : (trackP ? [trackP] : projects.get()).length === 0
-                ? html`<a-card variant="default">
+                ? html`<div class="a-card" data-variant="default">
                     <div class="empty">
-                      <a-icon name="inbox" size="md"></a-icon>
-                      <a-text variant="muted">No apps to verify yet.</a-text>
+                      <span
+                        class="a-icon text-2xl"
+                        aria-hidden="true"
+                        style="--icon-url: url('${iconUrl('inbox')}')"
+                      ></span>
+                      <p class="a-text" data-variant="muted">
+                        No apps to verify yet.
+                      </p>
                     </div>
-                  </a-card>`
+                  </div>`
                 : map(trackP ? [trackP] : projects.get(), (project) => {
-                const totalSteps = levelUpProgress
-                  .get()
-                  .filter((item) => item.level <= project.requirementLevel);
+                    const totalSteps = levelUpProgress
+                      .get()
+                      .filter((item) => item.level <= project.requirementLevel);
 
-                const stepsCompleted = totalSteps.filter(
-                  (item) => item.status === 'passed',
-                ).length;
+                    const stepsCompleted = totalSteps.filter(
+                      (item) => item.status === 'passed',
+                    ).length;
 
-                return html`
-                  <verification-card
-                    .status=${
-                      stepsCompleted === 0
-                        ? 'Not Started'
-                        : stepsCompleted < totalSteps.length
-                          ? 'In progress'
-                          : 'Completed'
-                    }
-                    .name=${project.name}
-                    .levelRequirement=${project.requirementLevel}
-                    .stepsCompleted="${stepsCompleted}"
-                    .totalSteps="${totalSteps.length}"
-                    .projectId=${project.id}
-                  ></verification-card>
-                `;
-              })
+                    return html`
+                      <verification-card
+                        .status=${
+                          stepsCompleted === 0
+                            ? 'Not Started'
+                            : stepsCompleted < totalSteps.length
+                              ? 'In progress'
+                              : 'Completed'
+                        }
+                        .name=${project.name}
+                        .levelRequirement=${project.requirementLevel}
+                        .stepsCompleted="${stepsCompleted}"
+                        .totalSteps="${totalSteps.length}"
+                        .projectId=${project.id}
+                      ></verification-card>
+                    `;
+                  })
         }
       </div>
     </div>`;

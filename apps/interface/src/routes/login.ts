@@ -1,16 +1,18 @@
+import { LightElement } from '@aura/widgets/light-element';
 import brightIDIcon from '@/assets/icons/brightid.svg';
 import LockIcon from '@/assets/icons/lock.svg';
 import { pushRouter } from '@/router';
 import { isLoginLoading } from '@/states/login';
 import { loginWithPasskey, registerWithPasskey } from '@aura/sdk/auth/passkeys';
 import { SignalWatcher } from '@lit-labs/signals';
-import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 
 import '@/components/landing/footer-section';
 import '@/components/landing/hero-section';
 import { userBrightId } from '@/states/user';
+import './login.css';
 
 interface AuthMethod {
   id: string;
@@ -22,98 +24,7 @@ interface AuthMethod {
 }
 
 @customElement('login-page')
-export class LoginPageElement extends SignalWatcher(LitElement) {
-  static styles?: CSSResultGroup = css`
-    :host {
-      display: block;
-    }
-    * {
-      box-sizing: border-box;
-    }
-    .wrapper {
-      max-width: 440px;
-      margin: 0 auto;
-    }
-    .container {
-      width: 100%;
-    }
-    .form-container {
-      margin: 28px 0;
-      text-align: left;
-    }
-    .form-title {
-      margin: 0;
-      font-size: 24px;
-      letter-spacing: -0.03em;
-      color: var(--foreground);
-    }
-    .form-desc {
-      margin: 8px 0 24px;
-      color: var(--muted-foreground);
-      font-size: 14px;
-    }
-    .methods {
-      display: grid;
-      gap: 12px;
-    }
-    .methods a-button {
-      width: 100%;
-    }
-    .methods a-button::part(button) {
-      width: 100%;
-      height: auto;
-      min-height: 4.75rem;
-      justify-content: flex-start;
-      gap: 12px;
-      padding: 16px;
-      text-align: left;
-    }
-    .method-copy {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-      min-width: 0;
-    }
-    .method-copy img {
-      flex-shrink: 0;
-    }
-    .method-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-    }
-    .font-medium {
-      font-weight: 600;
-    }
-    .text-xs {
-      font-size: 13px;
-    }
-    .text-muted-foreground,
-    .form-footer {
-      color: var(--muted-foreground);
-    }
-    .form-footer {
-      font-size: 12px;
-      text-align: center;
-      margin: 24px 0 0;
-    }
-    .form-footer a {
-      color: var(--primary);
-    }
-    .loading-wrapper {
-      min-height: 300px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      a-skeleton {
-        animation: none;
-      }
-    }
-  `;
+export class LoginPageElement extends SignalWatcher(LightElement) {
   authMethods: AuthMethod[] = [
     {
       id: 'passkey',
@@ -144,13 +55,16 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
         <hero-section></hero-section>
 
         <div class="container">
-          <a-card variant="default" class="form-container">
+          <div class="a-card form-container" data-variant="default">
             ${
               isLoginLoading.get()
                 ? html`
                     <div class="loading-wrapper">
-                      <a-head level="3">Signing in</a-head>
-                      <a-skeleton style="width: 12rem; margin-top: 16px"></a-skeleton>
+                      <h3 class="a-head" data-level="3">Signing in</h3>
+                      <div
+                        class="a-skeleton"
+                        style="width: 12rem; margin-top: 16px"
+                      ></div>
                     </div>
                   `
                 : html`
@@ -163,8 +77,10 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
                       ${map(
                         this.authMethods,
                         (method) => html`
-                          <a-button
-                            variant="outline"
+                          <button
+                            class="a-button"
+                            type="button"
+                            data-variant="outline"
                             @click=${() => method.callback?.()}
                           >
                             <span class="method-row">
@@ -181,7 +97,7 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
                                 </span>
                               </span>
                             </span>
-                          </a-button>
+                          </button>
                         `,
                       )}
                     </div>
@@ -192,7 +108,7 @@ export class LoginPageElement extends SignalWatcher(LitElement) {
                     </p>
                   `
             }
-          </a-card>
+          </div>
         </div>
 
         <footer-section></footer-section>

@@ -3,44 +3,45 @@ import type { ComponentDoc } from './types';
 export const input: ComponentDoc = {
   slug: 'input',
   name: 'Input',
-  tag: 'a-input',
+  element: 'input',
+  className: 'a-input',
+  void: true,
   description:
     'Text field with an optional label and prefix/suffix slots. Fully self-contained — no slot content required.',
   frame: 'block',
   props: [
     {
       name: 'type',
+      attr: 'type',
       type: 'enum',
       options: ['text', 'email', 'password', 'number'],
       default: 'text',
       description: 'Native input type.',
     },
     {
-      name: 'label',
-      type: 'string',
-      default: '',
-      description: 'Label rendered above the field.',
-    },
-    {
       name: 'placeholder',
+      attr: 'placeholder',
       type: 'string',
       default: '',
       description: 'Placeholder text.',
     },
     {
       name: 'value',
+      attr: 'value',
       type: 'string',
       default: '',
       description: 'Current value (reflected).',
     },
     {
       name: 'name',
+      attr: 'name',
       type: 'string',
-      default: 'input-text',
+      default: '',
       description: 'Form field name.',
     },
     {
       name: 'disabled',
+      attr: 'disabled',
       type: 'boolean',
       default: false,
       description: 'Disables the field.',
@@ -49,19 +50,19 @@ export const input: ComponentDoc = {
   cssVars: [
     {
       name: '--input',
-      default: 'oklch(0.20 0.015 265)',
+      default: 'oklch(0.225 0.018 244)',
       description: 'Input surface color.',
     },
     {
       name: '--border',
-      default: 'oklch(0.27 0.018 265)',
+      default: 'oklch(0.305 0.018 244)',
       description: 'Border color.',
     },
     {
       name: '--muted-foreground',
-      default: 'oklch(0.58 0.01 265)',
+      default: 'oklch(0.69 0.012 245)',
       description: 'Label and placeholder color.',
     },
-    { name: '--radius', default: '0.75rem', description: 'Corner radius.' },
+    { name: '--radius', default: '0.625rem', description: 'Corner radius.' },
   ],
 };

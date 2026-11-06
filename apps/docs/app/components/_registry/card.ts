@@ -3,7 +3,8 @@ import type { ComponentDoc } from './types';
 export const card: ComponentDoc = {
   slug: 'card',
   name: 'Card',
-  tag: 'a-card',
+  element: 'div',
+  className: 'a-card',
   description:
     'Elevated surface for grouping content. Glass is the default treatment; use `variant="default"` for a solid card, and `interactive` when the whole card is a click target.',
   slot: 'Card content',
@@ -26,7 +27,7 @@ export const card: ComponentDoc = {
   cssVars: [
     {
       name: '--card',
-      default: 'oklch(0.16 0.015 265)',
+      default: 'oklch(0.19 0.018 238)',
       description: 'Base card surface color.',
     },
     {
@@ -39,7 +40,7 @@ export const card: ComponentDoc = {
       default: 'color-mix(in oklch, var(--border) 60%, transparent)',
       description: 'Card border color (default variant).',
     },
-    { name: '--radius', default: '0.75rem', description: 'Corner radius.' },
+    { name: '--radius', default: '0.625rem', description: 'Corner radius.' },
     {
       name: '--blur',
       default: '2px',

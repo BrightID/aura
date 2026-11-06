@@ -9,10 +9,10 @@ export default function ConnectionCard(props: {
   onClick?: (id: string) => void;
 }) {
   return (
-    <a-card
-      interactive
+    <div
+      class="a-card flex w-full items-center justify-between gap-2 p-4"
+      data-interactive
       data-testid={`connection-card-${props.connection.id}`}
-      class="flex w-full items-center justify-between gap-2 p-4"
       onClick={() => props.onClick?.(props.connection.id)}
     >
       <div class="flex items-center gap-3">
@@ -31,6 +31,6 @@ export default function ConnectionCard(props: {
       <span class="text-sm capitalize text-muted-foreground">
         {props.connection.level}
       </span>
-    </a-card>
+    </div>
   );
 }

@@ -5,8 +5,9 @@ import { plans } from '~/constants/subscriptions';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getUserProjects } from '~/utils/apis';
 import { Link, useParams } from 'react-router';
-import { toast } from '@aura/ui';
-import { useAuraEvent } from '~/lib/aura';
+import { toast } from '@aura/ui/toast';
+import { AuraDialog } from '~/components/aura-dialog';
+import { AuraSwitch } from '~/components/aura-form-controls';
 import { getAuth } from 'firebase/auth';
 import axios from 'axios';
 import { API_BASE_URL } from '~/constants';
@@ -40,16 +41,9 @@ export default function PricingSection() {
     null,
   );
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const billingSwitchRef = useRef<HTMLElement>(null);
-  const dialogRef = useRef<HTMLElement>(null);
 
   const queryClient = useQueryClient();
   const params = useParams();
-
-  useAuraEvent<boolean>(billingSwitchRef, 'change', setIsYearly);
-  useAuraEvent<{ open: boolean }>(dialogRef, 'open-change', (e) => {
-    if (!e.open) handleClose();
-  });
 
   const {
     data: projects,
@@ -122,11 +116,11 @@ export default function PricingSection() {
   if (isPending) {
     return (
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-8">
-        <a-skeleton className="mx-auto h-10 w-48" />
+        <div className="a-skeleton mx-auto h-10 w-48" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <a-skeleton className="h-80 rounded-xl" />
-          <a-skeleton className="h-80 rounded-xl" />
-          <a-skeleton className="h-80 rounded-xl" />
+          <div className="a-skeleton h-80 rounded-xl" />
+          <div className="a-skeleton h-80 rounded-xl" />
+          <div className="a-skeleton h-80 rounded-xl" />
         </div>
       </div>
     );
@@ -143,8 +137,8 @@ export default function PricingSection() {
             ? 'Please try again later.'
             : 'This upgrade link does not match one of your projects.'}
         </p>
-        <Link to="/projects">
-          <a-button variant="outline">Back to projects</a-button>
+        <Link to="/projects" className="a-button" data-variant="outline">
+          Back to projects
         </Link>
       </div>
     );
@@ -170,18 +164,22 @@ export default function PricingSection() {
             >
               Monthly
             </span>
-            <a-switch ref={billingSwitchRef} checked={isYearly} />
+            <AuraSwitch
+              aria-label="Bill yearly"
+              checked={isYearly}
+              onCheckedChange={setIsYearly}
+            />
             <span
               className={`text-sm font-medium transition-colors ${isYearly ? 'text-foreground' : 'text-muted-foreground'}`}
             >
               Yearly
             </span>
-            <a-badge
-              variant="secondary"
-              className="bg-primary/10 text-primary text-xs"
+            <span
+              className="a-badge bg-primary/10 text-primary text-xs"
+              data-variant="secondary"
             >
               Save 20%
-            </a-badge>
+            </span>
           </div>
         </div>
 
@@ -201,20 +199,20 @@ export default function PricingSection() {
             const isFree = plan.monthlyPrice === 0;
 
             return (
-              <a-card
-                key={plan.name}
-                className={`group relative p-4 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
+              <div
+                className={`a-card group relative p-4 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
                     ? 'border-primary/50 shadow-[0_0_40px_color-mix(in_oklch,var(--primary)_22%,transparent)] bg-card/60 hover:shadow-[0_0_60px_color-mix(in_oklch,var(--primary)_32%,transparent)]'
                     : 'border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_18%,transparent)]'
                 }`}
+                key={plan.name}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <a-badge className="bg-primary text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_45%,transparent)] animate-pulse">
+                    <span className="a-badge bg-primary text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_45%,transparent)] animate-pulse">
                       Most Popular
-                    </a-badge>
+                    </span>
                   </div>
                 )}
 
@@ -274,7 +272,15 @@ export default function PricingSection() {
                   </ul>
                 </div>
 
-                <a-button
+                <button
+                  className={`a-button w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
+                    isCurrent
+                      ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                      : plan.popular
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_28%,transparent)] hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_40%,transparent)]'
+                        : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
+                  }`}
+                  type="button"
                   onClick={async () => {
                     if (isCurrent || plan.id == null || !focusedProject) return;
                     setLoadingPlanId(plan.id);
@@ -312,21 +318,12 @@ export default function PricingSection() {
                       setLoadingPlanId(null);
                     }
                   }}
-                  disabled={
-                    isCurrent || isFree || loadingPlanId !== null
-                  }
-                  className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
-                    isCurrent
-                      ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                      : plan.popular
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_color-mix(in_oklch,var(--primary)_28%,transparent)] hover:shadow-[0_0_30px_color-mix(in_oklch,var(--primary)_40%,transparent)]'
-                        : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
-                  }`}
-                  size="lg"
+                  disabled={isCurrent || isFree || loadingPlanId !== null}
+                  data-size="lg"
                 >
                   {loadingPlanId === plan.id ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…
+                      <Loader2 className="h-4 w-4 animate-spin" /> Loading…
                     </>
                   ) : isCurrent ? (
                     'Current Plan'
@@ -335,10 +332,10 @@ export default function PricingSection() {
                   ) : (
                     plan.cta
                   )}
-                </a-button>
+                </button>
 
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              </a-card>
+              </div>
             );
           })}
         </div>
@@ -373,16 +370,22 @@ export default function PricingSection() {
         </div>
       </div>
 
-      <a-dialog ref={dialogRef} open={!!activeWidget}>
-        <div slot="content" className="max-w-2xl w-full p-0 overflow-hidden">
+      <AuraDialog
+        open={!!activeWidget}
+        label="Complete payment"
+        onOpenChange={(open) => {
+          if (!open) handleClose();
+        }}
+      >
+        <div className="max-w-2xl w-full p-0 overflow-hidden">
           <div className="px-6 pt-5 pb-3">
-            <a-head level="2" className="text-lg font-semibold">
+            <h2 className="a-head text-lg font-semibold">
               {paymentStatus === 'completed'
                 ? `Subscribed to ${activeWidget?.planName}!`
                 : paymentStatus === 'failed'
                   ? 'Payment failed'
                   : `Complete payment — ${activeWidget?.planName}`}
-            </a-head>
+            </h2>
           </div>
 
           {paymentStatus === 'completed' && (
@@ -391,7 +394,9 @@ export default function PricingSection() {
               <p className="text-muted-foreground text-sm text-center">
                 Your subscription is now active. You can close this window.
               </p>
-              <a-button onClick={handleClose}>Done</a-button>
+              <button className="a-button" type="button" onClick={handleClose}>
+                Done
+              </button>
             </div>
           )}
 
@@ -401,9 +406,14 @@ export default function PricingSection() {
               <p className="text-muted-foreground text-sm text-center">
                 Payment did not complete. Please try again.
               </p>
-              <a-button variant="secondary" onClick={handleClose}>
+              <button
+                className="a-button"
+                type="button"
+                data-variant="secondary"
+                onClick={handleClose}
+              >
                 Close
-              </a-button>
+              </button>
             </div>
           )}
 
@@ -419,7 +429,7 @@ export default function PricingSection() {
               />
             )}
         </div>
-      </a-dialog>
+      </AuraDialog>
     </section>
   );
 }

@@ -1,0 +1,56 @@
+/* <verification-page>, verification.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (verification-page) to (:scope [data-c] > *) {
+    :scope {
+      display: block;
+    }
+
+    .eyebrow {
+      color: var(--muted-foreground);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .req {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .req .a-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .req .a-badge {
+      flex-shrink: 0;
+    }
+
+    .actions {
+      margin-top: 8px;
+    }
+
+    .actions .a-button {
+      width: 100%;
+    }
+  }
+}

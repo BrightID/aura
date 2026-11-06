@@ -1,6 +1,8 @@
-import { css, type CSSResultGroup, html, LitElement } from 'lit';
+import { LightElement } from '../light-element';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './level-badge.css';
 
 const levelColors: Record<
   number,
@@ -42,65 +44,9 @@ const levelLabels: Record<number, string> = {
 };
 
 @customElement('verification-level-badge')
-export class VerificationLevelBadge extends LitElement {
+export class VerificationLevelBadge extends LightElement {
   @property({ type: Number }) level = 0;
   @property() size: 'xs' | 'sm' | 'md' | 'lg' = 'md';
-
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: inline-flex;
-        font-size: inherit;
-      }
-
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375em;
-        border-radius: 9999px;
-        font-weight: 500;
-        border: 1px solid;
-        /* md defaults */
-        padding: 0.25em 0.75em;
-        font-size: 0.875em;
-      }
-      .badge.xs {
-        padding: 0.125em 0.375em;
-        font-size: 0.625em;
-        gap: 0.25em;
-      }
-      .badge.sm {
-        padding: 0.125em 0.5em;
-        font-size: 0.75em;
-      }
-      .badge.lg {
-        padding: 0.375em 1em;
-        font-size: 1em;
-      }
-
-      .dot {
-        border-radius: 50%;
-        background: currentColor;
-        flex-shrink: 0;
-        /* md default */
-        width: 0.5em;
-        height: 0.5em;
-      }
-      .badge.xs .dot {
-        width: 0.25em;
-        height: 0.25em;
-      }
-      .badge.sm .dot {
-        width: 0.375em;
-        height: 0.375em;
-      }
-      .badge.lg .dot {
-        width: 0.625em;
-        height: 0.625em;
-      }
-    `,
-  ];
 
   render() {
     const level = Math.max(0, Math.min(4, this.level));

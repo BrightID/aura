@@ -1,3 +1,4 @@
+import { LightElement } from '@aura/widgets/light-element';
 import { pushRouter } from '@/router';
 import { projects, trackedProject } from '@/states/projects';
 import { levelUpProgress } from '@/states/user';
@@ -6,14 +7,15 @@ import { getProjects, queryClient } from '@/utils/apis';
 import { EvaluationCategory } from '@/utils/aura';
 import { getLevelupProgress } from '@/utils/score';
 import { signal, SignalWatcher } from '@lit-labs/signals';
-import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import './project-page.css';
 
 const focusedProject = signal(null as Project | null);
 const progress = signal(0);
 
 @customElement('project-landing')
-export class ProjectLandingElement extends SignalWatcher(LitElement) {
+export class ProjectLandingElement extends SignalWatcher(LightElement) {
   @property({
     type: Number,
   })
@@ -21,34 +23,6 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
 
   @state() private isLoading = true;
   @state() private loadFailed = false;
-
-  static styles?: CSSResultGroup = css`
-    :host {
-      display: block;
-    }
-
-    .project-image {
-      width: 100%;
-      height: auto;
-      border-radius: var(--radius);
-      margin-bottom: 16px;
-    }
-
-    .description {
-      color: var(--muted-foreground);
-      line-height: 1.5;
-      margin: 8px 0 0;
-      overflow-wrap: anywhere;
-    }
-
-    .actions {
-      margin-top: 20px;
-    }
-
-    .actions a-button {
-      width: 100%;
-    }
-  `;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -87,26 +61,33 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
 
   protected render() {
     if (this.isLoading) {
-      return html`<a-skeleton style="height: 12rem"></a-skeleton>`;
+      return html`<div class="a-skeleton" style="height: 12rem"></div>`;
     }
 
     const project = focusedProject.get();
     if (this.loadFailed || !project) {
       return html`
-        <a-card variant="default">
-          <a-head level="2">Project unavailable</a-head>
-          <a-text variant="muted">That project could not be loaded.</a-text>
+        <div class="a-card" data-variant="default">
+          <h2 class="a-head">Project unavailable</h2>
+          <p class="a-text" data-variant="muted">
+            That project could not be loaded.
+          </p>
           <div class="actions">
-            <a-button variant="outline" @click=${() => pushRouter('/home')}>
+            <button
+              class="a-button"
+              type="button"
+              data-variant="outline"
+              @click=${() => pushRouter('/home')}
+            >
               Back home
-            </a-button>
+            </button>
           </div>
-        </a-card>
+        </div>
       `;
     }
 
     return html`
-      <a-card variant="default">
+      <div class="a-card" data-variant="default">
         ${
           project.image
             ? html`<img
@@ -116,7 +97,7 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
               />`
             : ''
         }
-        <a-head level="1">${project.name}</a-head>
+        <h1 class="a-head" data-level="1">${project.name}</h1>
         <p class="description">
           ${project.description || 'No description available.'}
         </p>
@@ -124,9 +105,11 @@ export class ProjectLandingElement extends SignalWatcher(LitElement) {
           To claim your reward, complete verification in Aura.
         </p>
         <div class="actions">
-          <a-button @click=${this.trackProject}>Continue</a-button>
+          <button class="a-button" type="button" @click=${this.trackProject}>
+            Continue
+          </button>
         </div>
-      </a-card>
+      </div>
     `;
   }
 }

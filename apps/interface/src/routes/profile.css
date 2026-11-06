@@ -1,0 +1,23 @@
+/* <profile-page>, profile.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (profile-page) to (:scope [data-c] > *) {
+    .heading {
+      margin-bottom: 8px;
+    }
+    .eyebrow {
+      color: var(--muted-foreground);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+    .a-button {
+      margin-top: 16px;
+    }
+    .a-text {
+      overflow-wrap: anywhere;
+    }
+  }
+}

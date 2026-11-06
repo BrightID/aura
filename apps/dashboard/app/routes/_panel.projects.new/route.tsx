@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router';
-import { toast } from 'sonner';
+import { toast } from '@aura/ui/toast';
 import { API_BASE_URL } from '~/constants';
 
 const formSchema = z.object({
@@ -29,10 +29,7 @@ const formSchema = z.object({
   logoUrl: z.url('Enter a valid URL').optional().or(z.literal('')),
   websiteUrl: z.url('Enter a valid URL').optional().or(z.literal('')),
   remainingtokens: z.coerce.number().int().min(0).optional(),
-  brightIdAppId: z
-    .string()
-    .max(500, 'Use 500 characters or fewer')
-    .optional(),
+  brightIdAppId: z.string().max(500, 'Use 500 characters or fewer').optional(),
   deadline: z.string().optional(),
 });
 

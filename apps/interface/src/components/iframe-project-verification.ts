@@ -1,10 +1,11 @@
-import { html, LitElement } from 'lit';
+import { LightElement } from '@aura/widgets/light-element';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 const productionAuraGetVerifiedURL = '/interface';
 
 @customElement('iframe-project-verification')
-export class IFramePorjectVerification extends LitElement {
+export class IFramePorjectVerification extends LightElement {
   @property({
     type: Number,
   })

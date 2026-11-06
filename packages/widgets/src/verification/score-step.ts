@@ -1,12 +1,15 @@
+import { icon } from '../icon';
+import { LightElement } from '../light-element';
 import { SignalWatcher } from '@lit-labs/signals';
-import { type CSSResultGroup, css, html, LitElement, svg } from 'lit';
+import { html, svg } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import {
   askedEvaluationPlayers,
   foundAuraPlayersFromContact,
 } from '@/lib/data/contacts';
 import type { AuraImpact } from '@/types/evaluation';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './score-step.css';
 
 const SLICE_COLORS = [
   '#6366f1',
@@ -57,160 +60,9 @@ function donutSlicePath(
 }
 
 @customElement('verification-score')
-export class VerificationScoreElement extends SignalWatcher(LitElement) {
+export class VerificationScoreElement extends SignalWatcher(LightElement) {
   @property({ type: Array }) impacts: AuraImpact[] = [];
   @property({ type: Number }) totalScore = 0;
-
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        font-size: inherit;
-        padding-bottom: 10px;
-      }
-      .stack {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25em;
-      }
-
-      /* Header */
-      .page-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-      }
-      .back-btn {
-        padding: 0.5em;
-        margin-left: -0.5em;
-        border-radius: 0.5em;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--muted-foreground);
-        transition: background 0.15s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .back-btn:hover {
-        background: var(--secondary);
-      }
-      .back-btn iconify-icon {
-        width: 1.5em;
-        height: 1.5em;
-      }
-      .title {
-        margin: 0;
-        font-size: 1em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-
-      /* Chart */
-      .chart-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1em;
-      }
-      .chart-svg {
-        width: 10em;
-        height: 10em;
-        overflow: visible;
-      }
-
-      /* Breakdown list */
-      .breakdown-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.375em;
-      }
-      .breakdown-item {
-        display: flex;
-        align-items: center;
-        gap: 0.625em;
-        padding: 0.625em 0.75em;
-        background: var(--secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5em;
-      }
-      .color-dot {
-        width: 0.6em;
-        height: 0.6em;
-        border-radius: 9999px;
-        flex-shrink: 0;
-      }
-      .bi-name {
-        flex: 1;
-        min-width: 0;
-        font-size: 0.8em;
-        color: var(--foreground);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .bi-conf {
-        font-size: 0.7em;
-        color: var(--muted-foreground);
-        flex-shrink: 0;
-      }
-      .bi-right {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 0.1em;
-        flex-shrink: 0;
-      }
-      .bi-amount {
-        font-size: 0.8em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-      .bi-pct {
-        font-size: 0.7em;
-        color: var(--muted-foreground);
-      }
-
-      .empty {
-        text-align: center;
-        padding: 2.5em 1em;
-        color: var(--muted-foreground);
-        font-size: 0.875em;
-      }
-
-      /* Pending rows */
-      .pending-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-        font-size: 0.7em;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-top: 0.25em;
-      }
-      .pending-label::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-      }
-      .pending-label iconify-icon {
-        width: 0.8em;
-        height: 0.8em;
-        flex-shrink: 0;
-      }
-      .breakdown-item.pending {
-        opacity: 0.65;
-      }
-      .bi-amount.zero {
-        color: var(--muted-foreground);
-      }
-    `,
-  ];
 
   protected render() {
     const contacts = foundAuraPlayersFromContact.get();
@@ -267,7 +119,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
             aria-label="Go back"
             @click=${() => this._emit('back')}
           >
-            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+            ${icon('lucide:chevron-left')}
           </button>
           <h2 class="title">Score Breakdown</h2>
         </div>
@@ -340,8 +192,7 @@ export class VerificationScoreElement extends SignalWatcher(LitElement) {
                     pending.length > 0
                       ? html`
                           <span class="pending-label">
-                            <iconify-icon icon="lucide:clock"></iconify-icon>
-                            Waiting for evaluation
+                            ${icon('lucide:clock')} Waiting for evaluation
                           </span>
                           ${pending.map(
                             (player) => html`

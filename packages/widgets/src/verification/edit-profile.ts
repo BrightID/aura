@@ -1,4 +1,6 @@
-import { type CSSResultGroup, css, html, LitElement } from 'lit';
+import { icon } from '../icon';
+import { LightElement } from '../light-element';
+import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import {
   userFirstName,
@@ -6,7 +8,8 @@ import {
   userLastName,
   userProfilePicture,
 } from '@/states/user';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './edit-profile.css';
 
 async function getGravatarHash(email: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(email.trim().toLowerCase());
@@ -17,128 +20,11 @@ async function getGravatarHash(email: string): Promise<string> {
 }
 
 @customElement('verification-edit-profile')
-export class VerificationEditProfileElement extends LitElement {
+export class VerificationEditProfileElement extends LightElement {
   @state() private _firstName = '';
   @state() private _lastName = '';
   @state() private _gravatarEmail = '';
   @state() private _saving = false;
-
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        font-size: inherit;
-      }
-
-      .stack {
-        display: flex;
-        flex-direction: column;
-        gap: 0.875em;
-      }
-
-      /* Header */
-      .page-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-      }
-      .back-btn {
-        padding: 0.5em;
-        margin-left: -0.5em;
-        border-radius: 0.5em;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--muted-foreground);
-        transition: background 0.15s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .back-btn:hover {
-        background: var(--secondary);
-      }
-      .back-btn iconify-icon {
-        width: 1.5em;
-        height: 1.5em;
-      }
-      .title {
-        margin: 0;
-        font-size: 1em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-
-      /* Purpose note */
-      .purpose-note {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.4em;
-        font-size: 0.75em;
-        color: var(--muted-foreground);
-        line-height: 1.5;
-        margin: 0;
-      }
-
-      .purpose-note iconify-icon {
-        width: 0.9em;
-        height: 0.9em;
-        flex-shrink: 0;
-        margin-top: 0.3em;
-      }
-
-      /* Form */
-      .form-card {
-        display: flex;
-        flex-direction: column;
-        gap: 0.125em;
-        padding: 0.875em;
-        background: var(--secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius, 0.75rem);
-      }
-
-      /* Gravatar hint */
-      .gravatar-hint {
-        /*display: flex;
-      align-items: center;
-      justify-content: space-between;*/
-        padding: 0.25em 0.125em 0.375em;
-        font-size: 0.7em;
-        color: var(--muted-foreground);
-      }
-      .gravatar-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.2em;
-        color: var(--primary);
-        text-decoration: none;
-        font-weight: 500;
-      }
-      .gravatar-link:hover {
-        text-decoration: underline;
-      }
-      .gravatar-link iconify-icon {
-        width: 0.75em;
-        height: 0.75em;
-      }
-      .gravatar-link span {
-        flex: 1 1 auto;
-        width: 100%;
-      }
-
-      /* Actions */
-      .actions {
-        display: flex;
-        gap: 0.5em;
-        justify-content: flex-end;
-        padding-top: 0.625em;
-        border-top: 1px solid var(--border);
-        margin-top: 0.375em;
-      }
-    `,
-  ];
 
   connectedCallback() {
     super.connectedCallback();
@@ -156,41 +42,50 @@ export class VerificationEditProfileElement extends LitElement {
             aria-label="Go back"
             @click=${() => this._emit('back')}
           >
-            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+            ${icon('lucide:chevron-left')}
           </button>
           <h2 class="title">Edit Profile</h2>
         </div>
 
         <p class="purpose-note">
-          <iconify-icon icon="lucide:info"></iconify-icon>
-          Your name and photo are embedded in the link you share with Aura
-          players, making it easier for them to identify and evaluate you.
+          ${icon('lucide:info')} Your name and photo are embedded in the link
+          you share with Aura players, making it easier for them to identify and
+          evaluate you.
         </p>
 
         <div class="form-card">
-          <a-input
-            label="First Name"
-            .value=${this._firstName}
-            @change=${(e: CustomEvent) => {
-              this._firstName = e.detail as string;
-            }}
-          ></a-input>
-          <a-input
-            label="Last Name"
-            .value=${this._lastName}
-            @change=${(e: CustomEvent) => {
-              this._lastName = e.detail as string;
-            }}
-          ></a-input>
-          <a-input
-            label="Gravatar Email"
-            type="email"
-            placeholder="your@email.com"
-            .value=${this._gravatarEmail}
-            @change=${(e: CustomEvent) => {
-              this._gravatarEmail = e.detail as string;
-            }}
-          ></a-input>
+          <label class="a-field">
+            First Name
+            <input
+              class="a-input"
+              .value=${this._firstName}
+              @input=${(e: Event) => {
+                this._firstName = (e.target as HTMLInputElement).value;
+              }}
+            />
+          </label>
+          <label class="a-field">
+            Last Name
+            <input
+              class="a-input"
+              .value=${this._lastName}
+              @input=${(e: Event) => {
+                this._lastName = (e.target as HTMLInputElement).value;
+              }}
+            />
+          </label>
+          <label class="a-field">
+            Gravatar Email
+            <input
+              class="a-input"
+              type="email"
+              placeholder="your@email.com"
+              .value=${this._gravatarEmail}
+              @input=${(e: Event) => {
+                this._gravatarEmail = (e.target as HTMLInputElement).value;
+              }}
+            />
+          </label>
           <div class="gravatar-hint">
             <span>Profile picture is pulled from Gravatar</span>
             <a
@@ -200,26 +95,30 @@ export class VerificationEditProfileElement extends LitElement {
               rel="noopener noreferrer"
             >
               <span> Create a Gravatar </span>
-              <iconify-icon icon="lucide:external-link"></iconify-icon>
+              ${icon('lucide:external-link')}
             </a>
           </div>
 
           <div class="actions">
-            <a-button
-              variant="ghost"
-              size="sm"
+            <button
+              class="a-button"
+              type="button"
+              data-variant="ghost"
+              data-size="sm"
               ?disabled=${this._saving}
               @click=${() => this._emit('back')}
             >
               Cancel
-            </a-button>
-            <a-button
-              size="sm"
+            </button>
+            <button
+              class="a-button"
+              type="button"
+              data-size="sm"
               ?disabled=${this._saving}
               @click=${() => this._save()}
             >
               ${this._saving ? 'Saving…' : 'Save'}
-            </a-button>
+            </button>
           </div>
         </div>
       </div>

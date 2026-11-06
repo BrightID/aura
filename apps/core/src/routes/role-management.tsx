@@ -31,10 +31,10 @@ function RoleCard(props: {
   const unlocked = () => !props.gated || progress().isUnlocked;
 
   return (
-    <a-card
-      variant="glass"
+    <div
+      class="a-card flex min-h-28 flex-col gap-3 p-5"
+      data-variant="glass"
       data-testid={`role-card-${props.label.toLowerCase()}`}
-      class="flex min-h-28 flex-col gap-3 p-5"
     >
       <div class="flex items-center justify-between">
         <p class="text-xl font-medium text-foreground">{props.label}</p>
@@ -52,7 +52,7 @@ function RoleCard(props: {
         </Show>
       </div>
       <LevelScore level={v.auraLevel()} score={v.auraScore()} />
-    </a-card>
+    </div>
   );
 }
 
@@ -62,14 +62,14 @@ export default function RoleManagementPage() {
 
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
-      <a-head class="text-2xl">Role Management</a-head>
+      <h2 class="a-head text-2xl">Role Management</h2>
 
       <Show
         when={subjectId()}
         fallback={
-          <a-text size="sm" variant="muted">
+          <p class="a-text" data-size="sm" data-variant="muted">
             Sign in to see your roles.
-          </a-text>
+          </p>
         }
       >
         <For each={ROLES}>

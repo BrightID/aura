@@ -1,45 +1,16 @@
-import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { iconUrl } from '@aura/ui/icon';
+import { LightElement } from '@aura/widgets/light-element';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import thumbsUpGreen from '@/assets/icons/thumbs-up.svg';
 
 import '@/components/common/notification-card';
 import { notificationItems } from '@/lib/notifications';
 import { createBlockiesImage } from '@/utils/image';
+import './notifications.css';
 
 @customElement('notifications-page')
-export class NotificationsPage extends LitElement {
-  static styles?: CSSResultGroup = css`
-    section {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-width: 0;
-    }
-
-    .filter {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .filter a-button {
-      flex: 0 0 auto;
-    }
-
-    .filter a-button[variant='ghost']::part(button) {
-      color: var(--muted-foreground);
-    }
-
-    .empty {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      color: var(--muted-foreground);
-    }
-  `;
-
+export class NotificationsPage extends LightElement {
   private activeFilter: string = 'All';
 
   private filters = [
@@ -63,18 +34,20 @@ export class NotificationsPage extends LitElement {
 
     return html`
       <section>
-        <a-head level="1">Alerts</a-head>
+        <h1 class="a-head" data-level="1">Alerts</h1>
 
         <div class="filter">
           ${this.filters.map(
             (f) => html`
-              <a-button
-                size="sm"
-                variant="${this.activeFilter === f.label ? 'default' : 'ghost'}"
+              <button
+                class="a-button"
+                type="button"
+                data-size="sm"
+                data-variant="${this.activeFilter === f.label ? 'default' : 'ghost'}"
                 @click=${() => this.setFilter(f.label)}
               >
                 ${f.label}
-              </a-button>
+              </button>
             `,
           )}
         </div>
@@ -82,12 +55,18 @@ export class NotificationsPage extends LitElement {
         ${
           filtered.length === 0
             ? html`
-                <a-card variant="default">
+                <div class="a-card" data-variant="default">
                   <div class="empty">
-                    <a-icon name="bell" size="md"></a-icon>
-                    <a-text variant="muted">No notifications yet.</a-text>
+                    <span
+                      class="a-icon text-2xl"
+                      aria-hidden="true"
+                      style="--icon-url: url('${iconUrl('bell')}')"
+                    ></span>
+                    <p class="a-text" data-variant="muted">
+                      No notifications yet.
+                    </p>
                   </div>
-                </a-card>
+                </div>
               `
             : filtered.map(
                 (item) => html`

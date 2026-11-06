@@ -1,5 +1,4 @@
 import '@/index.css';
-import '@aura/ui';
 import { Router } from '@solidjs/router';
 import { render } from 'solid-js/web';
 import Providers from '@/providers';

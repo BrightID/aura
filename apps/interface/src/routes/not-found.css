@@ -1,0 +1,13 @@
+/* <not-found>, not-found.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (not-found) to (:scope [data-c] > *) {
+    .a-card {
+      display: block;
+    }
+    .a-text {
+      margin: 8px 0 16px;
+    }
+  }
+}

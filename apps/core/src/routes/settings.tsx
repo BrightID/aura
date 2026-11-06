@@ -14,7 +14,7 @@ import VersionCard from '@/components/settings/version-card';
 export default function SettingsPage() {
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
-      <a-head class="text-2xl">Settings</a-head>
+      <h2 class="a-head text-2xl">Settings</h2>
 
       <section class="flex w-full flex-col gap-4">
         <SettingCard

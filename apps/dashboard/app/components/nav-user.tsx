@@ -14,7 +14,29 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
 import { logUserOut } from '~/lib/auth-actions';
+import { cn } from '~/lib/utils';
+
+/** The user's photo, or the placeholder text "CN" (not the user's initials) when there is none. */
+function UserAvatar({ user, className }: { user: User; className?: string }) {
+  return (
+    <span className={cn('a-avatar h-8 w-8 rounded-lg', className)}>
+      {user.photoURL ? (
+        <img src={user.photoURL} alt={user.displayName ?? user.email ?? ''} />
+      ) : (
+        'CN'
+      )}
+    </span>
+  );
+}
 
 export function NavUser({ user }: { user: User | null | undefined }) {
   const { isMobile } = useSidebar();
@@ -26,42 +48,33 @@ export function NavUser({ user }: { user: User | null | undefined }) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <a-dropdown-menu
-          className="w-full"
-          side={isMobile ? 'top' : 'right'}
-          align="end"
-          sideOffset={8}
-        >
-          <SidebarMenuButton
-            slot="trigger"
-            size="lg"
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <UserAvatar user={user} className="grayscale" />
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">
+                  {user.displayName ?? user.email}
+                </span>
+                <span className="text-muted-foreground truncate text-xs">
+                  {user.email}
+                </span>
+              </div>
+              <IconDotsVertical className="ml-auto size-4" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="min-w-56 rounded-lg"
+            side={isMobile ? 'top' : 'right'}
+            align="end"
+            sideOffset={8}
           >
-            <a-avatar
-              className="h-8 w-8 rounded-lg grayscale"
-              src={user.photoURL ?? ''}
-              alt={user.displayName ?? user.email!}
-              fallback="CN"
-            />
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">
-                {user.displayName ?? user.email}
-              </span>
-              <span className="text-muted-foreground truncate text-xs">
-                {user.email}
-              </span>
-            </div>
-            <IconDotsVertical className="ml-auto size-4" />
-          </SidebarMenuButton>
-          <div slot="content" className="min-w-56 rounded-lg">
-            <a-dropdown-label className="p-0 font-normal">
+            <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <a-avatar
-                  className="h-8 w-8 rounded-lg"
-                  src={user.photoURL || ''}
-                  alt={user.displayName || user.email!}
-                  fallback="CN"
-                />
+                <UserAvatar user={user} />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
                     {user.displayName}
@@ -71,38 +84,38 @@ export function NavUser({ user }: { user: User | null | undefined }) {
                   </span>
                 </div>
               </div>
-            </a-dropdown-label>
-            <a-dropdown-separator />
-            <Link to="/account">
-              <a-dropdown-item>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/account">
                 <IconUserCircle />
                 Account
-              </a-dropdown-item>
-            </Link>
-            <Link to="/billing">
-              <a-dropdown-item>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/billing">
                 <IconCreditCard />
                 Billing
-              </a-dropdown-item>
-            </Link>
-            <Link to="/notifications">
-              <a-dropdown-item>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/notifications">
                 <IconNotification />
                 Notifications
-              </a-dropdown-item>
-            </Link>
-            <a-dropdown-separator />
-            <a-dropdown-item
-              onClick={() => {
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={() => {
                 logUserOut();
                 navigate('/');
               }}
             >
               <IconLogout />
               Log out
-            </a-dropdown-item>
-          </div>
-        </a-dropdown-menu>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   );

@@ -1,12 +1,15 @@
+import { icon } from '../icon';
+import { LightElement } from '../light-element';
 import brightIDIcon from '@/assets/icons/brightid.svg';
 import LockIcon from '@/assets/icons/lock.svg';
 import { userBrightId } from '@/states/user';
 import { loginWithPasskey, registerWithPasskey } from '@aura/sdk/auth/passkeys';
-import { css, type CSSResultGroup, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import './brightid-qr';
 import './level-badge';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './login.css';
 
 type ConnectMethod = 'brightid' | 'passkey' | null;
 type View = 'options' | 'brightid-qr' | 'passkey-choice';
@@ -19,7 +22,7 @@ const levelDescriptions: Record<number, string> = {
 };
 
 @customElement('verification-connect')
-export class VerificationConnectElement extends LitElement {
+export class VerificationConnectElement extends LightElement {
   @property() appName = '';
   @property() appDescription?: string;
   @property() appLogo?: string;
@@ -28,289 +31,6 @@ export class VerificationConnectElement extends LitElement {
   @state() private connecting: ConnectMethod = null;
   @state() private view: View = 'options';
   @state() private error = '';
-
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        font-size: inherit;
-      }
-
-      .logo {
-        width: 5rem;
-        height: 5rem;
-      }
-
-      .stack {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25em;
-      }
-
-      /* Header */
-      .header {
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5em;
-      }
-      .logo-ring {
-        width: 3em;
-        height: 3em;
-        border-radius: 9999px;
-        background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .logo-ring svg {
-        width: 1.75em;
-        height: 1.75em;
-      }
-      .heading {
-        margin: 0;
-        font-size: 1.125em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-      .subheading {
-        margin: 0;
-        font-size: 0.875em;
-        color: var(--muted-foreground);
-      }
-
-      /* Options */
-      .options {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5em;
-      }
-      .option-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-        padding: 0.75em 1em;
-        background: var(--secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius, 0.75rem);
-        cursor: pointer;
-        transition: background 0.15s;
-        text-align: left;
-      }
-      .option-btn:hover:not(:disabled) {
-        background: color-mix(
-          in srgb,
-          var(--secondary) 80%,
-          var(--foreground) 5%
-        );
-      }
-      .option-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
-      .option-icon {
-        width: 2.25em;
-        height: 2.25em;
-        flex-shrink: 0;
-        border-radius: 0.5em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .option-icon.brightid {
-        background: rgba(237, 122, 92, 0.12);
-      }
-      .option-icon.passkey {
-        background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
-      }
-      .option-icon img {
-        width: 1.25em;
-        height: 1.25em;
-      }
-      .option-icon svg {
-        width: 1.25em;
-        height: 1.25em;
-        color: var(--primary);
-      }
-
-      .option-text {
-        flex: 1;
-      }
-      .option-name {
-        font-size: 0.9em;
-        font-weight: 500;
-        color: var(--foreground);
-      }
-      .option-desc {
-        font-size: 0.9em;
-        color: var(--muted-foreground);
-        margin-top: 0.125em;
-      }
-
-      .spinner {
-        width: 1em;
-        height: 1em;
-        flex-shrink: 0;
-        border: 2px solid var(--border);
-        border-top-color: var(--primary);
-        border-radius: 9999px;
-        animation: spin 0.6s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* Help */
-      .help-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.375em;
-        width: 100%;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 0.875em;
-        color: var(--muted-foreground);
-        padding: 0.25em;
-        transition: color 0.15s;
-      }
-      .help-btn:hover {
-        color: var(--foreground);
-      }
-      .help-btn iconify-icon {
-        width: 1em;
-        height: 1em;
-        flex-shrink: 0;
-      }
-
-      /* Trust row */
-      .trust-row {
-        padding-top: 0.75em;
-        border-top: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1em;
-        flex-wrap: wrap;
-      }
-      .trust-item {
-        display: flex;
-        align-items: center;
-        gap: 0.25em;
-        font-size: 0.75em;
-        color: var(--muted-foreground);
-      }
-      .trust-item iconify-icon {
-        width: 0.875em;
-        height: 0.875em;
-        flex-shrink: 0;
-      }
-
-      /* Error */
-      .error-msg {
-        padding: 0.625em 0.75em;
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 0.5em;
-        font-size: 0.75em;
-        color: var(--destructive);
-      }
-
-      /* App header (merged from intro) */
-      .app-header {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75em;
-      }
-      .app-logo-img {
-        width: 3em;
-        height: 3em;
-        flex-shrink: 0;
-        border-radius: var(--radius, 0.75rem);
-        object-fit: cover;
-      }
-      .app-logo-text {
-        width: 3em;
-        height: 3em;
-        flex-shrink: 0;
-        border-radius: var(--radius, 0.75rem);
-        background: var(--secondary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.125em;
-        font-weight: bold;
-        color: var(--foreground);
-      }
-      .app-info {
-        flex: 1;
-        min-width: 0;
-      }
-      .app-name {
-        margin: 0 0 0.25em;
-        font-size: 1em;
-        font-weight: 600;
-        color: var(--foreground);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .app-desc {
-        margin: 0;
-        font-size: 0.875em;
-        color: var(--muted-foreground);
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-
-      /* Required verification card */
-      .req-card {
-        padding: 0.75em 0.875em;
-        background: var(--secondary);
-        border-radius: var(--radius, 0.75rem);
-        border: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75em;
-      }
-      .req-card-text {
-        flex: 1;
-        min-width: 0;
-      }
-      .req-label {
-        font-size: 0.7em;
-        color: var(--muted-foreground);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        font-weight: 600;
-      }
-      .req-desc {
-        margin: 0.2em 0 0;
-        font-size: 0.8em;
-        color: var(--foreground);
-      }
-
-      /* Options heading */
-      .options-label {
-        font-size: 0.7em;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin: 0.25em 0 -0.25em;
-      }
-    `,
-  ];
 
   protected render() {
     if (this.view === 'brightid-qr') {
@@ -421,23 +141,15 @@ export class VerificationConnectElement extends LitElement {
         ${this.error ? html`<p class="error-msg">${this.error}</p>` : ''}
 
         <button class="help-btn" @click=${() => this._emit('how-it-works')}>
-          <iconify-icon icon="lucide:info"></iconify-icon>
-          What is Aura?
+          ${icon('lucide:info')} What is Aura?
         </button>
 
         <div class="trust-row">
           <span class="trust-item">
-            <iconify-icon icon="lucide:shield-check"></iconify-icon>
-            Decentralized
+            ${icon('lucide:shield-check')} Decentralized
           </span>
-          <span class="trust-item">
-            <iconify-icon icon="lucide:lock"></iconify-icon>
-            Privacy-First
-          </span>
-          <span class="trust-item">
-            <iconify-icon icon="lucide:globe"></iconify-icon>
-            Open Network
-          </span>
+          <span class="trust-item"> ${icon('lucide:lock')} Privacy-First </span>
+          <span class="trust-item"> ${icon('lucide:globe')} Open Network </span>
         </div>
       </div>
     `;
@@ -498,8 +210,7 @@ export class VerificationConnectElement extends LitElement {
             this.error = '';
           }}
         >
-          <iconify-icon icon="lucide:chevron-left"></iconify-icon>
-          Back
+          ${icon('lucide:chevron-left')} Back
         </button>
       </div>
     `;

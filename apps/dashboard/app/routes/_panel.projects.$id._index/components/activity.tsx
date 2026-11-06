@@ -9,7 +9,7 @@ import type { Project } from '~/types/projects';
 export default function ProjectActivity({ project }: { project: Project }) {
   return (
     <div className="space-y-6">
-      <a-card variant="default">
+      <div className="a-card" data-variant="default">
         <div className="flex flex-col gap-1.5">
           <h3 className="font-semibold leading-none">Timeline</h3>
           <p className="text-sm text-muted-foreground">
@@ -40,7 +40,7 @@ export default function ProjectActivity({ project }: { project: Project }) {
 
             {project.updatedAt && (
               <>
-                <a-separator />
+                <hr className="a-separator" />
                 <div className="flex items-start gap-4">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted mt-0.5">
                     <Activity className="h-4 w-4 text-muted-foreground" />
@@ -65,7 +65,7 @@ export default function ProjectActivity({ project }: { project: Project }) {
 
             {project.deadline && (
               <>
-                <a-separator />
+                <hr className="a-separator" />
                 <div className="flex items-start gap-4">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500/10 mt-0.5">
                     <Calendar className="h-4 w-4 text-orange-500" />
@@ -86,7 +86,7 @@ export default function ProjectActivity({ project }: { project: Project }) {
             )}
           </div>
         </div>
-      </a-card>
+      </div>
     </div>
   );
 }

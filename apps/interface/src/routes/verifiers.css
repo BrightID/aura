@@ -1,0 +1,38 @@
+/* <verifiers-page>, verifiers.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (verifiers-page) to (:scope [data-c] > *) {
+    .filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .filter .a-button {
+      flex: 0 0 auto;
+    }
+
+    .filter .a-button[data-variant='ghost']::part(button) {
+      color: var(--muted-foreground);
+    }
+
+    main {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 24px 0;
+      color: var(--muted-foreground);
+    }
+  }
+}

@@ -112,3 +112,6 @@ apps/core-old/src/styles/index.css
 
 # Local Grok MCP override (Aura Linear app user). Not for the shared repo.
 .grok/
+
+# Screenshot check output (scripts/visual-check.mjs)
+tests/visual/out/

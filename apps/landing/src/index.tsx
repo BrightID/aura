@@ -3,8 +3,9 @@ import { render } from 'solid-js/web';
 import App from './App';
 import { startClientNav } from './router';
 
-// Remotes also register @aura/ui tags. Skip duplicates so SPA nav
-// from the host does not throw on customElements.define.
+// The interface and dashboard remotes both register the @aura/widgets
+// elements. Skip duplicates so SPA nav from the host does not throw on
+// customElements.define.
 const define = CustomElementRegistry.prototype.define;
 CustomElementRegistry.prototype.define = function (
   this: CustomElementRegistry,

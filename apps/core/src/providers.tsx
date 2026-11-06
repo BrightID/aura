@@ -3,6 +3,7 @@ import localforage from 'localforage';
 import { createEffect, onMount, type ParentComponent } from 'solid-js';
 import OpNotifications from '@/components/evaluation/op-notifications';
 import NotificationsChecker from '@/components/notifications/notifications-checker';
+import Toaster from '@/components/ui/toaster';
 import { preferencesStore } from '@/store/preferences';
 import { isNotFound } from '@aura/domain/http';
 
@@ -33,8 +34,9 @@ const Providers: ParentComponent = (props) => {
       );
   });
 
-  // `dark` and `light` are the class selectors in @aura/ui/tokens.css.
-  // :root in that file is the dark palette, so a `light` class that does not match leaves the page dark.
+  // `dark` and `light` are the theme classes that @aura/ui/tokens.css styles
+  // (aura.css imports it). :root there is the dark palette: if tokens.css
+  // renamed `.light`, this class would match nothing and the page would stay dark.
   createEffect(() => {
     const dark = preferencesStore.theme === 'dark';
     document.documentElement.classList.toggle('dark', dark);
@@ -43,7 +45,7 @@ const Providers: ParentComponent = (props) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <a-toaster />
+      <Toaster />
       <OpNotifications />
       <NotificationsChecker />
       {props.children}

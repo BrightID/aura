@@ -1,4 +1,3 @@
-import '@aura/ui';
 import { StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { RouterProvider } from 'react-router';

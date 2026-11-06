@@ -1,39 +1,16 @@
+import { LightElement } from '@aura/widgets/light-element';
 import '@/components/project-verification';
-import '@aura/ui/components/dialog';
 import { SignalWatcher } from '@lit-labs/signals';
-import { css, CSSResultGroup, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import './dev.css';
 
 @customElement('verification-project')
-export class EmbeddedVerificationPageElement extends SignalWatcher(LitElement) {
+export class EmbeddedVerificationPageElement extends SignalWatcher(
+  LightElement,
+) {
   @state() private isModalOpen = false;
   protected iframeElement: null | HTMLIFrameElement = null;
-
-  static styles?: CSSResultGroup | undefined = css`
-    .container {
-      padding: 24px;
-      max-width: 1200px;
-      margin: 0 auto;
-      font-family: inherit;
-    }
-    a {
-      color: var(--primary);
-      font-weight: bold;
-      text-decoration: none;
-      display: block;
-      text-align: left;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    iframe {
-      border: none;
-      width: 100%;
-    }
-    .margin-top {
-      margin-top: 24px;
-    }
-  `;
 
   override connectedCallback(): void {
     super.connectedCallback();

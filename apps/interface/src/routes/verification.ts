@@ -1,3 +1,4 @@
+import { LightElement } from '@aura/widgets/light-element';
 import { projects } from '@/states/projects';
 import { levelUpProgress, userBrightId } from '@/states/user';
 import type { Project } from '@/types/projects';
@@ -6,9 +7,10 @@ import { EvaluationCategory } from '@/utils/aura';
 import { getLevelupProgress } from '@/utils/score';
 import { getSubjectVerifications } from '@/utils/subject';
 import { signal, SignalWatcher } from '@lit-labs/signals';
-import { css, html, LitElement, type CSSResultGroup } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { pushRouter } from '@/router';
+import './verification.css';
 
 const focusedProject = signal(null as Project | null);
 
@@ -19,65 +21,13 @@ type Requirement = {
 };
 
 @customElement('verification-page')
-export class VerificationPage extends SignalWatcher(LitElement) {
+export class VerificationPage extends SignalWatcher(LightElement) {
   @property({ type: Number })
   projectId!: number;
 
   @state() private auraLevel = 0;
   @state() private isLoading = true;
   @state() private loadFailed = false;
-
-  static styles?: CSSResultGroup = css`
-    :host {
-      display: block;
-    }
-
-    .eyebrow {
-      color: var(--muted-foreground);
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin: 0 0 6px;
-    }
-
-    .meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .req {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .req a-text {
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .req a-badge {
-      flex-shrink: 0;
-    }
-
-    .actions {
-      margin-top: 8px;
-    }
-
-    .actions a-button {
-      width: 100%;
-    }
-  `;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -126,25 +76,30 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
     if (this.isLoading) {
       return html`
-        <a-skeleton style="height: 2rem; width: 14rem"></a-skeleton>
-        <a-skeleton style="height: 6rem"></a-skeleton>
-        <a-skeleton style="height: 6rem"></a-skeleton>
+        <div class="a-skeleton" style="height: 2rem; width: 14rem"></div>
+        <div class="a-skeleton" style="height: 6rem"></div>
+        <div class="a-skeleton" style="height: 6rem"></div>
       `;
     }
 
     if (this.loadFailed || !project) {
       return html`
-        <a-card variant="default">
-          <a-head level="2">Project unavailable</a-head>
-          <a-text variant="muted">
+        <div class="a-card" data-variant="default">
+          <h2 class="a-head">Project unavailable</h2>
+          <p class="a-text" data-variant="muted">
             This project could not be loaded.
-          </a-text>
+          </p>
           <div class="actions">
-            <a-button variant="outline" @click=${() => pushRouter('/home')}>
+            <button
+              class="a-button"
+              type="button"
+              data-variant="outline"
+              @click=${() => pushRouter('/home')}
+            >
               Back home
-            </a-button>
+            </button>
           </div>
-        </a-card>
+        </div>
       `;
     }
 
@@ -157,12 +112,12 @@ export class VerificationPage extends SignalWatcher(LitElement) {
     return html`
       <header>
         <p class="eyebrow">Aura / Verified</p>
-        <a-head level="1">${project.name}</a-head>
+        <h1 class="a-head" data-level="1">${project.name}</h1>
         <div class="meta">
-          <a-text variant="small">Required level</a-text>
-          <a-badge variant="secondary" size="sm">
+          <p class="a-text" data-variant="small">Required level</p>
+          <span class="a-badge" data-variant="secondary" data-size="sm">
             Level ${project.requirementLevel}
-          </a-badge>
+          </span>
         </div>
       </header>
       ${
@@ -177,29 +132,43 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
   private _renderAuthGate() {
     return html`
-      <a-card variant="default">
-        <a-text variant="muted">
+      <div class="a-card" data-variant="default">
+        <p class="a-text" data-variant="muted">
           Connect your identity to check your verification status.
-        </a-text>
+        </p>
         <div class="actions">
-          <a-button @click=${() => pushRouter('/login')}>Sign in</a-button>
+          <button
+            class="a-button"
+            type="button"
+            @click=${() => pushRouter('/login')}
+          >
+            Sign in
+          </button>
         </div>
-      </a-card>
+      </div>
     `;
   }
 
   private _renderSuccess(project: Project) {
     return html`
-      <a-card variant="default">
-        <a-badge variant="default" size="sm">Verified</a-badge>
-        <a-head level="3">Verification complete</a-head>
-        <a-text variant="muted">
+      <div class="a-card" data-variant="default">
+        <span class="a-badge" data-variant="default" data-size="sm"
+          >Verified</span
+        >
+        <h3 class="a-head" data-level="3">Verification complete</h3>
+        <p class="a-text" data-variant="muted">
           You have met the requirements to access ${project.name}.
-        </a-text>
+        </p>
         <div class="actions">
-          <a-button @click=${() => pushRouter('/home')}>Back home</a-button>
+          <button
+            class="a-button"
+            type="button"
+            @click=${() => pushRouter('/home')}
+          >
+            Back home
+          </button>
         </div>
-      </a-card>
+      </div>
     `;
   }
 
@@ -210,45 +179,58 @@ export class VerificationPage extends SignalWatcher(LitElement) {
 
     if (total === 0) {
       return html`
-        <a-card variant="default">
-          <a-text variant="muted">No requirements listed for this project.</a-text>
-        </a-card>
+        <div class="a-card" data-variant="default">
+          <p class="a-text" data-variant="muted">
+            No requirements listed for this project.
+          </p>
+        </div>
         <div class="actions">
-          <a-button variant="outline" @click=${() => pushRouter('/home')}>
+          <button
+            class="a-button"
+            type="button"
+            data-variant="outline"
+            @click=${() => pushRouter('/home')}
+          >
             Back home
-          </a-button>
+          </button>
         </div>
       `;
     }
 
     return html`
       <div>
-        <a-text variant="small">Progress</a-text>
-        <a-text variant="muted">${done} of ${total} complete</a-text>
-        <a-progress .value=${percent}></a-progress>
+        <p class="a-text" data-variant="small">Progress</p>
+        <p class="a-text" data-variant="muted">${done} of ${total} complete</p>
+        <progress class="a-progress" .value=${percent} max="100"></progress>
       </div>
       <div class="stack">
         ${requirements.map((req) => {
           const passed = req.status === 'passed';
           return html`
-            <a-card variant="default">
+            <div class="a-card" data-variant="default">
               <div class="req">
-                <a-text>${req.reason}</a-text>
-                <a-badge
-                  variant=${passed ? 'default' : 'secondary'}
-                  size="sm"
+                <p class="a-text">${req.reason}</p>
+                <span
+                  class="a-badge"
+                  data-variant=${passed ? 'default' : 'secondary'}
+                  data-size="sm"
                 >
                   ${passed ? 'Met' : 'Needed'}
-                </a-badge>
+                </span>
               </div>
-            </a-card>
+            </div>
           `;
         })}
       </div>
       <div class="actions">
-        <a-button variant="outline" @click=${() => pushRouter('/home')}>
+        <button
+          class="a-button"
+          type="button"
+          data-variant="outline"
+          @click=${() => pushRouter('/home')}
+        >
           Back home
-        </a-button>
+        </button>
       </div>
     `;
   }

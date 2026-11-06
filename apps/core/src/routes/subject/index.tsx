@@ -10,9 +10,9 @@ export default function SubjectSelfPage() {
       when={subjectId()}
       fallback={
         <div class="px-5 pt-6">
-          <a-text size="sm" variant="muted">
+          <p class="a-text" data-size="sm" data-variant="muted">
             Sign in to view your profile.
-          </a-text>
+          </p>
         </div>
       }
     >

@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAuraEvent } from '~/lib/aura';
-import { toast } from '@aura/ui';
+import { useState, useEffect, useCallback } from 'react';
+import { AuraDialog } from '~/components/aura-dialog';
+import { AuraTabs } from '~/components/aura-tabs';
+import { toast } from '@aura/ui/toast';
 import { getAuth } from 'firebase/auth';
 import axios from 'axios';
 import { API_BASE_URL } from '~/constants';
@@ -59,8 +60,6 @@ export function PaymentCheckout({
 }: CheckoutProps) {
   const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
   const [tab, setTab] = useState<'hosted' | 'crypto'>('hosted');
-  const dialogRef = useRef<HTMLElement>(null);
-  const tabsRef = useRef<HTMLElement>(null);
 
   const [invoiceLoading, setInvoiceLoading] = useState(false);
   const [widgetUrl, setWidgetUrl] = useState<string | null>(null);
@@ -80,14 +79,6 @@ export function PaymentCheckout({
     setStatus('idle');
     setPolling(false);
   }, []);
-
-  useAuraEvent<{ open: boolean }>(dialogRef, 'open-change', (e) => {
-    if (!e.open) reset();
-    onOpenChange(e.open);
-  });
-  useAuraEvent<{ value: string }>(tabsRef, 'change', (e) =>
-    setTab(e.value as 'hosted' | 'crypto'),
-  );
 
   useEffect(() => {
     if (!orderId || !polling) return;
@@ -201,22 +192,35 @@ export function PaymentCheckout({
   };
 
   return (
-    <a-dialog open={open} ref={dialogRef}>
-      <div slot="content" className="sm:max-w-md">
+    <AuraDialog
+      open={open}
+      label={`Upgrade to ${plan.name}`}
+      onOpenChange={(next) => {
+        if (!next) reset();
+        onOpenChange(next);
+      }}
+    >
+      <div className="sm:max-w-md">
         <div className="flex flex-col gap-1.5">
-          <a-head level="3">Upgrade to {plan.name}</a-head>
-          <a-text variant="muted">
+          <h3 className="a-head" data-level="3">
+            Upgrade to {plan.name}
+          </h3>
+          <p className="a-text" data-variant="muted">
             ${price}/{isYearly ? 'year' : 'month'} ·{' '}
             {plan.tokens.toLocaleString()} verifications
-          </a-text>
+          </p>
         </div>
 
         {status !== 'idle' && <StatusBanner status={status} />}
 
         {status === 'completed' && (
-          <a-button className="w-full" onClick={() => onOpenChange(false)}>
+          <button
+            className="a-button w-full"
+            type="button"
+            onClick={() => onOpenChange(false)}
+          >
             Done
-          </a-button>
+          </button>
         )}
 
         {status === 'failed' && (
@@ -224,41 +228,61 @@ export function PaymentCheckout({
             <p className="text-sm text-muted-foreground">
               Your payment did not complete. You can try again.
             </p>
-            <a-button variant="secondary" className="w-full" onClick={reset}>
+            <button
+              className="a-button w-full"
+              type="button"
+              data-variant="secondary"
+              onClick={reset}
+            >
               Try again
-            </a-button>
+            </button>
           </div>
         )}
 
         {status === 'idle' && (
-          <a-tabs value={tab} ref={tabsRef} className="w-full">
-            <a-tab value="hosted">Card / Any Crypto</a-tab>
-            <a-tab value="crypto">Direct Crypto</a-tab>
+          <div className="w-full">
+            <AuraTabs
+              value={tab}
+              onValueChange={setTab}
+              tabs={[
+                { value: 'hosted', label: 'Card / Any Crypto' },
+                { value: 'crypto', label: 'Direct Crypto' },
+              ]}
+            />
 
-            <a-tab-panel slot="panel" value="hosted" className="space-y-4 pt-2">
+            <div
+              role="tabpanel"
+              className="a-tab-panel space-y-4 pt-6"
+              hidden={tab !== 'hosted'}
+            >
               <p className="text-sm text-muted-foreground">
                 Opens a secure MoonPay page. Accepts cards and 100+
                 cryptocurrencies.
               </p>
-              <a-button
-                className="w-full"
+              <button
+                className="a-button w-full"
+                type="button"
                 onClick={createInvoice}
                 disabled={invoiceLoading}
               >
                 {invoiceLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating
+                    <Loader2 className="h-4 w-4 animate-spin" /> Creating
                     invoice…
                   </>
                 ) : (
                   <>
-                    <ExternalLink className="mr-2 h-4 w-4" /> Pay ${price} →
+                    <ExternalLink className="h-4 w-4" /> Pay ${price} →
                   </>
                 )}
-              </a-button>
-            </a-tab-panel>
+              </button>
+            </div>
 
-            <a-tab-panel slot="panel" value="crypto" className="space-y-4 pt-2">
+            <div
+              role="tabpanel"
+              className="a-tab-panel space-y-4 pt-6"
+              hidden={tab !== 'crypto'}
+            >
               <p className="text-sm text-muted-foreground">
                 Opens a MoonPay page pre-selected to your chosen currency.
               </p>
@@ -277,25 +301,26 @@ export function PaymentCheckout({
                   </button>
                 ))}
               </div>
-              <a-button
-                className="w-full"
+              <button
+                className="a-button w-full"
+                type="button"
                 onClick={createCryptoPayment}
                 disabled={cryptoLoading}
               >
                 {cryptoLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening
+                    <Loader2 className="h-4 w-4 animate-spin" /> Opening
                     MoonPay…
                   </>
                 ) : (
                   <>
-                    <ExternalLink className="mr-2 h-4 w-4" /> Pay with{' '}
+                    <ExternalLink className="h-4 w-4" /> Pay with{' '}
                     {selectedCrypto.toUpperCase()} →
                   </>
                 )}
-              </a-button>
-            </a-tab-panel>
-          </a-tabs>
+              </button>
+            </div>
+          </div>
         )}
 
         {!TERMINAL.has(status) && status !== 'idle' && widgetUrl && (
@@ -304,20 +329,21 @@ export function PaymentCheckout({
               Complete payment in the tab that opened. This dialog will update
               automatically.
             </p>
-            <a-button
-              variant="outline"
-              size="sm"
-              className="w-full"
+            <button
+              className="a-button w-full"
+              type="button"
+              data-variant="outline"
+              data-size="sm"
               onClick={() =>
                 window.open(widgetUrl, '_blank', 'noopener,noreferrer')
               }
             >
-              <ExternalLink className="mr-2 h-4 w-4" /> Reopen MoonPay
-            </a-button>
+              <ExternalLink className="h-4 w-4" /> Reopen MoonPay
+            </button>
           </div>
         )}
       </div>
-    </a-dialog>
+    </AuraDialog>
   );
 }
 

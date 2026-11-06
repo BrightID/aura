@@ -1,6 +1,7 @@
 import { A } from '@solidjs/router';
 import type { JSX } from 'solid-js';
 import { Show } from 'solid-js';
+import Icon from '@/components/ui/icon';
 
 /** A settings row card — either a link (href) or a button (onClick). */
 export default function SettingCard(props: {
@@ -13,20 +14,18 @@ export default function SettingCard(props: {
   children?: JSX.Element;
 }) {
   const card = (
-    <a-card
-      interactive
+    <div
+      class="a-card flex items-center gap-3 rounded-lg py-3.5 pl-5 pr-4"
+      data-interactive
       data-testid={props.testid}
-      class="flex items-center gap-3 rounded-lg py-3.5 pl-5 pr-4"
       onClick={props.onClick}
     >
-      <Show when={props.icon}>
-        <a-icon name={props.icon} />
-      </Show>
+      <Show when={props.icon}>{(icon) => <Icon name={icon()} />}</Show>
       <Show when={props.label}>
         <span class="text-base font-medium">{props.label}</span>
       </Show>
       {props.children}
-    </a-card>
+    </div>
   );
 
   return (

@@ -5,7 +5,7 @@ import { FadeIn } from '~/components/animations';
 import { copyToClipboard } from '~/utils/clipboard';
 import { generateDeeplink } from 'brightid_sdk_v6/dist/appMethods';
 import { useCallback, useEffect, useState } from 'react';
-import { toast } from '@aura/ui';
+import { toast } from '@aura/ui/toast';
 import { useUser } from '~/store';
 import { useQuery } from '@tanstack/react-query';
 import { brightIdSponsor } from '~/utils/brightid';
@@ -75,7 +75,10 @@ export default function LoginWithBrightId() {
   return (
     <div className="relative z-10 mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
       <FadeIn delay={0.1} className="space-y-2">
-        <h1 data-testid="recovery-title" className="text-3xl font-bold tracking-tight">
+        <h1
+          data-testid="recovery-title"
+          className="text-3xl font-bold tracking-tight"
+        >
           Login
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -107,7 +110,7 @@ export default function LoginWithBrightId() {
           </Link>
         </FadeIn>
       ) : (
-        <a-skeleton className="size-[270px] max-w-full rounded-xl" />
+        <div className="a-skeleton size-[270px] max-w-full rounded-xl" />
       )}
 
       <FadeIn delay={0.25} className="flex w-full items-center gap-3">
@@ -132,16 +135,17 @@ export default function LoginWithBrightId() {
           >
             {universalLink || 'Preparing link…'}
           </a>
-          <a-button
+          <button
+            className="a-button"
             type="button"
-            variant="ghost"
-            size="icon"
+            data-variant="ghost"
+            data-size="icon"
             aria-label="Copy link"
             disabled={!universalLink}
             onClick={copyQr}
           >
             <CopyIcon className="size-4" />
-          </a-button>
+          </button>
         </div>
       </FadeIn>
 

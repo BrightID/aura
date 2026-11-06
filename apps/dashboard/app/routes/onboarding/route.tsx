@@ -10,7 +10,7 @@ import {
   FieldLegend,
   FieldSet,
 } from '@/components/ui/field';
-import { toast } from '@aura/ui';
+import { toast } from '@aura/ui/toast';
 import { Fragment, useState } from 'react';
 import { CheckIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
@@ -158,98 +158,101 @@ export default function OnboardingForm() {
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 py-10">
-    <a-card className="shadow-xl">
-      <div className="flex flex-col gap-1.5 p-6">
-        <a-head level="3" className="font-semibold">
-          Onboarding Form
-        </a-head>
-        <p className="text-muted-foreground text-sm">
-          Help us understand your needs and provide you with the best experience
-        </p>
+      <div className="a-card shadow-xl">
+        <div className="flex flex-col gap-1.5 p-6">
+          <h3 className="a-head font-semibold" data-level="3">
+            Onboarding Form
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            Help us understand your needs and provide you with the best
+            experience
+          </p>
 
-        <div className="flex items-center justify-between mt-6">
-          {STEPS.map((step, index) => (
-            <Fragment key={step.id}>
-              <div className="flex flex-col items-center flex-1">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
-                    currentStep > step.id
-                      ? 'bg-primary border-primary text-primary-foreground'
-                      : currentStep === step.id
-                        ? 'border-primary text-primary'
-                        : 'border-muted text-muted-foreground'
-                  }`}
-                >
-                  {currentStep > step.id ? (
-                    <CheckIcon className="w-5 h-5" />
-                  ) : (
-                    step.id
-                  )}
+          <div className="flex items-center justify-between mt-6">
+            {STEPS.map((step, index) => (
+              <Fragment key={step.id}>
+                <div className="flex flex-col items-center flex-1">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
+                      currentStep > step.id
+                        ? 'bg-primary border-primary text-primary-foreground'
+                        : currentStep === step.id
+                          ? 'border-primary text-primary'
+                          : 'border-muted text-muted-foreground'
+                    }`}
+                  >
+                    {currentStep > step.id ? (
+                      <CheckIcon className="w-5 h-5" />
+                    ) : (
+                      step.id
+                    )}
+                  </div>
+                  <span className="text-xs mt-2 text-center">{step.title}</span>
                 </div>
-                <span className="text-xs mt-2 text-center">{step.title}</span>
-              </div>
-              {index < STEPS.length - 1 && (
-                <div
-                  className={`h-0.5 flex-1 mx-2 transition-colors ${currentStep > step.id ? 'bg-primary' : 'bg-muted'}`}
-                />
+                {index < STEPS.length - 1 && (
+                  <div
+                    className={`h-0.5 flex-1 mx-2 transition-colors ${currentStep > step.id ? 'bg-primary' : 'bg-muted'}`}
+                  />
+                )}
+              </Fragment>
+            ))}
+          </div>
+        </div>
+        <div className="p-6 pt-0">
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            {currentStep === 1 && <FormStepOne form={form} />}
+
+            {currentStep === 2 && <FormStepTwo form={form} />}
+
+            {currentStep === 3 && <FormStepThree form={form} />}
+
+            <div className="flex justify-between mt-6 gap-4">
+              {currentStep > 1 ? (
+                <button
+                  className="a-button flex-1 bg-transparent"
+                  type="button"
+                  data-variant="outline"
+                  onClick={handlePrevious}
+                  disabled={currentStep === 1}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+              ) : (
+                <Link
+                  to="/"
+                  className="a-button w-full bg-transparent flex-1"
+                  data-variant="outline"
+                >
+                  <CheckIcon className="w-4 h-4" />
+                  Skip
+                </Link>
               )}
-            </Fragment>
-          ))}
+
+              {currentStep < STEPS.length ? (
+                <button
+                  className="a-button flex-1"
+                  type="button"
+                  onClick={handleNext}
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  className="a-button flex-1"
+                  disabled={isPending}
+                  type="button"
+                  onClick={handleNext}
+                >
+                  Complete Onboarding
+                  <CheckIcon className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </form>
         </div>
       </div>
-      <div className="p-6 pt-0">
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          {currentStep === 1 && <FormStepOne form={form} />}
-
-          {currentStep === 2 && <FormStepTwo form={form} />}
-
-          {currentStep === 3 && <FormStepThree form={form} />}
-
-          <div className="flex justify-between mt-6 gap-4">
-            {currentStep > 1 ? (
-              <a-button
-                type="button"
-                variant="outline"
-                onClick={handlePrevious}
-                disabled={currentStep === 1}
-                className="flex-1 bg-transparent"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Previous
-              </a-button>
-            ) : (
-              <Link className="flex-1" to="/">
-                <a-button
-                  className="w-full bg-transparent"
-                  variant="outline"
-                  type="button"
-                >
-                  <CheckIcon className="w-4 h-4 ml-2" />
-                  Skip
-                </a-button>
-              </Link>
-            )}
-
-            {currentStep < STEPS.length ? (
-              <a-button type="button" onClick={handleNext} className="flex-1">
-                Next
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </a-button>
-            ) : (
-              <a-button
-                disabled={isPending}
-                type="button"
-                onClick={handleNext}
-                className="flex-1"
-              >
-                Complete Onboarding
-                <CheckIcon className="w-4 h-4 ml-2" />
-              </a-button>
-            )}
-          </div>
-        </form>
-      </div>
-    </a-card>
     </div>
   );
 }

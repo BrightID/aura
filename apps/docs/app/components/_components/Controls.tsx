@@ -1,6 +1,5 @@
 'use client';
 
-import { AInput, ASelect, ASwitch } from '@aura/ui/react-wrappers';
 import type { ComponentDoc } from '../_registry';
 import type { PropState } from './snippet';
 
@@ -28,38 +27,42 @@ export function Controls({ doc, state, onChange }: ControlsProps) {
 
           <span className="shrink-0">
             {p.type === 'enum' && (
-              <ASelect
-                style={{ width: '9rem', marginBottom: 0 }}
+              <select
+                className="a-input"
+                style={{ width: '9rem' }}
+                aria-label={p.name}
                 value={String(state[p.name] ?? '')}
-                placeholder={p.default === undefined ? '— none —' : ''}
-                options={(p.options ?? []).map((opt) => ({
-                  label: opt,
-                  value: opt,
-                }))}
-                onChange={(e: Event) =>
-                  onChange(p.name, (e as CustomEvent<string>).detail)
-                }
-              />
+                onChange={(e) => onChange(p.name, e.currentTarget.value)}
+              >
+                {p.default === undefined && <option value="">— none —</option>}
+                {(p.options ?? []).map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
             )}
 
             {p.type === 'boolean' && (
-              <ASwitch
+              <input
+                type="checkbox"
+                role="switch"
+                className="a-switch"
+                aria-label={p.name}
                 checked={state[p.name] === true}
-                onChange={(e: Event) =>
-                  onChange(p.name, (e as CustomEvent<boolean>).detail)
-                }
+                onChange={(e) => onChange(p.name, e.currentTarget.checked)}
               />
             )}
 
             {(p.type === 'string' || p.type === 'number') && (
-              <AInput
-                style={{ width: '10rem', marginBottom: 0 }}
+              <input
+                className="a-input"
+                style={{ width: '10rem' }}
+                aria-label={p.name}
                 type={p.type === 'number' ? 'number' : 'text'}
                 value={String(state[p.name] ?? '')}
                 placeholder={String(p.default ?? '')}
-                onChange={(e: Event) =>
-                  onChange(p.name, (e as CustomEvent<string>).detail)
-                }
+                onChange={(e) => onChange(p.name, e.currentTarget.value)}
               />
             )}
           </span>

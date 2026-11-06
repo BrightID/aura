@@ -1,0 +1,99 @@
+/* <share-page>, share.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (share-page) to (:scope [data-c] > *) {
+    .container {
+      display: flex;
+      flex-direction: column;
+      color: var(--foreground);
+    }
+
+    .main-content {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .gate .a-button {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .qr-code {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .qr-image {
+      object-fit: contain;
+      width: min(240px, 100%);
+      height: auto;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+    }
+
+    .profile-link {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    .link {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    .social-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 12px;
+    }
+
+    .social-buttons .a-button {
+      flex: 0 0 5.5rem;
+    }
+
+    .social-buttons .a-button {
+      flex-direction: column;
+      height: auto;
+      gap: 6px;
+      padding: 8px 4px;
+      color: var(--foreground);
+    }
+
+    .social-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--muted);
+    }
+
+    .social-label {
+      display: block;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      text-align: center;
+      white-space: nowrap;
+    }
+  }
+}

@@ -1,0 +1,85 @@
+/* <contacts-section>, contacts-section.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (contacts-section) to (:scope [data-c] > *) {
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .title img {
+      flex-shrink: 0;
+    }
+
+    .title .a-head {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .integrations {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .integrations .a-button {
+      height: auto;
+      gap: 8px;
+      padding: 8px 12px;
+    }
+
+    .contact-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      margin: 8px 0;
+      background: color-mix(in oklch, var(--foreground) 6%, transparent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .contact-copy {
+      min-width: 0;
+    }
+
+    .contact-card .a-button {
+      flex-shrink: 0;
+    }
+
+    .contact-header {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin: 0 0 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .contact-value {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .divider {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .note {
+      margin-top: 12px;
+    }
+  }
+}

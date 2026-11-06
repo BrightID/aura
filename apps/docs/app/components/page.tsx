@@ -6,9 +6,10 @@ export default function ComponentsIndex() {
     <div className="prose">
       <h1>Components</h1>
       <p className="prose-lead">
-        Aura&apos;s UI kit is a set of framework-agnostic web components. Every
-        component below has a live playground — tweak its props and theme
-        variables, then copy the generated markup.
+        Aura&apos;s UI kit is one stylesheet, <code>@aura/ui/aura.css</code>:
+        classes for native HTML elements, so it works the same in React, Solid
+        and Lit. Every component below has a live playground — tweak its props
+        and theme variables, then copy the generated markup.
       </p>
 
       <div className="not-prose mt-8 grid grid-cols-2 gap-4 max-sm:grid-cols-1">
@@ -23,7 +24,7 @@ export default function ComponentsIndex() {
                 {c.name}
               </span>
               <code className="font-[family-name:var(--font-geist-mono)] text-[0.7rem] text-[var(--muted-foreground)]">
-                &lt;{c.tag}&gt;
+                .{c.className}
               </code>
             </div>
             <p className="line-clamp-2 text-sm text-[var(--muted-foreground)]">

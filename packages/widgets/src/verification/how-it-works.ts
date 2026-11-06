@@ -1,185 +1,39 @@
-import { css, type CSSResultGroup, html, LitElement } from 'lit';
+import { icon } from '../icon';
+import { LightElement } from '../light-element';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { widgetBase } from './shared-styles';
+import './shared-styles.css';
+import './how-it-works.css';
 
 const steps = [
   {
     title: 'Connect Your Identity',
     description:
       'Link your BrightID or create a universal identifier that you control.',
-    icon: html`<iconify-icon
-      icon="lucide:user"
-      width="1.25em"
-      height="1.25em"
-    ></iconify-icon>`,
+    icon: html`${icon('lucide:user', '', 'width: 1.25em; height: 1.25em')}`,
   },
   {
     title: 'Get Evaluated',
     description:
       'People who know you evaluate your uniqueness. No personal info is shared.',
-    icon: html`<iconify-icon
-      icon="lucide:users"
-      width="1.25em"
-      height="1.25em"
-    ></iconify-icon>`,
+    icon: html`${icon('lucide:users', '', 'width: 1.25em; height: 1.25em')}`,
   },
   {
     title: 'Earn Levels',
     description:
       'Your verification level increases as you receive positive evaluations.',
-    icon: html`<iconify-icon
-      icon="lucide:badge-check"
-      width="1.25em"
-      height="1.25em"
-    ></iconify-icon>`,
+    icon: html`${icon('lucide:badge-check', '', 'width: 1.25em; height: 1.25em')}`,
   },
   {
     title: 'Unlock Access',
     description:
       'Apps verify your level to grant access—without seeing your identity.',
-    icon: html`<iconify-icon
-      icon="lucide:lock-open"
-      width="1.25em"
-      height="1.25em"
-    ></iconify-icon>`,
+    icon: html`${icon('lucide:lock-open', '', 'width: 1.25em; height: 1.25em')}`,
   },
 ];
 
 @customElement('verification-how-it-works')
-export class VerificationHowItWorksElement extends LitElement {
-  static styles: CSSResultGroup = [
-    widgetBase,
-    css`
-      :host {
-        display: block;
-        font-size: inherit;
-      }
-      .stack {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25em;
-      }
-
-      /* Header */
-      .page-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-      }
-      .back-btn {
-        padding: 0.5em;
-        margin-left: -0.5em;
-        border-radius: 0.5em;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--muted-foreground);
-        transition: background 0.15s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .back-btn:hover {
-        background: var(--secondary);
-      }
-      .back-btn iconify-icon {
-        width: 1.5em;
-        height: 1.5em;
-      }
-      .header-title {
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
-      }
-      .aura-logo {
-        width: 1.25em;
-        height: 1.25em;
-      }
-      .title {
-        margin: 0;
-        font-size: 1em;
-        font-weight: 600;
-        color: var(--foreground);
-      }
-
-      /* Steps */
-      .steps {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75em;
-      }
-      .step-item {
-        display: flex;
-        gap: 0.75em;
-        padding: 0.75em;
-        background: var(--secondary);
-        border-radius: 0.5em;
-      }
-      .step-icon {
-        flex-shrink: 0;
-        width: 2.25em;
-        height: 2.25em;
-        border-radius: 0.5em;
-        background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-        color: var(--primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .step-content {
-        flex: 1;
-        min-width: 0;
-      }
-      .step-title {
-        margin: 0 0 0.25em;
-        font-size: 0.875em;
-        font-weight: 500;
-        color: var(--foreground);
-      }
-      .step-desc {
-        margin: 0;
-        font-size: 0.75em;
-        color: var(--muted-foreground);
-        line-height: 1.5;
-      }
-
-      /* Privacy note */
-      .privacy-note {
-        padding: 0.75em;
-        background: rgba(var(--aura-info-rgb, 96, 165, 250), 0.05);
-        border: 1px solid rgba(var(--aura-info-rgb, 96, 165, 250), 0.2);
-        border-radius: 0.5em;
-        display: flex;
-        gap: 0.5em;
-      }
-      .privacy-icon {
-        flex-shrink: 0;
-        margin-top: 0.125em;
-      }
-      .privacy-icon iconify-icon {
-        width: 1em;
-        height: 1em;
-        color: var(--aura-info);
-      }
-      .privacy-heading {
-        margin: 0 0 0.25em;
-        font-size: 0.75em;
-        font-weight: 500;
-        color: var(--aura-info);
-      }
-      .privacy-desc {
-        margin: 0;
-        font-size: 0.75em;
-        color: var(--muted-foreground);
-        line-height: 1.5;
-      }
-      .logo {
-        width: 3rem;
-        height: 3rem;
-      }
-    `,
-  ];
-
+export class VerificationHowItWorksElement extends LightElement {
   protected render() {
     return html`
       <div class="stack">
@@ -189,7 +43,7 @@ export class VerificationHowItWorksElement extends LitElement {
             aria-label="Go back"
             @click=${() => this._emit('back')}
           >
-            <iconify-icon icon="lucide:chevron-left"></iconify-icon>
+            ${icon('lucide:chevron-left')}
           </button>
           <div class="header-title">
             <img src="/aura2.png" class="logo" alt="Aura" />
@@ -212,9 +66,7 @@ export class VerificationHowItWorksElement extends LitElement {
         </div>
 
         <div class="privacy-note">
-          <div class="privacy-icon">
-            <iconify-icon icon="lucide:lock"></iconify-icon>
-          </div>
+          <div class="privacy-icon">${icon('lucide:lock')}</div>
           <div>
             <p class="privacy-heading">Privacy First</p>
             <p class="privacy-desc">
@@ -224,7 +76,13 @@ export class VerificationHowItWorksElement extends LitElement {
           </div>
         </div>
 
-        <a-button @click=${() => this._emit('back')}>Got it</a-button>
+        <button
+          class="a-button"
+          type="button"
+          @click=${() => this._emit('back')}
+        >
+          Got it
+        </button>
       </div>
     `;
   }

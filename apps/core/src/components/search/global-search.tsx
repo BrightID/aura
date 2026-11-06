@@ -1,9 +1,11 @@
+import Dialog from '@/components/ui/dialog';
 import { useNavigate } from '@solidjs/router';
 import { createMemo, createSignal, For, Show } from 'solid-js';
 import Avatar from '@/components/home/avatar';
 import { useBackup, useNameResolver } from '@/hooks/use-backup';
 import { useMyEvaluations } from '@/hooks/use-my-evaluations';
-import type { DialogElement } from '@aura/ui';
+import type { DialogHandle } from '@/components/ui/dialog';
+import Icon from '@/components/ui/icon';
 
 const MAX_RESULTS = 8;
 
@@ -14,7 +16,7 @@ const MAX_RESULTS = 8;
  * falls through to the filtered home list (old behavior).
  */
 export default function GlobalSearch() {
-  let dialog: DialogElement | undefined;
+  let dialog: DialogHandle | undefined;
   const navigate = useNavigate();
 
   const [query, setQuery] = createSignal('');
@@ -68,41 +70,51 @@ export default function GlobalSearch() {
 
   return (
     <>
-      <a-button
-        size="icon-sm"
-        variant="glass"
+      <button
+        class="a-button"
+        type="button"
+        data-size="icon"
+        data-variant="glass"
         aria-label="Search"
         data-testid="global-search-trigger"
         onClick={open}
       >
-        <a-icon name="search" />
-      </a-button>
+        <Icon name="search" />
+      </button>
 
-      <a-dialog label="Global search" ref={dialog}>
-        <div slot="content" class="flex w-80 max-w-full flex-col gap-3">
+      <Dialog label="Global search" ref={dialog}>
+        <div class="flex w-80 max-w-full flex-col gap-3">
           <div class="flex flex-col gap-1">
-            <a-head class="text-lg" data-testid="global-search-modal-title">
+            <h2 class="a-head text-lg" data-testid="global-search-modal-title">
               Global Search
-            </a-head>
-            <a-text variant="muted">Search from your connections</a-text>
+            </h2>
+            <p class="a-text" data-variant="muted">
+              Search from your connections
+            </p>
           </div>
 
           <div class="flex items-center gap-2">
-            <a-input
-              class="min-w-0 flex-1"
-              type="text"
-              autofocus
-              data-testid="global-search-input"
-              placeholder="Subject name or ID …"
-              value={query()}
-              onChange={(e: CustomEvent<string>) => setQuery(e.detail)}
-              onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && submit()}
+            <div class="a-input-group min-w-0 flex-1">
+              <Icon name="search" />
+              <input
+                class="a-input"
+                type="text"
+                autofocus
+                data-testid="global-search-input"
+                placeholder="Subject name or ID …"
+                value={query()}
+                onInput={(e) => setQuery(e.currentTarget.value)}
+                onKeyDown={(e) => e.key === 'Enter' && submit()}
+              />
+            </div>
+            <button
+              class="a-button"
+              type="button"
+              data-testid="global-search-submit"
+              onClick={submit}
             >
-              <a-icon name="search" slot="prefix" />
-            </a-input>
-            <a-button data-testid="global-search-submit" onClick={submit}>
               Search
-            </a-button>
+            </button>
           </div>
 
           <Show when={results().length > 0}>
@@ -135,10 +147,12 @@ export default function GlobalSearch() {
             </div>
           </Show>
           <Show when={query().trim() && results().length === 0}>
-            <a-text variant="muted">No connection matches.</a-text>
+            <p class="a-text" data-variant="muted">
+              No connection matches.
+            </p>
           </Show>
         </div>
-      </a-dialog>
+      </Dialog>
     </>
   );
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { Playground } from '../_components/Playground';
@@ -12,7 +13,7 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}) {
+}): Promise<Metadata> {
   const { slug } = await params;
   const doc = getComponent(slug);
   return { title: doc ? `${doc.name} — Aura UI` : 'Aura UI' };
@@ -34,7 +35,7 @@ export default async function ComponentPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}) {
+}): Promise<ReactNode> {
   const { slug } = await params;
   const doc = getComponent(slug);
   if (!doc) notFound();
@@ -55,10 +56,9 @@ export default async function ComponentPage({
 
       <h2>Theme variables</h2>
       <p>
-        These CSS custom properties are inherited from{' '}
-        <code>&lt;a-theme-provider&gt;</code>. Override them on any ancestor —
-        or live in the <strong>Theme</strong> tab above — to restyle the
-        component.
+        These CSS custom properties come from <code>@aura/ui/tokens.css</code>,
+        which <code>aura.css</code> imports. Override them on any ancestor — or
+        live in the <strong>Theme</strong> tab above — to restyle the component.
       </p>
       <div className="not-prose">
         <CssVarTable doc={doc} />

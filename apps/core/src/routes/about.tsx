@@ -6,24 +6,24 @@ function About() {
     <div class="flex min-h-[calc(100vh-80px)] flex-col px-5.5 pt-16 pb-4">
       <section class="content mb-auto">
         <FadeIn delay={0.1}>
-          <a-head class="mb-6 text-5xl">About</a-head>
+          <h2 class="a-head mb-6 text-5xl">About</h2>
         </FadeIn>
         <FadeIn delay={0.15}>
-          <a-text size="lg" class="font-medium">
+          <p class="a-text font-medium" data-size="lg">
             Aura is a social consensus protocol where players evaluate each
             other to verify unique humans, built on BrightID.
-          </a-text>
+          </p>
         </FadeIn>
       </section>
 
       <footer class="text-muted-foreground flex justify-between text-sm">
         <span class="flex gap-1">
-          <a-text class="font-light">Version</a-text>
-          <a-text>{__APP_VERSION__}</a-text>
+          <p class="a-text font-light">Version</p>
+          <p class="a-text">{__APP_VERSION__}</p>
         </span>
         <span class="flex gap-1">
-          <a-text class="text-muted-foreground">Powered by:</a-text>
-          <a-text class="font-light">BrightID</a-text>
+          <p class="a-text text-muted-foreground">Powered by:</p>
+          <p class="a-text font-light">BrightID</p>
         </span>
       </footer>
     </div>

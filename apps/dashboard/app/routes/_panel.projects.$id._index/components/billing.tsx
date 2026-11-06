@@ -6,12 +6,11 @@ import type { Project } from '~/types/projects';
 
 export default function ProjectBilling({ project }: { project: Project }) {
   const sub =
-    plans.find((item) => item.id === (project.selectedPlanId ?? null)) ??
-    null;
+    plans.find((item) => item.id === (project.selectedPlanId ?? null)) ?? null;
 
   return (
     <div className="space-y-6">
-      <a-card variant="default">
+      <div className="a-card" data-variant="default">
         <div className="flex flex-col gap-1.5">
           <h3 className="font-semibold leading-none">Current Plan</h3>
           <p className="text-sm text-muted-foreground">
@@ -35,14 +34,14 @@ export default function ProjectBilling({ project }: { project: Project }) {
                 </p>
               </div>
             </div>
-            <Link to={`/projects/${project.id}/upgrade`}>
-              <a-button>Upgrade</a-button>
+            <Link to={`/projects/${project.id}/upgrade`} className="a-button">
+              Upgrade
             </Link>
           </div>
         </div>
-      </a-card>
+      </div>
 
-      <a-card variant="default">
+      <div className="a-card" data-variant="default">
         <div className="flex flex-col gap-1.5">
           <h3 className="font-semibold leading-none">Token Allocation</h3>
           <p className="text-sm text-muted-foreground">
@@ -67,7 +66,7 @@ export default function ProjectBilling({ project }: { project: Project }) {
             </div>
           </div>
         </div>
-      </a-card>
+      </div>
     </div>
   );
 }

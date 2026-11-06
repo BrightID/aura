@@ -15,6 +15,7 @@ import { formatDuration } from '@/shared/lib/time';
 import { categoryLabel } from '@aura/domain/labels';
 import type { NotificationAlert } from '@aura/domain/notifications';
 import { EvaluationCategory } from '@aura/domain/types/evaluations';
+import Icon from '@/components/ui/icon';
 
 const CATEGORY_FILTERS: { label: string; value: EvaluationCategory | null }[] =
   [
@@ -81,32 +82,36 @@ export default function NotificationsPage() {
   return (
     <div class="flex w-full flex-1 flex-col gap-4 px-5 pt-6 pb-10">
       <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <a-head class="text-2xl">Notifications</a-head>
+        <h2 class="a-head text-2xl">Notifications</h2>
         <Show when={unreadCount() > 0}>
-          <a-button
-            size="sm"
-            variant="glass"
+          <button
+            class="a-button"
+            type="button"
+            data-size="sm"
+            data-variant="glass"
             data-testid="notifications-mark-all"
             onClick={markAllAsRead}
           >
             Mark all as read
-          </a-button>
+          </button>
         </Show>
       </div>
 
       <div class="flex flex-wrap gap-2">
         <For each={CATEGORY_FILTERS}>
           {(c) => (
-            <a-button
-              size="sm"
-              variant="glass"
-              color="secondary"
-              selected={filter() === c.value}
+            <button
+              class="a-button"
+              type="button"
+              data-size="sm"
+              data-variant="glass"
+              data-color="secondary"
+              aria-pressed={filter() === c.value}
               data-testid={`notifications-filter-${c.label.toLowerCase()}`}
               onClick={() => setFilter(c.value)}
             >
               {c.label}
-            </a-button>
+            </button>
           )}
         </For>
       </div>
@@ -118,13 +123,13 @@ export default function NotificationsPage() {
       >
         <IncrementalList items={alerts()} class="flex flex-col gap-3">
           {(alert) => (
-            <a-card
-              interactive
+            <div
+              class="a-card flex w-full items-center gap-3 p-4"
+              data-interactive
               data-testid={`notification-${alert.id}`}
-              class="flex w-full items-center gap-3 p-4"
               onClick={() => open(alert)}
             >
-              <a-icon name={KIND_ICON[alert.kind]} />
+              <Icon name={KIND_ICON[alert.kind]} />
               <div class="flex flex-1 flex-col">
                 <p
                   class={`text-sm ${alert.viewed ? 'text-muted-foreground' : 'font-medium text-foreground'}`}
@@ -139,7 +144,7 @@ export default function NotificationsPage() {
               <Show when={!alert.viewed}>
                 <span class="bg-primary h-2.5 w-2.5 rounded-full" />
               </Show>
-            </a-card>
+            </div>
           )}
         </IncrementalList>
       </ListState>

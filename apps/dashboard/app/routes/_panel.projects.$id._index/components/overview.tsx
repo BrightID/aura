@@ -79,7 +79,10 @@ export default function OverviewSection({
         project.requirementLevel !== null
           ? `Level ${project.requirementLevel}`
           : 'Not set',
-      hint: project.requirementLevel === null ? 'Set in Verification' : 'Aura score',
+      hint:
+        project.requirementLevel === null
+          ? 'Set in Verification'
+          : 'Aura score',
       icon: <Shield className="size-3.5 text-muted-foreground" />,
     },
     {
@@ -115,7 +118,7 @@ export default function OverviewSection({
         ))}
       </div>
 
-      <a-card variant="default">
+      <div className="a-card" data-variant="default">
         <div className="flex flex-col gap-1">
           <h3 className="font-semibold leading-none">Project details</h3>
           <p className="text-sm text-muted-foreground">
@@ -129,11 +132,11 @@ export default function OverviewSection({
                 <code className="truncate rounded bg-muted px-1.5 py-0.5 text-xs">
                   {project.brightIdAppId}
                 </code>
-                <a-button
+                <button
+                  className="a-button size-7"
                   type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-7"
+                  data-variant="ghost"
+                  data-size="icon"
                   onClick={copyId}
                   aria-label={copied ? 'Copied' : 'Copy App ID'}
                 >
@@ -142,7 +145,7 @@ export default function OverviewSection({
                   ) : (
                     <Copy className="size-3.5" />
                   )}
-                </a-button>
+                </button>
               </span>
             ) : (
               <button
@@ -202,7 +205,7 @@ export default function OverviewSection({
             </pre>
           </div>
         ) : null}
-      </a-card>
+      </div>
     </div>
   );
 }

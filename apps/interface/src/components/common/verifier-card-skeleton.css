@@ -1,0 +1,25 @@
+/* <verifier-card-skeleton>, verifier-card-skeleton.ts. Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (verifier-card-skeleton) to (:scope [data-c] > *) {
+    :scope {
+      display: block;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .copy {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+}

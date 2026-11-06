@@ -1,0 +1,59 @@
+/* Shared base for the verification widgets (12 tags). Scoped: these rules stop at nested components. */
+@layer theme, base, components, app, utilities;
+
+@layer app {
+  @scope (app-verification-embed, verification-brightid-qr, verification-connect, verification-edit-profile, verification-evaluations, verification-find-players, verification-footer, verification-how-it-works, verification-level-badge, verification-progress, verification-score, verification-success) to (:scope [data-c] > *) {
+    /* Written for the browser's default box model: restore it under a host
+       page's border-box reset (Tailwind's, in the dashboard). Browsers already
+       draw buttons, selects, meters and progress bars border-box, and the
+       aura.css classes (.a-button, .a-input, ...) set border-box themselves.
+       :where() keeps these at zero specificity, so the widget's own rules win. */
+    :where(
+      :not(
+        button,
+        select,
+        meter,
+        progress,
+        input:is([type='button'], [type='submit'], [type='reset']),
+        [class^='a-'],
+        [class*=' a-']
+      ),
+      ::before,
+      ::after
+    ) {
+      box-sizing: content-box;
+    }
+    /* The same reset gives controls line-height: inherit; browsers use normal. */
+    :where(button, select, input, textarea) {
+      line-height: normal;
+    }
+
+    /* Keyboard focus — visible for keyboard users, invisible on mouse click. */
+    button:focus-visible,
+    a:focus-visible,
+    [tabindex]:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: var(--radius, 0.5em);
+    }
+
+    /* Tactile press feedback (transform only — never reflows layout). */
+    button:active:not(:disabled) {
+      transform: scale(0.985);
+    }
+
+    /* Respect users who prefer less motion. */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  }
+}
