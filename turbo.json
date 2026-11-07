@@ -20,7 +20,8 @@
         "@aura/core#build",
         "aura-dashboard#build",
         "@aura/demo-integration#build",
-        "@aura/interface#build"
+        "@aura/interface#build",
+        "@aura/vouch#build"
       ],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]

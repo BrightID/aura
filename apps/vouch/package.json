@@ -1,0 +1,24 @@
+{
+  "name": "@aura/vouch",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5177",
+    "build": "rm -rf dist && vite build",
+    "preview": "vite preview",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aura/ui": "workspace:*",
+    "@solidjs/router": "^0.15.3",
+    "solid-js": "^1.9.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.2",
+    "vite": "^6.1.0",
+    "vite-plugin-solid": "^2.11.6"
+  }
+}
