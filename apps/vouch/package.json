@@ -1,10 +1,11 @@
 {
   "name": "@aura/vouch",
   "version": "0.1.0",
+  "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5177",
+    "dev": "vite",
     "build": "rm -rf dist && vite build",
     "preview": "vite preview",
     "check-types": "tsc --noEmit"
@@ -18,7 +19,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.2",
-    "vite": "^6.1.0",
+    "vite": "^6.3.5",
     "vite-plugin-solid": "^2.11.6"
   }
 }

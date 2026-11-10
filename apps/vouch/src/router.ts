@@ -1,7 +1,8 @@
 import type { RouteDefinition } from '@solidjs/router';
-import { lazy } from 'solid-js';
+import Home from '@/routes/index';
+import NotFound from '@/routes/not-found';
 
 export const appRoutes: RouteDefinition[] = [
-  { path: '/', component: lazy(() => import('@/routes/index')) },
-  { path: '*', component: lazy(() => import('@/routes/not-found')) },
+  { path: '/', component: Home },
+  { path: '*', component: NotFound },
 ];
