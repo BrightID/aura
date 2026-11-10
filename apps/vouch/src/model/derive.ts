@@ -43,26 +43,36 @@ export function votes(api: Api, k: string, q: number): Vote[] {
         t: e.modified,
       })),
   );
+  // Seeded votes are demo data. A rater's recorded answer replaces their seeded vote.
+  const answered = (r: string) => recorded.some((vote) => vote.r === r);
   const base = operator[2]
-    .filter(([r]) => !recorded.some((vote) => vote.r === r))
+    .filter(([r]) => !answered(r))
     .map(([r, c], i) => ({ r, yes: true, c, t: ratings[i % 3] }));
-  const extra = (extraVotes[k]?.[q] || []).map((r, i) => ({
-    r,
-    yes: true,
-    c: 3,
-    t: ratings[i % 3],
-  }));
+  const extra = (extraVotes[k]?.[q] || [])
+    .filter((r) => !answered(r))
+    .map((r, i) => ({
+      r,
+      yes: true,
+      c: 3,
+      t: ratings[i % 3],
+    }));
   const result = base.concat(extra, recorded);
   // The practice world's one standing No: Priya doubts Idris's self-custody.
-  if (k === 'idris' && q === 1)
+  if (k === 'idris' && q === 1 && !answered('priya'))
     result.push({ r: 'priya', yes: false, c: 4, t: ratings[2] });
   return result;
 }
 
-/** The number of Yes answers to question `q`, capped at 2; -1 for Idris's self-custody, the standing No. */
-export function level(api: Api, k: string, q: number) {
-  if (k === 'idris' && q === 1) return -1;
-  return Math.min(2, votes(api, k, q).filter((x) => x.yes).length);
+/**
+ * The number of Yes answers to question `q`, capped at 2. Idris's question 1
+ * (self-custody) gives -1, the practice world's standing No, while Priya's
+ * vote on it is No. `v` defaults to `votes(api, k, q)`; `getVerifications`
+ * passes the votes it already has, so they are worked out once.
+ */
+export function level(api: Api, k: string, q: number, v = votes(api, k, q)) {
+  if (k === 'idris' && q === 1 && v.some((x) => x.r === 'priya' && !x.yes))
+    return -1;
+  return Math.min(2, v.filter((x) => x.yes).length);
 }
 
 export type OperatorStatus = 'Held back by a No' | 'Seated' | 'Pending';
@@ -129,22 +139,29 @@ export function incomingRequests(api: Api, p: string, now = Date.now()) {
   for (const x of api.requests.list())
     if ('kind' in x && x.kind && x.domain === 'interfold' && x.to === p)
       incoming.push({ from: x.from, type: 'operator', time: x.time });
-  const answeredAll = (from: string) =>
-    Q.every((question) =>
-      api
-        .getConnections(from, 'inbound')
-        .some(
-          (row) =>
-            row.id === p &&
-            row.evaluations.some(
-              (e) =>
-                e.domain === 'interfold' &&
-                e.category === 'subject' &&
-                e.question === question,
-            ),
-        ),
+  const answeredAll = (from: string) => {
+    const mine =
+      api.getConnections(from, 'inbound').find((row) => row.id === p)
+        ?.evaluations ?? [];
+    return Q.every((question) =>
+      mine.some(
+        (e) =>
+          e.domain === 'interfold' &&
+          e.category === 'subject' &&
+          e.question === question,
+      ),
     );
-  return incoming
+  };
+  // A sender seeded into this queue as demo data can also send a real ask.
+  // Keep one row per sender, the newer one, so the queue and its counts show
+  // each sender once.
+  const newest = new Map<string, Omit<QueueRow, 'status'>>();
+  for (const row of incoming) {
+    const old = newest.get(row.from);
+    if (!old || Date.parse(row.time) > Date.parse(old.time))
+      newest.set(row.from, row);
+  }
+  return [...newest.values()]
     .filter(
       (request) =>
         api.disclosure.get(request.from).nodes.length > 0 &&
@@ -177,12 +194,22 @@ export function deriveRequestQueue(api: Api, id: string, now = Date.now()) {
   const player: QueueRow[] = waiting
     .filter((row) => !row.role || row.role === 'player')
     .map((row) => ({ ...row, type: 'player', status: 'Player ask' }));
-  // Nora and Auryn, the practice managers, each have the other's trainer ask waiting.
+  // Nora and Auryn, the practice managers, each see the other's trainer ask
+  // until they record a trainer answer for them. The row is demo data with no
+  // playerRequests record, so evaluate has nothing to mark answered.
+  const other = id === 'nora' ? 'auryn' : 'nora';
   const trainer: QueueRow[] =
-    id === 'nora' || id === 'auryn'
+    (id === 'nora' || id === 'auryn') &&
+    !api.state.answers.some(
+      (a) =>
+        a.domain === 'interfold' &&
+        a.rater === id &&
+        a.subject === other &&
+        a.role === 'trainer',
+    )
       ? [
           {
-            from: id === 'nora' ? 'auryn' : 'nora',
+            from: other,
             type: 'trainer',
             time: api.data.times.ratings[0],
             status: 'Trainer ask',
@@ -251,7 +278,10 @@ export function deriveHistory(api: Api, id: string): HistoryRow[] {
         rater: id,
         question: Q.indexOf(e.question as (typeof Q)[number]),
         role: e.category as Answer['role'],
-        kind: e.category === 'trainer' ? 'trainer' : undefined,
+        kind:
+          e.category === 'trainer' || e.category === 'manager'
+            ? e.category
+            : undefined,
         yes: e.positive,
         conf: e.confidence,
         time: e.modified,
@@ -266,7 +296,8 @@ export function deriveHistory(api: Api, id: string): HistoryRow[] {
       !('domain' in x) ||
       x.domain !== 'interfold' ||
       x.to !== id ||
-      x.status !== 'Rated in'
+      x.status !== 'Rated in' ||
+      (x.role && x.role !== 'player')
     )
       continue;
     const row = people.get(x.from) || {

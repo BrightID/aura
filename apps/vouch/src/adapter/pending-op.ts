@@ -28,12 +28,20 @@ export class PendingOp {
       try {
         send();
         this.set('applied');
-        onCommit();
       } catch (error) {
         this.error = error;
         this.set('failed');
       }
       this.resolve(this.status);
+      // The write is applied and `done` has resolved. An error in onCommit (the
+      // room sync) is logged and the op stays 'applied': marking it failed
+      // would tell the user that a write which happened did not.
+      if (this.status === 'applied')
+        try {
+          onCommit();
+        } catch (error) {
+          console.error(error);
+        }
     }, delay);
   }
 

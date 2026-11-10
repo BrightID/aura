@@ -28,14 +28,16 @@ export interface Outgoing {
   status?: string;
 }
 
-export type RequestStatus =
-  | 'waiting'
-  | 'Rated in'
-  | 'Declined'
-  | 'later'
-  | 'ignored'
-  | 'Sent'
-  | 'Answered';
+export const REQUEST_STATUSES = [
+  'waiting',
+  'Rated in',
+  'Declined',
+  'later',
+  'ignored',
+  'Sent',
+  'Answered',
+] as const;
+export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
 /** An ask to be rated in as a player, trainer or manager. */
 export interface PlayerRequest {

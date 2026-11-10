@@ -4,6 +4,7 @@ import {
   emptyWorld,
   keepAfterReset,
   mergeWorld,
+  recordKey,
   stampedWorld,
   worldKey,
 } from '@/model/world';
@@ -129,10 +130,10 @@ describe('cleanWorld', () => {
 
   test('keeps good records and defaults an invite role', () => {
     const clean = cleanWorld({
-      answers: { k: answer },
+      answers: { [recordKey.answers(answer)]: answer },
       invites: { [token]: invite },
     });
-    expect(clean.answers.k).toEqual(answer);
+    expect(Object.values(clean.answers)).toEqual([answer]);
     expect(clean.invites[token].role).toBe('operator');
   });
 
@@ -140,8 +141,12 @@ describe('cleanWorld', () => {
     const input = JSON.parse(
       JSON.stringify({
         answers: {
-          conf: { ...answer, conf: 5 },
-          unstamped: { ...answer, by: undefined },
+          [recordKey.answers(answer)]: { ...answer, conf: 5 },
+          [recordKey.answers({ ...answer, question: 1 })]: {
+            ...answer,
+            question: 1,
+            by: undefined,
+          },
         },
         invites: { 'not-a-token': invite },
         nodeReady: { nora: { value: 'yes', ...stamp } },
@@ -172,7 +177,7 @@ describe('cleanWorld', () => {
       ...stamp,
     });
     const clean = cleanWorld({
-      answers: { one: { ...answer, conf: 1 } },
+      answers: { [recordKey.answers(answer)]: { ...answer, conf: 1 } },
       invites: {
         ['b'.repeat(32)]: { ...invite, name: 'x'.repeat(80) },
         ['c'.repeat(32)]: { ...invite, name: 'x'.repeat(81) },
@@ -183,7 +188,7 @@ describe('cleanWorld', () => {
         [worldKey('rosa', 'a'.repeat(201))]: node('a'.repeat(201)),
       },
     });
-    expect(Object.keys(clean.answers)).toEqual(['one']);
+    expect(Object.keys(clean.answers)).toEqual([recordKey.answers(answer)]);
     expect(Object.keys(clean.invites)).toEqual(['b'.repeat(32)]);
     expect(Object.keys(clean.nodes)).toEqual([
       worldKey('rosa', 'a'.repeat(200)),
@@ -205,6 +210,15 @@ describe('cleanWorld', () => {
     ).toEqual({
       [worldKey('rosa', 'n1')]: node,
     });
+  });
+
+  test('drops a record whose key does not match it', () => {
+    const key = recordKey.answers(answer);
+    expect(
+      Object.keys(
+        cleanWorld({ answers: { [key]: answer, other: answer } }).answers,
+      ),
+    ).toEqual([key]);
   });
 
   test('returns an empty world for anything but a plain object', () => {

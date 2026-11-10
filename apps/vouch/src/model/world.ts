@@ -4,6 +4,8 @@
 // are: rooms store worlds in this format, and a change makes browsers drop or
 // misread each other's records.
 
+import { REQUEST_STATUSES } from './types';
+
 export const WORLD_PARTS = [
   'identities',
   'answers',
@@ -164,21 +166,21 @@ const plain = (value: unknown): value is Record<string, unknown> =>
   (Object.getPrototypeOf(value) === Object.prototype ||
     Object.getPrototypeOf(value) === null);
 
-const requestStatuses = new Set([
-  'waiting',
-  'Rated in',
-  'Declined',
-  'later',
-  'ignored',
-  'Sent',
-  'Answered',
-]);
+const requestStatuses = new Set<unknown>(REQUEST_STATUSES);
 const domains = ['interfold', 'uniqueness'];
 const str = (x: unknown): x is string => typeof x === 'string';
 const confidence = (x: unknown) =>
   Number.isInteger(x) && (x as number) >= 1 && (x as number) <= 4;
 
 function validRecord(part: Part, key: string, item: WorldRecord): boolean {
+  // Each record in these parts must sit under its own recordKey. Otherwise a
+  // room world could hold the same answer under two keys, and votes() in
+  // derive.ts would count it twice.
+  if (
+    part in recordKey &&
+    key !== recordKey[part as keyof typeof recordKey](item)
+  )
+    return false;
   switch (part) {
     case 'arrivalCodes':
       return (
@@ -236,7 +238,6 @@ function validRecord(part: Part, key: string, item: WorldRecord): boolean {
       return (
         str(item.owner) &&
         str(item.id) &&
-        key === worldKey(item.owner, item.id) &&
         str(item.address) &&
         item.address.length <= 200 &&
         str(item.location) &&
