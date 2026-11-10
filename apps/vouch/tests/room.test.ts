@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { createMockAdapter } from '@/adapter/mock';
 import { createSeed } from '@/model/seed';
-import { emptyWorld, stampedWorld } from '@/model/world';
+import { emptyWorld, recordKey, stampedWorld } from '@/model/world';
 import { applyWorld, createRoomSync, stateRecords } from '@/sync/room';
 
 // An in-memory stand-in for the room server in apps/landing/api/vouch, with
@@ -129,8 +129,8 @@ describe('applyWorld', () => {
   test('two managers saying Yes promote a trainer', () => {
     const api = createMockAdapter(createSeed());
     const records = stateRecords(api);
-    for (const rater of ['nora', 'auryn'])
-      records.answers[rater] = {
+    for (const rater of ['nora', 'auryn']) {
+      const answer = {
         domain: 'interfold',
         subject: 'lena',
         rater,
@@ -140,6 +140,8 @@ describe('applyWorld', () => {
         conf: 3,
         time: '2026-01-01T00:00:00Z',
       };
+      records.answers[recordKey.answers(answer)] = answer;
+    }
     applyWorld(api, stampedWorld(records, emptyWorld(), 'x', 1));
     expect(api.state.promotedRoles.lena?.interfold?.trainer).toBe(1);
     expect(api.getVerifications('lena').categories.trainer?.level).toBe(1);
@@ -148,8 +150,8 @@ describe('applyWorld', () => {
   test('player-ready comes from player Yes answers only', () => {
     const api = createMockAdapter(createSeed());
     const records = stateRecords(api);
-    const add = (subject: string, role: string, yes: boolean) =>
-      (records.answers[`${subject}-${role}`] = {
+    const add = (subject: string, role: string, yes: boolean) => {
+      const answer = {
         domain: 'interfold',
         subject,
         rater: 'nora',
@@ -158,7 +160,9 @@ describe('applyWorld', () => {
         yes,
         conf: 3,
         time: '2026-01-01T00:00:00Z',
-      });
+      };
+      records.answers[recordKey.answers(answer)] = answer;
+    };
     add('kenji', 'player', true);
     add('rosa', 'player', false);
     add('mateo', 'trainer', true);
