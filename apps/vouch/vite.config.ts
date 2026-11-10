@@ -30,6 +30,7 @@ export default defineConfig({
   },
   server: {
     port: PORT,
+    strictPort: true,
     origin: `http://localhost:${PORT}`,
     cors: true,
     host: true,
