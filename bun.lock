@@ -220,6 +220,22 @@
         "vite-plugin-solid": "^2.11.6",
       },
     },
+    "apps/vouch": {
+      "name": "@aura/vouch",
+      "version": "0.1.0",
+      "dependencies": {
+        "@aura/ui": "workspace:*",
+        "@solidjs/router": "^0.15.3",
+        "solid-js": "^1.9.5",
+      },
+      "devDependencies": {
+        "@tailwindcss/vite": "^4.1.18",
+        "tailwindcss": "^4.1.18",
+        "typescript": "^5.9.2",
+        "vite": "^6.3.5",
+        "vite-plugin-solid": "^2.11.6",
+      },
+    },
     "packages/domain": {
       "name": "@aura/domain",
       "version": "0.1.0",
@@ -361,6 +377,8 @@
     "@aura/typescript-config": ["@aura/typescript-config@workspace:packages/typescript-config"],
 
     "@aura/ui": ["@aura/ui@workspace:packages/ui"],
+
+    "@aura/vouch": ["@aura/vouch@workspace:apps/vouch"],
 
     "@aura/widgets": ["@aura/widgets@workspace:packages/widgets"],
 
@@ -3395,6 +3413,8 @@
     "@aura/sdk/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 
     "@aura/ui/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+
+    "@aura/vouch/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 
     "@aura/widgets/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 

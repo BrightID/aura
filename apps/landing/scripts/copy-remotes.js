@@ -10,6 +10,7 @@ const remotes = [
   ['dashboard', resolve(import.meta.dirname, '../../dashboard/dist')],
   ['demo', resolve(import.meta.dirname, '../../demo-integration/dist')],
   ['interface', resolve(import.meta.dirname, '../../interface/dist')],
+  ['vouch', resolve(import.meta.dirname, '../../vouch/dist')],
 ];
 
 for (const [name, from] of remotes) {

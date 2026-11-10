@@ -30,6 +30,10 @@ const REMOTE_URLS = {
     dev: 'http://localhost:3000/interface/src/mount.ts',
     prod: import.meta.env.VITE_INTERFACE_URL ?? '/interface/remoteEntry.js',
   },
+  vouch: {
+    dev: 'http://localhost:5177/vouch/src/mount.tsx',
+    prod: import.meta.env.VITE_VOUCH_URL ?? '/vouch/remoteEntry.js',
+  },
 } satisfies Record<string, RemoteConfig>;
 
 type RemoteName = keyof typeof REMOTE_URLS;
