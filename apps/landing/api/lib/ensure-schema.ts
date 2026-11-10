@@ -96,6 +96,27 @@ const statements = [
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS "verifications_user_project_uidx"
     ON "verifications" ("userId", "projectId")`,
+  `CREATE TABLE IF NOT EXISTS "vouch_rooms" (
+    "room" varchar(40) PRIMARY KEY NOT NULL,
+    "version" integer DEFAULT 0 NOT NULL,
+    "generation" integer DEFAULT 1 NOT NULL,
+    "world" text,
+    "updated_at" timestamp DEFAULT now() NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS "vouch_presence" (
+    "room" varchar(40) NOT NULL,
+    "browser_id" varchar(64) NOT NULL,
+    "persona" varchar(80) NOT NULL,
+    "seen_at" timestamp DEFAULT now() NOT NULL,
+    CONSTRAINT "vouch_presence_room_browser_id_pk" PRIMARY KEY("room", "browser_id")
+  )`,
+  `CREATE TABLE IF NOT EXISTS "vouch_claims" (
+    "room" varchar(40) NOT NULL,
+    "token" varchar(32) NOT NULL,
+    "claimed_by" varchar(80) NOT NULL,
+    "created_at" timestamp DEFAULT now() NOT NULL,
+    CONSTRAINT "vouch_claims_room_token_pk" PRIMARY KEY("room", "token")
+  )`,
 ];
 
 let pending: Promise<void> | null = null;

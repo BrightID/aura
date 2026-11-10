@@ -20,7 +20,7 @@ test('server client requires TLS and supports Supabase pooling', () => {
 });
 
 test('all app tables deny public API access by default', () => {
-  expect(Object.values(schema)).toHaveLength(8);
+  expect(Object.values(schema)).toHaveLength(11);
   for (const table of Object.values(schema)) {
     expect(getTableConfig(table).enableRLS).toBe(true);
   }
