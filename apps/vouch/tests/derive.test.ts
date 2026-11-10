@@ -6,6 +6,7 @@ import {
   deriveRequestQueue,
   deriveStatus,
   level,
+  votes,
 } from '@/model/derive';
 import { createSeed } from '@/model/seed';
 
@@ -73,6 +74,22 @@ describe('deriveRequestQueue', () => {
     expect(deriveRequestQueue(api, 'auryn').player.map((r) => r.from)).toEqual([
       'dara',
     ]);
+  });
+
+  test('an operator answered on only some questions stays in the queue', async () => {
+    const api = practice();
+    api.setState('persona', 'auryn');
+    for (const question of [0, 1])
+      await api.evaluate({
+        evaluated: 'sofia',
+        positive: true,
+        confidence: 3,
+        question,
+        category: 'subject',
+      }).done;
+    expect(
+      deriveRequestQueue(api, 'auryn').incoming.map((r) => r.from),
+    ).toContain('sofia');
   });
 
   test('an operator leaves the queue once every question is answered', async () => {
@@ -153,5 +170,87 @@ describe('role asks to the founders', () => {
     expect(
       deriveRequestQueue(api, 'lena').rows.map((r) => r.from),
     ).not.toContain('oskar');
+  });
+});
+
+describe('review fixes', () => {
+  test("Priya's recorded Yes replaces her standing No", async () => {
+    const api = practice();
+    api.setState('persona', 'priya');
+    await api.evaluate({
+      evaluated: 'idris',
+      positive: true,
+      confidence: 3,
+      question: 1,
+      category: 'subject',
+    }).done;
+    expect(votes(api, 'idris', 1).filter((v) => v.r === 'priya')).toMatchObject(
+      [{ yes: true }],
+    );
+    expect(level(api, 'idris', 1)).not.toBe(-1);
+    expect(deriveStatus(api, 'idris')).not.toBe('Held back by a No');
+  });
+
+  test('a recorded answer replaces a seeded extra vote', async () => {
+    const api = practice();
+    api.setState('persona', 'auryn');
+    await api.evaluate({
+      evaluated: 'maya',
+      positive: false,
+      confidence: 3,
+      question: 0,
+      category: 'subject',
+    }).done;
+    expect(votes(api, 'maya', 0).filter((v) => v.r === 'auryn')).toMatchObject([
+      { yes: false },
+    ]);
+  });
+
+  test('a seeded sender who also asks shows once in the queue', async () => {
+    const api = practice();
+    api.setState('persona', 'idris');
+    await api.requests.ask({ to: 'auryn', category: 'endorsement' }).done;
+    const from = deriveRequestQueue(api, 'auryn').incoming.map((r) => r.from);
+    expect(from.filter((x) => x === 'idris')).toHaveLength(1);
+  });
+
+  test('answering the seeded trainer ask clears it from the queue', async () => {
+    const api = practice();
+    api.setState('persona', 'nora');
+    await api.evaluate({
+      evaluated: 'auryn',
+      positive: true,
+      confidence: 3,
+      category: 'trainer',
+    }).done;
+    expect(deriveRequestQueue(api, 'nora').trainer).toEqual([]);
+  });
+
+  test('history keeps the kind of a manager answer', async () => {
+    const api = practice();
+    api.setState('persona', 'nora');
+    await api.evaluate({
+      evaluated: 'tomas',
+      positive: true,
+      confidence: 3,
+      category: 'manager',
+    }).done;
+    const row = deriveHistory(api, 'nora').find((r) => r.subject === 'tomas');
+    expect(row?.answers).toMatchObject([{ role: 'manager', kind: 'manager' }]);
+  });
+
+  test('a rated-in trainer ask is not shown as a player rating', async () => {
+    const api = practice();
+    api.setState('persona', 'oskar');
+    await api.requests.ask({ to: 'nora', category: 'trainer' }).done;
+    api.setState('persona', 'nora');
+    await api.evaluate({
+      evaluated: 'oskar',
+      positive: true,
+      confidence: 3,
+      category: 'trainer',
+    }).done;
+    const row = deriveHistory(api, 'nora').find((r) => r.subject === 'oskar');
+    expect(row?.player).toBeUndefined();
   });
 });

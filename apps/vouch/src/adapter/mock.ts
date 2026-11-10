@@ -12,6 +12,7 @@ import type {
   PracticeNode,
   Role,
 } from '@/model/types';
+import { recordKey } from '@/model/world';
 import { PendingOp } from './pending-op';
 import type {
   Adapter,
@@ -23,6 +24,17 @@ import type {
 } from './types';
 
 const DOMAIN = 'interfold';
+
+/**
+ * Add `item`, or replace the record with the same `recordKey`. A shared room
+ * holds one record per key, so a second copy here would show twice locally
+ * but once in the room.
+ */
+function upsert<T>(list: T[], key: (x: T) => string, item: T) {
+  const index = list.findIndex((x) => key(x) === key(item));
+  if (index >= 0) list[index] = item;
+  else list.push(item);
+}
 
 export interface PracticeState {
   /** The practice persona acting now; 'newcomer' is signed out. */
@@ -104,10 +116,24 @@ export function createMockAdapter(
   const pending = (send: () => void) =>
     new PendingOp(send, { delay, onCommit });
 
+  /**
+   * `id`'s role levels, which `getVerifications` reports as categories: player
+   * level 1 once rated in, then seeded levels, then promotions, each
+   * overriding the one before.
+   */
+  const roles = (id: string): Levels => ({
+    ...(state.playerReady[id] ? { player: 1 } : {}),
+    ...data.levels[id],
+    ...state.promotedRoles[id]?.[DOMAIN],
+  });
+
   // Practice ladder: Yes answers from two current managers admit a trainer or manager.
   const roleProgress = (id: string, role: Role) => {
     const requests = state.playerRequests.filter(
-      (x) => x.from === id && x.domain === DOMAIN && x.role === role,
+      (x) =>
+        x.from === id &&
+        x.domain === DOMAIN &&
+        (role === 'player' ? !x.role || x.role === 'player' : x.role === role),
     );
     const yes = state.answers.filter(
       (a) =>
@@ -115,7 +141,7 @@ export function createMockAdapter(
         a.domain === DOMAIN &&
         a.role === role &&
         a.yes &&
-        (api.getVerifications(a.rater).categories.manager?.level ?? 0) >= 1,
+        (roles(a.rater).manager ?? 0) >= 1,
     );
     return {
       requests: requests as RequestRow[],
@@ -135,25 +161,20 @@ export function createMockAdapter(
         : { id: data.ids[state.persona], name: data.names[state.persona] },
 
     getVerifications(id: string): Verifications {
-      const roles = {
-        ...(data.levels[id] || (state.playerReady[id] ? { player: 1 } : {})),
-        ...state.promotedRoles[id]?.[DOMAIN],
-      };
       return {
         block: 39984000,
         categories: {
           ...Object.fromEntries(
-            Q.map((q, i) => [
-              q,
-              {
-                level: level(api, id, i),
-                score: 0,
-                impacts: votes(api, id, i),
-              },
-            ]),
+            Q.map((q, i) => {
+              const impacts = votes(api, id, i);
+              return [
+                q,
+                { level: level(api, id, i, impacts), score: 0, impacts },
+              ];
+            }),
           ),
           ...Object.fromEntries(
-            Object.entries(roles).map(([role, lvl]) => [
+            Object.entries(roles(id)).map(([role, lvl]) => [
               role,
               { level: lvl, score: 0, impacts: [] },
             ]),
@@ -257,9 +278,7 @@ export function createMockAdapter(
             request.conf = args.confidence;
             request.decided = time;
             if (role !== 'player')
-              request.admittedByManager =
-                (api.getVerifications(actor).categories.manager?.level ?? 0) >=
-                1;
+              request.admittedByManager = (roles(actor).manager ?? 0) >= 1;
           }
         });
         if ((role === 'trainer' || role === 'manager') && !shared)
@@ -276,7 +295,10 @@ export function createMockAdapter(
             to,
             time: new Date().toISOString(),
           });
-          s.nameGrants.push({ viewer: to, person: actor });
+          upsert(s.nameGrants, recordKey.nameGrants, {
+            viewer: to,
+            person: actor,
+          });
         }),
       );
     },
@@ -320,8 +342,13 @@ export function createMockAdapter(
         nodes: state.nodes[id] || [],
         controlRelationships: state.controlRelationships[id] || [],
       }),
-      setRelationships: (id: string, relationships: string[]) =>
-        setState('controlRelationships', id, relationships),
+      // Applied at once, with no undo window, like the standalone vouch-app this
+      // is ported from. It calls onCommit itself: without that call the room
+      // sync never sends the change, and the next poll overwrites it.
+      setRelationships: (id: string, relationships: string[]) => {
+        setState('controlRelationships', id, relationships);
+        onCommit?.();
+      },
     },
 
     requests: {
@@ -341,7 +368,7 @@ export function createMockAdapter(
               category === 'trainer' ||
               category === 'manager'
             )
-              s.playerRequests.push({
+              upsert(s.playerRequests, recordKey.playerRequests, {
                 from,
                 to,
                 domain: DOMAIN,
@@ -350,14 +377,17 @@ export function createMockAdapter(
                 status: 'waiting',
               });
             else
-              s.outgoing.push({
+              upsert(s.outgoing, recordKey.outgoing, {
                 from,
                 to,
                 domain: DOMAIN,
                 kind: category,
                 time,
               });
-            s.nameGrants.push({ viewer: to, person: from });
+            upsert(s.nameGrants, recordKey.nameGrants, {
+              viewer: to,
+              person: from,
+            });
           });
         });
       },
