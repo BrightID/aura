@@ -55,7 +55,7 @@ export default function Answer() {
             </>
           }
         >
-          <Back />
+          <Back to="/requests" />
           <h1 class="a-head" data-level="2">
             Rate {label(api, params.subject!)} as{' '}
             {kind === 'player' ? 'a player' : kind}
@@ -104,7 +104,7 @@ function Questions(props: { k: string }) {
         </>
       }
     >
-      <Back />
+      <Back to="/requests" />
       <h1 class="a-head" data-level="2">
         Answer {label(api, props.k)}
       </h1>
@@ -228,7 +228,7 @@ export function PastAnswer() {
     );
   return (
     <>
-      <Back />
+      <Back to="/requests" />
       <h1 class="a-head" data-level="2">
         Earlier answers · {label(api, params.subject!)}
       </h1>

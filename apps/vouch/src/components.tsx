@@ -1,4 +1,4 @@
-import { A, useNavigate } from '@solidjs/router';
+import { A } from '@solidjs/router';
 import { For, Show, createSignal, onCleanup, type JSX } from 'solid-js';
 import { answerKey, useApp } from '@/app';
 import type { Vote } from '@/adapter/types';
@@ -36,18 +36,25 @@ export const RoleWord = (props: { role: string; children: JSX.Element }) => (
   </span>
 );
 
-export function Back() {
-  const navigate = useNavigate();
+/**
+ * The ← Back link. It always opens `to`, the page the caller names (Home or
+ * Requests), with ?room= kept. It never steps back in browser history, which
+ * could leave Vouch: a page opened from a shared link has no Vouch page behind
+ * it. Vouch also runs inside the landing site (apps/landing), whose link
+ * handling gives every Vouch history entry the same router depth, so a depth
+ * check cannot tell where Vouch's entries start either.
+ */
+export function Back(props: { to: '/' | '/requests' }) {
+  const { href } = useApp();
   return (
-    <button
-      type="button"
+    <A
+      href={href(props.to)}
       class="a-button self-start"
       data-variant="ghost"
       data-size="sm"
-      onClick={() => navigate(-1)}
     >
       ← Back
-    </button>
+    </A>
   );
 }
 

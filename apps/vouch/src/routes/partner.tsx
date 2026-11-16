@@ -12,7 +12,7 @@ export default function Partner() {
   const key = () => api.data.ids[p()] || p();
   return (
     <>
-      <Back />
+      <Back to="/" />
       <h1 class="a-head" data-level="2">
         What Interfold sees
       </h1>

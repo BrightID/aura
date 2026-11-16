@@ -337,6 +337,19 @@ describe('createRoomSync', () => {
     expect(server.slot().generation).toBe(2);
   });
 
+  test("a reset from another browser clears this browser's Later and Ignore", async () => {
+    const server = fakeServer();
+    const a = browser(server, 'philip');
+    const b = browser(server, 'adam');
+    await a.sync.poll();
+    await b.sync.poll();
+    b.api.requests.defer({ from: 'kenji', to: 'adam', kind: 'ignored' });
+    expect(Object.keys(b.api.state.choices)).toHaveLength(1);
+    await a.sync.reset('t');
+    await b.sync.poll();
+    expect(b.api.state.choices).toEqual({});
+  });
+
   test('a browser from before a reset cannot write the old world back', async () => {
     const server = fakeServer();
     const a = browser(server, 'philip');

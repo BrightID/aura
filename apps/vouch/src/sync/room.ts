@@ -259,6 +259,11 @@ export function createRoomSync({
     dirty = false;
     clearTimeout(pushTimer);
     world = applyWorld(api, mergeWorld(seedWorld, lastServer));
+    // `choices` holds this browser's Later and Ignore marks on requests. It is
+    // not part of the room's shared world, so applying the reset world does not
+    // clear it. A reset puts the practice requests back as they started; marks
+    // kept from before the reset would hide those requests again.
+    api.setState({ choices: {} });
     if (!survives) api.setState('persona', 'newcomer');
     generation = body.generation;
     version = body.version;
