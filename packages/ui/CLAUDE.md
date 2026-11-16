@@ -30,4 +30,4 @@ There is no build: the apps import `src/` directly through the `exports` in pack
 
 After any change to aura.css or tokens.css, run `bun run test:visual` from the repo root. Rebaseline with `--update` only when every reported difference is intended, and look at each diff image in `tests/visual/out/` first.
 
-If a class's markup changes, update its users: core (`apps/core/src`), the dashboard (`apps/dashboard/app`, including the shadcn wrappers in `components/ui/`), interface and the widgets (`apps/interface/src`, `packages/widgets/src`), and the docs registry (`apps/docs/app/components/_registry`).
+If a class's markup changes, update every app that writes that markup (paths from the repository root): core (`apps/core/src`), vouch (`apps/vouch/src`), the dashboard (`apps/dashboard/app`, including the shadcn wrappers in `apps/dashboard/app/components/ui/`), interface and the widgets (`apps/interface/src`, `packages/widgets/src`), and the docs registry (`apps/docs/app/components/_registry`).

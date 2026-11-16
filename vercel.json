@@ -23,6 +23,7 @@
     { "source": "/core", "destination": "/core/", "permanent": true },
     { "source": "/dashboard", "destination": "/dashboard/", "permanent": true },
     { "source": "/demo", "destination": "/demo/", "permanent": true },
+    { "source": "/vouch", "destination": "/vouch/", "permanent": true },
     {
       "source": "/interface",
       "destination": "/interface/login",
