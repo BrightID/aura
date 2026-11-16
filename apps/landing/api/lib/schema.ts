@@ -4,6 +4,7 @@ import {
   decimal,
   integer,
   pgTable,
+  primaryKey,
   serial,
   text,
   timestamp,
@@ -127,3 +128,41 @@ export const brightIdAppsTable = pgTable('brightid_apps', {
   callbackUrl: text('callback_url'),
   joined: timestamp('joined').notNull().defaultNow(),
 }).enableRLS();
+
+// Vouch practice rooms (apps/vouch). Practice data only: invented people and
+// answers, never sent to the BrightID network.
+
+/** One shared practice world per room, written by compare-and-set on `version`. */
+export const vouchRoomsTable = pgTable('vouch_rooms', {
+  room: varchar({ length: 40 }).primaryKey(),
+  version: integer().notNull().default(0),
+  // Goes up only on reset, so a tab from before the reset can't write the old world back.
+  generation: integer().notNull().default(1),
+  // Stored as text, not jsonb: jsonb reorders keys, and clients compare worlds as JSON.
+  world: text(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}).enableRLS();
+
+/** Who is in a room: one row per browser, refreshed by heartbeats. */
+export const vouchPresenceTable = pgTable(
+  'vouch_presence',
+  {
+    room: varchar({ length: 40 }).notNull(),
+    browserId: varchar('browser_id', { length: 64 }).notNull(),
+    persona: varchar({ length: 80 }).notNull(),
+    seenAt: timestamp('seen_at').notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.room, table.browserId] })],
+).enableRLS();
+
+/** The first browser to claim an invite token wins it. */
+export const vouchClaimsTable = pgTable(
+  'vouch_claims',
+  {
+    room: varchar({ length: 40 }).notNull(),
+    token: varchar({ length: 32 }).notNull(),
+    claimedBy: varchar('claimed_by', { length: 80 }).notNull(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.room, table.token] })],
+).enableRLS();

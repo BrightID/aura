@@ -61,8 +61,10 @@ export interface PracticeState {
   teamAsked: Record<string, string>;
   arrivalRole: Record<string, string>;
   nameVisibility: Record<string, string>;
-  /** People who joined a shared room as themselves, not as a practice persona. Nothing fills it yet; the room sync will. */
-  created: string[];
+  /** Newcomers who made their own identity in a shared room, rather than playing a cast member, keyed by id. The room sync fills it. */
+  identities: Record<string, { name: string; createdAt: number }>;
+  /** Codes an operator shows a player in person. When the player enters one, the operator's endorsement ask goes to them. Keyed by code. */
+  arrivalCodes: Record<string, { from: string; time: number }>;
   /** Practice switch: the next ask fails, to show the failed state. */
   failNextSend: boolean;
 }
@@ -70,14 +72,15 @@ export interface PracticeState {
 export interface MockOptions {
   /**
    * Set in a shared room. An edited answer keeps its place in the list, and
-   * this adapter does not promote trainers or managers. In vouch-app, a shared
-   * room's promotions are worked out when the room's world is applied; here
-   * that is the job of the room sync, which is not written yet.
+   * this adapter does not promote trainers or managers itself. In a shared
+   * room the ratings come from several browsers, so the room sync
+   * (src/sync/room.ts) works out promotions from all of them each time it
+   * applies the room's world.
    */
   shared?: boolean;
   /** The undo window, in ms. */
   delay?: number;
-  /** Runs after each applied write. The room sync, not written yet, will use it to send changes to the room. */
+  /** Runs after each applied write. The room sync uses it to send changes to the room. */
   onCommit?: () => void;
 }
 
@@ -110,7 +113,8 @@ export function createMockAdapter(
     teamAsked: {},
     arrivalRole: {},
     nameVisibility: {},
-    created: [],
+    identities: {},
+    arrivalCodes: {},
     failNextSend: false,
   });
   const change = (fn: (draft: PracticeState) => void) => setState(produce(fn));
@@ -171,7 +175,12 @@ export function createMockAdapter(
     session: () =>
       state.persona === 'newcomer'
         ? null
-        : { id: data.ids[state.persona], name: data.names[state.persona] },
+        : {
+            id: data.ids[state.persona] ?? state.persona,
+            name:
+              data.names[state.persona] ??
+              state.identities[state.persona]?.name,
+          },
 
     getVerifications(id: string): Verifications {
       return {
