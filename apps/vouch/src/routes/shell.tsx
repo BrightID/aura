@@ -13,7 +13,7 @@ export default function Shell(props: RouteSectionProps) {
   const waiting = () =>
     persona() === 'newcomer'
       ? 0
-      : deriveRequestQueue(api, persona()).rows.length;
+      : deriveRequestQueue(api, persona()).active.length;
   const [drawer, setDrawer] = createSignal<HTMLDialogElement>();
   createEffect(() => {
     const dialog = drawer();

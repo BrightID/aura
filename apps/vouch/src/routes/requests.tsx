@@ -14,6 +14,7 @@ import {
   ago,
   answerMark,
   answerPath,
+  canRate,
   historyRole,
   label,
   ownAnswer,
@@ -113,8 +114,17 @@ function Queue(props: { p: string }) {
                     </>
                   }
                 />
-                <p class="a-text">Should this person be a player?</p>
-                <AnswerControl kind="player" subject={from} />
+                <Show
+                  when={canRate(api, props.p, 'player')}
+                  fallback={
+                    <p class="a-text" data-variant="muted">
+                      Only trainers can rate players in.
+                    </p>
+                  }
+                >
+                  <p class="a-text">Should this person be a player?</p>
+                  <AnswerControl kind="player" subject={from} />
+                </Show>
               </div>
             )}
           </For>
@@ -377,7 +387,7 @@ function Queue(props: { p: string }) {
         </details>
       </Show>
       <p class="a-text" data-variant="muted">
-        {queue().rows.length
+        {queue().active.length
           ? queue().incoming.some((x) => x.status === 'Seated')
             ? 'Seated: can hold threshold-council tickets.'
             : 'Answer when you’re ready.'

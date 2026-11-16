@@ -70,6 +70,8 @@ describe('deriveRequestQueue', () => {
       ['dara', 'Later'],
     ]);
     expect(queue.ignored.map((r) => r.from)).toEqual(['viktor']);
+    expect(queue.active.map((r) => r.from)).not.toContain('dara');
+    expect(queue.active.map((r) => r.from)).not.toContain('viktor');
     api.requests.restore({ from: 'dara', to: 'auryn' });
     expect(deriveRequestQueue(api, 'auryn').player.map((r) => r.from)).toEqual([
       'dara',

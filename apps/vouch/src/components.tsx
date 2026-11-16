@@ -177,6 +177,10 @@ function holdToAnswer(
   return {
     stop,
     onPointerDown(e: PointerEvent & { currentTarget: HTMLButtonElement }) {
+      // Only the primary button (left click, touch or pen) starts a hold.
+      // onPointerUp answers whenever a hold is running, so a right- or
+      // middle-click that started one would send an answer on release.
+      if (e.button !== 0) return;
       start = performance.now();
       setHeld(1);
       timer = setInterval(

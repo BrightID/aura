@@ -173,14 +173,14 @@ function SignedIn(props: { p: string }) {
           {sharedControlDone(api, props.p) ? '✓' : '—'} · Endorsed {yes()} of 2
         </p>
       </Show>
-      <Show when={queue().rows.length}>
+      <Show when={queue().active.length}>
         <div class="flex flex-col gap-2">
           <A class="vouch-link" href={href('/requests')}>
-            Requests waiting · {queue().rows.length} →
+            Requests waiting · {queue().active.length} →
           </A>
           <div class="flex flex-wrap gap-2" aria-label="Requests by kind">
             <For
-              each={Object.entries(requestKinds(queue().rows)).filter(
+              each={Object.entries(requestKinds(queue().active)).filter(
                 ([, n]) => n,
               )}
             >

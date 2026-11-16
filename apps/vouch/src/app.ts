@@ -40,7 +40,11 @@ function readRoom() {
 function readBrowserId() {
   let value = storage.get('auraMock_browserId');
   if (!/^[A-Za-z0-9_-]{6,64}$/.test(value || '')) {
-    value = `browser_${crypto.randomUUID().replace(/-/g, '')}`;
+    // crypto.getRandomValues works on any page. crypto.randomUUID exists only
+    // in secure contexts (https or localhost), so on a shared room opened over
+    // plain http, such as a dev server reached by LAN IP, it would throw and
+    // the app would render nothing.
+    value = `browser_${Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')}`;
     storage.set('auraMock_browserId', value);
   }
   return value!;
@@ -150,7 +154,13 @@ function createApp() {
   function defer(subject: string, kind: 'later' | 'ignored') {
     const persona = api.state.persona;
     const key = choiceKey(persona, subject);
-    if (pendingChoices[key]) return;
+    const prior = pendingChoices[key];
+    if (prior?.kind === kind) return;
+    // A second tap on the same button changes nothing. Tapping the other one
+    // ('later' is the Not now button) while the first choice is still in its
+    // undo window cancels the first choice, and the new one takes its place.
+    // If the first was already sent, the new one overwrites it.
+    prior?.op.undo();
     for (const [answerKey, entry] of Object.entries(pendingAnswers))
       if (
         entry?.subject === subject &&
