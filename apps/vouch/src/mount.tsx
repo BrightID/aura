@@ -14,9 +14,9 @@ export function mount(el: HTMLElement) {
   const addedDark = !html.classList.contains('dark');
   html.classList.add('dark');
   document.body.classList.add(...BODY_CLASS);
-  // The code injectRemoteCss puts in remoteEntry.js adds these links when landing
-  // first imports vouch. mount() enables them and the cleanup disables them, so
-  // Tailwind's preflight stops restyling landing once the user leaves vouch.
+  // The vite.config injectRemoteCss plugin adds these links disabled. Our CSS
+  // includes Tailwind's preflight reset, which would restyle the landing host
+  // page, so it applies only between mount() and the cleanup returned below.
   const css = document.querySelectorAll<HTMLLinkElement>(
     `link[data-remote-css="${import.meta.env.BASE_URL}"]`,
   );

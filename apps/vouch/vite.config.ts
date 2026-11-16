@@ -8,7 +8,11 @@ const PORT = 5177;
 
 export default defineConfig({
   base: '/vouch/',
-  plugins: [tailwindcss(), solid(), injectRemoteCss('/vouch/')],
+  plugins: [
+    tailwindcss(),
+    solid(),
+    injectRemoteCss('/vouch/', { disabled: true }),
+  ],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
