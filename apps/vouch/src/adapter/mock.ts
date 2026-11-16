@@ -1,5 +1,6 @@
 import { createStore, produce } from 'solid-js/store';
 import { choiceKey, level, votes } from '@/model/derive';
+import { uniquenessManagers } from '@/model/personas';
 import { Q } from '@/model/questions';
 import type { Seed } from '@/model/seed';
 import type {
@@ -127,6 +128,17 @@ export function createMockAdapter(
     ...state.promotedRoles[id]?.[DOMAIN],
   });
 
+  /**
+   * `id`'s manager level: their Interfold `manager` role level when they have
+   * one, else their level in `uniquenessManagers` (the founders' seed table in
+   * personas.ts), else 0. At level 1 or more, deriveRequestQueue shows them
+   * trainer and manager asks, and roleProgress counts their Yes answers toward
+   * promoting the person who asked. Both read this one function, so a founder
+   * who is shown an ask can also decide it.
+   */
+  const managerLevel = (id: string) =>
+    roles(id).manager ?? uniquenessManagers[id] ?? 0;
+
   // Practice ladder: Yes answers from two current managers admit a trainer or manager.
   const roleProgress = (id: string, role: Role) => {
     const requests = state.playerRequests.filter(
@@ -141,7 +153,7 @@ export function createMockAdapter(
         a.domain === DOMAIN &&
         a.role === role &&
         a.yes &&
-        (roles(a.rater).manager ?? 0) >= 1,
+        managerLevel(a.rater) >= 1,
     );
     return {
       requests: requests as RequestRow[],
@@ -154,6 +166,7 @@ export function createMockAdapter(
     state,
     data,
     setState,
+    managerLevel,
 
     session: () =>
       state.persona === 'newcomer'
@@ -278,7 +291,7 @@ export function createMockAdapter(
             request.conf = args.confidence;
             request.decided = time;
             if (role !== 'player')
-              request.admittedByManager = (roles(actor).manager ?? 0) >= 1;
+              request.admittedByManager = managerLevel(actor) >= 1;
           }
         });
         if ((role === 'trainer' || role === 'manager') && !shared)

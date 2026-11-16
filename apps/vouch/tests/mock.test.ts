@@ -342,6 +342,27 @@ describe('createMockAdapter', () => {
     ).toMatchObject({ status: 'Rated in', admittedByManager: true });
   });
 
+  test('two founders saying Yes promote a trainer', async () => {
+    const api = adapter('oskar');
+    for (const founder of ['philip', 'adam'])
+      await api.requests.ask({ to: founder, category: 'trainer' }).done;
+    for (const founder of ['philip', 'adam']) {
+      api.setState('persona', founder);
+      await api.evaluate({
+        evaluated: 'oskar',
+        positive: true,
+        confidence: 3,
+        category: 'trainer',
+      }).done;
+    }
+    expect(
+      api.state.playerRequests
+        .filter((x) => x.from === 'oskar')
+        .map((x) => x.admittedByManager),
+    ).toEqual([true, true]);
+    expect(api.getVerifications('oskar').categories.trainer?.level).toBe(1);
+  });
+
   test("each question's category reports its votes and level", () => {
     const answer = adapter('auryn').getVerifications('maya').categories[Q[0]];
     expect(answer.level).toBe(2);

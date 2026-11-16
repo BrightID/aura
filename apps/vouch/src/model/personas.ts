@@ -276,9 +276,12 @@ export const times = {
 };
 
 /**
- * Manager levels of the vouch-app Uniqueness practice people who are managers.
- * Interfold uses them for anyone with no Interfold manager level (see
- * `managerLevel` in derive.ts), so these five can receive trainer and manager asks.
+ * Manager levels of the five founders, keyed by persona id. They come from the
+ * Uniqueness practice in vouch-app, the standalone app this code is ported
+ * from. `managerLevel` in src/adapter/mock.ts falls back to this table for
+ * anyone with no Interfold manager level. So each founder listed here sees
+ * trainer and manager asks, and two founders' Yes answers promote the person
+ * who asked. Remove someone and they lose both.
  */
 export const uniquenessManagers: Record<string, number> = {
   philip: 2,

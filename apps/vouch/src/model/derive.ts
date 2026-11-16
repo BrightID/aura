@@ -1,7 +1,7 @@
 import type { MockAdapter } from '@/adapter/mock';
 import type { RequestRow, Vote } from '@/adapter/types';
 import { Q, QUESTIONS } from './questions';
-import { extraVotes, lenaSeed, uniquenessManagers } from './seed';
+import { extraVotes, lenaSeed } from './seed';
 import type { Answer } from './types';
 
 // Every screen derives what it shows from the functions in this file, so the
@@ -108,15 +108,11 @@ export const requestStatuses = [
 export type RequestStatus = (typeof requestStatuses)[number];
 
 /**
- * `id`'s manager level. Without an Interfold one, it is their level in
- * `uniquenessManagers`. The standalone vouch-app, which this code is ported
- * from, does the same, so both show the same practice queues. A level of 1 or
- * more shows trainer and manager asks in the queue.
+ * `id`'s manager level, read from the adapter (`managerLevel` in
+ * src/adapter/mock.ts), so the queue and the promotion count agree on who is
+ * a manager.
  */
-export const managerLevel = (api: Api, id: string) =>
-  api.getVerifications(id).categories.manager?.level ??
-  uniquenessManagers[id] ??
-  0;
+export const managerLevel = (api: Api, id: string) => api.managerLevel(id);
 
 /** Operators asking `p` for an endorsement that `p` has not fully answered yet. */
 export function incomingRequests(api: Api, p: string, now = Date.now()) {
