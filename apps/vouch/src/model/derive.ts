@@ -236,6 +236,11 @@ export function deriveRequestQueue(api: Api, id: string, now = Date.now()) {
     trainer: active.filter((row) => row.status === 'Trainer ask'),
     later,
     ignored: all.filter((row) => choice(row) === 'ignored'),
+    /**
+     * The rows `id` has not put off: every row with no Later or Ignore
+     * choice. Count this for "waiting on you"; `rows` also holds Later.
+     */
+    active,
     rows: [...active, ...later],
   };
 }
