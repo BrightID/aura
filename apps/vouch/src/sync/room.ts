@@ -125,20 +125,8 @@ export function applyWorld(api: MockAdapter, next: unknown): World {
         .map((a) => a.subject),
     );
     for (const subject of subjects) {
-      const managers = new Set(
-        api.state.answers
-          .filter(
-            (a) =>
-              a.subject === subject &&
-              a.domain === 'interfold' &&
-              a.role === role &&
-              a.yes &&
-              (api.getVerifications(a.rater).categories.manager?.level ?? 0) >=
-                1,
-          )
-          .map((a) => a.rater),
-      );
-      if (managers.size >= 2)
+      const { yes, required } = api.requests.roleProgress(subject, role);
+      if (yes >= required)
         api.setState(
           produce((s: PracticeState) => {
             ((s.promotedRoles[subject] ||= {}).interfold ||= {})[role] = 1;

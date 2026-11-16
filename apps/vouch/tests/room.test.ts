@@ -126,10 +126,13 @@ describe('applyWorld', () => {
     },
   );
 
-  test('two managers saying Yes promote a trainer', () => {
+  test.each([
+    ['nora', 'auryn'],
+    ['philip', 'adam'],
+  ])('two managers saying Yes promote a trainer (%s, %s)', (...raters) => {
     const api = createMockAdapter(createSeed());
     const records = stateRecords(api);
-    for (const rater of ['nora', 'auryn']) {
+    for (const rater of raters) {
       const answer = {
         domain: 'interfold',
         subject: 'lena',
