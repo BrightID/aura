@@ -325,4 +325,47 @@ describe.skipIf(!url)('vouch rooms', async () => {
       await call(claim, 'POST', 'demo-1', { token, id: 'newcomerB' }),
     ).toEqual([200, { claimedBy: 'newcomerB' }]);
   });
+
+  test('a reset keeps the claim on an invite it keeps as claimed', async () => {
+    const token = 'b'.repeat(32);
+    await call(claim, 'POST', 'keep-1', { token, id: 'newcomerA' });
+    await call(reset, 'POST', 'keep-1', {
+      teamCode: 't',
+      keep: {
+        invites: { [token]: { inviter: 'philip', claimedBy: 'newcomerA' } },
+      },
+    });
+    expect(
+      await call(claim, 'POST', 'keep-1', { token, id: 'newcomerB' }),
+    ).toEqual([409, { claimedBy: 'newcomerA' }]);
+  });
+
+  test('a claim racing a reset still answers', async () => {
+    const { claim: claimToken, clearClaims } =
+      await import('../api/lib/vouch-room');
+    const [winner] = await Promise.all([
+      claimToken('race-1', 'd'.repeat(32), 'newcomerA'),
+      clearClaims('race-1'),
+    ]);
+    expect(winner).toBe('newcomerA');
+  });
+
+  test('an old claim in a room still in use is kept', async () => {
+    const token = 'e'.repeat(32);
+    await call(world, 'PUT', 'busy-1', {
+      baseVersion: 0,
+      generation: 1,
+      world: {},
+    });
+    await call(claim, 'POST', 'busy-1', { token, id: 'newcomerA' });
+    await sql`UPDATE vouch_claims SET created_at = now() - interval '15 days' WHERE room = 'busy-1'`;
+    await call(world, 'PUT', 'busy-1', {
+      baseVersion: 1,
+      generation: 1,
+      world: {},
+    });
+    expect(
+      await call(claim, 'POST', 'busy-1', { token, id: 'newcomerB' }),
+    ).toEqual([409, { claimedBy: 'newcomerA' }]);
+  });
 });

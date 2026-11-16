@@ -150,6 +150,53 @@ describe('applyWorld', () => {
     expect(api.getVerifications('lena').categories.trainer?.level).toBe(1);
   });
 
+  test('a manager promoted in this apply counts for a later promotion', () => {
+    const api = createMockAdapter(createSeed());
+    const records = stateRecords(api);
+    // Oskar starts with no manager role. Kenji's answers come first, so on a
+    // single pass oskar's Yes for kenji would be checked before philip and
+    // adam's answers promote oskar, and kenji would not be promoted.
+    for (const [rater, subject] of [
+      ['oskar', 'kenji'],
+      ['auryn', 'kenji'],
+      ['philip', 'oskar'],
+      ['adam', 'oskar'],
+    ]) {
+      const answer = {
+        domain: 'interfold',
+        subject,
+        rater,
+        role: 'manager',
+        question: 0,
+        yes: true,
+        conf: 3,
+        time: '2026-01-01T00:00:00Z',
+      };
+      records.answers[recordKey.answers(answer)] = answer;
+    }
+    applyWorld(api, stampedWorld(records, emptyWorld(), 'x', 1));
+    expect(api.state.promotedRoles.oskar?.interfold?.manager).toBe(1);
+    expect(api.state.promotedRoles.kenji?.interfold?.manager).toBe(1);
+  });
+
+  test('a player Yes outside Interfold does not make a player', () => {
+    const api = createMockAdapter(createSeed());
+    const records = stateRecords(api);
+    const answer = {
+      domain: 'uniqueness',
+      subject: 'oskar',
+      rater: 'nora',
+      role: 'player',
+      question: 0,
+      yes: true,
+      conf: 3,
+      time: '2026-01-01T00:00:00Z',
+    };
+    records.answers[recordKey.answers(answer)] = answer;
+    applyWorld(api, stampedWorld(records, emptyWorld(), 'x', 1));
+    expect(api.state.playerReady.oskar).toBeUndefined();
+  });
+
   test('player-ready comes from player Yes answers only', () => {
     const api = createMockAdapter(createSeed());
     const records = stateRecords(api);

@@ -31,8 +31,9 @@ const PARTS = [
   'nodeReady',
   'nameVisibility',
 ];
-// A write deletes rooms not written to for this long, claims made this long
-// ago, and presence rows not refreshed for this long.
+// Each successful write() runs prune(), which deletes rooms not written to for
+// this long, claims at least this old whose room is gone, and presence rows
+// not refreshed for this long.
 const KEEP_DAYS = 14;
 // A browser counts as present this long after its last heartbeat.
 const PRESENT_SECONDS = 30;
@@ -113,7 +114,13 @@ export async function write(
 async function prune() {
   const cutoff = sql`now() - make_interval(days => ${KEEP_DAYS})`;
   await sql`DELETE FROM vouch_rooms WHERE updated_at < ${cutoff}`;
-  await sql`DELETE FROM vouch_claims WHERE created_at < ${cutoff}`;
+  // A claim is never deleted while its room exists. The room's world keeps the
+  // invite with its claimedBy set, and without the claim row a second person
+  // could claim that invite too.
+  await sql`
+    DELETE FROM vouch_claims
+    WHERE created_at < ${cutoff}
+      AND room NOT IN (SELECT room FROM vouch_rooms)`;
   await sql`DELETE FROM vouch_presence WHERE seen_at < ${cutoff}`;
 }
 
@@ -138,15 +145,18 @@ export async function present(room: string) {
 
 /** Claim invite `token` for `id`. Returns whoever holds it: `id` if this call won. */
 export async function claim(room: string, token: string, id: string) {
-  await sql`
-    INSERT INTO vouch_claims (room, token, claimed_by) VALUES (${room}, ${token}, ${id})
-    ON CONFLICT DO NOTHING`;
+  // Insert and read back in one statement. As two statements (insert, then
+  // SELECT), a reset's clearClaims could delete the row in between, leaving
+  // nothing to return. On conflict, the update keeps claimed_by as it is; it
+  // exists so that RETURNING gives the existing claimant.
   const [row] = await sql<{ claimedBy: string }[]>`
-    SELECT claimed_by AS "claimedBy" FROM vouch_claims
-    WHERE room = ${room} AND token = ${token}`;
+    INSERT INTO vouch_claims (room, token, claimed_by) VALUES (${room}, ${token}, ${id})
+    ON CONFLICT (room, token) DO UPDATE SET claimed_by = vouch_claims.claimed_by
+    RETURNING claimed_by AS "claimedBy"`;
   return row.claimedBy;
 }
 
-export async function clearClaims(room: string) {
-  await sql`DELETE FROM vouch_claims WHERE room = ${room}`;
+/** Delete `room`'s invite claims, except those on the tokens in `keep`. */
+export async function clearClaims(room: string, keep: string[] = []) {
+  await sql`DELETE FROM vouch_claims WHERE room = ${room} AND NOT (token = ANY(${keep}))`;
 }

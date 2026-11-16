@@ -110,28 +110,36 @@ export function applyWorld(api: MockAdapter, next: unknown): World {
       );
       s.playerReady = {};
       for (const a of s.answers)
-        if (a.role === 'player' && a.yes) s.playerReady[a.subject] = true;
+        if (a.domain === 'interfold' && a.role === 'player' && a.yes)
+          s.playerReady[a.subject] = true;
       s.promotedRoles = {};
     }),
   );
-  // Promotions are worked out from all the room's answers, since the
-  // answering browser's adapter doesn't promote in a shared room. Each is set
-  // as soon as it is found, as in vouch-app, so someone promoted to manager
-  // here already counts as a manager when later people's answers are checked.
-  for (const role of ['trainer', 'manager'] as const) {
-    const subjects = new Set(
-      api.state.answers
-        .filter((a) => a.role === role && a.yes && a.domain === 'interfold')
-        .map((a) => a.subject),
-    );
-    for (const subject of subjects) {
-      const { yes, required } = api.requests.roleProgress(subject, role);
-      if (yes >= required)
+  // Promotions are worked out here from all the room's answers: in a shared
+  // room, the mock adapter's evaluate doesn't promote. roleProgress counts a
+  // Yes only from a manager, and reads promotedRoles to decide who is one, so
+  // a promotion can make another one possible. The outer loop therefore
+  // repeats over every subject until a whole pass promotes nobody. One pass
+  // would miss a promotion whose subject came before its new manager's.
+  for (let promoted = true; promoted;) {
+    promoted = false;
+    for (const role of ['trainer', 'manager'] as const) {
+      const subjects = new Set(
+        api.state.answers
+          .filter((a) => a.role === role && a.yes && a.domain === 'interfold')
+          .map((a) => a.subject),
+      );
+      for (const subject of subjects) {
+        if (api.state.promotedRoles[subject]?.interfold?.[role]) continue;
+        const { yes, required } = api.requests.roleProgress(subject, role);
+        if (yes < required) continue;
+        promoted = true;
         api.setState(
           produce((s: PracticeState) => {
             ((s.promotedRoles[subject] ||= {}).interfold ||= {})[role] = 1;
           }),
         );
+      }
     }
   }
   const { persona, identities } = api.state;

@@ -34,7 +34,15 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     const { version } = await read(room);
     const r = await write(room, version, 0, keep, true);
     if (r.ok) {
-      await clearClaims(room);
+      // An invite kept with claimedBy set stays claimed, so keep its claim row:
+      // without it, a second person could claim the invite. Claims on every
+      // other invite, including removed ones, are cleared.
+      const claimed = Object.entries(keep?.invites ?? {})
+        .filter(
+          ([, invite]) => invite?.claimedBy !== undefined && !invite.removed,
+        )
+        .map(([token]) => token);
+      await clearClaims(room, claimed);
       return res
         .status(200)
         .json({ version: r.version, generation: r.generation });
