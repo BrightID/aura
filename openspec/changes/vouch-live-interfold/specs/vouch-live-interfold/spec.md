@@ -126,26 +126,38 @@ A `submitting` answer SHALL be signed with a new timestamp and posted, unless th
 
 ### Requirement: Polling until applied
 
-A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or as the next requirement says. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a single `failed` poll in that time neither ends polling nor restarts the 5 minutes.
+A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or as the next requirement says. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a `failed` poll that the next requirement treats as not final neither ends polling nor restarts the 5 minutes.
 
 #### Scenario: Accepted, not yet applied
 - **WHEN** the node returns the hash but polling still reports `unknown`, `init` or `sent`
 - **THEN** the answer shows as submitted, not applied
 
-### Requirement: Two failed polls in a row
+### Requirement: Write-conflict failures are not final
 
-A `submitted` answer SHALL become `failed` when the node reports `failed` on two polls in a row, and not on one, because on a write conflict the node stores `failed` and then retries the same operation (BrightID-Aura-Node, `web_services/foxx/v6/apply.js` and `consensus/receiver.py`). Two are taken as final on the assumption that the retry settles within one 5-second interval; task 5.2 checks it.
+When the node reports `failed`, the answer SHALL become `failed` at once, with two exceptions, read from the `result` field of the node's operation-state response: on `errorNum` 25 it becomes `applied` (*Applied before counts as applied*), and on `arangoErrorNum` 1200, ArangoDB's write-conflict error, it SHALL keep polling. The node itself retries an operation on exactly that error until it applies or fails another way (BrightID-Aura-Node, `consensus/receiver.py`, `process_op`).
 
 #### Scenario: Failed then applied
-- **WHEN** one poll reports `failed` and the next reports `applied`
+- **WHEN** a poll reports `failed` with `arangoErrorNum` 1200, and a later poll reports `applied`
 - **THEN** the answer shows as applied, never as failed
+
+#### Scenario: Failed for another reason
+- **WHEN** a poll reports `failed` with neither `errorNum` 25 nor `arangoErrorNum` 1200, or with no error at all
+- **THEN** the answer shows as failed at once, with Retry
+
+### Requirement: Applied before counts as applied
+
+When the node reports `failed` with result `errorNum` 25, the answer SHALL become `applied`, because the node returns that error only for an operation it has already applied. It returns it when it processes the same operation a second time, and that second processing overwrites the stored `applied` state with `failed` (BrightID-Aura-Node, `web_services/foxx/v6/apply.js`, `operationsPut`).
+
+#### Scenario: Applied before
+- **WHEN** a poll reports `failed` with `errorNum` 25, as after the node processed the same operation a second time
+- **THEN** the answer shows as applied
 
 ### Requirement: Unconfirmed answers stay pending
 
 An `unconfirmed` answer SHALL offer no retry, only a way to check again. Checking again returns it to `submitted` and polls for another 5 minutes, after which it is `unconfirmed` again if the node still has not settled it.
 
 #### Scenario: Never settles
-- **WHEN** 5 minutes pass with no poll reporting `applied` or `expired`, and no two polls in a row reporting `failed`
+- **WHEN** 5 minutes pass with no poll reporting `applied` or `expired`, and none reporting a `failed` that is final
 - **THEN** the answer shows as not confirmed yet, offers to check again and no retry, and checking again shows it applied once the node reports `applied`
 
 ### Requirement: Retry after failure
