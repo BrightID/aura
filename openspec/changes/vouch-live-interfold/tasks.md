@@ -21,4 +21,6 @@
 
 ## 5. Follow-up
 
+
 - [ ] 5.1 When BrightID/shared-specs archives `interfold-live-endorsements`, point this spec's Purpose link at the accepted spec.
+- [ ] 5.2 Measure how long the node keeps an operation `failed` while it retries a write conflict. If it can stay `failed` across one 5-second polling interval, change *Two failed polls in a row* to wait out that time, for example by requiring as many consecutive `failed` polls as the retry can last.

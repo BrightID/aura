@@ -36,13 +36,21 @@ How `apps/vouch` sends live Interfold answers to the Aura node and reads them ba
 - **WHEN** the app is built with live reads on and no `VITE_AURA_NODE_URL`
 - **THEN** the evidence route reads from `https://aura-test.brightid.org`
 
+#### Scenario: Set
+- **WHEN** the app is built with `VITE_AURA_NODE_URL` set to another node
+- **THEN** evidence reads and answer writes both go to that node
+
 ### Requirement: Evaluator from the core login
 
-The live writer SHALL take the evaluator's BrightID and secret key from core's persisted login store. With no signed-in core user, the answer route SHALL say that the person must sign in to Aura, link to `/core/`, and submit nothing. A practice persona or room identity SHALL never supply the evaluator or the key.
+The live writer SHALL take the evaluator's BrightID and secret key from core's persisted login store. This is not the app login the shared contract's *Open endorsement participation* rule forbids, because it adds no new account or gate on top of the Aura sign-in, which already holds the signing key. With no signed-in core user, the answer route SHALL say that the person must sign in to Aura, link to `/core/`, and submit nothing.
 
 #### Scenario: Not signed in
 - **WHEN** a person opens `/live/:operator` with live writes on and no core login in the browser
 - **THEN** the page asks them to sign in to Aura with a link to `/core/`, and no answer can be submitted
+
+### Requirement: Practice identities never sign
+
+A practice persona or room identity SHALL never supply the evaluator or the key.
 
 #### Scenario: Practice identity chosen
 - **WHEN** a practice persona or a room identity is selected and the person is signed in to core
@@ -50,11 +58,15 @@ The live writer SHALL take the evaluator's BrightID and secret key from core's p
 
 ### Requirement: Signed as the evaluator shown
 
-An answer SHALL be signed only as the core user the answer screen showed when it opened. Each time the answer is signed, when it moves to `submitting`, the writer compares the signed-in core user with that one. If nobody or another account is signed in then, the answer moves to `failed` and nothing is sent, and a retry fails the same way until that user is signed in again.
+An answer SHALL be signed only as the core user the answer screen showed when it opened. Each time the answer moves to `submitting`, before signing it, the writer compares the signed-in core user with that one. If nobody or another account is signed in then, the answer moves to `failed`, with a message saying whether nobody or another account is signed in, and nothing is sent; a retry fails the same way until that user is signed in again.
 
 #### Scenario: Account changed after the page opened
 - **WHEN** the answer screen shows evaluator A, and the person signs in to core as B in another tab before answering
 - **THEN** the answer fails, says another account is signed in, and is not signed as B
+
+#### Scenario: Signed out after the page opened
+- **WHEN** the answer screen shows evaluator A, the person signs out of core in another tab, answers, and then presses Retry
+- **THEN** the answer fails and says to sign in, the retry fails the same way, and nothing is sent
 
 ### Requirement: Operator id from the route
 
@@ -106,7 +118,7 @@ Undo during the 1.5-second window SHALL discard the answer. Once an answer has l
 
 ### Requirement: Submission confirmed by the node
 
-A `submitting` answer SHALL be signed with a new timestamp and posted; it becomes `submitted` only when the node returns the operation's hash and that hash equals the one `hash` in `@aura/domain` computes from the signed message, and `failed` otherwise.
+A `submitting` answer SHALL be signed with a new timestamp and posted, unless the check in *Signed as the evaluator shown* fails; it becomes `submitted` only when the node returns the operation's hash and that hash equals what the `hash` function in `@aura/domain` computes from the signed message, and `failed` otherwise.
 
 #### Scenario: Hash mismatch
 - **WHEN** the node returns a hash that does not match the signed message
@@ -114,14 +126,18 @@ A `submitting` answer SHALL be signed with a new timestamp and posted; it become
 
 ### Requirement: Polling until applied
 
-A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or reports `failed` on two polls in a row. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a single `failed` poll in that time does not stop this.
+A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or as the next requirement says. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a single `failed` poll in that time neither ends polling nor restarts the 5 minutes.
 
 #### Scenario: Accepted, not yet applied
 - **WHEN** the node returns the hash but polling still reports `unknown`, `init` or `sent`
 - **THEN** the answer shows as submitted, not applied
 
+### Requirement: Two failed polls in a row
+
+A `submitted` answer SHALL become `failed` when the node reports `failed` on two polls in a row, and not on one, because on a write conflict the node stores `failed` and then retries the same operation (BrightID-Aura-Node, `web_services/foxx/v6/apply.js` and `consensus/receiver.py`). Two are taken as final on the assumption that the retry settles within one 5-second interval; task 5.2 checks it.
+
 #### Scenario: Failed then applied
-- **WHEN** one poll reports `failed` and the next reports `applied`. The node does this on a write conflict: it stores `failed`, then retries the same operation, which is why one `failed` poll is not final
+- **WHEN** one poll reports `failed` and the next reports `applied`
 - **THEN** the answer shows as applied, never as failed
 
 ### Requirement: Unconfirmed answers stay pending
