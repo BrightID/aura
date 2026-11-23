@@ -5,7 +5,10 @@
 // the /live/ routes.
 
 export interface LiveConfig {
-  /** On: the build may send the signed-in person's Interfold answers. No route acts on it until the answer route is added (AUR-345). */
+  /**
+   * On: the app registers the answer route, /live/:operator, where the person
+   * signed in to apps/core sends signed Interfold answers to the node.
+   */
   writes: boolean;
   /** On: the build reads Interfold answers from the node. Independent of `writes`. */
   reads: boolean;
@@ -31,13 +34,12 @@ export function liveConfig(
 
 export const LIVE = liveConfig(import.meta.env);
 
-/**
- * The live route paths the router registers for a config. Only reads add one
- * today; with writes on and reads off the list is empty, until the answer
- * route is added (AUR-345).
- */
+/** The live route paths the router registers for a config, one per switch that is on. */
 export function livePaths(config: LiveConfig): string[] {
-  return config.reads ? ['/live/:operator/evidence'] : [];
+  return [
+    ...(config.writes ? ['/live/:operator'] : []),
+    ...(config.reads ? ['/live/:operator/evidence'] : []),
+  ];
 }
 
 /** A BrightID id: 43 characters of A-Z, a-z, 0-9, `-` and `_`. */
