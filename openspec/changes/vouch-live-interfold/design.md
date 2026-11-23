@@ -1,4 +1,0 @@
-## Open Questions
-
-- The shared [interfold-endorsements](https://github.com/BrightID/shared-specs/blob/main/openspec/changes/interfold-live-endorsements/specs/interfold-endorsements/spec.md) contract's *Open endorsement participation* rule forbids requiring "app login" to submit. This spec takes the secret key that signs each answer from the login store of `apps/core`, as ADR-0004 (BrightID/shared-specs#7) decides, so a person not signed in to `apps/core` cannot submit. Does signing in to core count as the forbidden app login? If it does, the shared contract or ADR-0004 must change before `apps/vouch` can submit live answers.
-- May a production build turn on `VITE_VOUCH_LIVE_WRITES` before the end-to-end test on aura-test, the Aura test node (BrightID/aura#12), passes? Until a person answers, whoever configures a deployment turns it on only for builds pointed at aura-test; no code enforces this.
