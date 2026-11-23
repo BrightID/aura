@@ -3,14 +3,12 @@ import { b64ToUint8Array } from '@aura/domain/crypto';
 import type { CoreSession } from '@aura/domain/core-session';
 import {
   buildEvaluateOperation,
-  fetchOperationState,
+  fetchOperation,
   postOperation,
   type InterfoldCategory,
+  type OperationStatus,
 } from '@aura/domain/operations';
-import {
-  EvaluationValue,
-  type OperationState,
-} from '@aura/domain/types/evaluations';
+import { EvaluationValue } from '@aura/domain/types/evaluations';
 import { Q } from '@/model/questions';
 
 export type LiveState =
@@ -83,7 +81,7 @@ export interface WriterDeps {
   evaluator?: string;
   now?: () => number;
   post?: typeof postOperation;
-  state?: (nodeUrl: string, hash: string) => Promise<OperationState>;
+  state?: (nodeUrl: string, hash: string) => Promise<OperationStatus>;
   setTimer?: (fn: () => void, ms: number) => unknown;
   clearTimer?: (timer: unknown) => void;
 }
@@ -91,19 +89,30 @@ export interface WriterDeps {
 export const UNDO_MS = 1500;
 export const POLL_MS = 5_000;
 export const SETTLE_MS = 5 * 60_000;
+/**
+ * ArangoDB's write-conflict error, the one failure the node retries by itself;
+ * on it the writer keeps polling instead of failing the answer.
+ */
+export const ARANGO_CONFLICT = 1200;
+/** The node's error for an operation it already applied (OperationAppliedBeforeError). */
+export const APPLIED_BEFORE = 25;
 
 /**
- * One live answer. It holds for the undo window, then is signed and posted
- * (`submitting`). It is `submitted` once the node returns a hash equal to the
- * signed message's hash, and `failed` if signing or posting fails: no session,
- * another account, a hash that differs, or a post error.
+ * One live answer. It holds for the 1.5-second undo window; undo then moves it
+ * to `failed` with the error 'Undone'. Otherwise it is signed and posted
+ * (`submitting`). It becomes `submitted` once the node returns a hash equal to
+ * the signed message's hash, and `failed` if signing or posting fails: no
+ * session, a session for an account other than `deps.evaluator`, a hash that
+ * differs, or a post error.
  *
- * Once submitted, it is `applied` when the node reports applied, and `failed`
- * when the node reports expired or reports failed on two polls in a row. One
- * failed report is not enough, because on a write conflict the node stores
- * failed, then retries the same operation and may apply it. After 5 minutes
- * without applied or failed, it is `unconfirmed`: still pending, and it can be
- * checked again. A failed answer can be retried, except one that was undone.
+ * Once submitted, it polls the node. It is `applied` when the node reports
+ * applied, or failed with the applied-before error (see APPLIED_BEFORE). It is
+ * `failed` when the node reports expired, or failed with any other error
+ * except ArangoDB's write conflict (see ARANGO_CONFLICT), on which polling goes
+ * on. If none of these comes within 5 minutes of becoming submitted, it is
+ * `unconfirmed`: still pending, and the screen's Check again calls
+ * checkAgain(), which polls for another 5 minutes. A failed answer can be
+ * retried, except one that was undone.
  */
 export class LiveAnswer {
   readonly answer: LiveAnswerInput;
@@ -119,7 +128,7 @@ export class LiveAnswer {
     this.deps = {
       now: Date.now,
       post: postOperation,
-      state: fetchOperationState,
+      state: fetchOperation,
       setTimer: (fn, ms) => setTimeout(fn, ms),
       clearTimer: (t) => clearTimeout(t as ReturnType<typeof setTimeout>),
       evaluator: '',
@@ -184,21 +193,29 @@ export class LiveAnswer {
   private watch(hash: string, run: number) {
     this.signal[1]('submitted');
     const until = this.deps.now() + SETTLE_MS;
-    let failedOnce = false;
     const poll = async () => {
       if (run !== this.run) return;
-      let state: OperationState | undefined;
+      let status: OperationStatus | undefined;
       try {
-        state = await this.deps.state(this.deps.nodeUrl, hash);
+        status = await this.deps.state(this.deps.nodeUrl, hash);
       } catch {
         // A poll request that throws counts as no report: polling goes on at
         // the next POLL_MS, and the time still counts toward the 5 minutes.
       }
       if (run !== this.run) return;
-      if (state === 'APPLIED') return void this.signal[1]('applied');
-      if (state === 'EXPIRED' || (state === 'FAILED' && failedOnce))
+      const state = status?.state;
+      // Failed with errorNum 25 means the node processed this answer's
+      // operation a second time, as when its receiver reprocesses a block, and
+      // overwrote the stored applied state with failed. The answer's
+      // evaluation is already in the node's database.
+      const appliedBefore =
+        state === 'FAILED' && status?.errorNum === APPLIED_BEFORE;
+      if (state === 'APPLIED' || appliedBefore)
+        return void this.signal[1]('applied');
+      const conflict =
+        state === 'FAILED' && status?.arangoErrorNum === ARANGO_CONFLICT;
+      if ((state === 'FAILED' && !conflict) || state === 'EXPIRED')
         return this.fail(`The node reported ${state.toLowerCase()}`);
-      failedOnce = state === 'FAILED';
       if (this.deps.now() >= until) return void this.signal[1]('unconfirmed');
       this.timer = this.deps.setTimer(() => void poll(), POLL_MS);
     };

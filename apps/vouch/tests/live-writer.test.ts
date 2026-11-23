@@ -1,6 +1,7 @@
 import { expect, test } from 'bun:test';
 import nacl from 'tweetnacl';
 import { hash, uInt8ArrayToB64 } from '@aura/domain/crypto';
+import type { OperationStatus } from '@aura/domain/operations';
 import type { OperationState } from '@aura/domain/types/evaluations';
 import { isOperatorId, liveConfig, livePaths } from '@/live/config';
 import {
@@ -18,7 +19,10 @@ const keys = nacl.sign.keyPair();
 const session = { brightId: 'me', secretKey: uInt8ArrayToB64(keys.secretKey) };
 
 /** Timers and a node the test drives by hand. */
-function harness(states: OperationState[] = [], post?: WriterDeps['post']) {
+function harness(
+  states: (OperationState | OperationStatus)[] = [],
+  post?: WriterDeps['post'],
+) {
   let now = 1_000;
   let timers: { at: number; fn: () => void }[] = [];
   const posted: { message: string }[] = [];
@@ -40,7 +44,10 @@ function harness(states: OperationState[] = [], post?: WriterDeps['post']) {
         posted.push({ message });
         return hash(message);
       }),
-    state: async () => states.shift() ?? 'SENT',
+    state: async () => {
+      const next = states.shift() ?? 'SENT';
+      return typeof next === 'string' ? { state: next } : next;
+    },
   };
   /** Move the clock on by `ms`, running every timer that falls due. */
   const advance = async (ms: number) => {
@@ -165,9 +172,9 @@ test('an answer the node has not settled after 5 minutes stays pending, and can 
 
 // @scenario vouch-live-interfold: Rejected and retried
 test('a failed answer can be retried, and is applied only when the node says so', async () => {
-  const h = harness(['FAILED', 'FAILED', 'SENT', 'APPLIED']);
+  const h = harness(['FAILED', 'SENT', 'APPLIED']);
   const a = new LiveAnswer(input, h.deps);
-  await h.advance(UNDO_MS + POLL_MS * 2);
+  await h.advance(UNDO_MS + POLL_MS);
   expect(a.state).toBe('failed');
   a.retry();
   for (let i = 0; i < 5; i++) await Promise.resolve();
@@ -244,12 +251,12 @@ test('retry does nothing unless the answer failed', async () => {
 });
 
 test('a failure says why, and a retry clears the reason', async () => {
-  const h = harness(['FAILED', 'FAILED', 'SENT']);
+  const h = harness(['FAILED', 'SENT']);
   const a = new LiveAnswer(input, { ...h.deps, session: () => null });
   await h.advance(UNDO_MS);
   expect(a.error).toBe('Sign in to Aura first');
   const b = new LiveAnswer(input, h.deps);
-  await h.advance(UNDO_MS + POLL_MS * 2);
+  await h.advance(UNDO_MS + POLL_MS);
   expect(b.error).toBe('The node reported failed');
   b.retry();
   expect(b.error).toBeUndefined();
@@ -263,7 +270,7 @@ test('the answer screen refuses a malformed operator id', () => {
 // @scenario vouch-live-interfold: Failed then applied
 test('a failed the node overwrites with applied a moment later is not final', async () => {
   // The node stores failed on a write conflict, then retries the same op.
-  const h = harness(['FAILED', 'APPLIED']);
+  const h = harness([{ state: 'FAILED', arangoErrorNum: 1200 }, 'APPLIED']);
   const a = new LiveAnswer(input, h.deps);
   await h.advance(UNDO_MS + POLL_MS * 2);
   expect(a.state).toBe('applied');
@@ -337,7 +344,7 @@ test('a set node URL receives both reads and writes', async () => {
     },
     state: async (url) => {
       urls.push(url);
-      return 'APPLIED';
+      return { state: 'APPLIED' };
     },
   });
   await h.advance(UNDO_MS + POLL_MS);
@@ -349,4 +356,28 @@ test('a set node URL receives both reads and writes', async () => {
     return {};
   });
   expect(new Set(urls)).toEqual(new Set([nodeUrl]));
+});
+
+// @scenario vouch-live-interfold: Failed for another reason
+test('a failure other than a write conflict is final at once', async () => {
+  for (const report of [
+    { state: 'FAILED' as const, arangoErrorNum: 1210 },
+    'FAILED' as const,
+  ]) {
+    const h = harness([report, 'APPLIED']);
+    const a = new LiveAnswer(input, h.deps);
+    await h.advance(UNDO_MS + POLL_MS);
+    expect([a.state, a.error]).toEqual(['failed', 'The node reported failed']);
+  }
+});
+
+// @scenario vouch-live-interfold: Applied before
+test('an operation the node reports as applied before counts as applied', async () => {
+  // When the node processes the same operation a second time, it overwrites
+  // the stored applied state with failed (errorNum 25), though the answer's
+  // evaluation is already in the node's database.
+  const h = harness([{ state: 'FAILED', errorNum: 25 }]);
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  expect(a.state).toBe('applied');
 });
