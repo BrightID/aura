@@ -48,6 +48,14 @@ The live writer SHALL take the evaluator's BrightID and secret key from core's p
 - **WHEN** a practice persona or a room identity is selected and the person is signed in to core
 - **THEN** a live answer is signed as the core user, and the practice id appears nowhere in the operation
 
+### Requirement: Signed as the evaluator shown
+
+An answer SHALL be signed only as the core user the answer screen showed when it opened. Each time the answer is signed, when it moves to `submitting`, the writer compares the signed-in core user with that one. If nobody or another account is signed in then, the answer moves to `failed` and nothing is sent, and a retry fails the same way until that user is signed in again.
+
+#### Scenario: Account changed after the page opened
+- **WHEN** the answer screen shows evaluator A, and the person signs in to core as B in another tab before answering
+- **THEN** the answer fails, says another account is signed in, and is not signed as B
+
 ### Requirement: Operator id from the route
 
 The live routes SHALL accept an operator id only when it is 43 characters of `A-Z`, `a-z`, `0-9`, `-` and `_`, the form of a BrightID id. For any other id the route SHALL say the link is not valid and make no node request.
@@ -70,11 +78,31 @@ The practice screens number the questions 0, 1 and 2, in the order of `Q` in `ap
 
 ### Requirement: Live write states
 
-A live answer SHALL be in one of `holding`, `submitting`, `submitted`, `applied` and `failed`, and SHALL show as applied only in `applied`. The allowed moves are: `holding` to `submitting` when the 1.5-second undo window ends, and undo during that window discards the answer; `submitting` to `submitted` or `failed`; `submitted` to `applied` or `failed`; and `failed` to `submitting` on retry. Once an answer has left `holding`, no undo SHALL be offered.
+A live answer SHALL be in one of `holding`, `submitting`, `submitted`, `unconfirmed`, `applied` and `failed`, and SHALL show as applied only in `applied`. It starts in `holding`; besides undo, which discards it, it SHALL move only:
+
+- `holding` to `submitting`, when the undo window ends;
+- `submitting` to `submitted` or `failed`;
+- `submitted` to `applied`, `failed` or `unconfirmed`;
+- `unconfirmed` to `submitted`, on check again;
+- `failed` to `submitting`, on retry.
+
+No move leaves `applied`.
+
+#### Scenario: Applied is final
+- **WHEN** an answer is applied
+- **THEN** it offers no undo, retry or check again, and stays applied
+
+### Requirement: Undo only while holding
+
+Undo during the 1.5-second window SHALL discard the answer. Once an answer has left `holding`, no undo SHALL be offered.
+
+#### Scenario: Undo inside the window
+- **WHEN** the evaluator undoes an answer while it is holding
+- **THEN** the answer is discarded and nothing is signed or sent
 
 #### Scenario: Undo after submission
-- **WHEN** an answer is submitting, submitted or applied
-- **THEN** no undo is offered, and the answer's real state stays on screen
+- **WHEN** an answer is submitting, submitted, unconfirmed, applied or failed
+- **THEN** no undo is offered, and the screen keeps showing the answer's current state
 
 ### Requirement: Submission confirmed by the node
 
@@ -86,15 +114,23 @@ A `submitting` answer SHALL be signed with a new timestamp and posted; it become
 
 ### Requirement: Polling until applied
 
-A `submitted` answer SHALL poll the operation's state every 5 seconds. It becomes `applied` when the node reports `applied`, and `failed` when the node reports `failed` or `expired`, or when 5 minutes pass after it became `submitted` without either.
+A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or reports `failed` on two polls in a row. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a single `failed` poll in that time does not stop this.
 
 #### Scenario: Accepted, not yet applied
 - **WHEN** the node returns the hash but polling still reports `unknown`, `init` or `sent`
 - **THEN** the answer shows as submitted, not applied
 
+#### Scenario: Failed then applied
+- **WHEN** one poll reports `failed` and the next reports `applied`. The node does this on a write conflict: it stores `failed`, then retries the same operation, which is why one `failed` poll is not final
+- **THEN** the answer shows as applied, never as failed
+
+### Requirement: Unconfirmed answers stay pending
+
+An `unconfirmed` answer SHALL offer no retry, only a way to check again. Checking again returns it to `submitted` and polls for another 5 minutes, after which it is `unconfirmed` again if the node still has not settled it.
+
 #### Scenario: Never settles
-- **WHEN** polling has reported neither `applied` nor `failed` nor `expired` for 5 minutes
-- **THEN** the answer shows as failed
+- **WHEN** 5 minutes pass with no poll reporting `applied` or `expired`, and no two polls in a row reporting `failed`
+- **THEN** the answer shows as not confirmed yet, offers to check again and no retry, and checking again shows it applied once the node reports `applied`
 
 ### Requirement: Retry after failure
 
