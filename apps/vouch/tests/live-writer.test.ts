@@ -297,3 +297,56 @@ test('an applied answer stays applied whatever is pressed', async () => {
   await h.advance(POLL_MS * 3);
   expect([a.state, h.posted.length]).toEqual(['applied', 1]);
 });
+
+// spec-trace's CI check matches this tag to the spec scenario; rename both together.
+// @scenario vouch-live-interfold: Signed out after the page opened
+test('signing out after the page opened fails the answer and its retry', async () => {
+  const h = harness();
+  const a = new LiveAnswer(input, {
+    ...h.deps,
+    evaluator: 'me',
+    session: () => null,
+  });
+  await h.advance(UNDO_MS);
+  expect([a.state, a.error]).toEqual(['failed', 'Sign in to Aura first']);
+  a.retry();
+  for (let i = 0; i < 5; i++) await Promise.resolve();
+  expect([a.state, a.error, h.posted.length]).toEqual([
+    'failed',
+    'Sign in to Aura first',
+    0,
+  ]);
+});
+
+// The Node URL requirement's scenario "Set": VITE_AURA_NODE_URL is set. spec-trace's
+// CI check matches this tag to it; rename both together.
+// @scenario vouch-live-interfold: Set
+test('a set node URL receives both reads and writes', async () => {
+  const nodeUrl = liveConfig({
+    VITE_AURA_NODE_URL: 'https://other.node/',
+  }).nodeUrl;
+  expect(nodeUrl).toBe('https://other.node');
+  const urls: string[] = [];
+  const h = harness();
+  const a = new LiveAnswer(input, {
+    ...h.deps,
+    nodeUrl,
+    post: async (url, _op, message) => {
+      urls.push(url);
+      return hash(message);
+    },
+    state: async (url) => {
+      urls.push(url);
+      return 'APPLIED';
+    },
+  });
+  await h.advance(UNDO_MS + POLL_MS);
+  expect(a.state).toBe('applied');
+  expect(new Set(urls)).toEqual(new Set([nodeUrl]));
+  const { readEvidence } = await import('@/live/evidence');
+  await readEvidence(nodeUrl, X, async (url) => {
+    urls.push(url);
+    return {};
+  });
+  expect(new Set(urls)).toEqual(new Set([nodeUrl]));
+});
