@@ -42,7 +42,7 @@ How `apps/vouch` sends live Interfold answers to the Aura node and reads them ba
 
 ### Requirement: Evaluator from the core login
 
-The live writer SHALL take the evaluator's BrightID and secret key from core's persisted login store. This is not the app login the shared contract's *Open endorsement participation* rule forbids, because it adds no new account or gate on top of the Aura sign-in, which already holds the signing key. With no signed-in core user, the answer route SHALL say that the person must sign in to Aura, link to `/core/`, and submit nothing.
+The live writer SHALL take the evaluator's BrightID and secret key from core's persisted login store. Reading core's login store is not the separate app login that the shared interfold-endorsements contract forbids, because it adds no new account or gate ([ADR-0004](https://github.com/BrightID/shared-specs/pull/7)). With no signed-in core user, the answer route SHALL say that the person must sign in to Aura, link to `/core/`, and submit nothing.
 
 #### Scenario: Not signed in
 - **WHEN** a person opens `/live/:operator` with live writes on and no core login in the browser
@@ -63,6 +63,10 @@ An answer SHALL be signed only as the core user the answer screen showed when it
 #### Scenario: Account changed after the page opened
 - **WHEN** the answer screen shows evaluator A, and the person signs in to core as B in another tab before answering
 - **THEN** the answer fails, says another account is signed in, and is not signed as B
+
+#### Scenario: Signed back in
+- **WHEN** an answer failed because evaluator A was signed out, and A signs in to core again before Retry is pressed
+- **THEN** the retry signs as A and the answer is sent
 
 #### Scenario: Signed out after the page opened
 - **WHEN** the answer screen shows evaluator A, the person signs out of core in another tab, answers, and then presses Retry
@@ -126,7 +130,15 @@ A `submitting` answer SHALL be signed with a new timestamp and posted, unless th
 
 ### Requirement: Polling until applied
 
-A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or as the next requirement says. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a `failed` poll that the next requirement treats as not final neither ends polling nor restarts the 5 minutes.
+A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or reports `failed` with an error that *Write-conflict failures are not final* treats as final. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a write-conflict `failed` poll keeps polling and does not restart the 5 minutes.
+
+#### Scenario: Expired
+- **WHEN** a poll reports `expired`
+- **THEN** the answer shows as failed, with Retry
+
+#### Scenario: Conflict that never clears
+- **WHEN** every poll for 5 minutes reports `failed` with `arangoErrorNum` 1200
+- **THEN** the answer stays submitted during those polls and becomes unconfirmed at the 5-minute mark
 
 #### Scenario: Accepted, not yet applied
 - **WHEN** the node returns the hash but polling still reports `unknown`, `init` or `sent`
@@ -134,7 +146,7 @@ A `submitted` answer SHALL poll the operation's state every 5 seconds. The answe
 
 ### Requirement: Write-conflict failures are not final
 
-When the node reports `failed`, the answer SHALL become `failed` at once, with two exceptions, read from the `result` field of the node's operation-state response: on `errorNum` 25 it becomes `applied` (*Applied before counts as applied*), and on `arangoErrorNum` 1200, ArangoDB's write-conflict error, it SHALL keep polling. The node itself retries an operation on exactly that error until it applies or fails another way (BrightID-Aura-Node, `consensus/receiver.py`, `process_op`).
+When the node reports `failed` with `arangoErrorNum` 1200 in the `result` of its response to that poll (`GET /brightid/v6/operations/{hash}`), the answer SHALL stay `submitted` and keep polling, until the 5-minute limit in *Polling until applied*, because the node retries that write conflict itself. On any other `failed`, it SHALL become `failed` at once, unless *Applied before counts as applied* applies.
 
 #### Scenario: Failed then applied
 - **WHEN** a poll reports `failed` with `arangoErrorNum` 1200, and a later poll reports `applied`
@@ -146,10 +158,10 @@ When the node reports `failed`, the answer SHALL become `failed` at once, with t
 
 ### Requirement: Applied before counts as applied
 
-When the node reports `failed` with result `errorNum` 25, the answer SHALL become `applied`, because the node returns that error only for an operation it has already applied. It returns it when it processes the same operation a second time, and that second processing overwrites the stored `applied` state with `failed` (BrightID-Aura-Node, `web_services/foxx/v6/apply.js`, `operationsPut`).
+When the node reports `failed` with `errorNum` 25 in the `result` of its response to that poll, the answer SHALL become `applied`, because the node raises that error only for an operation it has already applied.
 
 #### Scenario: Applied before
-- **WHEN** a poll reports `failed` with `errorNum` 25, as after the node processed the same operation a second time
+- **WHEN** a poll reports `failed` with `errorNum` 25, as when the node processed an applied operation a second time and stored that error over its applied record
 - **THEN** the answer shows as applied
 
 ### Requirement: Unconfirmed answers stay pending
