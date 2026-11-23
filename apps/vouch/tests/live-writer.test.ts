@@ -381,3 +381,54 @@ test('an operation the node reports as applied before counts as applied', async 
   await h.advance(UNDO_MS + POLL_MS);
   expect(a.state).toBe('applied');
 });
+
+// spec-trace's CI check fails unless the text after "vouch-live-interfold:" below
+// is, word for word, a scenario title in openspec/changes/vouch-live-interfold;
+// rename that tag text and the scenario title together.
+// @scenario vouch-live-interfold: Expired
+test('an expired operation fails the answer, with retry', async () => {
+  const h = harness(['EXPIRED', 'APPLIED']);
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  expect([a.state, a.error]).toEqual(['failed', 'The node reported expired']);
+  a.retry();
+  for (let i = 0; i < 5; i++) await Promise.resolve();
+  expect([a.state, h.posted.length]).toEqual(['submitted', 2]);
+});
+
+// spec-trace's CI check fails unless the text after "vouch-live-interfold:" below
+// is, word for word, a scenario title in openspec/changes/vouch-live-interfold;
+// rename that tag text and the scenario title together.
+// @scenario vouch-live-interfold: Conflict that never clears
+test('a write conflict that never clears ends unconfirmed at 5 minutes', async () => {
+  const conflict = { state: 'FAILED' as const, arangoErrorNum: 1200 };
+  const h = harness(Array(SETTLE_MS / POLL_MS + 5).fill(conflict));
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + SETTLE_MS - POLL_MS);
+  expect(a.state).toBe('submitted');
+  await h.advance(POLL_MS);
+  expect(a.state).toBe('unconfirmed');
+});
+
+// spec-trace's CI check fails unless the text after "vouch-live-interfold:" below
+// is, word for word, a scenario title in openspec/changes/vouch-live-interfold;
+// rename that tag text and the scenario title together.
+// The scenario: the evaluator account the answer screen shows was signed out,
+// and then signs back in before Retry.
+// @scenario vouch-live-interfold: Signed back in
+test('a retry after the shown account signs back in is sent as that account', async () => {
+  let current: typeof session | null = null;
+  const h = harness();
+  const a = new LiveAnswer(input, {
+    ...h.deps,
+    evaluator: 'me',
+    session: () => current,
+  });
+  await h.advance(UNDO_MS);
+  expect(a.state).toBe('failed');
+  current = session;
+  a.retry();
+  for (let i = 0; i < 5; i++) await Promise.resolve();
+  expect(a.state).toBe('submitted');
+  expect(JSON.parse(h.posted[0]!.message).evaluator).toBe('me');
+});
