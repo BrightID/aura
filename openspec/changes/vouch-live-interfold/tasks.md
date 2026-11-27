@@ -1,8 +1,8 @@
 ## 1. Signer (AUR-350, BrightID/aura#8)
 
-- [ ] 1.1 Give `buildEvaluateOperation` in `@aura/domain` a `domain` argument, defaulting to `BrightID`, and widen `category` to accept the three Interfold categories; `apps/core`'s BrightID calls stay unchanged.
-- [ ] 1.2 In `apps/core`, copy the persisted login store, on every write, to a fixed localStorage key, and leave the store's own key as it is, so nobody signed in to core is logged out. `apps/vouch` reads the copy, never the store's own key, which is `storage-` plus an id from SolidJS's `createUniqueId` counter and so depends on the order core's stores load.
-- [ ] 1.3 Read that copy from `apps/vouch`.
+- [x] 1.1 Give `buildEvaluateOperation` in `@aura/domain` a `domain` argument, defaulting to `BrightID`, and widen `category` to accept the three Interfold categories, `Keyholder`, `Self-custody` and `Disclosure`; `apps/core`'s BrightID calls stay unchanged.
+- [x] 1.2 In `apps/core`, leave the persisted login store under the key it already uses, so nobody signed in to core is logged out, and write that key's name to the localStorage key `aura-core-auth` each time core loads. The store's key is `storage-` plus an id from SolidJS's `createUniqueId` counter, so it depends on the order core's stores load, and only core can name it.
+- [ ] 1.3 Read core's session in `apps/vouch` with `readCoreSession` from `@aura/domain`, which on each call reads the name in `aura-core-auth` and then the store under that name. So it sees every write to the store, including one by a tab still running an older build of core, which writes the same key as long as the stores before it load in the same order.
 
 ## 2. Live adapter and switches (AUR-345, AUR-346)
 
@@ -21,4 +21,4 @@
 ## 5. Follow-up
 
 - [ ] 5.1 When BrightID/shared-specs archives `interfold-live-endorsements`, point this spec's Purpose link at the accepted spec.
-- [ ] 5.2 Check two paths: aura-test directly, and aura-node through `apps/landing`'s `/api/operations` proxy, the path the browser uses for aura-node. On each, confirm that `GET /brightid/v6/operations/{hash}` for a failed operation returns `data.result.errorNum` and `data.result.arangoErrorNum`, and that a hash the node never stored gets a 404. If the response the browser gets lacks the two fields, the writer finds neither field and treats every failure as final at once; then change the node or the proxy so the fields reach the browser before relying on the 1200 and 25 rules.
+- [ ] 5.2 On aura-test and on aura-node, confirm that `GET /brightid/v6/operations/{hash}` for a failed operation returns `data.result.errorNum` and `data.result.arangoErrorNum`, and that a hash the node never stored gets a 404. If the response the browser gets lacks the two fields, the writer finds neither field and treats every failure as final at once; then change the node so it returns them before a production build turns on live writes.

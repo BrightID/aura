@@ -19,37 +19,23 @@ export interface AuthState {
   secretKey: string;
 }
 
-// Given no name, makePersisted would save this store as `storage-<id>`, taking
-// the next id from solid's counter, so ids follow the order the stores load.
-// This store builds that same name itself, with exactly one id at the same
-// point in every build. So every build of core, including one still open in
-// another tab, reads and writes the same key. Moving or dropping this
-// createUniqueId call changes the key and shifts the ids, and so the keys, of
-// every store that loads after it.
-// Each write is also copied to CORE_AUTH_STORAGE_KEY, the fixed name apps/vouch
-// reads; core never reads the copy. If core read it too, it would need a rule
-// for which key wins when they differ, and older builds never write the copy.
-// ponytail: a write by a tab still running an older build reaches the copy only
-// when a newer build next loads; drop the generated key once no older build runs.
+// Given no name, makePersisted saves a store as `storage-<id>`, taking the next
+// id from solid's counter, so each store's id depends on how many stores loaded
+// before it. This store builds its name the same way, taking one id from the
+// counter, so the name matches what makePersisted gave it in older builds, as
+// long as the same stores load before it. Every build of core, including one
+// still open in another tab, then reads and writes the same key. Moving or
+// dropping this createUniqueId call changes this key and the keys of every
+// store that loads after it.
+//
+// The store builds the name itself so it can write the name under
+// CORE_AUTH_STORAGE_KEY, where apps/vouch looks it up to read this store.
 const name = `storage-${createUniqueId()}`;
-const storage = {
-  getItem: (key: string) => localStorage.getItem(key),
-  setItem: (key: string, value: string) => {
-    localStorage.setItem(key, value);
-    localStorage.setItem(CORE_AUTH_STORAGE_KEY, value);
-  },
-  removeItem: (key: string) => {
-    localStorage.removeItem(key);
-    localStorage.removeItem(CORE_AUTH_STORAGE_KEY);
-  },
-};
 try {
-  const saved = localStorage.getItem(name);
-  if (saved === null) localStorage.removeItem(CORE_AUTH_STORAGE_KEY);
-  else localStorage.setItem(CORE_AUTH_STORAGE_KEY, saved);
+  localStorage.setItem(CORE_AUTH_STORAGE_KEY, name);
 } catch {
-  // Storage blocked: makePersisted, below, throws on the blocked storage as it
-  // did before this copy existed, so the copy must not throw first.
+  // With storage blocked, vouch cannot read the session anyway, and
+  // makePersisted, below, throws on the same storage.
 }
 
 const [authStore, setAuthStore] = makePersisted(
@@ -59,7 +45,7 @@ const [authStore, setAuthStore] = makePersisted(
     publicKey: '',
     secretKey: '',
   }),
-  { name, storage },
+  { name },
 );
 
 export function setKeypair(secretKey: string, publicKey: string): void {

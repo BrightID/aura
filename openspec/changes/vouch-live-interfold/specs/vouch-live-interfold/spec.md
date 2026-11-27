@@ -170,7 +170,7 @@ A `submitted` answer SHALL poll the operation's state every 5 seconds. The answe
 
 ### Requirement: Polls that get no state
 
-A poll that gets no response within 30 seconds, fails on the network, or gets an error status SHALL count as no report: polling goes on, and the 5 minutes keep running. When the 5 minutes pass, and at least one poll in them got a 404 while none reported a state, `unknown` included, the answer SHALL become `failed`, not `unconfirmed`, because a 404 means the node holds no such operation and so can never apply it.
+A poll that gets no response within 30 seconds, fails on the network, or gets an error status, a 404 included, SHALL count as no report: polling goes on, and the 5 minutes keep running. When the 5 minutes pass, and at least one poll in them got a 404 while every other poll got no report, the answer SHALL become `failed`, not `unconfirmed`, because the node held no such operation when polled.
 
 #### Scenario: Poll request fails
 - **WHEN** a poll gets no response within 30 seconds, and a later poll reports `applied`
@@ -179,6 +179,14 @@ A poll that gets no response within 30 seconds, fails on the network, or gets an
 #### Scenario: Never stored
 - **WHEN** every poll for 5 minutes gets a 404
 - **THEN** the answer shows as failed at the 5-minute mark, with Retry
+
+#### Scenario: Not found or unreachable
+- **WHEN** every poll for 5 minutes gets either a 404 or no response within 30 seconds, and at least one gets a 404
+- **THEN** the answer shows as failed at the 5-minute mark, with Retry
+
+#### Scenario: Unreachable for 5 minutes
+- **WHEN** no poll for 5 minutes gets a response within 30 seconds
+- **THEN** the answer shows as unconfirmed at the 5-minute mark, and offers to check again
 
 ### Requirement: Write-conflict failures are not final
 
@@ -197,7 +205,7 @@ When the node reports `failed` with `arangoErrorNum` 1200 in the `data.result` o
 When the node reports `failed` with `errorNum` 25 in the `data.result` of a poll's response, the answer SHALL become `applied`, because the node raises that error only for an operation it has already applied.
 
 #### Scenario: Applied before
-- **WHEN** a poll reports `failed` with `errorNum` 25, as when the node processed an applied operation a second time and stored that error over its applied record
+- **WHEN** a poll reports `failed` with `errorNum` 25
 - **THEN** the answer shows as applied
 
 ### Requirement: Unconfirmed answers stay pending
@@ -210,11 +218,15 @@ An `unconfirmed` answer SHALL offer no retry, only a way to check again. Checkin
 
 ### Requirement: Retry after failure
 
-A failed live answer SHALL offer a retry button, which moves it to `submitting`.
+A failed live answer SHALL offer a retry button, which moves it to `submitting`. When *Retry polls the earlier post* signs the answer again, it SHALL sign the same Yes or No with the confidence selected for that question when Retry was pressed, not the confidence first given; the screen lets the evaluator change it while the answer is failed.
 
 #### Scenario: Rejected and retried
 - **WHEN** the node answers the post with status 400, the evaluator presses retry, and a poll of the answer's hash gets a 404
 - **THEN** the answer is signed again with a new timestamp, and shows as applied only once polling reports `applied`
+
+#### Scenario: Retry with another confidence
+- **WHEN** an answer given with confidence 2 failed, the evaluator selects confidence 4 and presses retry, and a poll of the answer's hash gets a 404
+- **THEN** the answer is signed again with confidence 4
 
 ### Requirement: Retry polls the earlier post
 
@@ -236,6 +248,34 @@ On retry of an answer posted before, whatever that post's result, the writer SHA
 #### Scenario: Applied after it failed
 - **WHEN** an answer failed on a poll reporting `failed` with `errorNum` 4, and when the evaluator presses retry a poll of its hash reports `applied`
 - **THEN** the answer shows as applied, and nothing is signed again
+
+### Requirement: No new answer while one is in flight
+
+The answer screen SHALL offer no new Yes or No to a question while its last answer is `holding`, `submitting`, `submitted` or `unconfirmed`.
+
+#### Scenario: Answer in flight
+- **WHEN** a question's last answer is holding, submitting, submitted or unconfirmed
+- **THEN** the screen offers no Yes or No for that question
+
+### Requirement: One pending answer per question
+
+A new Yes or No to a question whose last answer was posted and is now `failed` SHALL go through that answer's retry, which signs the new Yes or No in place of the earlier one, but only on a result for which *Retry polls the earlier post* signs again. On any other result the new Yes or No is dropped, and the screen shows the earlier answer's Yes or No in the state that rule gives. This is because an earlier answer applied after a newer one would replace the newer one.
+
+#### Scenario: Earlier answer still pending
+- **WHEN** a Yes failed on a poll reporting `failed` with `errorNum` 4, the evaluator answers No, and a poll of the earlier hash reports `init`
+- **THEN** No is not signed, and the answer shows as submitted with Yes, polling the earlier hash
+
+#### Scenario: Earlier answer gone
+- **WHEN** a Yes failed after the node answered its post with status 400, the evaluator answers No with confidence 3, and a poll of the earlier hash gets a 404
+- **THEN** No is signed with confidence 3 and posted at once, as a retry is, with no undo window
+
+#### Scenario: Earlier answer applied after it failed
+- **WHEN** a Yes failed on a poll reporting `failed` with `errorNum` 4, the evaluator answers No, and a poll of the earlier hash reports `applied`
+- **THEN** No is not signed, and the answer shows as applied with Yes
+
+#### Scenario: Earlier answer never posted
+- **WHEN** a Yes failed before it was posted, because nobody was signed in to `apps/core`, and the evaluator, signed in again, answers No
+- **THEN** No is a new answer: it holds for the undo window and is then signed and posted, with no poll first
 
 ### Requirement: Evidence from the node only
 

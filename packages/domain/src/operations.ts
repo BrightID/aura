@@ -37,18 +37,16 @@ export type EvaluateDomainCategory =
   | { domain?: 'BrightID'; category: EvaluationCategory }
   | { domain: 'Interfold'; category: InterfoldCategory };
 
-export interface SignedEvaluateOp {
+export type SignedEvaluateOp = Required<EvaluateDomainCategory> & {
   name: 'Evaluate';
   evaluator: string;
   evaluated: string;
   evaluation: EvaluationValue;
   confidence: number;
-  domain: 'BrightID' | 'Interfold';
-  category: EvaluationCategory | InterfoldCategory;
   timestamp: number;
   v: number;
   sig: string;
-}
+};
 
 export type BuildEvaluateOperationParams = EvaluateDomainCategory & {
   evaluator: string;
@@ -64,17 +62,19 @@ export function buildEvaluateOperation(params: BuildEvaluateOperationParams): {
   op: SignedEvaluateOp;
   message: string;
 } {
-  const unsigned = {
+  const fields = {
     name: 'Evaluate' as const,
     evaluator: params.evaluator,
     evaluated: params.evaluated,
     evaluation: params.evaluation,
     confidence: params.confidence,
-    domain: params.domain ?? 'BrightID',
-    category: params.category,
     timestamp: params.timestamp,
     v: OP_VERSION,
   };
+  const unsigned =
+    params.domain === 'Interfold'
+      ? { ...fields, domain: 'Interfold' as const, category: params.category }
+      : { ...fields, domain: 'BrightID' as const, category: params.category };
 
   const message = stringify(unsigned);
   const sig = uInt8ArrayToB64(
@@ -111,6 +111,11 @@ export async function submitEvaluateOperation(
   params: BuildEvaluateOperationParams & { domain?: 'BrightID' },
   signal?: AbortSignal,
 ): Promise<EvaluateOperation> {
+  if ((params.domain ?? 'BrightID') !== 'BrightID') {
+    throw new Error(
+      'submitEvaluateOperation accepts BrightID evaluations only',
+    );
+  }
   const { op, message } = buildEvaluateOperation(params);
   const opHash = await postOperation(nodeUrl, op, message, signal);
 
