@@ -33,13 +33,34 @@ describe('live switches', () => {
     ]);
   });
 
-  // @scenario vouch-live-interfold: Unset
-  // The node URL left unset defaults to aura-test; a set one loses its trailing slash.
-  test('the node defaults to aura-test', () => {
-    expect(liveConfig({}).nodeUrl).toBe('https://aura-test.brightid.org');
+  // @scenario vouch-live-interfold: Unset in a production build
+  // The second expect goes beyond the scenario: a set URL loses its trailing slash.
+  test('a production build defaults to aura-node, as apps/core does', () => {
+    expect(liveConfig({ MODE: 'production' }).nodeUrl).toBe(
+      'https://aura-node.brightid.org',
+    );
     expect(
-      liveConfig({ VITE_AURA_NODE_URL: 'https://node.example/' }).nodeUrl,
-    ).toBe('https://node.example');
+      liveConfig({
+        MODE: 'production',
+        VITE_AURA_NODE_URL: 'https://n.example/',
+      }).nodeUrl,
+    ).toBe('https://n.example');
+  });
+
+  // @scenario vouch-live-interfold: Unset in a development build
+  // The first expect is the scenario: VITE_AURA_TEST_NODE_URL unset, so
+  // VITE_AURA_NODE_URL is ignored. The second, with no MODE, also a non-production
+  // build, shows the test variable is read and loses its trailing slash.
+  test('any other build reads the test node variable, defaulting to aura-test', () => {
+    expect(
+      liveConfig({
+        MODE: 'development',
+        VITE_AURA_NODE_URL: 'https://n.example',
+      }).nodeUrl,
+    ).toBe('https://aura-test.brightid.org');
+    expect(
+      liveConfig({ VITE_AURA_TEST_NODE_URL: 'https://t.example/' }).nodeUrl,
+    ).toBe('https://t.example');
   });
 });
 

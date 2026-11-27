@@ -12,11 +12,17 @@ interface NodeEvaluation {
 }
 interface NodeConnection {
   id?: unknown;
-  auraEvaluations?: NodeEvaluation[] | null;
+  auraEvaluations?: unknown;
 }
 export interface InboundResponse {
-  data?: { connections?: NodeConnection[] | null };
+  data?: { connections?: unknown } | null;
 }
+
+/** `value` as an array of objects, skipping anything else; [] for a non-array. */
+const records = <T>(value: unknown): T[] =>
+  Array.isArray(value)
+    ? value.filter((v): v is T => typeof v === 'object' && v !== null)
+    : [];
 
 /** One evaluator's latest valid answer to one question, built from the node's record. */
 export interface LiveAnswer {
@@ -32,14 +38,20 @@ export interface LiveAnswer {
  * The current Interfold answers among an operator's inbound connections. A
  * record counts only with domain `Interfold`, one of the three question
  * categories, a positive or negative evaluation, and an integer confidence
- * from 1 to 4; everything else is dropped. For one evaluator and question,
- * only the latest record counts.
+ * from 1 to 4, and a `modified` time inside the range of a Date, on a
+ * connection whose id is a non-empty string; everything else is dropped, as is
+ * any part of the response that is not the expected shape. For one evaluator
+ * and question, only the latest record counts. Answers come newest first.
  */
-export function interfoldEvidence(response: InboundResponse): LiveAnswer[] {
+export function interfoldEvidence(
+  response: InboundResponse | null,
+): LiveAnswer[] {
   const latest = new Map<string, LiveAnswer>();
-  for (const connection of response.data?.connections ?? []) {
+  for (const connection of records<NodeConnection>(
+    response?.data?.connections,
+  )) {
     if (typeof connection.id !== 'string' || !connection.id) continue;
-    for (const e of connection.auraEvaluations ?? []) {
+    for (const e of records<NodeEvaluation>(connection.auraEvaluations)) {
       const question = Q.find((q) => q === e.category);
       if (
         e.domain !== 'Interfold' ||
@@ -48,7 +60,8 @@ export function interfoldEvidence(response: InboundResponse): LiveAnswer[] {
         !Number.isInteger(e.confidence) ||
         (e.confidence as number) < 1 ||
         (e.confidence as number) > 4 ||
-        typeof e.modified !== 'number'
+        typeof e.modified !== 'number' ||
+        Number.isNaN(new Date(e.modified).getTime())
       )
         continue;
       const answer: LiveAnswer = {
