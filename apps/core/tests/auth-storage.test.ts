@@ -1,10 +1,24 @@
-import { expect, mock, test } from 'bun:test';
+import { afterAll, expect, mock, test } from 'bun:test';
+
+// This file must be the first in its bun process to import src/store/auth: the
+// test predicts the id auth.ts takes from solid-js's createUniqueId counter
+// when it loads, and bun loads a module once per process. Nothing enforces
+// that order. A test file that imports src/store/auth and runs earlier in the
+// same process would make this test fail on the key assertions.
 
 // Bun resolves solid-js to its server build, whose createUniqueId does not hand
 // out the `cl-<n>` counter ids this test depends on; the app runs the browser
-// build.
+// build. afterAll puts the server build and the real localStorage back, so
+// test files that run after this one in the same process see neither the
+// browser build nor the fake localStorage below.
 const browserSolid = await import('solid-js/dist/solid.js');
 mock.module('solid-js', () => browserSolid);
+const realStorage = globalThis.localStorage;
+afterAll(async () => {
+  const serverSolid = await import('solid-js/dist/server.js');
+  mock.module('solid-js', () => serverSolid);
+  globalThis.localStorage = realStorage;
+});
 
 const store = new Map<string, string>();
 globalThis.localStorage = {

@@ -1,5 +1,6 @@
 import { createSignal } from 'solid-js';
-import { b64ToUint8Array } from '@aura/domain/crypto';
+import { b64ToUint8Array, hash } from '@aura/domain/crypto';
+import { HttpError, isNotFound } from '@aura/domain/http';
 import type { CoreSession } from '@aura/domain/core-session';
 import {
   buildEvaluateOperation,
@@ -98,21 +99,69 @@ export const ARANGO_CONFLICT = 1200;
 export const APPLIED_BEFORE = 25;
 
 /**
- * One live answer. It holds for the 1.5-second undo window; undo then moves it
- * to `failed` with the error 'Undone'. Otherwise it is signed and posted
- * (`submitting`). It becomes `submitted` once the node returns a hash equal to
- * the signed message's hash, and `failed` if signing or posting fails: no
- * session, a session for an account other than `deps.evaluator`, a hash that
- * differs, or a post error.
+ * The message postOperation's error has when the node returns a hash that is
+ * not the signed message's. submit() throws the same message when a `post` in
+ * WriterDeps returns another hash, and matches on it to fail the answer; keep
+ * it equal to postOperation's, or a mismatch would be polled instead of failed.
+ */
+const HASH_MISMATCH = 'Invalid operation hash returned from server';
+
+/**
+ * One poll of the node: a status, `'not found'` for a 404, or undefined when
+ * the request failed in any other way (no response, a timeout, a 5xx).
+ */
+type Poll = OperationStatus | 'not found' | undefined;
+
+/** Whether a status the node reported settles an answer, and how. */
+function settle(status: OperationStatus): 'applied' | 'failed' | 'pending' {
+  const { state } = status;
+  // Failed with errorNum 25 means the node processed this answer's operation a
+  // second time, as when the node's receiver (the process that applies the
+  // blocks of operations) reprocesses a block, and overwrote the stored applied
+  // state with failed. The evaluation is already stored.
+  // Failed with the write conflict, 1200, is still pending: the receiver
+  // retries that operation at once by itself.
+  if (
+    state === 'APPLIED' ||
+    (state === 'FAILED' && status.errorNum === APPLIED_BEFORE)
+  )
+    return 'applied';
+  if (
+    state === 'EXPIRED' ||
+    (state === 'FAILED' && status.arangoErrorNum !== ARANGO_CONFLICT)
+  )
+    return 'failed';
+  return 'pending';
+}
+
+/**
+ * One live answer. It holds for the 1.5-second undo window; undo() during the
+ * window moves it to `failed` with the error 'Undone'. Otherwise it is signed
+ * and posted (`submitting`), and from then on it is tracked by the hash of the
+ * signed message.
  *
- * Once submitted, it polls the node. It is `applied` when the node reports
- * applied, or failed with the applied-before error (see APPLIED_BEFORE). It is
- * `failed` when the node reports expired, or failed with any other error
- * except ArangoDB's write conflict (see ARANGO_CONFLICT), on which polling goes
- * on. If none of these comes within 5 minutes of becoming submitted, it is
+ * It fails before posting when there is no session, or, when
+ * `deps.evaluator` is set, a session for another account. It fails when the
+ * node refuses the post with a 4xx status or returns another hash. Any other
+ * post failure (no response, a network error, a 5xx) may come after the node
+ * stored the operation, so the answer polls its hash as if the post had
+ * succeeded.
+ *
+ * Once submitted, it polls the node every 5 seconds until `settle` says the
+ * answer is applied or failed. A poll that gets a 404 or fails in any other
+ * way settles nothing. If nothing settles it within 5 minutes, it is
  * `unconfirmed`: still pending, and the screen's Check again calls
- * checkAgain(), which polls for another 5 minutes. A failed answer can be
- * retried, except one that was undone.
+ * checkAgain(), which polls for another 5 minutes. Each 5-minute window is
+ * judged on its own: when its polls got a 404 and never a status, the node
+ * holds no such operation, and the answer is `failed` instead.
+ *
+ * A failed answer can be retried, except one that was undone. A retry first
+ * polls the hash it last posted, since the node can still apply an operation
+ * it reported failed. That operation applied makes the answer `applied`;
+ * still pending, the answer polls it again; gone or failed for good, the
+ * answer is signed again and posted. When that poll fails, the answer stays
+ * `failed` with nothing signed. dispose() cancels the timer, so a holding
+ * answer is never posted and polling ends.
  */
 export class LiveAnswer {
   readonly answer: LiveAnswerInput;
@@ -144,10 +193,18 @@ export class LiveAnswer {
   /** Cancel while holding; nothing is sent. Returns false once it has left holding. */
   undo() {
     if (this.state !== 'holding') return false;
-    this.deps.clearTimer(this.timer);
-    this.run++;
+    this.stop();
     this.fail('Undone');
     return true;
+  }
+
+  /**
+   * Cancel the pending timer, as when the screen closes: a holding answer is
+   * never posted, and polling ends. An answer already posted stays on the node.
+   * Nothing restarts it unless retry() or checkAgain() is called.
+   */
+  dispose() {
+    this.stop();
   }
 
   /** Poll an unconfirmed answer again, for another 5 minutes. */
@@ -156,9 +213,17 @@ export class LiveAnswer {
       this.watch(this.hash, ++this.run);
   }
 
-  /** Sign and send a failed answer again. */
+  /**
+   * For a failed answer that was not undone: check what became of the last
+   * post, and sign and post it again only if that post is gone or failed.
+   */
   retry() {
     if (this.state === 'failed' && this.error !== 'Undone') void this.submit();
+  }
+
+  private stop() {
+    this.deps.clearTimer(this.timer);
+    this.run++;
   }
 
   private fail(error: string) {
@@ -166,11 +231,32 @@ export class LiveAnswer {
     this.signal[1]('failed');
   }
 
+  private async poll(hash: string): Promise<Poll> {
+    try {
+      return await this.deps.state(this.deps.nodeUrl, hash);
+    } catch (e) {
+      return isNotFound(e) ? 'not found' : undefined;
+    }
+  }
+
   private async submit() {
     const run = ++this.run;
     this.error = undefined;
     this.signal[1]('submitting');
-    let hash: string;
+    if (this.hash) {
+      const earlier = await this.poll(this.hash);
+      if (run !== this.run) return;
+      if (earlier === undefined)
+        return this.fail(
+          'Could not reach the node to check the earlier answer; try again',
+        );
+      if (earlier !== 'not found') {
+        const settled = settle(earlier);
+        if (settled === 'applied') return void this.signal[1]('applied');
+        if (settled === 'pending') return this.watch(this.hash, run);
+      }
+    }
+    let signed: ReturnType<typeof signAnswer>;
     try {
       const session = this.deps.session();
       if (!session) throw new Error('Sign in to Aura first');
@@ -178,48 +264,59 @@ export class LiveAnswer {
         throw new Error(
           'You are now signed in to Aura with another account; reload this page',
         );
-      const { op, message } = signAnswer(this.answer, session, this.deps.now());
-      hash = await this.deps.post(this.deps.nodeUrl, op, message);
+      signed = signAnswer(this.answer, session, this.deps.now());
     } catch (e) {
-      if (run === this.run)
-        this.fail(e instanceof Error ? e.message : String(e));
-      return;
+      return this.fail(e instanceof Error ? e.message : String(e));
+    }
+    const ownHash = hash(signed.message);
+    this.hash = ownHash;
+    try {
+      const returned = await this.deps.post(
+        this.deps.nodeUrl,
+        signed.op,
+        signed.message,
+      );
+      if (returned !== ownHash) throw new Error(HASH_MISMATCH);
+    } catch (e) {
+      if (run !== this.run) return;
+      // The node refuses with a 4xx only before it stores an operation, and a
+      // hash that differs is not this answer's operation, so neither is worth
+      // polling. Signing errors never reach here: that try returned above.
+      if (
+        (e instanceof HttpError && e.status < 500) ||
+        (e instanceof Error && e.message === HASH_MISMATCH)
+      )
+        return this.fail(e.message);
     }
     if (run !== this.run) return;
-    this.hash = hash;
-    this.watch(hash, run);
+    this.watch(ownHash, run);
   }
 
   private watch(hash: string, run: number) {
     this.signal[1]('submitted');
     const until = this.deps.now() + SETTLE_MS;
-    const poll = async () => {
+    let notFound = false;
+    let found = false;
+    const tick = async () => {
       if (run !== this.run) return;
-      let status: OperationStatus | undefined;
-      try {
-        status = await this.deps.state(this.deps.nodeUrl, hash);
-      } catch {
-        // A poll request that throws counts as no report: polling goes on at
-        // the next POLL_MS, and the time still counts toward the 5 minutes.
+      const status = await this.poll(hash);
+      if (run !== this.run) return;
+      if (status === 'not found') notFound = true;
+      else if (status) {
+        found = true;
+        const settled = settle(status);
+        if (settled === 'applied') return void this.signal[1]('applied');
+        if (settled === 'failed')
+          return this.fail(`The node reported ${status.state.toLowerCase()}`);
       }
-      if (run !== this.run) return;
-      const state = status?.state;
-      // Failed with errorNum 25 means the node processed this answer's
-      // operation a second time, as when its receiver reprocesses a block, and
-      // overwrote the stored applied state with failed. The answer's
-      // evaluation is already in the node's database.
-      const appliedBefore =
-        state === 'FAILED' && status?.errorNum === APPLIED_BEFORE;
-      if (state === 'APPLIED' || appliedBefore)
-        return void this.signal[1]('applied');
-      const conflict =
-        state === 'FAILED' && status?.arangoErrorNum === ARANGO_CONFLICT;
-      if ((state === 'FAILED' && !conflict) || state === 'EXPIRED')
-        return this.fail(`The node reported ${state.toLowerCase()}`);
-      if (this.deps.now() >= until) return void this.signal[1]('unconfirmed');
-      this.timer = this.deps.setTimer(() => void poll(), POLL_MS);
+      if (this.deps.now() >= until) {
+        if (notFound && !found)
+          return this.fail('The node has no record of this answer');
+        return void this.signal[1]('unconfirmed');
+      }
+      this.timer = this.deps.setTimer(() => void tick(), POLL_MS);
     };
-    this.timer = this.deps.setTimer(() => void poll(), POLL_MS);
+    this.timer = this.deps.setTimer(() => void tick(), POLL_MS);
   }
 }
 

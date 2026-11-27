@@ -1,6 +1,9 @@
 import { useParams } from '@solidjs/router';
-import { For, Match, Show, Switch, createSignal } from 'solid-js';
-import { readCoreSession } from '@aura/domain/core-session';
+import { For, Match, Show, Switch, createSignal, onCleanup } from 'solid-js';
+import {
+  CORE_AUTH_STORAGE_KEY,
+  readCoreSession,
+} from '@aura/domain/core-session';
 import { Back } from '@/components';
 import { LIVE, isOperatorId } from '@/live/config';
 import { LiveAnswer, answerGate } from '@/live/writer';
@@ -19,11 +22,18 @@ const STATE_TEXT = {
 export default function LiveAnswerScreen() {
   const params = useParams();
   const operator = () => params.operator ?? '';
-  // Read once per page view: whoever is signed in to apps/core in this browser.
-  // Each answer is signed only as this account (the writer's `evaluator`), so
-  // signing in as someone else in another tab fails an answer instead of
-  // switching who signs it.
-  const session = readCoreSession();
+  // Whoever is signed in to apps/core in this browser. While nobody is, a
+  // sign-in in another tab shows here at once; once someone is, the account
+  // shown never changes. The writer reads the session again when it signs
+  // (`evaluator` is the account shown), so after another tab signs in as
+  // someone else, or signs out, answers fail instead of signing as anyone else.
+  const [session, setSession] = createSignal(readCoreSession());
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === CORE_AUTH_STORAGE_KEY && !session())
+      setSession(readCoreSession());
+  };
+  window.addEventListener('storage', onStorage);
+  onCleanup(() => window.removeEventListener('storage', onStorage));
   return (
     <>
       <Back to="/" />
@@ -35,14 +45,16 @@ export default function LiveAnswerScreen() {
       </p>
       <Switch>
         <Match
-          when={answerGate(session, operator(), isOperatorId) === 'invalid'}
+          when={answerGate(session(), operator(), isOperatorId) === 'invalid'}
         >
           <p class="a-text">
             This link is not valid: it does not name a BrightID.
           </p>
         </Match>
         <Match
-          when={answerGate(session, operator(), isOperatorId) === 'signed-out'}
+          when={
+            answerGate(session(), operator(), isOperatorId) === 'signed-out'
+          }
         >
           <p class="a-text">
             Sign in to Aura first: your answers are signed with your Aura login.
@@ -51,21 +63,27 @@ export default function LiveAnswerScreen() {
             Sign in to Aura
           </a>
         </Match>
-        <Match when={session}>
+        <Match when={session()}>
           {(me) => (
             <>
               <p class="a-text" data-variant="muted">
                 Answering as {me().brightId}, sent to {LIVE.nodeUrl}.
               </p>
-              <For each={QUESTIONS}>
-                {(q) => (
-                  <Question
-                    operator={operator()}
-                    question={q}
-                    evaluator={me().brightId}
-                  />
+              {/* Keyed, so moving to another operator's link replaces the
+                  Question components; each one's onCleanup disposes its answer. */}
+              <Show when={operator()} keyed>
+                {(op) => (
+                  <For each={QUESTIONS}>
+                    {(q) => (
+                      <Question
+                        operator={op}
+                        question={q}
+                        evaluator={me().brightId}
+                      />
+                    )}
+                  </For>
                 )}
-              </For>
+              </Show>
             </>
           )}
         </Match>
@@ -81,6 +99,11 @@ function Question(props: {
 }) {
   const [confidence, setConfidence] = createSignal(2);
   const [sent, setSent] = createSignal<LiveAnswer>();
+  // When this question goes away (leaving the screen, or another operator's
+  // link) its latest answer is disposed: one still in its undo window is never
+  // sent, and polling ends. An earlier answer was replaced only once it failed,
+  // so it has nothing running.
+  onCleanup(() => sent()?.dispose());
   const answer = (yes: boolean) =>
     setSent(
       new LiveAnswer(

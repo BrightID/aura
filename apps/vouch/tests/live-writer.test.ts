@@ -1,7 +1,12 @@
 import { expect, test } from 'bun:test';
 import nacl from 'tweetnacl';
 import { hash, uInt8ArrayToB64 } from '@aura/domain/crypto';
-import type { OperationStatus } from '@aura/domain/operations';
+import { HttpError } from '@aura/domain/http';
+import {
+  fetchOperation,
+  postOperation,
+  type OperationStatus,
+} from '@aura/domain/operations';
 import type { OperationState } from '@aura/domain/types/evaluations';
 import { isOperatorId, liveConfig, livePaths } from '@/live/config';
 import {
@@ -20,7 +25,11 @@ const session = { brightId: 'me', secretKey: uInt8ArrayToB64(keys.secretKey) };
 
 /** Timers and a node the test drives by hand. */
 function harness(
-  states: (OperationState | OperationStatus)[] = [],
+  /**
+   * What each poll gets, in order, then 'SENT' once the list runs out. An
+   * Error is thrown, as for a 404 or no response.
+   */
+  states: (OperationState | OperationStatus | Error)[] = [],
   post?: WriterDeps['post'],
 ) {
   let now = 1_000;
@@ -46,6 +55,7 @@ function harness(
       }),
     state: async () => {
       const next = states.shift() ?? 'SENT';
+      if (next instanceof Error) throw next;
       return typeof next === 'string' ? { state: next } : next;
     },
   };
@@ -68,6 +78,12 @@ function harness(
 }
 
 const input = { operator: X, question: 1, yes: false, confidence: 3 };
+const notFound = () => new HttpError('GET failed with status 404', 404);
+const noResponse = () => new TypeError('Failed to fetch');
+/** Let pending promise callbacks run; a retry's poll and post take fewer than 5 turns. */
+const flush = async () => {
+  for (let i = 0; i < 5; i++) await Promise.resolve();
+};
 
 // @scenario vouch-live-interfold: Writes on, reads off
 test('writes on alone registers the answer route only', () => {
@@ -172,10 +188,22 @@ test('an answer the node has not settled after 5 minutes stays pending, and can 
 
 // @scenario vouch-live-interfold: Rejected and retried
 test('a failed answer can be retried, and is applied only when the node says so', async () => {
-  const h = harness(['FAILED', 'SENT', 'APPLIED']);
+  let refuse = true;
+  const h = harness(
+    [notFound(), 'SENT', 'APPLIED'],
+    async (_u, _op, message) => {
+      h.posted.push({ message });
+      if (refuse) {
+        refuse = false;
+        throw new HttpError('POST failed with status 400', 400);
+      }
+      return hash(message);
+    },
+  );
   const a = new LiveAnswer(input, h.deps);
-  await h.advance(UNDO_MS + POLL_MS);
+  await h.advance(UNDO_MS);
   expect(a.state).toBe('failed');
+  await h.advance(1);
   a.retry();
   for (let i = 0; i < 5; i++) await Promise.resolve();
   expect(a.state).toBe('submitted');
@@ -330,6 +358,7 @@ test('signing out after the page opened fails the answer and its retry', async (
 // @scenario vouch-live-interfold: Set
 test('a set node URL receives both reads and writes', async () => {
   const nodeUrl = liveConfig({
+    MODE: 'production',
     VITE_AURA_NODE_URL: 'https://other.node/',
   }).nodeUrl;
   expect(nodeUrl).toBe('https://other.node');
@@ -387,7 +416,7 @@ test('an operation the node reports as applied before counts as applied', async 
 // rename that tag text and the scenario title together.
 // @scenario vouch-live-interfold: Expired
 test('an expired operation fails the answer, with retry', async () => {
-  const h = harness(['EXPIRED', 'APPLIED']);
+  const h = harness(['EXPIRED', 'EXPIRED']);
   const a = new LiveAnswer(input, h.deps);
   await h.advance(UNDO_MS + POLL_MS);
   expect([a.state, a.error]).toEqual(['failed', 'The node reported expired']);
@@ -431,4 +460,158 @@ test('a retry after the shown account signs back in is sent as that account', as
   for (let i = 0; i < 5; i++) await Promise.resolve();
   expect(a.state).toBe('submitted');
   expect(JSON.parse(h.posted[0]!.message).evaluator).toBe('me');
+});
+
+// @scenario vouch-live-interfold: Post rejected
+test('a post the node refuses with a 4xx fails the answer', async () => {
+  const h = harness([], async () => {
+    throw new HttpError('POST failed with status 400', 400);
+  });
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS);
+  expect(a.state).toBe('failed');
+});
+
+// @scenario vouch-live-interfold: No response to the post
+// A 5xx counts with no response: the node may have stored the operation first.
+test("a post with no response polls the answer's own hash", async () => {
+  for (const err of [
+    noResponse(),
+    new HttpError('POST failed with status 502', 502),
+  ]) {
+    const polled: string[] = [];
+    const h = harness([], async (_u, _op, message) => {
+      h.posted.push({ message });
+      throw err;
+    });
+    const a = new LiveAnswer(input, {
+      ...h.deps,
+      state: async (_url, opHash) => {
+        polled.push(opHash);
+        return { state: 'APPLIED' };
+      },
+    });
+    await h.advance(UNDO_MS);
+    expect(a.state).toBe('submitted');
+    await h.advance(POLL_MS);
+    expect(a.state).toBe('applied');
+    expect(polled).toEqual([hash(h.posted[0]!.message)]);
+  }
+});
+
+// @scenario vouch-live-interfold: Poll request fails
+test('a poll that gets no response keeps the answer submitted', async () => {
+  const h = harness([noResponse(), 'APPLIED']);
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  expect(a.state).toBe('submitted');
+  await h.advance(POLL_MS);
+  expect(a.state).toBe('applied');
+});
+
+// @scenario vouch-live-interfold: Never stored
+test('an answer the node never stored fails after 5 minutes of 404s, and can be retried', async () => {
+  const h = harness(Array.from({ length: SETTLE_MS / POLL_MS + 1 }, notFound));
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + SETTLE_MS - POLL_MS);
+  expect(a.state).toBe('submitted');
+  await h.advance(POLL_MS);
+  expect([a.state, a.error]).toEqual([
+    'failed',
+    'The node has no record of this answer',
+  ]);
+  // One poll that reported a state means the node holds it: unconfirmed instead.
+  const h2 = harness(['SENT', ...Array.from({ length: 70 }, notFound)]);
+  const b = new LiveAnswer(input, h2.deps);
+  await h2.advance(UNDO_MS + SETTLE_MS);
+  expect(b.state).toBe('unconfirmed');
+  // The 5-minute window used all but one of the 404s; the retry's poll of the
+  // old hash gets that last one, and the answer is signed again.
+  a.retry();
+  await flush();
+  expect([a.state, h.posted.length]).toEqual(['submitted', 2]);
+});
+
+// @scenario vouch-live-interfold: Still pending at retry
+test('a retry whose earlier operation is still pending polls it and signs nothing', async () => {
+  const h = harness([
+    { state: 'FAILED', errorNum: 4 },
+    { state: 'FAILED', arangoErrorNum: 1200 },
+    'APPLIED',
+  ]);
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  expect(a.state).toBe('failed');
+  a.retry();
+  await flush();
+  expect([a.state, h.posted.length]).toEqual(['submitted', 1]);
+  await h.advance(POLL_MS);
+  expect(a.state).toBe('applied');
+});
+
+// @scenario vouch-live-interfold: Node unreachable at retry
+test('a retry that cannot reach the node fails again and signs nothing', async () => {
+  const h = harness([{ state: 'FAILED', errorNum: 4 }, noResponse()]);
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  a.retry();
+  await flush();
+  expect([a.state, h.posted.length]).toEqual(['failed', 1]);
+  expect(a.error).toContain('Could not reach the node');
+});
+
+// @scenario vouch-live-interfold: Applied after it failed
+test('a retry finds the earlier operation applied and signs nothing', async () => {
+  const h = harness([{ state: 'FAILED', errorNum: 4 }, 'APPLIED']);
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  expect(a.state).toBe('failed');
+  a.retry();
+  await flush();
+  expect([a.state, h.posted.length]).toEqual(['applied', 1]);
+});
+
+test('a disposed answer sends nothing more and stops polling', async () => {
+  const h = harness();
+  const a = new LiveAnswer(input, h.deps);
+  a.dispose();
+  await h.advance(UNDO_MS * 2);
+  expect([a.state, h.posted.length]).toEqual(['holding', 0]);
+  let polls = 0;
+  const b = new LiveAnswer(input, {
+    ...h.deps,
+    state: async () => {
+      polls++;
+      return { state: 'SENT' };
+    },
+  });
+  await h.advance(UNDO_MS + POLL_MS);
+  b.dispose();
+  await h.advance(POLL_MS * 3);
+  expect([b.state, polls]).toEqual(['submitted', 1]);
+});
+
+// @scenario vouch-live-interfold: Answers to aura-node
+// The test checks the URLs only; landing's /api/operations route forwards them
+// to aura-node.
+test("posts and polls for aura-node go to landing's same-origin route", async () => {
+  const realFetch = globalThis.fetch;
+  const urls: string[] = [];
+  const { op, message } = signAnswer(input, session, 5);
+  globalThis.fetch = (async (url: string, init?: RequestInit) => {
+    urls.push(url);
+    const body =
+      init?.method === 'POST'
+        ? { data: { hash: hash(message) } }
+        : { data: { state: 'applied' } };
+    return new Response(JSON.stringify(body));
+  }) as unknown as typeof fetch;
+  try {
+    const nodeUrl = liveConfig({ MODE: 'production' }).nodeUrl;
+    await postOperation(nodeUrl, op, message);
+    await fetchOperation(nodeUrl, 'h1');
+    expect(urls).toEqual(['/api/operations', '/api/operations?hash=h1']);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });
