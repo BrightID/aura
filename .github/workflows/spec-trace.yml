@@ -1,5 +1,10 @@
 name: spec-trace
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
 jobs:
   spec-trace:
     runs-on: ubuntu-latest

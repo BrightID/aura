@@ -30,23 +30,59 @@ How `apps/vouch` sends live Interfold answers to the Aura node and reads them ba
 
 ### Requirement: Node URL
 
-`apps/vouch` SHALL send every live request to the node named by `VITE_AURA_NODE_URL`, or to `https://aura-test.brightid.org` when it is unset.
+`apps/vouch` SHALL send every live request to the node `apps/core` uses in a build of the same mode, because only that node knows the key that `apps/core` signed in with. A production build (Vite mode `production`) SHALL use `VITE_AURA_NODE_URL`, or `https://aura-node.brightid.org` when it is unset; any other build SHALL use `VITE_AURA_TEST_NODE_URL`, or `https://aura-test.brightid.org` when it is unset.
 
-#### Scenario: Unset
-- **WHEN** the app is built with live reads on and no `VITE_AURA_NODE_URL`
+#### Scenario: Unset in a production build
+- **WHEN** a production build has live reads on and no `VITE_AURA_NODE_URL`
+- **THEN** the evidence route reads from `https://aura-node.brightid.org`
+
+#### Scenario: Unset in a development build
+- **WHEN** a development build has live reads on, no `VITE_AURA_TEST_NODE_URL`, and `VITE_AURA_NODE_URL` set to another node
 - **THEN** the evidence route reads from `https://aura-test.brightid.org`
+
+#### Scenario: Set
+- **WHEN** a production build has `VITE_AURA_NODE_URL` set to another node
+- **THEN** evidence reads and answer writes both go to that node
+
+### Requirement: Answers to aura-node through landing
+
+When the node is `https://aura-node.brightid.org`, every post and poll of an answer SHALL go to the same-origin `/api/operations` route that `apps/landing` serves, because aura-node's server refuses the browser's cross-origin post. So `apps/vouch` writes to aura-node only when served from `apps/landing`'s origin; evidence reads go to aura-node directly.
+
+#### Scenario: Answers to aura-node
+- **WHEN** a production build uses `https://aura-node.brightid.org` and an answer is posted and polled
+- **THEN** the post and the polls go to `/api/operations` on the page's own origin
 
 ### Requirement: Evaluator from the core login
 
-The live writer SHALL take the evaluator's BrightID and secret key from core's persisted login store. With no signed-in core user, the answer route SHALL say that the person must sign in to Aura, link to `/core/`, and submit nothing. A practice persona or room identity SHALL never supply the evaluator or the key.
+The live writer SHALL take the evaluator's BrightID and secret key from core's persisted login store. Reading core's login store is not the separate app login that the shared interfold-endorsements contract forbids, because it adds no new account or gate ([ADR-0004](https://github.com/BrightID/shared-specs/pull/7)). With no signed-in core user, the answer route SHALL say that the person must sign in to Aura, link to `/core/`, and submit nothing.
 
 #### Scenario: Not signed in
 - **WHEN** a person opens `/live/:operator` with live writes on and no core login in the browser
 - **THEN** the page asks them to sign in to Aura with a link to `/core/`, and no answer can be submitted
 
+### Requirement: Practice identities never sign
+
+A practice persona or room identity SHALL never supply the evaluator or the key.
+
 #### Scenario: Practice identity chosen
 - **WHEN** a practice persona or a room identity is selected and the person is signed in to core
 - **THEN** a live answer is signed as the core user, and the practice id appears nowhere in the operation
+
+### Requirement: Signed as the evaluator shown
+
+An answer SHALL be signed only as the core user the answer screen showed when it opened. Each time the answer moves to `submitting`, before signing it, the writer compares the signed-in core user with that one. If nobody or another account is signed in then, the answer moves to `failed`, with a message saying whether nobody or another account is signed in, and nothing is sent; a retry fails the same way until that user is signed in again.
+
+#### Scenario: Account changed after the page opened
+- **WHEN** the answer screen shows evaluator A, and the person signs in to core as B in another tab before answering
+- **THEN** the answer fails, says another account is signed in, and is not signed as B
+
+#### Scenario: Signed back in
+- **WHEN** an answer failed because evaluator A was signed out, and A signs in to core again before Retry is pressed
+- **THEN** the retry signs as A and the answer is sent
+
+#### Scenario: Signed out after the page opened
+- **WHEN** the answer screen shows evaluator A, the person signs out of core in another tab, answers, and then presses Retry
+- **THEN** the answer fails and says to sign in, the retry fails the same way, and nothing is sent
 
 ### Requirement: Operator id from the route
 
@@ -70,39 +106,136 @@ The practice screens number the questions 0, 1 and 2, in the order of `Q` in `ap
 
 ### Requirement: Live write states
 
-A live answer SHALL be in one of `holding`, `submitting`, `submitted`, `applied` and `failed`, and SHALL show as applied only in `applied`. The allowed moves are: `holding` to `submitting` when the 1.5-second undo window ends, and undo during that window discards the answer; `submitting` to `submitted` or `failed`; `submitted` to `applied` or `failed`; and `failed` to `submitting` on retry. Once an answer has left `holding`, no undo SHALL be offered.
+A live answer SHALL be in one of `holding`, `submitting`, `submitted`, `unconfirmed`, `applied` and `failed`, and SHALL show as applied only in `applied`. It starts in `holding` and, unless undo discards it, SHALL move only:
+
+- `holding` to `submitting`, after the undo window;
+- `submitting` to `submitted`, `applied` or `failed`;
+- `submitted` to `applied`, `failed` or `unconfirmed`;
+- `unconfirmed` to `submitted`, on check again;
+- `failed` to `submitting`, on retry.
+
+No move leaves `applied`.
+
+#### Scenario: Applied is final
+- **WHEN** an answer is applied
+- **THEN** it offers no undo, retry or check again, and stays applied
+
+### Requirement: Undo only while holding
+
+Undo during the 1.5-second window SHALL discard the answer. Once an answer has left `holding`, no undo SHALL be offered.
+
+#### Scenario: Undo inside the window
+- **WHEN** the evaluator undoes an answer while it is holding
+- **THEN** the answer is discarded and nothing is signed or sent
 
 #### Scenario: Undo after submission
-- **WHEN** an answer is submitting, submitted or applied
-- **THEN** no undo is offered, and the answer's real state stays on screen
+- **WHEN** an answer is submitting, submitted, unconfirmed, applied or failed
+- **THEN** no undo is offered, and the screen keeps showing the answer's current state
 
 ### Requirement: Submission confirmed by the node
 
-A `submitting` answer SHALL be signed with a new timestamp and posted; it becomes `submitted` only when the node returns the operation's hash and that hash equals the one `hash` in `@aura/domain` computes from the signed message, and `failed` otherwise.
+A `submitting` answer SHALL be signed with a new timestamp and posted, unless *Retry polls the earlier post* settles it first, or the check in *Signed as the evaluator shown* then fails. The answer's hash is what the `hash` function in `@aura/domain` computes from the message it last signed. The answer becomes `submitted` when the node returns a hash equal to the answer's hash, `failed` when it returns another hash or none, and otherwise as *Post failures* says.
 
 #### Scenario: Hash mismatch
 - **WHEN** the node returns a hash that does not match the signed message
 - **THEN** the answer shows as failed
 
+### Requirement: Post failures
+
+A post the node answers with a status from 400 to 499 SHALL make the answer `failed`. A post that gets no response within 30 seconds, fails on the network, gets a status of 500 or above, or gets a body that cannot be read SHALL make the answer `submitted` under the answer's hash, because the node may have stored the operation before its response was lost.
+
+#### Scenario: Post rejected
+- **WHEN** the node answers the post with status 400
+- **THEN** the answer shows as failed, with Retry
+
+#### Scenario: No response to the post
+- **WHEN** the post gets no response within 30 seconds
+- **THEN** the answer shows as submitted, polls the answer's hash, and shows as applied once a poll reports `applied`
+
 ### Requirement: Polling until applied
 
-A `submitted` answer SHALL poll the operation's state every 5 seconds. It becomes `applied` when the node reports `applied`, and `failed` when the node reports `failed` or `expired`, or when 5 minutes pass after it became `submitted` without either.
+A `submitted` answer SHALL poll the operation's state every 5 seconds. The answer becomes `applied` when the node reports `applied`. It becomes `failed` when the node reports `expired`, or reports `failed` with an error that *Write-conflict failures are not final* treats as final. It becomes `unconfirmed` when 5 minutes pass after it became `submitted` without reaching `applied` or `failed`; a write-conflict `failed` poll keeps polling and does not restart the 5 minutes.
+
+#### Scenario: Expired
+- **WHEN** a poll reports `expired`
+- **THEN** the answer shows as failed, with Retry
+
+#### Scenario: Conflict that never clears
+- **WHEN** every poll for 5 minutes reports `failed` with `arangoErrorNum` 1200
+- **THEN** the answer stays submitted during those polls and becomes unconfirmed at the 5-minute mark
 
 #### Scenario: Accepted, not yet applied
 - **WHEN** the node returns the hash but polling still reports `unknown`, `init` or `sent`
 - **THEN** the answer shows as submitted, not applied
 
+### Requirement: Polls that get no state
+
+A poll that gets no response within 30 seconds, fails on the network, or gets an error status SHALL count as no report: polling goes on, and the 5 minutes keep running. When the 5 minutes pass, and at least one poll in them got a 404 while none reported a state, `unknown` included, the answer SHALL become `failed`, not `unconfirmed`, because a 404 means the node holds no such operation and so can never apply it.
+
+#### Scenario: Poll request fails
+- **WHEN** a poll gets no response within 30 seconds, and a later poll reports `applied`
+- **THEN** the answer stays submitted until that later poll, then shows as applied
+
+#### Scenario: Never stored
+- **WHEN** every poll for 5 minutes gets a 404
+- **THEN** the answer shows as failed at the 5-minute mark, with Retry
+
+### Requirement: Write-conflict failures are not final
+
+When the node reports `failed` with `arangoErrorNum` 1200 in the `data.result` of a poll's response (`GET /brightid/v6/operations/{hash}`), the answer SHALL stay `submitted` and keep polling, until the 5-minute limit in *Polling until applied*, because the node retries that write conflict itself. On any other `failed`, it SHALL become `failed` at once, unless *Applied before counts as applied* applies.
+
+#### Scenario: Failed then applied
+- **WHEN** a poll reports `failed` with `arangoErrorNum` 1200, and a later poll reports `applied`
+- **THEN** the answer shows as applied, never as failed
+
+#### Scenario: Failed for another reason
+- **WHEN** a poll reports `failed` with neither `errorNum` 25 nor `arangoErrorNum` 1200, or with no error at all
+- **THEN** the answer shows as failed at once, with Retry
+
+### Requirement: Applied before counts as applied
+
+When the node reports `failed` with `errorNum` 25 in the `data.result` of a poll's response, the answer SHALL become `applied`, because the node raises that error only for an operation it has already applied.
+
+#### Scenario: Applied before
+- **WHEN** a poll reports `failed` with `errorNum` 25, as when the node processed an applied operation a second time and stored that error over its applied record
+- **THEN** the answer shows as applied
+
+### Requirement: Unconfirmed answers stay pending
+
+An `unconfirmed` answer SHALL offer no retry, only a way to check again. Checking again returns it to `submitted` and polls for another 5 minutes, after which it is `unconfirmed` again if the node still has not settled it.
+
 #### Scenario: Never settles
-- **WHEN** polling has reported neither `applied` nor `failed` nor `expired` for 5 minutes
-- **THEN** the answer shows as failed
+- **WHEN** 5 minutes pass with polls reporting `init` or `sent`, and none reporting `applied`, `expired` or a `failed` that is final
+- **THEN** the answer shows as not confirmed yet, offers to check again and no retry, and checking again shows it applied once the node reports `applied`
 
 ### Requirement: Retry after failure
 
 A failed live answer SHALL offer a retry button, which moves it to `submitting`.
 
 #### Scenario: Rejected and retried
-- **WHEN** the submit request fails and the evaluator presses retry
+- **WHEN** the node answers the post with status 400, the evaluator presses retry, and a poll of the answer's hash gets a 404
 - **THEN** the answer is signed again with a new timestamp, and shows as applied only once polling reports `applied`
+
+### Requirement: Retry polls the earlier post
+
+On retry of an answer posted before, whatever that post's result, the writer SHALL first poll the answer's hash once. By the result, the answer SHALL become:
+
+- `applied`, on `applied`, or `failed` with `errorNum` 25;
+- `submitted`, on `unknown`, `init`, `sent`, or `failed` with `arangoErrorNum` 1200;
+- signed again and posted, on a 404, `expired`, or any other `failed`;
+- `failed`, with nothing signed, on any result *Polls that get no state* counts as no report but a 404.
+
+#### Scenario: Still pending at retry
+- **WHEN** an answer failed, and when the evaluator presses retry a poll of its hash reports `failed` with `arangoErrorNum` 1200
+- **THEN** the answer shows as submitted and polls that hash for another 5 minutes, and nothing is signed again
+
+#### Scenario: Node unreachable at retry
+- **WHEN** an answer failed, and when the evaluator presses retry the poll of its hash gets no response within 30 seconds
+- **THEN** the answer shows as failed again, with Retry, and nothing is signed
+
+#### Scenario: Applied after it failed
+- **WHEN** an answer failed on a poll reporting `failed` with `errorNum` 4, and when the evaluator presses retry a poll of its hash reports `applied`
+- **THEN** the answer shows as applied, and nothing is signed again
 
 ### Requirement: Evidence from the node only
 
