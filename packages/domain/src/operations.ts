@@ -141,15 +141,40 @@ const NODE_STATE_TO_OPERATION_STATE: Record<string, OperationState> = {
   expired: 'EXPIRED',
 };
 
+/** An operation's state on the node, and the errors it failed with, if any. */
+export interface OperationStatus {
+  state: OperationState;
+  /** The node's error number for a failure; 25 means the operation was applied before. */
+  errorNum?: number;
+  /** ArangoDB's error number when the node failed it on a database error; 1200 is a write conflict. */
+  arangoErrorNum?: number;
+}
+
+export async function fetchOperation(
+  nodeUrl: string,
+  hash: string,
+  signal?: AbortSignal,
+): Promise<OperationStatus> {
+  const res = await getJson<{
+    data?: {
+      state?: string;
+      result?: { errorNum?: unknown; arangoErrorNum?: unknown };
+    };
+  }>(operationsUrl(nodeUrl, hash), signal);
+  const state =
+    NODE_STATE_TO_OPERATION_STATE[res.data?.state ?? ''] ?? 'UNKNOWN';
+  const result = res.data?.result;
+  const status: OperationStatus = { state };
+  if (typeof result?.errorNum === 'number') status.errorNum = result.errorNum;
+  if (typeof result?.arangoErrorNum === 'number')
+    status.arangoErrorNum = result.arangoErrorNum;
+  return status;
+}
+
 export async function fetchOperationState(
   nodeUrl: string,
   hash: string,
   signal?: AbortSignal,
 ): Promise<OperationState> {
-  const res = await getJson<{ data?: { state?: string } }>(
-    operationsUrl(nodeUrl, hash),
-    signal,
-  );
-  const nodeState = res.data?.state ?? '';
-  return NODE_STATE_TO_OPERATION_STATE[nodeState] ?? 'UNKNOWN';
+  return (await fetchOperation(nodeUrl, hash, signal)).state;
 }
