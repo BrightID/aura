@@ -29,45 +29,52 @@ function operationsUrl(nodeUrl: string, opHash?: string): string {
   return `${base}${path}`;
 }
 
-export interface SignedEvaluateOp {
+/** The three Interfold questions, each sent as its own Evaluate category. */
+export type InterfoldCategory = 'Keyholder' | 'Self-custody' | 'Disclosure';
+
+/** A BrightID evaluation (the default), or an Interfold answer. */
+export type EvaluateDomainCategory =
+  | { domain?: 'BrightID'; category: EvaluationCategory }
+  | { domain: 'Interfold'; category: InterfoldCategory };
+
+export type SignedEvaluateOp = Required<EvaluateDomainCategory> & {
   name: 'Evaluate';
   evaluator: string;
   evaluated: string;
   evaluation: EvaluationValue;
   confidence: number;
-  domain: 'BrightID';
-  category: EvaluationCategory;
   timestamp: number;
   v: number;
   sig: string;
-}
+};
 
-export interface BuildEvaluateOperationParams {
+export type BuildEvaluateOperationParams = EvaluateDomainCategory & {
   evaluator: string;
   evaluated: string;
   evaluation: EvaluationValue;
   confidence: number;
-  category: EvaluationCategory;
   timestamp: number;
   /** Ed25519 secret key bytes (caller decodes the stored b64 key). */
   secretKey: Uint8Array;
-}
+};
 
 export function buildEvaluateOperation(params: BuildEvaluateOperationParams): {
   op: SignedEvaluateOp;
   message: string;
 } {
-  const unsigned = {
+  const fields = {
     name: 'Evaluate' as const,
     evaluator: params.evaluator,
     evaluated: params.evaluated,
     evaluation: params.evaluation,
     confidence: params.confidence,
-    domain: 'BrightID' as const,
-    category: params.category,
     timestamp: params.timestamp,
     v: OP_VERSION,
   };
+  const unsigned =
+    params.domain === 'Interfold'
+      ? { ...fields, domain: 'Interfold' as const, category: params.category }
+      : { ...fields, domain: 'BrightID' as const, category: params.category };
 
   const message = stringify(unsigned);
   const sig = uInt8ArrayToB64(
@@ -77,29 +84,46 @@ export function buildEvaluateOperation(params: BuildEvaluateOperationParams): {
   return { op: { ...unsigned, sig }, message };
 }
 
-export async function submitEvaluateOperation(
+/**
+ * Post a signed operation and return its hash. Throws when the node's hash
+ * differs from the hash of `message`, the exact text that was signed.
+ */
+export async function postOperation(
   nodeUrl: string,
-  params: BuildEvaluateOperationParams,
+  op: SignedEvaluateOp,
+  message: string,
   signal?: AbortSignal,
-): Promise<EvaluateOperation> {
-  const { op, message } = buildEvaluateOperation(params);
-
+): Promise<string> {
   const res = await postJson<{ data: { hash: string } }>(
     operationsUrl(nodeUrl),
     op,
     signal,
   );
-
   const returnedHash = res.data?.hash;
   if (returnedHash !== hash(message)) {
     throw new Error('Invalid operation hash returned from server');
   }
+  return returnedHash;
+}
+
+export async function submitEvaluateOperation(
+  nodeUrl: string,
+  params: BuildEvaluateOperationParams & { domain?: 'BrightID' },
+  signal?: AbortSignal,
+): Promise<EvaluateOperation> {
+  if ((params.domain ?? 'BrightID') !== 'BrightID') {
+    throw new Error(
+      'submitEvaluateOperation accepts BrightID evaluations only',
+    );
+  }
+  const { op, message } = buildEvaluateOperation(params);
+  const opHash = await postOperation(nodeUrl, op, message, signal);
 
   return {
-    hash: returnedHash,
+    hash: opHash,
     evaluator: op.evaluator,
     evaluated: op.evaluated,
-    category: op.category,
+    category: params.category,
     confidence: op.confidence,
     evaluation: op.evaluation,
     timestamp: op.timestamp,
