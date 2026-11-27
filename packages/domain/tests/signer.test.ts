@@ -2,7 +2,10 @@ import { beforeEach, expect, test } from 'bun:test';
 import nacl from 'tweetnacl';
 import { b64ToUint8Array, strToUint8Array } from '../src/crypto';
 import { CORE_AUTH_STORAGE_KEY, readCoreSession } from '../src/core-session';
-import { buildEvaluateOperation } from '../src/operations';
+import {
+  buildEvaluateOperation,
+  submitEvaluateOperation,
+} from '../src/operations';
 import { EvaluationCategory, EvaluationValue } from '../src/types/evaluations';
 
 const { publicKey, secretKey } = nacl.sign.keyPair();
@@ -60,18 +63,16 @@ beforeEach(() => {
 });
 
 test('readCoreSession returns the signed-in user, or null', () => {
+  const key = 'storage-cl-1';
+  const save = (auth: unknown) => store.set(key, JSON.stringify(auth));
+  save({ user: { brightId: 'x', password: '' }, secretKey: 'k' });
+  // CORE_AUTH_STORAGE_KEY is unset until a core build that writes it loads.
   expect(readCoreSession()).toBeNull();
-  store.set(
-    CORE_AUTH_STORAGE_KEY,
-    JSON.stringify({ user: null, secretKey: '' }),
-  );
-  expect(readCoreSession()).toBeNull();
-  store.set(
-    CORE_AUTH_STORAGE_KEY,
-    JSON.stringify({ user: { brightId: 'x', password: '' }, secretKey: 'k' }),
-  );
+  store.set(CORE_AUTH_STORAGE_KEY, key);
   expect(readCoreSession()).toEqual({ brightId: 'x', secretKey: 'k' });
-  store.set(CORE_AUTH_STORAGE_KEY, '{not json');
+  save({ user: null, secretKey: '' });
+  expect(readCoreSession()).toBeNull();
+  store.set(key, '{not json');
   expect(readCoreSession()).toBeNull();
   for (const auth of [
     { user: { brightId: 'x' }, secretKey: '' },
@@ -79,7 +80,14 @@ test('readCoreSession returns the signed-in user, or null', () => {
     { user: { brightId: 5 }, secretKey: 'k' },
     { user: { brightId: 'x' }, secretKey: 5 },
   ]) {
-    store.set(CORE_AUTH_STORAGE_KEY, JSON.stringify(auth));
+    save(auth);
     expect(readCoreSession()).toBeNull();
   }
+});
+
+test('submitEvaluateOperation refuses an Interfold answer at runtime', async () => {
+  const params = { ...base, domain: 'Interfold', category: 'Keyholder' };
+  await expect(
+    submitEvaluateOperation('http://node.invalid', params as never),
+  ).rejects.toThrow('BrightID evaluations only');
 });

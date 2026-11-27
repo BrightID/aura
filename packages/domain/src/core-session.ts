@@ -1,7 +1,10 @@
 /**
- * The localStorage key under which apps/core keeps a copy of its login store,
- * updated on every write. apps/vouch, served from the same origin, reads the
- * signed-in evaluator from it.
+ * The localStorage key that holds the name of the key apps/core keeps its login
+ * store under. Core writes the name each time it loads. apps/vouch, served from
+ * the same origin, looks up the name here and reads the store itself, so it
+ * sees every write to the store, including writes by a tab still running an
+ * older build of core. Until core has loaded once in this browser, the name is
+ * missing and readCoreSession returns null.
  */
 export const CORE_AUTH_STORAGE_KEY = 'aura-core-auth';
 
@@ -14,7 +17,8 @@ export interface CoreSession {
 /** The person signed in to core in this browser, or null. */
 export function readCoreSession(): CoreSession | null {
   try {
-    const raw = localStorage.getItem(CORE_AUTH_STORAGE_KEY);
+    const key = localStorage.getItem(CORE_AUTH_STORAGE_KEY);
+    const raw = key ? localStorage.getItem(key) : null;
     const auth = raw ? JSON.parse(raw) : null;
     const brightId = auth?.user?.brightId;
     const secretKey = auth?.secretKey;
