@@ -81,6 +81,33 @@ test('a response with no connections has no answers', () => {
   expect(interfoldEvidence({ data: { connections: null } })).toEqual([]);
 });
 
+test('a malformed record or response is dropped, and the valid answers still show', () => {
+  const good = { id: 'e1', auraEvaluations: [record(2)] };
+  const withGood: unknown[] = [
+    {
+      data: {
+        connections: [null, good, 'x', { id: 'e2', auraEvaluations: { a: 1 } }],
+      },
+    },
+    // record(3, 1e20) has a `modified` outside the range of a Date; the
+    // evidence page would throw formatting it, so it is dropped.
+    {
+      data: {
+        connections: [
+          { id: 'e3', auraEvaluations: [null, record(3, 1e20)] },
+          good,
+        ],
+      },
+    },
+  ];
+  for (const response of withGood)
+    expect(
+      interfoldEvidence(response as never).map((a) => a.evaluator),
+    ).toEqual(['e1']);
+  for (const response of [null, { data: null }, { data: { connections: {} } }])
+    expect(interfoldEvidence(response as never)).toEqual([]);
+});
+
 test('a read in progress shows as loading, even after an earlier read failed', () => {
   // Solid keeps a resource's last error while it loads again.
   expect(evidenceView({ loading: true, error: new Error('502') })).toBe(

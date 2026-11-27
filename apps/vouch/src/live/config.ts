@@ -16,11 +16,16 @@ export interface LiveConfig {
   nodeUrl: string;
 }
 
-const DEFAULT_NODE_URL = 'https://aura-test.brightid.org';
-
 /**
- * A switch is on only when its env value is the string 'true'. The node URL
- * defaults to aura-test, with any trailing slash removed.
+ * `writes` is on only when VITE_VOUCH_LIVE_WRITES is the string 'true', and
+ * `reads` likewise with VITE_VOUCH_LIVE_READS.
+ *
+ * The node URL copies the rule in apps/core/src/shared/lib/urls.ts; change the
+ * two together. A production build reads VITE_AURA_NODE_URL and defaults to
+ * aura-node; any other build reads VITE_AURA_TEST_NODE_URL and defaults to
+ * aura-test. A trailing slash is removed. Answers are signed with the key of
+ * the person signed in to apps/core, which only the node core uses knows; any
+ * other node would reject every answer.
  */
 export function liveConfig(
   env: Record<string, string | undefined>,
@@ -28,7 +33,10 @@ export function liveConfig(
   return {
     writes: env.VITE_VOUCH_LIVE_WRITES === 'true',
     reads: env.VITE_VOUCH_LIVE_READS === 'true',
-    nodeUrl: (env.VITE_AURA_NODE_URL || DEFAULT_NODE_URL).replace(/\/+$/, ''),
+    nodeUrl: (env.MODE === 'production'
+      ? env.VITE_AURA_NODE_URL || 'https://aura-node.brightid.org'
+      : env.VITE_AURA_TEST_NODE_URL || 'https://aura-test.brightid.org'
+    ).replace(/\/+$/, ''),
   };
 }
 

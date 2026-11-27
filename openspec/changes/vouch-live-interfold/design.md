@@ -1,0 +1,3 @@
+## Open Questions
+
+- An answer the node reported `failed` can still be applied later: the node's receiver, the process that applies operations block by block, restarts after an error and applies the block holding it again. Once an answer has failed, the answer screen lets a person give a fresh answer to the same question (not Retry, which polls the earlier answer first), and then the earlier one, applied late, would replace the newer one on the node. Is that risk accepted, or should the answer screen refuse a second answer to a question while an earlier one could still apply, and for how long?

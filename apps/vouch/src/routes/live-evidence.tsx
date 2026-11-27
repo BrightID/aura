@@ -30,7 +30,8 @@ export default function LiveEvidence() {
         <Match when={evidenceView(answers) === 'error'}>
           <section class="a-card flex flex-col gap-2" data-variant="default">
             <p class="a-text">
-              Could not read the answers from {LIVE.nodeUrl}.
+              Could not read the answers from {LIVE.nodeUrl}:{' '}
+              {String(answers.error?.message ?? answers.error)}
             </p>
             <button
               class="a-button self-start"
