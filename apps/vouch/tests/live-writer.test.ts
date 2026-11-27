@@ -14,6 +14,7 @@ import {
   POLL_MS,
   SETTLE_MS,
   UNDO_MS,
+  answerAction,
   answerGate,
   signAnswer,
   type WriterDeps,
@@ -614,4 +615,162 @@ test("posts and polls for aura-node go to landing's same-origin route", async ()
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+/** A Yes whose post the node refused with a 400, so it failed after a post. */
+async function refusedYes(states: Parameters<typeof harness>[0]) {
+  let refuse = true;
+  const h = harness(states, async (_u, _op, message) => {
+    h.posted.push({ message });
+    if (refuse) {
+      refuse = false;
+      throw new HttpError('POST failed with status 400', 400);
+    }
+    return hash(message);
+  });
+  const a = new LiveAnswer({ ...input, yes: true, confidence: 2 }, h.deps);
+  await h.advance(UNDO_MS);
+  expect(a.state).toBe('failed');
+  return { h, a };
+}
+const signed = (h: ReturnType<typeof harness>, i: number) =>
+  JSON.parse(h.posted[i]!.message) as {
+    evaluation: string;
+    confidence: number;
+  };
+
+// @scenario vouch-live-interfold: Retry with another confidence
+test('a retry signs the confidence selected when Retry is pressed', async () => {
+  const { h, a } = await refusedYes([notFound()]);
+  a.retry({ confidence: 4 });
+  await flush();
+  expect(h.posted.length).toBe(2);
+  expect(signed(h, 0).confidence).toBe(2);
+  expect(signed(h, 1)).toMatchObject({ evaluation: 'positive', confidence: 4 });
+  expect(a.answer.confidence).toBe(4);
+});
+
+// @scenario vouch-live-interfold: Earlier answer still pending
+test('a new answer to a failed posted answer whose post is still pending is not sent', async () => {
+  const h = harness([{ state: 'FAILED', errorNum: 4 }, 'INIT']);
+  const a = new LiveAnswer({ ...input, yes: true }, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  expect(a.state).toBe('failed');
+  expect(answerAction(a)).toBe('retry');
+  a.retry({ yes: false, confidence: 3 });
+  await flush();
+  expect([a.state, a.answer.yes, h.posted.length]).toEqual([
+    'submitted',
+    true,
+    1,
+  ]);
+});
+
+// @scenario vouch-live-interfold: Earlier answer gone
+test('a new answer to a failed posted answer whose post is gone is signed at once', async () => {
+  const { h, a } = await refusedYes([notFound()]);
+  expect(answerAction(a)).toBe('retry');
+  a.retry({ yes: false, confidence: 3 });
+  await flush();
+  // No undo window: it is posted without the clock moving.
+  expect([a.state, h.posted.length]).toEqual(['submitted', 2]);
+  expect(signed(h, 1)).toMatchObject({ evaluation: 'negative', confidence: 3 });
+  expect(a.answer.yes).toBe(false);
+});
+
+// @scenario vouch-live-interfold: Earlier answer applied after it failed
+test('a new answer to a failed posted answer the node then applied is not sent', async () => {
+  const h = harness([{ state: 'FAILED', errorNum: 4 }, 'APPLIED']);
+  const a = new LiveAnswer({ ...input, yes: true }, h.deps);
+  await h.advance(UNDO_MS + POLL_MS);
+  a.retry({ yes: false, confidence: 3 });
+  await flush();
+  expect([a.state, a.answer.yes, h.posted.length]).toEqual([
+    'applied',
+    true,
+    1,
+  ]);
+  // Applied is final, so a further Yes or No is a new answer.
+  expect(answerAction(a)).toBe('new');
+});
+
+// @scenario vouch-live-interfold: Earlier answer never posted
+test('a new answer to a failed answer that was never posted is a new answer', async () => {
+  const h = harness();
+  const a = new LiveAnswer(input, { ...h.deps, session: () => null });
+  await h.advance(UNDO_MS);
+  expect([a.state, h.posted.length]).toEqual(['failed', 0]);
+  expect(answerAction(a)).toBe('new');
+  expect(answerAction(undefined)).toBe('new');
+});
+
+// @scenario vouch-live-interfold: Answer in flight
+test('no new answer is offered while the last one is in flight', async () => {
+  let release = () => {};
+  const h = harness(
+    [],
+    (_u, _op, message) =>
+      new Promise((resolve) => {
+        release = () => resolve(hash(message));
+      }),
+  );
+  const a = new LiveAnswer(input, h.deps);
+  expect([a.state, answerAction(a)]).toEqual(['holding', 'none']);
+  await h.advance(UNDO_MS);
+  expect([a.state, answerAction(a)]).toEqual(['submitting', 'none']);
+  release();
+  await flush();
+  expect([a.state, answerAction(a)]).toEqual(['submitted', 'none']);
+  await h.advance(SETTLE_MS);
+  expect([a.state, answerAction(a)]).toEqual(['unconfirmed', 'none']);
+});
+
+// A new Yes or No that fails to sign (signed out) must not change
+// `answer`, which the screen shows: the earlier answer is the one the node
+// may still apply.
+test('a new value that fails to sign leaves the earlier answer shown', async () => {
+  let current: typeof session | null = session;
+  const h = harness([
+    { state: 'FAILED', errorNum: 4 },
+    { state: 'FAILED', errorNum: 4 },
+    'APPLIED',
+  ]);
+  const a = new LiveAnswer(
+    { ...input, yes: true },
+    { ...h.deps, evaluator: 'me', session: () => current },
+  );
+  await h.advance(UNDO_MS + POLL_MS);
+  current = null;
+  a.retry({ yes: false, confidence: 3 });
+  await flush();
+  expect([a.state, a.answer.yes]).toEqual(['failed', true]);
+  current = session;
+  a.retry({ confidence: 3 });
+  await flush();
+  expect([a.state, a.answer.yes, h.posted.length]).toEqual([
+    'applied',
+    true,
+    1,
+  ]);
+});
+
+// @scenario vouch-live-interfold: Not found or unreachable
+test('404s mixed with polls that get no response fail the answer after 5 minutes', async () => {
+  const h = harness(
+    Array.from({ length: 70 }, (_, i) => (i % 2 ? noResponse() : notFound())),
+  );
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + SETTLE_MS);
+  expect([a.state, a.error]).toEqual([
+    'failed',
+    'The node has no record of this answer',
+  ]);
+});
+
+// @scenario vouch-live-interfold: Unreachable for 5 minutes
+test('polls that never get a response leave the answer unconfirmed', async () => {
+  const h = harness(Array.from({ length: 70 }, noResponse));
+  const a = new LiveAnswer(input, h.deps);
+  await h.advance(UNDO_MS + SETTLE_MS);
+  expect(a.state).toBe('unconfirmed');
 });

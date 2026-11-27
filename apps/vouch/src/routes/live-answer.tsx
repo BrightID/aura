@@ -1,12 +1,9 @@
 import { useParams } from '@solidjs/router';
 import { For, Match, Show, Switch, createSignal, onCleanup } from 'solid-js';
-import {
-  CORE_AUTH_STORAGE_KEY,
-  readCoreSession,
-} from '@aura/domain/core-session';
+import { readCoreSession } from '@aura/domain/core-session';
 import { Back } from '@/components';
 import { LIVE, isOperatorId } from '@/live/config';
-import { LiveAnswer, answerGate } from '@/live/writer';
+import { LiveAnswer, answerAction, answerGate } from '@/live/writer';
 import { Q, QUESTIONS, QUESTION_TEXT } from '@/model/questions';
 
 const STATE_TEXT = {
@@ -23,14 +20,16 @@ export default function LiveAnswerScreen() {
   const params = useParams();
   const operator = () => params.operator ?? '';
   // Whoever is signed in to apps/core in this browser. While nobody is, a
-  // sign-in in another tab shows here at once; once someone is, the account
-  // shown never changes. The writer reads the session again when it signs
-  // (`evaluator` is the account shown), so after another tab signs in as
-  // someone else, or signs out, answers fail instead of signing as anyone else.
+  // sign-in in another tab shows here at once: that tab writes core's login
+  // store under a generated key, whose name core keeps in the localStorage
+  // key aura-core-auth. This screen cannot know the key in advance, so every
+  // storage event rereads the session. Once someone is signed in, the account shown never
+  // changes. The writer reads the session again when it signs (`evaluator` is
+  // the account shown), so after another tab signs in as someone else, or
+  // signs out, answers fail instead of signing as anyone else.
   const [session, setSession] = createSignal(readCoreSession());
-  const onStorage = (e: StorageEvent) => {
-    if (e.key === CORE_AUTH_STORAGE_KEY && !session())
-      setSession(readCoreSession());
+  const onStorage = () => {
+    if (!session()) setSession(readCoreSession());
   };
   window.addEventListener('storage', onStorage);
   onCleanup(() => window.removeEventListener('storage', onStorage));
@@ -101,10 +100,17 @@ function Question(props: {
   const [sent, setSent] = createSignal<LiveAnswer>();
   // When this question goes away (leaving the screen, or another operator's
   // link) its latest answer is disposed: one still in its undo window is never
-  // sent, and polling ends. An earlier answer was replaced only once it failed,
-  // so it has nothing running.
+  // sent, and polling ends. An earlier answer was replaced only once it was
+  // applied or failed without a post, so it has nothing running.
   onCleanup(() => sent()?.dispose());
-  const answer = (yes: boolean) =>
+  // A failed answer that sent a post is never replaced: a new Yes or No
+  // retries it, so its post is polled before anything else is signed. The
+  // node keeps the evaluation it applied last, so without that poll an
+  // earlier answer the node applies late would overwrite the newer one.
+  const answer = (yes: boolean) => {
+    const last = sent();
+    if (answerAction(last) === 'retry')
+      return last!.retry({ yes, confidence: confidence() });
     setSent(
       new LiveAnswer(
         {
@@ -120,15 +126,8 @@ function Question(props: {
         },
       ),
     );
-  const busy = () => {
-    const s = sent()?.state;
-    return (
-      s === 'holding' ||
-      s === 'submitting' ||
-      s === 'submitted' ||
-      s === 'unconfirmed'
-    );
   };
+  const busy = () => answerAction(sent()) === 'none';
   return (
     <section class="a-card flex flex-col gap-2" data-variant="default">
       <span class="font-medium">{Q[props.question]}</span>
@@ -197,7 +196,7 @@ function Question(props: {
                 class="a-button"
                 data-variant="ghost"
                 data-size="sm"
-                onClick={() => a().retry()}
+                onClick={() => a().retry({ confidence: confidence() })}
               >
                 Retry
               </button>

@@ -141,7 +141,7 @@ function settle(status: OperationStatus): 'applied' | 'failed' | 'pending' {
  * signed message.
  *
  * It fails before posting when there is no session, or, when
- * `deps.evaluator` is set, a session for another account. It fails when the
+ * `deps.evaluator` is set, a session for an account other than that one. It fails when the
  * node refuses the post with a 4xx status or returns another hash. Any other
  * post failure (no response, a network error, a 5xx) may come after the node
  * stored the operation, so the answer polls its hash as if the post had
@@ -152,28 +152,30 @@ function settle(status: OperationStatus): 'applied' | 'failed' | 'pending' {
  * way settles nothing. If nothing settles it within 5 minutes, it is
  * `unconfirmed`: still pending, and the screen's Check again calls
  * checkAgain(), which polls for another 5 minutes. Each 5-minute window is
- * judged on its own: when its polls got a 404 and never a status, the node
+ * judged on its own: when at least one of its polls got a 404 and none got
+ * an operation state (polls with no response count for neither), the node
  * holds no such operation, and the answer is `failed` instead.
  *
  * A failed answer can be retried, except one that was undone. A retry first
  * polls the hash it last posted, since the node can still apply an operation
  * it reported failed. That operation applied makes the answer `applied`;
- * still pending, the answer polls it again; gone or failed for good, the
- * answer is signed again and posted. When that poll fails, the answer stays
- * `failed` with nothing signed. dispose() cancels the timer, so a holding
+ * still pending, the answer polls it again. On a 404, `EXPIRED`, or a
+ * `FAILED` that `settle` treats as final, the answer is signed again, with
+ * the Yes or No and confidence the retry was given, and posted. When that
+ * poll gets no response, the answer stays `failed` with nothing signed. dispose() cancels the timer, so a holding
  * answer is never posted and polling ends.
  */
 export class LiveAnswer {
-  readonly answer: LiveAnswerInput;
   error?: string;
   private readonly deps: Required<WriterDeps>;
   private readonly signal = createSignal<LiveState>('holding');
+  private readonly input: ReturnType<typeof createSignal<LiveAnswerInput>>;
   private timer?: unknown;
   private run = 0;
   private hash?: string;
 
   constructor(answer: LiveAnswerInput, deps: WriterDeps) {
-    this.answer = answer;
+    this.input = createSignal(answer);
     this.deps = {
       now: Date.now,
       post: postOperation,
@@ -188,6 +190,19 @@ export class LiveAnswer {
 
   get state() {
     return this.signal[0]();
+  }
+
+  /** The answer last signed, or to be signed; a retry may change its Yes or No and confidence. */
+  get answer() {
+    return this.input[0]();
+  }
+
+  /**
+   * Whether this answer has sent a post. Even a post the node refused may be
+   * checked before another is signed, as a retry does for every post.
+   */
+  get posted() {
+    return this.hash !== undefined;
   }
 
   /** Cancel while holding; nothing is sent. Returns false once it has left holding. */
@@ -214,11 +229,16 @@ export class LiveAnswer {
   }
 
   /**
-   * For a failed answer that was not undone: check what became of the last
-   * post, and sign and post it again only if that post is gone or failed.
+   * For a failed answer that was not undone: poll the last post, if there
+   * was one, and sign and post again unless that post is applied or pending
+   * or the poll gets no response. What is signed is the answer with `change`
+   * applied: the screen passes the confidence selected now, and, when the
+   * person pressed Yes or No rather than Retry, that value. When nothing is
+   * signed, `change` is dropped.
    */
-  retry() {
-    if (this.state === 'failed' && this.error !== 'Undone') void this.submit();
+  retry(change: Partial<Pick<LiveAnswerInput, 'yes' | 'confidence'>> = {}) {
+    if (this.state === 'failed' && this.error !== 'Undone')
+      void this.submit(change);
   }
 
   private stop() {
@@ -239,7 +259,9 @@ export class LiveAnswer {
     }
   }
 
-  private async submit() {
+  private async submit(
+    change: Partial<Pick<LiveAnswerInput, 'yes' | 'confidence'>> = {},
+  ) {
     const run = ++this.run;
     this.error = undefined;
     this.signal[1]('submitting');
@@ -256,6 +278,10 @@ export class LiveAnswer {
         if (settled === 'pending') return this.watch(this.hash, run);
       }
     }
+    // `answer`, which the screen shows, takes the change only once it is
+    // signed: until then, the earlier answer is the one the node may still
+    // apply.
+    const next = { ...this.answer, ...change };
     let signed: ReturnType<typeof signAnswer>;
     try {
       const session = this.deps.session();
@@ -264,10 +290,11 @@ export class LiveAnswer {
         throw new Error(
           'You are now signed in to Aura with another account; reload this page',
         );
-      signed = signAnswer(this.answer, session, this.deps.now());
+      signed = signAnswer(next, session, this.deps.now());
     } catch (e) {
       return this.fail(e instanceof Error ? e.message : String(e));
     }
+    this.input[1](next);
     const ownHash = hash(signed.message);
     this.hash = ownHash;
     try {
@@ -318,6 +345,23 @@ export class LiveAnswer {
     };
     this.timer = this.deps.setTimer(() => void tick(), POLL_MS);
   }
+}
+
+/**
+ * What a Yes or No on a question does, given the question's last answer:
+ * nothing while that answer is in flight; a retry of it, with the new value,
+ * when it failed after a post the node may still apply; otherwise a new answer.
+ */
+export function answerAction(last?: LiveAnswer): 'none' | 'retry' | 'new' {
+  const s = last?.state;
+  if (
+    s === 'holding' ||
+    s === 'submitting' ||
+    s === 'submitted' ||
+    s === 'unconfirmed'
+  )
+    return 'none';
+  return s === 'failed' && last!.posted ? 'retry' : 'new';
 }
 
 /** What the answer screen can offer, before any answer is given. */

@@ -8,6 +8,8 @@ const PORT = 5177;
 
 export default defineConfig({
   base: '/vouch/',
+  // Read core's .env, in apps/core, so both apps use the same node URLs.
+  envDir: resolve(__dirname, '../core'),
   plugins: [
     tailwindcss(),
     solid(),
